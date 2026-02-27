@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
@@ -19,11 +20,11 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 @Slf4j
 public class IntegrationsUtil {
 
-    private final Function<String, Integrations> toIntegrations;
+    private final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations;
     private final Map<IntegrationsPredicate, IntegrationListMethod> configToIntegrationListMap;
 
-    public IntegrationsUtil(final Map<String, Integrations> integrations) {
-        this.toIntegrations = integrations::get;
+    public IntegrationsUtil(final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
+        this.envToIntegrations = envToIntegrations;
         this.configToIntegrationListMap = createConfigToIntegratonMap();
     }
 
@@ -63,7 +64,7 @@ public class IntegrationsUtil {
 
     @SuppressWarnings("unchecked")
     public <T extends Integration> List<T> findListByEnv(final Class<T> clazz, final String env) {
-        Integrations integration = toIntegrations.apply(env);
+        Integrations integration = envToIntegrations.get(env);
         if (integration == null) {
             return Collections.emptyList();
         }

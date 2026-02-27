@@ -6,11 +6,11 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Conditional({OnKafkaEnabledCondition.class})
 @Component
 public class KafkaOperation extends AbstractStorageOperation {
@@ -28,12 +29,6 @@ public class KafkaOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer;
     private final Map<AliasEnv, AdminClient> adminClient;
-
-    public KafkaOperation(@Autowired(required = false) final Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer,
-                          @Autowired(required = false) final Map<AliasEnv, AdminClient> adminClient) {
-        this.kafkaConsumer = kafkaConsumer;
-        this.adminClient = adminClient;
-    }
 
     @Override
     public StorageOperationResult apply(final Source source, final String alias) {

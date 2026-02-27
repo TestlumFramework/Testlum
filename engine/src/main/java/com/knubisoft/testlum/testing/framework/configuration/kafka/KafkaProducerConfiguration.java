@@ -1,10 +1,10 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.vault.VaultService;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
@@ -31,7 +30,7 @@ public class KafkaProducerConfiguration {
 
     @Bean
     public Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer(
-            final Map<String, Integrations> envToIntegrations) {
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
         Map<AliasEnv, KafkaProducer<String, String>> producerMap = new HashMap<>();
         envToIntegrations
                 .forEach((env, integrations) -> addConfigProps(integrations, env, producerMap));

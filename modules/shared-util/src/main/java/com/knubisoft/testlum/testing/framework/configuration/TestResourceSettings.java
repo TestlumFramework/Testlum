@@ -45,7 +45,7 @@ public class TestResourceSettings {
     private static String pathToTestResources;
     @Getter
     private static Optional<String> scenarioScope;
-    private static boolean initialized = false;
+    private static boolean initialized;
 
     private final File testResourcesFolder;
 

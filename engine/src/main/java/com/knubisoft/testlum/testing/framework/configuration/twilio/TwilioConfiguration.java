@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.twilio;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnTwilioEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -25,7 +26,8 @@ public class TwilioConfiguration {
     private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, Twilio> twilio(final Map<String, Integrations> envToIntegrations) {
+    public Map<AliasEnv, Twilio> twilio(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
         Map<AliasEnv, Twilio> twilioMap = new HashMap<>();
         envToIntegrations
                 .forEach((env, integrations) -> addTwilioToMap(integrations, env, twilioMap));

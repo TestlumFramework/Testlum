@@ -1,10 +1,10 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.vault.VaultService;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +31,9 @@ public class KafkaConsumerConfiguration {
 
     @Bean
     public Map<AliasEnv, KafkaConsumer<String, String>>
-    kafkaConsumer(final Map<String, Integrations> envToIntegrations) {
+    kafkaConsumer(final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
         final Map<AliasEnv, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
-        envToIntegrations.forEach((env, integrations) -> addKafkaConsumer(integrations, env, consumerMap));
+        envToIntegrations.forEach((env, integration) -> addKafkaConsumer(integration, env, consumerMap));
         return consumerMap;
     }
 

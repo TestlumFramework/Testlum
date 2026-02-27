@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -36,11 +35,11 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
     private static final String SOURCE = "Source";
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
-    @Autowired(required = false)
-    private Map<AliasEnv, JavaMailSenderImpl> javaMailSenderMap;
+    private final Map<AliasEnv, JavaMailSenderImpl> javaMailSenderMap;
 
     public SmtpInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+        this.javaMailSenderMap = dependencies.getContext().getBean("javaMailSender", Map.class);
     }
 
     @Override

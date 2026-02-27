@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_INFO;
 
@@ -41,10 +40,10 @@ public class BrowserUtil {
         return StringUtils.isBlank(browserAlias)
                 ? Optional.empty()
                 : environmentLoader.getWebSettings(env).
-                flatMap(e-> finEnabledByAlias(e, browserAlias));
+                flatMap(e -> finEnabledByAlias(e, browserAlias));
     }
 
-    private Optional<AbstractBrowser> finEnabledByAlias(Web web, String browserAlias) {
+    private Optional<AbstractBrowser> finEnabledByAlias(final Web web, final String browserAlias) {
         return web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(browser -> browser.isEnabled() && browser.getAlias().equalsIgnoreCase(browserAlias))
                 .findFirst();

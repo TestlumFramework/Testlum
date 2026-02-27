@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.smtp;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSmtpEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -29,11 +30,12 @@ public class SmtpConfiguration {
     private final ConnectionTemplate connectionTemplate;
     private final HealthCheckFactory healthCheckFactory;
 
-    @Bean
-    public Map<AliasEnv, JavaMailSenderImpl> javaMailSender(final Map<String, Integrations> envToIntegrations) {
+    @Bean("javaMailSender")
+    public Map<AliasEnv, JavaMailSenderImpl> javaMailSender(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
         Map<AliasEnv, JavaMailSenderImpl> senderMap = new HashMap<>();
         envToIntegrations
-                .forEach((env, integrations) -> addSenderToMap(integrations, env, senderMap));
+                .forEach((env, integration) -> addSenderToMap(integration, env, senderMap));
         return senderMap;
     }
 

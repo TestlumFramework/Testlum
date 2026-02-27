@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.sendgrid;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSendgridEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -26,7 +27,8 @@ public class SendgridConfiguration {
     private final HealthCheckFactory healthCheckFactory;
 
     @Bean("sendGridMap")
-    public Map<AliasEnv, SendGrid> sendGrid(final Map<String, Integrations> envToIntegrations) {
+    public Map<AliasEnv, SendGrid> sendGrid(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
         Map<AliasEnv, SendGrid> sendGridMap = new HashMap<>();
         envToIntegrations.forEach((env, integrations) -> addToMap(integrations, env, sendGridMap));
         return sendGridMap;

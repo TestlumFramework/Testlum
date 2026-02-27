@@ -29,8 +29,8 @@ public class ConfigProviderImpl implements ConfigProvider {
         return loader.getNativeSettings(env).orElseThrow(noConfigurationFound(env));
     }
 
-    private Supplier<? extends RuntimeException> noConfigurationFound(String env) {
-        return ()-> new DefaultFrameworkException("No configuration found for " + env);
+    private Supplier<? extends RuntimeException> noConfigurationFound(final String env) {
+        return () -> new DefaultFrameworkException("No configuration found for " + env);
     }
 
 }

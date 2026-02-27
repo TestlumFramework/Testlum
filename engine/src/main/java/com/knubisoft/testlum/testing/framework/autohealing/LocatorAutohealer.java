@@ -24,17 +24,26 @@ import org.openqa.selenium.WebElement;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.nio.charset.Charset.defaultCharset;
 
 public class LocatorAutohealer {
 
     private static final double MIN_ACCEPTABLE_SCORE = 0.5;
+    private static final double STRUCTURAL_WEIGHT = 0.4;
+    private static final int MAX_CANDIDATES_FOR_STRUCTURAL_CHECK = 40;
+    private static final List<String> FALLBACK_TAGS = List.of("input", "button", "a", "select", "textarea", "div", "span", "label");
+
     private static final String PATCH_FILE_PREFIX = "patch_";
     private static final String PATCH_FILE_EXTENSION = ".xml";
 
@@ -52,23 +61,35 @@ public class LocatorAutohealer {
     }
 
     public Optional<WebElement> heal(final Locator locator) {
-        HealingElementMetadata healingElementMetadata = elementMetadataExtractor.extractMetadata(locator);
-        String tag = healingElementMetadata.findMostCommonTag().orElse("*");
-        SearchContext searchScope = driver;
-        for (String anchorId : healingElementMetadata.getAncestorIds()) {
-            try {
-                searchScope = driver.findElement(By.id(anchorId));
-                break;
-            } catch (NoSuchElementException ignored) {
+        HealingElementMetadata metadata = elementMetadataExtractor.extractMetadata(locator);
+        List<WebElement> candidates = collectCandidates(metadata);
+        if (candidates.isEmpty()) {
+            return Optional.empty();
+        }
+
+        List<ScoredElement> baseScored = candidates.stream()
+                .map(candidate -> new ScoredElement(candidate, calculateWeightedBaseScore(metadata, candidate)))
+                .sorted(Comparator.comparingDouble((ScoredElement s) -> s.score).reversed())
+                .toList();
+
+        int structuralLimit = Math.min(MAX_CANDIDATES_FOR_STRUCTURAL_CHECK, baseScored.size());
+
+        ScoredElement best = null;
+        for (int i = 0; i < baseScored.size(); i++) {
+            ScoredElement scored = baseScored.get(i);
+            double finalScore = scored.score;
+            if (i < structuralLimit) {
+                finalScore = combineWithStructuralScore(scored.score, metadata, scored.element);
+            }
+            if (finalScore < MIN_ACCEPTABLE_SCORE) {
+                continue;
+            }
+            if (best == null || finalScore > best.score) {
+                best = new ScoredElement(scored.element, finalScore);
             }
         }
-        List<WebElement> candidates = searchScope.findElements(By.tagName(tag));
 
-        return candidates.stream()
-                .map(candidate -> new ScoredElement(candidate, calculateScore(healingElementMetadata, candidate)))
-                .filter(scored -> scored.score >= MIN_ACCEPTABLE_SCORE)
-                .max(Comparator.comparingDouble(s -> s.score))
-                .map(ScoredElement::getElement);
+        return Optional.ofNullable(best).map(ScoredElement::getElement);
     }
 
     public File generateNewLocators(final WebElement healedElement, final AutoHealingMode mode,
@@ -88,6 +109,93 @@ public class LocatorAutohealer {
             }
         }
         return locatorData.getFile();
+    }
+
+    private List<WebElement> collectCandidates(final HealingElementMetadata metadata) {
+        List<String> tags = resolveTags(metadata);
+        Set<WebElement> uniqueCandidates = new LinkedHashSet<>();
+
+        for (String anchorId : metadata.getAncestorIds()) {
+            try {
+                SearchContext anchor = driver.findElement(By.id(anchorId));
+                for (String tag : tags) {
+                    uniqueCandidates.addAll(anchor.findElements(By.tagName(tag)));
+                }
+            } catch (NoSuchElementException ignored) {
+            }
+        }
+
+        for (String tag : tags) {
+            uniqueCandidates.addAll(driver.findElements(By.tagName(tag)));
+        }
+
+        return new ArrayList<>(uniqueCandidates);
+    }
+
+    private List<String> resolveTags(final HealingElementMetadata metadata) {
+        Optional<String> mostCommonTag = metadata.findMostCommonTag();
+        if (mostCommonTag.isPresent() && !"*".equals(mostCommonTag.get())) {
+            return List.of(mostCommonTag.get().toLowerCase());
+        }
+
+        List<String> extractedTags = metadata.getTagNames().stream()
+                .map(String::toLowerCase)
+                .filter(tag -> !"*".equals(tag))
+                .distinct()
+                .collect(Collectors.toList());
+
+        return extractedTags.isEmpty() ? FALLBACK_TAGS : extractedTags;
+    }
+
+    private double combineWithStructuralScore(final double baseScore,
+                                              final HealingElementMetadata metadata,
+                                              final WebElement candidate) {
+        StructuralInfo structuralInfo = calculateStructuralInfo(metadata, candidate);
+        if (structuralInfo.checksPerformed == 0) {
+            return baseScore;
+        }
+
+        double structuralScore = structuralInfo.matchedChecks / (double) structuralInfo.checksPerformed;
+        return (baseScore * (1 - STRUCTURAL_WEIGHT)) + (structuralScore * STRUCTURAL_WEIGHT);
+    }
+
+    private StructuralInfo calculateStructuralInfo(final HealingElementMetadata metadata, final WebElement candidate) {
+        int matchedChecks = 0;
+        int checksPerformed = 0;
+
+        if (!metadata.getParentTags().isEmpty()) {
+            checksPerformed++;
+            try {
+                String actualParentTag = (String) ((JavascriptExecutor) driver)
+                        .executeScript("return arguments[0].parentNode && arguments[0].parentNode.tagName ? arguments[0].parentNode.tagName.toLowerCase() : null;", candidate);
+                if (actualParentTag != null && metadata.getParentTags().contains(actualParentTag)) {
+                    matchedChecks++;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (!metadata.getAncestorIds().isEmpty()) {
+            checksPerformed++;
+            try {
+                Boolean isInsideAnchor = (Boolean) ((JavascriptExecutor) driver).executeScript(
+                        "var el = arguments[0];" +
+                                "var ids = arguments[1];" +
+                                "return ids.some(function(id){" +
+                                "  var anchor = document.getElementById(id);" +
+                                "  return anchor && anchor.contains(el);" +
+                                "});",
+                        candidate,
+                        new ArrayList<>(metadata.getAncestorIds())
+                );
+                if (Boolean.TRUE.equals(isInsideAnchor)) {
+                    matchedChecks++;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        return new StructuralInfo(matchedChecks, checksPerformed);
     }
 
     private File generatePatchForLocatorDefinedInScenario(final ExecutorDependencies dependencies,
@@ -129,93 +237,115 @@ public class LocatorAutohealer {
     }
 
     private void generateText(final WebElement healedElement, final HealedLocators healedLocators) {
-        String text = healedElement.getText().trim();
+        String text = normalize(healedElement.getText());
         if (!text.isEmpty()) {
             healedLocators.setText(text);
         }
-    }
-
-    private double calculateScore(final HealingElementMetadata metadata, final WebElement candidate) {
-        double baseScore = this.calculateWeightedBaseScore(metadata, candidate);
-
-        double structuralScore = 0;
-        double structuralWeight = 0.2;
-        int structuralChecksPerformed = 0;
-
-        try {
-            String actualParentTag = (String) ((JavascriptExecutor) driver)
-                    .executeScript("return arguments[0].parentNode.tagName;", candidate);
-
-            if (actualParentTag != null && !metadata.getParentTags().isEmpty()) {
-                structuralChecksPerformed++;
-                if (metadata.getParentTags().contains(actualParentTag.toLowerCase())) {
-                    structuralScore += 1.0;
-                }
-            }
-        } catch (Exception ignored) {
-        }
-
-        if (!metadata.getAncestorIds().isEmpty()) {
-            structuralChecksPerformed++;
-            boolean isInsideAnchor = metadata.getAncestorIds().stream()
-                    .anyMatch(anchorId -> {
-                        try {
-                            return (Boolean) ((JavascriptExecutor) driver).executeScript(
-                                    "return document.getElementById(arguments[1])?.contains(arguments[0]);",
-                                    candidate, anchorId);
-                        } catch (Exception e) {
-                            return false;
-                        }
-                    });
-            if (isInsideAnchor) {
-                structuralScore += 1.0;
-            }
-        }
-
-        double finalStructuralScore = (structuralChecksPerformed > 0)
-                ? (structuralScore / structuralChecksPerformed)
-                : 0;
-
-        return (baseScore * (1 - structuralWeight)) + (finalStructuralScore * structuralWeight);
     }
 
     private double calculateWeightedBaseScore(final HealingElementMetadata metadata, final WebElement candidate) {
         double totalWeight = 0;
         double weightedScore = 0;
 
-        String candidateText = candidate.getText();
-        if (!metadata.getTexts().isEmpty() && !candidateText.isEmpty()) {
-            weightedScore += this.maxSimilarity(metadata.getTexts(), candidateText) * 0.5;
-            totalWeight += 0.5;
+        if (!metadata.getTexts().isEmpty()) {
+            double textScore = calculateTextScore(metadata.getTexts(), candidate);
+            weightedScore += textScore * 0.45;
+            totalWeight += 0.45;
         }
 
-        String candidateId = candidate.getAttribute("id");
-        if (!metadata.getIds().isEmpty() && candidateId != null && !candidateId.isEmpty()) {
-            weightedScore += this.maxSimilarity(metadata.getIds(), candidateId) * 0.3;
-            totalWeight += 0.3;
+        if (!metadata.getIds().isEmpty()) {
+            double idScore = calculateIdScore(metadata.getIds(), candidate);
+            weightedScore += idScore * 0.30;
+            totalWeight += 0.30;
         }
 
         if (!metadata.getAttributes().isEmpty()) {
-            double attrScore = this.calculateAttributeScore(metadata.getAttributes(), candidate);
-            if (attrScore > 0) {
-                weightedScore += attrScore * 0.2;
-                totalWeight += 0.2;
+            double attrScore = calculateAttributeScore(metadata.getAttributes(), candidate);
+            weightedScore += attrScore * 0.15;
+            totalWeight += 0.15;
+        }
+
+        if (!metadata.getClasses().isEmpty()) {
+            double classScore = calculateClassScore(metadata.getClasses(), candidate);
+            weightedScore += classScore * 0.10;
+            totalWeight += 0.10;
+        }
+
+        if (totalWeight == 0) {
+            return 0;
+        }
+        return boundToUnitInterval(weightedScore / totalWeight);
+    }
+
+    private double calculateTextScore(final Collection<String> texts, final WebElement candidate) {
+        String candidateText = normalize(candidate.getText());
+        if (candidateText.isEmpty()) {
+            return 0;
+        }
+        return maxSimilarity(texts, candidateText);
+    }
+
+    private double calculateIdScore(final Collection<String> ids, final WebElement candidate) {
+        String candidateId = normalize(candidate.getAttribute("id"));
+        if (candidateId.isEmpty()) {
+            return 0;
+        }
+
+        boolean exactMatch = ids.stream()
+                .map(this::normalize)
+                .anyMatch(candidateId::equals);
+        if (exactMatch) {
+            return 1.0;
+        }
+
+        return maxSimilarity(ids, candidateId) * 0.7;
+    }
+
+    private double calculateClassScore(final Collection<String> classes, final WebElement candidate) {
+        String candidateClass = normalize(candidate.getAttribute("class"));
+        if (candidateClass.isEmpty()) {
+            return 0;
+        }
+
+        Set<String> candidateTokens = new HashSet<>(List.of(candidateClass.split("\\s+")));
+        if (candidateTokens.isEmpty()) {
+            return 0;
+        }
+
+        double best = 0;
+        for (String cls : classes) {
+            String normalized = normalize(cls);
+            if (normalized.isEmpty()) {
+                continue;
             }
+            Set<String> sourceTokens = new HashSet<>(List.of(normalized.split("\\s+")));
+            if (sourceTokens.isEmpty()) {
+                continue;
+            }
+
+            long intersection = sourceTokens.stream().filter(candidateTokens::contains).count();
+            long union = sourceTokens.size() + candidateTokens.size() - intersection;
+            double tokenSimilarity = union == 0 ? 0 : (double) intersection / union;
+            double fuzzySimilarity = getScore(normalized, candidateClass);
+            best = Math.max(best, (tokenSimilarity * 0.6) + (fuzzySimilarity * 0.4));
         }
 
-        String candidateClass = candidate.getAttribute("class");
-        if (!metadata.getClasses().isEmpty() && candidateClass != null && !candidateClass.isEmpty()) {
-            weightedScore += this.maxSimilarity(metadata.getClasses(), candidateClass) * 0.1;
-            totalWeight += 0.1;
-        }
-
-        return (totalWeight == 0) ? 0 : (weightedScore / totalWeight);
+        return boundToUnitInterval(best);
     }
 
     private double maxSimilarity(final Collection<String> items, final String target) {
-        if (items.isEmpty() || target == null || target.isEmpty()) return 0.0;
+        if (items.isEmpty()) {
+            return 0.0;
+        }
+        String normalizedTarget = normalize(target);
+        if (normalizedTarget.isEmpty()) {
+            return 0.0;
+        }
+
         return items.stream()
-                .mapToDouble(item -> this.getScore(item.toLowerCase(), target.toLowerCase()))
+                .map(this::normalize)
+                .filter(value -> !value.isEmpty())
+                .mapToDouble(item -> this.getScore(item, normalizedTarget))
                 .max().orElse(0.0);
     }
 
@@ -223,14 +353,34 @@ public class LocatorAutohealer {
         if (metaAttrs.isEmpty()) {
             return 0.0;
         }
-        double totalMatch = 0.0;
+
+        double total = 0;
         for (Map.Entry<String, String> entry : metaAttrs.entrySet()) {
-            String actualValue = candidate.getAttribute(entry.getKey());
-            if (actualValue != null) {
-                totalMatch += this.getScore(entry.getValue(), actualValue);
+            String expected = normalize(entry.getValue());
+            if (expected.isEmpty()) {
+                continue;
             }
+
+            String actual = normalize(candidate.getAttribute(entry.getKey()));
+            if (actual.isEmpty()) {
+                continue;
+            }
+
+            total += getScore(expected, actual);
         }
-        return totalMatch / metaAttrs.size();
+
+        return boundToUnitInterval(total / metaAttrs.size());
+    }
+
+    private String normalize(final String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.trim().replaceAll("\\s+", " ").toLowerCase();
+    }
+
+    private double boundToUnitInterval(final double value) {
+        return Math.max(0, Math.min(1, value));
     }
 
     private double getScore(final String previousValue, final String actualValue) {
@@ -238,13 +388,16 @@ public class LocatorAutohealer {
 
         double normalizedLevenshteinDistance = getNormalizedLevenshteinDistance(previousValue, actualValue);
 
-        return jaroWinklerSimilarityScore > normalizedLevenshteinDistance
-                ? jaroWinklerSimilarityScore : normalizedLevenshteinDistance;
+        return Math.max(jaroWinklerSimilarityScore, normalizedLevenshteinDistance);
     }
 
     private double getNormalizedLevenshteinDistance(final String previousValue, final String actualValue) {
-        int distance = levenshteinDistance.apply(previousValue, actualValue);
         int maxLength = Math.max(previousValue.length(), actualValue.length());
+        if (maxLength == 0) {
+            return 1.0;
+        }
+
+        int distance = levenshteinDistance.apply(previousValue, actualValue);
         return 1.0 - ((double) distance / maxLength);
     }
 
@@ -302,6 +455,16 @@ public class LocatorAutohealer {
         ScoredElement(final WebElement element, final double score) {
             this.element = element;
             this.score = score;
+        }
+    }
+
+    private static class StructuralInfo {
+        int matchedChecks;
+        int checksPerformed;
+
+        StructuralInfo(final int matchedChecks, final int checksPerformed) {
+            this.matchedChecks = matchedChecks;
+            this.checksPerformed = checksPerformed;
         }
     }
 }

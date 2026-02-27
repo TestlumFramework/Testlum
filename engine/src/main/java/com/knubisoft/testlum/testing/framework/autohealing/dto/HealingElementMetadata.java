@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 public class HealingElementMetadata {
 
     private final List<String> tagNames = new ArrayList<>();
-    private final Set<String> texts = new HashSet<>();
-    private final Set<String> classes = new HashSet<>();
+    private final Set<String> texts = new LinkedHashSet<>();
+    private final Set<String> classes = new LinkedHashSet<>();
     private final List<String> ids = new ArrayList<>();
     private final Map<String, String> attributes = new HashMap<>();
     private final List<String> parentTags = new ArrayList<>();
-    private final Set<String> ancestorIds = new HashSet<>();
+    private final Set<String> ancestorIds = new LinkedHashSet<>();
 
     public void addTagName(final String tagName) {
         this.tagNames.add(tagName);

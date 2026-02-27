@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -17,7 +16,7 @@ import java.util.Optional;
 public class EnvironmentLoader {
 
     @Qualifier("uiConfig")
-    private final Map<String, UiConfig> uiConfigMap;
+    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigMap;
 
     public Optional<Web> getCurrentEnvWebSettings() {
         return getWebSettings(EnvManager.currentEnv());

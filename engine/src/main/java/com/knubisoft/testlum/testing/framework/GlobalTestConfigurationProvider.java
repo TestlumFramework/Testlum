@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.model.global_config.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -64,20 +65,26 @@ public class GlobalTestConfigurationProvider {
         }
     }
 
+    public static class UIConfiguration extends HashMap<String, UiConfig> {
+        public UIConfiguration(final Map<? extends String, ? extends UiConfig> m) {
+            super(m);
+        }
+    }
+
     @Bean("uiConfig")
-    public Map<String, UiConfig> getUiConfigs(final List<Environment> environments,
-                                              final Optional<VaultService> vaultService) {
+    public UIConfiguration getUiConfigs(final List<Environment> environments,
+                                        final Optional<VaultService> vaultService) {
         return collectUiConfigs(environments, vaultService);
     }
 
     @Bean
-    public Integrations getDefaultIntegrations(final Map<String, Integrations> integrations,
+    public Integrations getDefaultIntegrations(final EnvToIntegrationMap integrations,
                                                final List<Environment> environments) {
         return integrations.get(getDefaultEnabledEnvironment(environments));
     }
 
     @Bean
-    public UiConfig getDefaultUiConfigs(final Map<String, UiConfig> uiConfigs,
+    public UiConfig getDefaultUiConfigs(@Qualifier("uiConfig") final UIConfiguration uiConfigs,
                                         final List<Environment> environments) {
         return uiConfigs.get(getDefaultEnabledEnvironment(environments));
     }
@@ -88,7 +95,7 @@ public class GlobalTestConfigurationProvider {
     }
 
     private EnvToIntegrationMap collectIntegrations(final List<Environment> environments,
-                                                          final Optional<VaultService> vaultService) {
+                                                    final Optional<VaultService> vaultService) {
         Map<String, Integrations> integrationsMap = environments.stream()
                 .collect(Collectors.toMap(Environment::getFolder, e -> initIntegration(e, vaultService)));
         integrationsValidator.validate(integrationsMap);
@@ -107,12 +114,12 @@ public class GlobalTestConfigurationProvider {
                 });
     }
 
-    private Map<String, UiConfig> collectUiConfigs(final List<Environment> environments,
-                                                   final Optional<VaultService> vaultService) {
+    private UIConfiguration collectUiConfigs(final List<Environment> environments,
+                                             final Optional<VaultService> vaultService) {
         Map<String, UiConfig> uiConfigMap = environments.stream()
                 .collect(Collectors.toMap(Environment::getFolder, env -> initUiConfig(env, vaultService)));
         validator.validate(uiConfigMap);
-        return uiConfigMap;
+        return new UIConfiguration(uiConfigMap);
     }
 
     private UiConfig initUiConfig(final Environment env,

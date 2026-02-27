@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
@@ -28,7 +29,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class NativeDriverFactory {
 
     private final SeleniumDriverUtil seleniumDriverUtil;
-    private final Map<String, UiConfig> uiConfigs;
+    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
 
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();

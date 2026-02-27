@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.ui;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.connection.ConnectionTemplateImpl;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -50,7 +51,7 @@ public class WebDriverFactory {
     private final SeleniumDriverUtil seleniumDriverUtil;
     private final HealthCheckFactory healthCheckFactory;
     private final BrowserUtil browserUtil;
-    private final Map<String, UiConfig> uiConfigs;
+    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
 
     private Map<BrowserPredicate, WebDriverFunction> driverInitializerMap = Map.of(
             browser -> browser instanceof Chrome, b -> new ChromeDriverInitializer().init((Chrome) b),

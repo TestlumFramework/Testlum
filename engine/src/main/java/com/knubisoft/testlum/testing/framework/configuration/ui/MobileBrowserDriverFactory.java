@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.time.Duration;
-import java.util.Map;
 import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_MOBILE_PLATFORM_NAME;
@@ -23,7 +23,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 public class MobileBrowserDriverFactory {
 
     private final SeleniumDriverUtil seleniumDriverUtil;
-    private final Map<String, UiConfig> uiConfigs;
+    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
 
     public WebDriver createDriver(final MobilebrowserDevice mobileDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
@@ -35,7 +35,7 @@ public class MobileBrowserDriverFactory {
 
     @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities,
-                                                final Map<String, UiConfig> uiConfigs) {
+                                                final GlobalTestConfigurationProvider.UIConfiguration uiConfigs) {
         UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
         String serverUrl = seleniumDriverUtil.getMobileBrowserConnectionUrl(uiConfig);
         Mobilebrowser settings = uiConfig.getMobilebrowser();

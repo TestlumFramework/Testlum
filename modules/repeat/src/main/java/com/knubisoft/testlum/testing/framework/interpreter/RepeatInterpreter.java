@@ -25,9 +25,14 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
 
     private static final String TABLE_FORMAT = "%-23s|%-70s";
     private static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_CYAN = "\u001b[36m";
     private static final String ANSI_RESET = "\u001b[0m";
     private static final String COMMAND_REPEAT_FINISHED_LOG = ANSI_YELLOW + "------- Repeat is finished -------"
             + ANSI_RESET;
+    private static final String COMMAND_REPEAT_WITH_INDEX_RUN_LOG =
+            ANSI_CYAN + "------- Repeat Run %d/%d -------" + ANSI_RESET;
+    private static final String COMMAND_REPEAT_WITH_VARIATION_RUN_LOG =
+            ANSI_CYAN + "------- Repeat Variation %d/%d: %s -------" + ANSI_RESET;
 
     private final RepeatCommandRunner repeatCommandsRunner;
     private final GlobalVariations globalVariations;
@@ -56,21 +61,26 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
         result.put("Variations", repeat.getVariations());
         List<AbstractCommand> commands = repeat.getCommands();
-        List<AbstractCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
-                .flatMap(variation -> commands.stream().map(command ->
-                        injectObjectVariation(command, variation)))
-                .collect(Collectors.toList());
-        this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+        List<Map<String, String>> variations = globalVariations.getVariations(repeat.getVariations());
+        for (int i = 0; i < variations.size(); i++) {
+            Map<String, String> variationMap = variations.get(i);
+            log.info(format(COMMAND_REPEAT_WITH_VARIATION_RUN_LOG, i + 1, variations.size(), variationMap.toString()));
+            List<AbstractCommand> injectedForThisRound = commands.stream()
+                    .map(command -> injectObjectVariation(command, variationMap))
+                    .collect(Collectors.toList());
+
+            this.repeatCommandsRunner.runCommands(injectedForThisRound, dependencies, result, subCommandsResult);
+        }
     }
 
     private void runSimpleRepeat(final Repeat repeat,
                                  final CommandResult result,
                                  final List<CommandResult> subCommandsResult) {
-        Repeat repeat1 = injectCommand(repeat);
         log.info(format(TABLE_FORMAT, "Times", repeat.getTimes()));
         result.put("Times", repeat.getTimes());
-        for (int i = 0; i < repeat1.getTimes(); i++) {
-            this.repeatCommandsRunner.runCommands(repeat1.getCommands(), dependencies, result, subCommandsResult);
+        for (int i = 0; i < repeat.getTimes(); i++) {
+            log.info(format(COMMAND_REPEAT_WITH_INDEX_RUN_LOG, i + 1, repeat.getTimes()));
+            this.repeatCommandsRunner.runCommands(repeat.getCommands(), dependencies, result, subCommandsResult);
         }
     }
 

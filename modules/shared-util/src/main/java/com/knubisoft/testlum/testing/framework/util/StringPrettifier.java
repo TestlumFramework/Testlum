@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StringPrettifier {
 
-    private static final int CHAR_LIMIT_FOR_CUT = 150;
+    private static final int CHAR_LIMIT_FOR_CUT = 500;
 
     private final JacksonService jacksonService;
 

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -85,7 +86,7 @@ public class TestSetCollector {
         if (variationsExist(entry)) {
             return getVariationList(entry).stream().map(variations -> getArgumentsWithoutUiSteps(entry, variations));
         }
-        return Stream.of(getArgumentsWithoutUiSteps(entry, new HashMap<>()));
+        return Stream.of(getArgumentsWithoutUiSteps(entry, new LinkedHashMap<>()));
     }
 
     private Arguments getArgumentsWithoutUiSteps(final MappingResult entry, final Map<String, String> variations) {

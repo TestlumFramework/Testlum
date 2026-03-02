@@ -10,7 +10,7 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 @UtilityClass
 public class StringPrettifier {
 
-    private static final int CHAR_LIMIT_FOR_CUT = 150;
+    private static final int CHAR_LIMIT_FOR_CUT = 500;
 
     public String prettify(final String string) {
         if (StringUtils.isNotBlank(string)) {

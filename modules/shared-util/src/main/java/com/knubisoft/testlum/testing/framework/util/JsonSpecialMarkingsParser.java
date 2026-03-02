@@ -23,10 +23,8 @@ public class JsonSpecialMarkingsParser {
         Map<String, Object> result = removeFromContextMapKeysSpecialJsonMarks(contextMap);
         DocumentContext ctx = JsonPath.parse("{}");
         Map<String, Object> parentMarkers = collectMarkedJsonPairs(result);
-        List<Map.Entry<String, Object>> sortedByPathDepth = new ArrayList<>(result.entrySet());
-        sortedByPathDepth.sort(Comparator.comparingInt(e -> e.getKey().split("\\.").length));
 
-        for (Map.Entry<String, Object> entry : sortedByPathDepth) {
+        for (Map.Entry<String, Object> entry : result.entrySet()) {
             processEntry(entry.getKey(), String.valueOf(entry.getValue()), ctx, parentMarkers);
         }
         String json = ctx.jsonString();
@@ -37,9 +35,13 @@ public class JsonSpecialMarkingsParser {
     private static Map<String, Object> removeFromContextMapKeysSpecialJsonMarks(Map<String, String> contextMap) {
         Map<String, Object> result = new LinkedHashMap<>();
         for (Map.Entry<String, String> stringObjectEntry : contextMap.entrySet()) {
+            if (stringObjectEntry.getKey().contains("expected")) {
+                result.put(stringObjectEntry.getKey(), stringObjectEntry.getValue());
+            } else {
             String csvColumnName = stringObjectEntry.getKey().trim();
             String csvColumnNameSanitized = csvColumnName.substring(2, csvColumnName.length() - 1);
             result.put(csvColumnNameSanitized, stringObjectEntry.getValue());
+            }
         }
         return result;
     }

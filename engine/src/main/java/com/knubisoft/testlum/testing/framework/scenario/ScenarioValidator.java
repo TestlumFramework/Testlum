@@ -1,13 +1,13 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.*;
-import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
@@ -31,6 +31,7 @@ import com.knubisoft.testlum.testing.model.scenario.Sqs;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Web;
 import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.framework.xml.XMLValidator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;

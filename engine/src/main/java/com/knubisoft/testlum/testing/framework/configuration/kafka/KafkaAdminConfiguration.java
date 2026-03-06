@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;

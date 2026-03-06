@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.s3;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;

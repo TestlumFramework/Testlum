@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.github.romankh3.image.comparison.exception.ImageComparisonException;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

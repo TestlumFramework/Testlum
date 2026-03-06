@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.configuration.datasource;
 import com.clickhouse.jdbc.DataSourceImpl;
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;

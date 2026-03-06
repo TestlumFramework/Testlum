@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;

@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.kafka;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;

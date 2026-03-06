@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.parser;
 
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.opencsv.CSVReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

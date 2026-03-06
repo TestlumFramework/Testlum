@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.report.extentreports;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.HtmlReportGenerator;
 import com.knubisoft.testlum.testing.model.global_config.KlovServerReportGenerator;

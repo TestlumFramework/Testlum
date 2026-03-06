@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.scenario.StorageName;
 import lombok.RequiredArgsConstructor;

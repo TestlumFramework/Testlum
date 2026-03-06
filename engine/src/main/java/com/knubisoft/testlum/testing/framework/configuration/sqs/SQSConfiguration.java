@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.sqs;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;

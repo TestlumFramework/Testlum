@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +55,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     public SendGridInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.httpUtil = dependencies.getContext().getBean(HttpUtil.class);
-        this.sendGrid = dependencies.getContext().getBean("sendGridMap", Map.class);
+        this.sendGrid = dependencies.getOptionalBean("sendGridMap", Map.class, Collections::emptyMap);
     }
 
     @Override

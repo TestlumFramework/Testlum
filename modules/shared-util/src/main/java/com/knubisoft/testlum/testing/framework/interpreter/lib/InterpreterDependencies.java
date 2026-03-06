@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 @Builder
 @Getter
@@ -27,6 +28,12 @@ public class InterpreterDependencies {
     private final WebDriver nativeDriver;
 
     private Authorization authorization;
+
+    public <T> T getOptionalBean(final String beanName, final Class<T> clazz, final Supplier<T> defaultValue) {
+        return this.context.containsBean(beanName)
+                ? context.getBean(beanName, clazz)
+                : defaultValue.get();
+    }
 
     @Data
     @AllArgsConstructor

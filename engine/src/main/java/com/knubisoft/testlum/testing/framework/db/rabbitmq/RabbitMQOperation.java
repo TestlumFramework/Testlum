@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.rabbitmq;
 
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;

@@ -86,8 +86,27 @@ public class ScenarioContext {
             String zeroSubsequence = m.group(0);
             String value = get(firstSubsequence);
             value = StringEscapeUtils.escapeJson(value);
+            if (isInsideSpelOrExpression(original, m.start())) {
+                value = escapeSpelQuotes(value);
+            }
             formatted = formatted.replace(zeroSubsequence, value);
         }
         return formatted;
+    }
+
+    private boolean isInsideSpelOrExpression(final String json, final int position) {
+        String prefix = json.substring(0, position);
+        int spelIndex = prefix.lastIndexOf("\"spel\"");
+        int exprIndex = prefix.lastIndexOf("\"expression\"");
+        int nearestKeyIndex = Math.max(spelIndex, exprIndex);
+        if (nearestKeyIndex == -1) {
+            return false;
+        }
+        int colonIndex = json.indexOf(':', nearestKeyIndex);
+        return colonIndex != -1 && colonIndex < position;
+    }
+
+    private String escapeSpelQuotes(final String value) {
+        return value.replaceAll("'", "''");
     }
 }

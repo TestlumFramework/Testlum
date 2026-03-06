@@ -15,7 +15,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.util.List;
-import java.util.Optional;
 
 @Setter
 @Getter
@@ -34,23 +33,41 @@ public abstract class AbstractCondition<T extends Integration> implements Condit
 
     private Integrations getDefaultIntegrations(final ConditionContext conditionContext) {
         try {
-            FileSearcher fileSearcher = conditionContext.getBeanFactory().getBean(FileSearcher.class);
-            XMLParsers xmlParsers = conditionContext.getBeanFactory().getBean(XMLParsers.class);
-            TestResourceSettings testResourceSettings = conditionContext.getBeanFactory().getBean(TestResourceSettings.class);
+            FileSearcher fileSearcher = this.getBean(conditionContext, FileSearcher.class);
+            XMLParsers xmlParsers = this.getBean(conditionContext, XMLParsers.class);
+            TestResourceSettings testResourceSettings = this.getBean(conditionContext, TestResourceSettings.class);
 
             GlobalTestConfiguration globalTestConfiguration =
-                    xmlParsers.forGlobalTestConfiguration().process(testResourceSettings.getConfigFile());
+                    this.loadGlobalConfiguration(xmlParsers, testResourceSettings);
 
-            String folder = getCurrentEnv(filterEnabledEnvironments(globalTestConfiguration));
+            String envFolder = getCurrentEnv(filterEnabledEnvironments(globalTestConfiguration));
 
-            Optional<Integrations> result = fileSearcher
-                    .searchFileFromEnvFolder(folder, TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                    .map(configFile -> xmlParsers.forIntegrations().process(configFile));
-
-            return result.get();
+            return loadIntegrations(fileSearcher, xmlParsers, envFolder);
         } catch (Exception e) {
             throw new RuntimeException("Unable to initialize default integrations", e);
         }
+    }
+
+    private <B> B getBean(final ConditionContext conditionContext, final Class<B> beanType) {
+        return conditionContext.getBeanFactory().getBean(beanType);
+    }
+
+    private GlobalTestConfiguration loadGlobalConfiguration(final XMLParsers xmlParsers,
+                                                            final TestResourceSettings settings) {
+
+        return xmlParsers
+                .forGlobalTestConfiguration()
+                .process(settings.getConfigFile());
+    }
+
+    private Integrations loadIntegrations(final FileSearcher fileSearcher,
+                                          final XMLParsers xmlParsers,
+                                          final String folder) {
+
+        return fileSearcher
+                .searchFileFromEnvFolder(folder, TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
+                .map(file -> xmlParsers.forIntegrations().process(file))
+                .orElseThrow(() -> new IllegalStateException("Integrations config file not found"));
     }
 
     private String getCurrentEnv(final List<Environment> environments) {

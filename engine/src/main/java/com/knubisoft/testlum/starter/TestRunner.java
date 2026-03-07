@@ -2,8 +2,8 @@ package com.knubisoft.testlum.starter;
 
 import com.knubisoft.testlum.testing.RootTest;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy;
+import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import lombok.RequiredArgsConstructor;

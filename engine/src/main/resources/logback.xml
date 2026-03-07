@@ -1,7 +1,7 @@
 <configuration>
     <property
             name="CONSOLE_LOG_PATTERN"
-            value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(|){faint} %m%n%wEx"/>
+            value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(|){faint} %clr([%X{env}:%X{scenario}]){cyan} %m%n%wEx"/>
     <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>

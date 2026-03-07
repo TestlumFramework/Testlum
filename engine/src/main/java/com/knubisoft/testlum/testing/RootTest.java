@@ -3,9 +3,8 @@ package com.knubisoft.testlum.testing;
 import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.testing.framework.*;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.framework.env.service.LockService;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
+import com.knubisoft.testlum.testing.framework.env.service.EnvironmentExecutionService;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
@@ -30,6 +29,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.slf4j.MDC;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -65,12 +65,20 @@ public class RootTest {
     @MethodSource("prepareTestData")
     void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments) {
         ScenarioArguments data = arguments.getPayload();
-        LockService envLockService = ctx.getBean(LockService.class);
-        envLockService.runLocked(() -> prepareAndRun(data));
+        EnvironmentExecutionService executionService = ctx.getBean(EnvironmentExecutionService.class);
+        executionService.runInEnvironment(data.getEnvironment(), () -> {
+            MDC.put("env", data.getEnvironment());
+            MDC.put("scenario", data.getPath());
+            try {
+                prepareAndRun(data);
+            } finally {
+                MDC.remove("env");
+                MDC.remove("scenario");
+            }
+        });
     }
 
     private void prepareAndRun(final ScenarioArguments args) {
-        args.setEnvironment(EnvManager.currentEnv());
         boolean ignore = args.getException() instanceof IntegrationDisabledException;
         LogUtil logUtil = ctx.getBean(LogUtil.class);
         logUtil.logScenarioDetails(args, args.getException(), ignore ? Color.YELLOW : Color.GREEN);

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
@@ -9,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import org.apache.commons.lang3.StringUtils;
@@ -35,13 +37,15 @@ public class TestSetCollector {
     private final ScenarioFilter scenarioFilter;
     private final TestResourceSettings testResourceSettings;
     private final GlobalVariationsProvider globalVariationsProvider;
+    private final List<Environment> environments;
 
     public TestSetCollector(final ScenarioCollector scenarioCollector,
                             final ScenarioFilter scenarioFilter,
                             final BrowserUtil browserUtil,
                             final MobileUtil mobileUtil,
                             final TestResourceSettings testResourceSettings,
-                            final GlobalVariationsProvider globalVariationsProvider) {
+                            final GlobalVariationsProvider globalVariationsProvider,
+                            final List<Environment> environments) {
         this.scenarioCollector = scenarioCollector;
         this.scenarioFilter = scenarioFilter;
         this.browsers = browserUtil.filterDefaultEnabledBrowsers().stream()
@@ -52,12 +56,16 @@ public class TestSetCollector {
                 .map(NativeDevice::getAlias).toList();
         this.testResourceSettings = testResourceSettings;
         this.globalVariationsProvider = globalVariationsProvider;
+        this.environments = environments;
     }
 
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = scenarioCollector.collect();
         List<MappingResult> validScenarios = scenarioFilter.filterScenarios(result);
-        return validScenarios.stream().flatMap(this::createArguments);
+        List<String> executionEnvironments = resolveExecutionEnvironments();
+        return validScenarios.stream()
+                .flatMap(this::createArguments)
+                .flatMap(arguments -> expandByEnvironment(arguments, executionEnvironments));
     }
 
     //CHECKSTYLE:OFF
@@ -167,6 +175,45 @@ public class TestSetCollector {
 
     private Arguments convertToNamedArguments(final ScenarioArguments scenarioArguments) {
         return arguments(Named.of(scenarioArguments.getPath(), scenarioArguments));
+    }
+
+    private Stream<Arguments> expandByEnvironment(final Arguments argument, final List<String> executionEnvironments) {
+        Object[] values = argument.get();
+        if (values.length == 0 || !(values[0] instanceof Named<?> named)) {
+            return Stream.of(argument);
+        }
+        Object payload = named.getPayload();
+        if (!(payload instanceof ScenarioArguments base)) {
+            return Stream.of(argument);
+        }
+        return executionEnvironments.stream()
+                .map(environment -> cloneForEnvironment(base, environment))
+                .map(scenarioArguments -> arguments(Named.of(
+                        scenarioArguments.getPath() + " [" + scenarioArguments.getEnvironment() + "]",
+                        scenarioArguments)));
+    }
+
+    private List<String> resolveExecutionEnvironments() {
+        if (environments == null || environments.isEmpty()) {
+            throw new DefaultFrameworkException("No enabled environments found for test execution");
+        }
+        return environments.stream().map(Environment::getFolder).toList();
+    }
+
+    private ScenarioArguments cloneForEnvironment(final ScenarioArguments base, final String environment) {
+        ScenarioArguments cloned = ScenarioArguments.builder()
+                .path(base.getPath())
+                .file(base.getFile())
+                .scenario(base.getScenario())
+                .exception(base.getException())
+                .browser(base.getBrowser())
+                .mobileBrowserDevice(base.getMobileBrowserDevice())
+                .nativeDevice(base.getNativeDevice())
+                .variations(base.getVariations() == null ? null : new HashMap<>(base.getVariations()))
+                .containsUiSteps(base.isContainsUiSteps())
+                .build();
+        cloned.setEnvironment(environment);
+        return cloned;
     }
 
     private String getShortPath(final File file) {

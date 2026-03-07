@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Slf4j
@@ -39,7 +40,8 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     public SmtpInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.javaMailSenderMap = dependencies.getContext().getBean("javaMailSender", Map.class);
+        this.javaMailSenderMap =
+                dependencies.getOptionalBean("javaMailSender", Map.class, Collections::emptyMap);
     }
 
     @Override

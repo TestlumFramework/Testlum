@@ -18,6 +18,7 @@
         <module>comparator</module>
         <module>log</module>
         <module>connection-template</module>
+        <module>condition</module>
     </modules>
 
 </project>

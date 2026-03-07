@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

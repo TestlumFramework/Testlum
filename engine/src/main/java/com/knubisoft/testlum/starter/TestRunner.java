@@ -1,7 +1,11 @@
 package com.knubisoft.testlum.starter;
 
 import com.knubisoft.testlum.testing.RootTest;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy;
+import com.knubisoft.testlum.testing.model.global_config.Environment;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
@@ -23,6 +27,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Component
 public class TestRunner implements CommandLineRunner {
+
+    private final XMLParsers xmlParsers;
+    private final TestResourceSettings testResourceSettings;
 
     @Override
     public void run(final String... args) {
@@ -70,12 +77,30 @@ public class TestRunner implements CommandLineRunner {
      * @return the configured builder with parallel execution settings
      */
     private LauncherDiscoveryRequestBuilder parallel(final LauncherDiscoveryRequestBuilder b) {
-        boolean isParallel = false; // TODO update from settings globalTestConfigurationProvider
+        GlobalTestConfiguration globalTestConfiguration =
+                xmlParsers.forGlobalTestConfiguration().process(testResourceSettings.getConfigFile());
         String clazz = GlobalParallelExecutionConfigStrategy.class.getName();
-        return b.configurationParameter("junit.jupiter.execution.parallel.enabled", String.valueOf(isParallel))
+        return b.configurationParameter("junit.jupiter.execution.parallel.enabled",
+                        String.valueOf(this.isParallel(globalTestConfiguration)))
                 .configurationParameter("junit.jupiter.execution.parallel.config.strategy", "custom")
-                .configurationParameter("junit.jupiter.execution.parallel.config.custom.class", clazz);
+                .configurationParameter("junit.jupiter.execution.parallel.config.custom.class", clazz)
+                .configurationParameter("junit.jupiter.execution.parallel.config.testlum.parallelism",
+                        String.valueOf(this.computeParallelism(globalTestConfiguration)));
     }
+
+    private boolean isParallel(final GlobalTestConfiguration globalTestConfiguration) {
+        return Boolean.TRUE.equals(globalTestConfiguration.isParallelExecution());
+    }
+
+    private int computeParallelism(final GlobalTestConfiguration globalTestConfiguration) {
+        int envThreads = globalTestConfiguration.getEnvironments().getEnv()
+                .stream()
+                .mapToInt(Environment::getThreads)
+                .sum();
+        int cpu = Runtime.getRuntime().availableProcessors();
+        return Math.max(1, Math.min(envThreads, cpu * 2));
+    }
+
 
     /**
      * Formats the test execution summary and exits with the appropriate exit code.

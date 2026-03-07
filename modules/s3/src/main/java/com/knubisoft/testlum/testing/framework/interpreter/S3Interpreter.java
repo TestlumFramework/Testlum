@@ -65,7 +65,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     public S3Interpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.s3Client = dependencies.getContext().getBean("s3Client", Map.class);
+        this.s3Client = dependencies.getOptionalBean("s3Client", Map.class, Collections::emptyMap);
     }
 
     @Override

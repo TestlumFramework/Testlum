@@ -50,6 +50,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-condition</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-client</artifactId>
         </dependency>

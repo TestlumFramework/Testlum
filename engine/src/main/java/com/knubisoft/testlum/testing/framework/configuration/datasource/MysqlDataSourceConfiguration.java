@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnMysqlEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.util.DataSourceUtil;

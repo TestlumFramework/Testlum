@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sqs;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;

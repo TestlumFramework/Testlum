@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnWebsocketEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;

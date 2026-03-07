@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.constant.MigrationConstant;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;

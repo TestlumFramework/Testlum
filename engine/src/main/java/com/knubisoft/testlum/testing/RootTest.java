@@ -67,8 +67,8 @@ public class RootTest {
         ScenarioArguments data = arguments.getPayload();
         EnvironmentExecutionService executionService = ctx.getBean(EnvironmentExecutionService.class);
         executionService.runInEnvironment(data.getEnvironment(), () -> {
-            MDC.put("env", data.getEnvironment());
-            MDC.put("scenario", data.getPath());
+            MDC.put("env", "[".concat(data.getEnvironment()).concat(":"));
+            MDC.put("scenario", data.getPath().concat("]"));
             try {
                 prepareAndRun(data);
             } finally {

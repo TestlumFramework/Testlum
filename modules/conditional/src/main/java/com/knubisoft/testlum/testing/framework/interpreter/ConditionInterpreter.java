@@ -18,7 +18,7 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
 
     @Override
     protected void acceptImpl(final Condition o, final CommandResult result) {
-        Condition condition = injectCommand(o);
+        Condition condition = injectConditionCommand(o);
         ScenarioContext scenarioContext = dependencies.getScenarioContext();
         conditionProvider.processCondition(condition.getName(), scenarioContext.getCondition(condition.getSpel()),
                 scenarioContext, result);

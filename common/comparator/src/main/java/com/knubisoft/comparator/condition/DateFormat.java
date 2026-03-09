@@ -11,10 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.comparator.constant.CommonConstant.DASH;
-import static com.knubisoft.comparator.constant.CommonConstant.DATE_TEMPLATE;
-import static com.knubisoft.comparator.constant.CommonConstant.DATE_TIME_TEMPLATE;
-import static com.knubisoft.comparator.constant.CommonConstant.SLASH;
+import static com.knubisoft.comparator.constant.CommonConstant.*;
 import static java.lang.String.format;
 
 @Getter

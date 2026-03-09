@@ -1,46 +1,57 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import lombok.Getter;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_INFO;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class BrowserUtil {
 
+    private final EnvironmentLoader environmentLoader;
+    private final UiConfig uiConfig;
+
     public List<AbstractBrowser> filterDefaultEnabledBrowsers() {
-        Web web = GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getWeb();
-        return nonNull(web)
+        Web web = uiConfig.getWeb();
+        return Objects.nonNull(web)
                 ? web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(AbstractBrowser::isEnabled).toList()
                 : Collections.emptyList();
     }
 
+    @SneakyThrows
     public Optional<AbstractBrowser> getBrowserBy(final String env, final String browserAlias) {
-        return isBlank(browserAlias)
+        return StringUtils.isBlank(browserAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProvider.get().getWebSettings(env)
-                .getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
+                : environmentLoader.getWebSettings(env).
+                flatMap(e -> finEnabledByAlias(e, browserAlias));
+    }
+
+    private Optional<AbstractBrowser> finEnabledByAlias(final Web web, final String browserAlias) {
+        return web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(browser -> browser.isEnabled() && browser.getAlias().equalsIgnoreCase(browserAlias))
                 .findFirst();
     }
 
     public void manageWindowSize(final AbstractBrowser browser, final WebDriver webDriver) {
         String browserWindowSize = browser.getBrowserWindowSize();
-        if (isNotBlank(browserWindowSize)) {
+        if (StringUtils.isNotBlank(browserWindowSize)) {
             String[] size = browserWindowSize.split(DelimiterConstant.X);
             int width = Integer.parseInt(size[0]);
             int height = Integer.parseInt(size[1]);
@@ -59,13 +70,13 @@ public class BrowserUtil {
     }
 
     public BrowserType getBrowserType(final AbstractBrowser browser) {
-        if (nonNull(browser.getBrowserType().getRemoteBrowser())) {
+        if (Objects.nonNull(browser.getBrowserType().getRemoteBrowser())) {
             return BrowserType.REMOTE;
         }
-        if (nonNull(browser.getBrowserType().getBrowserInDocker())) {
+        if (Objects.nonNull(browser.getBrowserType().getBrowserInDocker())) {
             return BrowserType.IN_DOCKER;
         }
-        if (nonNull(browser.getBrowserType().getBrowserStack())) {
+        if (Objects.nonNull(browser.getBrowserType().getBrowserStack())) {
             return BrowserType.BROWSER_STACK;
         }
         return BrowserType.LOCAL;
@@ -82,7 +93,7 @@ public class BrowserUtil {
             return browser.getBrowserType().getBrowserStack().getBrowserVersion();
         }
         String version = browser.getBrowserType().getLocalBrowser().getDriverVersion();
-        return isBlank(version) ? "No browser version specified (the latest version is used)" : version;
+        return StringUtils.isBlank(version) ? "No browser version specified (the latest version is used)" : version;
     }
 
     @Getter

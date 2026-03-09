@@ -5,8 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -38,7 +36,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
     public void execute(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocator();
         result.put(DROP_DOWN_LOCATOR, locatorId);
-        WebElement dropDownElement = UiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy());
+        WebElement dropDownElement = uiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy());
         if (dropDownElement.getTagName().equals("select")) {
             processSelectDropDown(dropDown, result, dropDownElement);
         } else {
@@ -76,7 +74,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         TypeForOneValue type = oneValue.getType();
         String value = oneValue.getValue();
         validateByMethodForCustomDropDown(oneValue.getBy());
-        ResultUtil.addDropDownForOneValueMetaData(oneValue.getType().value(), oneValue.getBy().value(), value, result);
+        resultUtil.addDropDownForOneValueMetaData(oneValue.getType().value(), oneValue.getBy().value(), value, result);
         log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
         log.info(BY_LOG, oneValue.getBy().value());
         log.info(VALUE_LOG, value);
@@ -108,7 +106,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();
-        ResultUtil.addDropDownForOneValueMetaData(type.value(), method.value(), value, result);
+        resultUtil.addDropDownForOneValueMetaData(type.value(), method.value(), value, result);
         log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
         log.info(BY_LOG, oneValue.getBy().value());
         log.info(VALUE_LOG, value);
@@ -117,7 +115,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         } else {
             deselectByMethod(select, method, value);
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void validateByMethodForCustomDropDown(final SelectOrDeselectBy method) {

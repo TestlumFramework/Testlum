@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -57,6 +56,10 @@ public final class JacksonMapperUtil {
     @SneakyThrows
     public String writeValueToCopiedString(final Object value) {
         return COPY_MAPPER.writeValueAsString(value);
+    }
+
+    public <T> T deepCopy(final Object value, final Class<T> valueType) {
+        return COPY_MAPPER.convertValue(value, valueType);
     }
 
     public Object toJsonObject(final String content) {

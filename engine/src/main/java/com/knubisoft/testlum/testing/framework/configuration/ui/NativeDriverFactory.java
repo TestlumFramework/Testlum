@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
@@ -8,10 +8,11 @@ import com.knubisoft.testlum.testing.model.global_config.*;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.time.Duration;
@@ -23,19 +24,23 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class NativeDriverFactory {
+
+    private final SeleniumDriverUtil seleniumDriverUtil;
+    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
 
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        SeleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
+        seleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
         return getNativeWebDriver(nativeDevice, desiredCapabilities);
     }
 
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
                                             final DesiredCapabilities desiredCapabilities) {
-        UiConfig uiConfig = GlobalTestConfigurationProvider.get().getUiConfigs().get(EnvManager.currentEnv());
-        String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uiConfig);
+        UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
+        String serverUrl = seleniumDriverUtil.getNativeConnectionUrl(uiConfig);
         AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, desiredCapabilities);
         int secondsToWait = uiConfig.getNative().getElementAutowait().getSeconds();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
@@ -83,7 +88,7 @@ public class NativeDriverFactory {
     private void setAppiumCapabilities(final NativeDevice nativeDevice,
                                        final DesiredCapabilities desiredCapabilities) {
         AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
-        SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        seleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability("appium:udid", capabilities.getUdid());
         if (isNotBlank(capabilities.getApp())) {
             desiredCapabilities.setCapability("appium:app", capabilities.getApp());
@@ -93,7 +98,7 @@ public class NativeDriverFactory {
     private void setBrowserStackCapabilities(final NativeDevice nativeDevice,
                                              final DesiredCapabilities desiredCapabilities) {
         BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
-        SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        seleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability("appium:app", capabilities.getApp());
         desiredCapabilities.setCapability("appium:browserstack.local", Boolean.TRUE);
     }

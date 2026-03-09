@@ -1,0 +1,68 @@
+package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
+
+import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.MobilebrowserRepeat;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
+
+@Slf4j
+@ExecutorForClass(MobilebrowserRepeat.class)
+public class MobileBrowserRepeatExecutor extends AbstractUiExecutor<MobilebrowserRepeat> {
+
+    private final SubCommandRunner repeatCommandsRunner;
+    private final GlobalVariations globalVariations;
+
+    public MobileBrowserRepeatExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
+        this.repeatCommandsRunner = dependencies.getContext().getBean(SubCommandRunner.class);
+        this.globalVariations = dependencies.getContext().getBean(GlobalVariations.class);
+    }
+
+    @Override
+    public void execute(final MobilebrowserRepeat repeat, final CommandResult result) {
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        result.setSubCommandsResult(subCommandsResult);
+        if (StringUtils.isNotBlank(repeat.getVariations())) {
+            runRepeatWithVariations(repeat, result, subCommandsResult);
+        } else {
+            runSimpleRepeat(repeat, result, subCommandsResult);
+        }
+        log.info(REPEAT_FINISHED_LOG);
+    }
+
+    private void runRepeatWithVariations(final MobilebrowserRepeat repeat,
+                                         final CommandResult result,
+                                         final List<CommandResult> subCommandsResult) {
+        log.info(LogFormat.table("Variations", repeat.getVariations()));
+        result.put("Variations", repeat.getVariations());
+        List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
+        List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
+                .flatMap(variation -> commands.stream().map(command ->
+                        injectionUtil.injectObjectVariation(command, variation, dependencies.getScenarioContext())))
+                .toList();
+        this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+    }
+
+    private void runSimpleRepeat(final MobilebrowserRepeat repeat,
+                                 final CommandResult result,
+                                 final List<CommandResult> subCommandsResult) {
+        log.info(LogFormat.table("Times", String.valueOf(repeat.getTimes())));
+        result.put("Times", repeat.getTimes());
+        for (int i = 0; i < repeat.getTimes(); i++) {
+            this.repeatCommandsRunner.runCommands(repeat.getClickOrInputOrAssert(), dependencies, result,
+                    subCommandsResult);
+        }
+    }
+}

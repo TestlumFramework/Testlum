@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.NavigateNative;
 import com.knubisoft.testlum.testing.model.scenario.NavigateNativeDestination;
 import io.appium.java_client.android.AndroidDriver;
@@ -13,6 +12,7 @@ import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,11 +30,15 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
     public NavigateNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        this.navigateToKeyMap = createNavigationMap();
+    }
+
+    private static @NotNull Map<NavigateNativeDestination, AndroidKey> createNavigationMap() {
         Map<NavigateNativeDestination, AndroidKey> navigateMap = new HashMap<>();
         navigateMap.put(NavigateNativeDestination.HOME, AndroidKey.HOME);
         navigateMap.put(NavigateNativeDestination.BACK, AndroidKey.BACK);
         navigateMap.put(NavigateNativeDestination.OVERVIEW, AndroidKey.APP_SWITCH);
-        this.navigateToKeyMap = Collections.unmodifiableMap(navigateMap);
+        return Collections.unmodifiableMap(navigateMap);
     }
 
     @Override
@@ -47,7 +51,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
         if (dependencies.getDriver() instanceof IOSDriver) {
             performIOSNavigation(navigateNative, (IOSDriver) dependencies.getDriver());
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void performIOSNavigation(final NavigateNative navigateNative, final IOSDriver driver) {

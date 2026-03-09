@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.WebAssert;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +20,13 @@ import java.util.List;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static java.util.Objects.nonNull;
 
+@RequiredArgsConstructor
 @Component
 public class SubCommandRunnerImpl implements SubCommandRunner {
+
+    private final ResultUtil resultUtil;
+    private final ConfigUtil configUtil;
+    private final LogUtil logUtil;
 
     public void runCommands(final List<AbstractUiCommand> commandList,
                             final CommandResult result,
@@ -28,7 +34,7 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         commandList.forEach(command -> processEachCommand(command, subCommandsResult, dependencies));
-        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+        resultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     public void runCommands(final List<AbstractUiCommand> commandList,
@@ -36,7 +42,7 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
                             final CommandResult result,
                             final List<CommandResult> subCommandsResult) {
         commandList.forEach(command -> processEachCommand(command, subCommandsResult, dependencies));
-        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+        resultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processEachCommand(final AbstractUiCommand command,
@@ -49,8 +55,8 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
 
     private CommandResult createCommandResult(final AbstractUiCommand command,
                                               final ExecutorDependencies dependencies) {
-        return command instanceof WebAssert ? ResultUtil.newUiCommandResultInstance(0, command)
-                : ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+        return command instanceof WebAssert ? resultUtil.newUiCommandResultInstance(0, command)
+                : resultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
     }
 
     private void executeUiCommand(final AbstractUiCommand command,
@@ -79,7 +85,7 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
         long execTime = stopWatch.getDuration().toMillis();
         stopWatch.stop();
         result.setExecutionTime(execTime);
-        LogUtil.logExecutionTime(execTime, command);
+        logUtil.logExecutionTime(execTime, command);
         Integer threshold = command.getThreshold();
         if (nonNull(threshold) && execTime > threshold) {
             processException(new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, execTime, threshold), result);
@@ -87,8 +93,8 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
     }
 
     private void processException(final Exception e, final CommandResult result) {
-        ResultUtil.setExceptionResult(result, e);
-        LogUtil.logException(e);
-        ConfigUtil.checkIfStopScenarioOnFailure(e);
+        resultUtil.setExceptionResult(result, e);
+        logUtil.logException(e);
+        configUtil.checkIfStopScenarioOnFailure(e);
     }
 }

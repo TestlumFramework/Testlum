@@ -1,14 +1,18 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import lombok.experimental.UtilityClass;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-@UtilityClass
+@RequiredArgsConstructor
+@Component
 public class ConfigUtil {
 
+    private final GlobalTestConfiguration globalTestConfiguration;
+
     public void checkIfStopScenarioOnFailure(final Exception e) {
-        if (GlobalTestConfigurationProvider.get().provide().isStopScenarioOnFailure()) {
+        if (globalTestConfiguration.isStopScenarioOnFailure()) {
             throw new DefaultFrameworkException(e);
         }
     }

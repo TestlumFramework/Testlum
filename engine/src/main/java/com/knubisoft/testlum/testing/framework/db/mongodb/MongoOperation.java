@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.mongodb;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnMongoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;

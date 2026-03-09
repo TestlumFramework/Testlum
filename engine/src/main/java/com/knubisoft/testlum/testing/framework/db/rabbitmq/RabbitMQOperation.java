@@ -1,16 +1,15 @@
 package com.knubisoft.testlum.testing.framework.db.rabbitmq;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
-import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
@@ -21,16 +20,13 @@ import java.util.Objects;
 
 @Conditional({OnRabbitMQEnabledCondition.class})
 @Component
+@RequiredArgsConstructor
 public class RabbitMQOperation extends AbstractStorageOperation {
 
+    @Qualifier("rabbitMqClient")
     private final Map<AliasEnv, Client> rabbitMqClient;
-    private final Map<String, Integrations> integrations;
-
-    public RabbitMQOperation(@Autowired(required = false) @Qualifier("rabbitMqClient")
-                             final Map<AliasEnv, Client> rabbitMqClient) {
-        this.rabbitMqClient = rabbitMqClient;
-        this.integrations = GlobalTestConfigurationProvider.get().getIntegrations();
-    }
+    private final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations;
+    private final IntegrationsUtil integrationsUtil;
 
     @Override
     public StorageOperationResult apply(final Source source, final String name) {
@@ -49,7 +45,8 @@ public class RabbitMQOperation extends AbstractStorageOperation {
     }
 
     private Rabbitmq findByName(final AliasEnv aliasEnv) {
-        List<Rabbitmq> rabbitmqs = integrations.get(aliasEnv.getEnvironment()).getRabbitmqIntegration().getRabbitmq();
-        return IntegrationsUtil.findForAlias(rabbitmqs, aliasEnv.getAlias());
+        List<Rabbitmq> mqs = envToIntegrations.get(aliasEnv.getEnvironment())
+                .getRabbitmqIntegration().getRabbitmq();
+        return integrationsUtil.findForAlias(mqs, aliasEnv.getAlias());
     }
 }

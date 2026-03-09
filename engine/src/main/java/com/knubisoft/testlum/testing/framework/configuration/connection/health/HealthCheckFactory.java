@@ -1,8 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.connection.health;
 
 import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
@@ -12,6 +11,7 @@ import com.rabbitmq.http.client.Client;
 import com.sendgrid.Method;
 import com.sendgrid.SendGrid;
 import com.twilio.exception.ApiException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -26,6 +26,7 @@ import org.springframework.data.redis.connection.DefaultStringRedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -35,15 +36,21 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class HealthCheckFactory {
 
     private static final int WEB_DRIVER_MAX_TIMEOUT_SECONDS = 60;
     private static final int TIME = 5;
 
-    public static IntegrationHealthCheck<DataSource> forJdbc() {
+    private final EnvironmentLoader environmentLoader;
+    private final BrowserUtil browserUtil;
+
+    public IntegrationHealthCheck<DataSource> forJdbc() {
         return ds -> {
             try (Connection conn = ds.getConnection()) {
                 conn.isValid(TIME);
@@ -51,11 +58,11 @@ public class HealthCheckFactory {
         };
     }
 
-    public static IntegrationHealthCheck<DynamoDbClient> forDynamoDb() {
+    public IntegrationHealthCheck<DynamoDbClient> forDynamoDb() {
         return client -> client.listTables(lt -> lt.limit(1));
     }
 
-    public static IntegrationHealthCheck<RestHighLevelClient> forElasticRestHighLevelClient() {
+    public IntegrationHealthCheck<RestHighLevelClient> forElasticRestHighLevelClient() {
         return restHighLevelClient -> {
             boolean isAlive = restHighLevelClient.ping(RequestOptions.DEFAULT);
             if (!isAlive) {
@@ -64,7 +71,7 @@ public class HealthCheckFactory {
         };
     }
 
-    public static IntegrationHealthCheck<RestClient> forElasticRestClient() {
+    public IntegrationHealthCheck<RestClient> forElasticRestClient() {
         return restClient -> {
             Response response = restClient.performRequest(new Request("GET", "/"));
             int statusCode = response.getStatusLine().getStatusCode();
@@ -74,38 +81,38 @@ public class HealthCheckFactory {
         };
     }
 
-    public static IntegrationHealthCheck<AdminClient> forKafkaAdmin() {
+    public IntegrationHealthCheck<AdminClient> forKafkaAdmin() {
         return client -> client.listTopics().names().get(TIME, TimeUnit.SECONDS);
     }
 
-    public static IntegrationHealthCheck<KafkaConsumer<String, String>> forKafkaConsumer() {
+    public IntegrationHealthCheck<KafkaConsumer<String, String>> forKafkaConsumer() {
         return kafkaConsumer -> kafkaConsumer.listTopics(Duration.ofSeconds(TIME));
     }
 
-    public static IntegrationHealthCheck<KafkaProducer<String, String>> forKafkaProducer() {
+    public IntegrationHealthCheck<KafkaProducer<String, String>> forKafkaProducer() {
         return kafkaProducer -> kafkaProducer.clientInstanceId(Duration.ofSeconds(TIME));
     }
 
-    public static IntegrationHealthCheck<LambdaClient> forLambda() {
+    public IntegrationHealthCheck<LambdaClient> forLambda() {
         return client -> client.listFunctions(lf -> lf.maxItems(1));
     }
 
-    public static IntegrationHealthCheck<MongoDatabase> forMongoDb(final Mongo mongo) {
+    public IntegrationHealthCheck<MongoDatabase> forMongoDb(final Mongo mongo) {
         return mongoDatabase -> {
             Bson ping = new BsonDocument("ping", new BsonInt64(1));
             mongoDatabase.runCommand(ping);
         };
     }
 
-    public static IntegrationHealthCheck<Client> forRabbitMqAdmin() {
+    public IntegrationHealthCheck<Client> forRabbitMqAdmin() {
         return Client::getVhosts;
     }
 
-    public static IntegrationHealthCheck<CachingConnectionFactory> forRabbitMqAmqp() {
+    public IntegrationHealthCheck<CachingConnectionFactory> forRabbitMqAmqp() {
         return connectionFactory -> connectionFactory.createConnection().close();
     }
 
-    public static IntegrationHealthCheck<DefaultStringRedisConnection> forRedis(final JedisConnection jedisConnection) {
+    public IntegrationHealthCheck<DefaultStringRedisConnection> forRedis(final JedisConnection jedisConnection) {
         return connection -> {
             String response = jedisConnection.ping();
             if (!"PONG".equalsIgnoreCase(response)) {
@@ -114,7 +121,7 @@ public class HealthCheckFactory {
         };
     }
 
-    public static IntegrationHealthCheck<SendGrid> forSendGrid() {
+    public IntegrationHealthCheck<SendGrid> forSendGrid() {
         return sdkSendGrid -> {
             com.sendgrid.Request request = new com.sendgrid.Request();
             request.setMethod(Method.GET);
@@ -130,19 +137,19 @@ public class HealthCheckFactory {
         };
     }
 
-    public static IntegrationHealthCheck<SesClient> forSes() {
+    public IntegrationHealthCheck<SesClient> forSes() {
         return sesClient -> sesClient.listIdentities(li -> li.maxItems(1));
     }
 
-    public static IntegrationHealthCheck<JavaMailSenderImpl> forSmtp() {
+    public IntegrationHealthCheck<JavaMailSenderImpl> forSmtp() {
         return JavaMailSenderImpl::testConnection;
     }
 
-    public static IntegrationHealthCheck<SqsClient> forSqs() {
+    public IntegrationHealthCheck<SqsClient> forSqs() {
         return sqsClient -> sqsClient.listQueues(lq -> lq.maxResults(1));
     }
 
-    public static IntegrationHealthCheck<Twilio> forTwilio() {
+    public IntegrationHealthCheck<Twilio> forTwilio() {
         return twilio -> {
             com.twilio.Twilio.init(twilio.getAccountSid(), twilio.getAuthToken());
             try {
@@ -158,7 +165,7 @@ public class HealthCheckFactory {
         };
     }
 
-    public static IntegrationHealthCheck<WebsocketConnectionManager> forWebSocket(final WebsocketApi websocket) {
+    public IntegrationHealthCheck<WebsocketConnectionManager> forWebSocket(final WebsocketApi websocket) {
         return wsManager -> {
             try {
                 wsManager.openConnection();
@@ -173,7 +180,7 @@ public class HealthCheckFactory {
         };
     }
 
-    private static void closeConnectionManager(final WebsocketConnectionManager wsManager) {
+    private void closeConnectionManager(final WebsocketConnectionManager wsManager) {
         try {
             wsManager.closeConnection();
         } catch (Exception ex) {
@@ -181,7 +188,7 @@ public class HealthCheckFactory {
         }
     }
 
-    public static IntegrationHealthCheck<WebDriver> forWebDriver(final AbstractBrowser browser) {
+    public IntegrationHealthCheck<WebDriver> forWebDriver(final AbstractBrowser browser) {
         return webDriver -> {
             try {
                 safeInitWebdriverWithTimeouts(browser, webDriver);
@@ -195,17 +202,19 @@ public class HealthCheckFactory {
         };
     }
 
-    private static void safeInitWebdriverWithTimeouts(final AbstractBrowser browser, final WebDriver webDriver) {
+    private void safeInitWebdriverWithTimeouts(final AbstractBrowser browser, final WebDriver webDriver) {
         webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(WEB_DRIVER_MAX_TIMEOUT_SECONDS));
         webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(WEB_DRIVER_MAX_TIMEOUT_SECONDS));
-        BrowserUtil.manageWindowSize(browser, webDriver);
-        Web settings = GlobalTestConfigurationProvider.get().
-                getWebSettings(EnvManager.currentEnv());
-        log.debug("Navigating to base URL: {}", settings.getBaseUrl());
-        webDriver.get(settings.getBaseUrl());
+        browserUtil.manageWindowSize(browser, webDriver);
+        Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();
+        if (settings.isPresent()) {
+            String url = settings.get().getBaseUrl();
+            log.debug("Navigating to base URL: {}", url);
+            webDriver.get(url);
+        }
     }
 
-    public static IntegrationHealthCheck<S3Client> forS3() {
+    public IntegrationHealthCheck<S3Client> forS3() {
         return S3Client::listBuckets;
     }
 }

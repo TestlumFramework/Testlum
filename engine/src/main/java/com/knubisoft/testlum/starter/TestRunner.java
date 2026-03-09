@@ -1,10 +1,11 @@
 package com.knubisoft.testlum.starter;
 
-
 import com.knubisoft.testlum.testing.RootTest;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy;
+import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
+import com.knubisoft.testlum.testing.model.global_config.Environment;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
@@ -27,6 +28,9 @@ import java.util.stream.Collectors;
 @Component
 public class TestRunner implements CommandLineRunner {
 
+    private final XMLParsers xmlParsers;
+    private final TestResourceSettings testResourceSettings;
+
     @Override
     public void run(final String... args) {
         TestExecutionSummary summary = launchTestsAndGetSummary();
@@ -41,7 +45,7 @@ public class TestRunner implements CommandLineRunner {
      *
      * @return the test execution summary containing pass/fail counts and details
      */
-    private static TestExecutionSummary launchTestsAndGetSummary() {
+    private TestExecutionSummary launchTestsAndGetSummary() {
         Launcher launcher = LauncherFactory.create();
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         launcher.registerTestExecutionListeners(listener);
@@ -57,7 +61,7 @@ public class TestRunner implements CommandLineRunner {
      *
      * @return the configured launcher discovery request
      */
-    private static LauncherDiscoveryRequest createRequest() {
+    private LauncherDiscoveryRequest createRequest() {
         LauncherDiscoveryRequestBuilder request = LauncherDiscoveryRequestBuilder.request();
         request.selectors(DiscoverySelectors.selectClass(RootTest.class));
         return parallel(request).build();
@@ -72,13 +76,31 @@ public class TestRunner implements CommandLineRunner {
      * @param b the launcher discovery request builder to configure
      * @return the configured builder with parallel execution settings
      */
-    private static LauncherDiscoveryRequestBuilder parallel(final LauncherDiscoveryRequestBuilder b) {
-        boolean isParallel = GlobalTestConfigurationProvider.get().provide().isParallelExecution();
+    private LauncherDiscoveryRequestBuilder parallel(final LauncherDiscoveryRequestBuilder b) {
+        GlobalTestConfiguration globalTestConfiguration =
+                xmlParsers.forGlobalTestConfiguration().process(testResourceSettings.getConfigFile());
         String clazz = GlobalParallelExecutionConfigStrategy.class.getName();
-        return b.configurationParameter("junit.jupiter.execution.parallel.enabled", String.valueOf(isParallel))
+        return b.configurationParameter("junit.jupiter.execution.parallel.enabled",
+                        String.valueOf(this.isParallel(globalTestConfiguration)))
                 .configurationParameter("junit.jupiter.execution.parallel.config.strategy", "custom")
-                .configurationParameter("junit.jupiter.execution.parallel.config.custom.class", clazz);
+                .configurationParameter("junit.jupiter.execution.parallel.config.custom.class", clazz)
+                .configurationParameter("junit.jupiter.execution.parallel.config.testlum.parallelism",
+                        String.valueOf(this.computeParallelism(globalTestConfiguration)));
     }
+
+    private boolean isParallel(final GlobalTestConfiguration globalTestConfiguration) {
+        return Boolean.TRUE.equals(globalTestConfiguration.isParallelExecution());
+    }
+
+    private int computeParallelism(final GlobalTestConfiguration globalTestConfiguration) {
+        int envThreads = globalTestConfiguration.getEnvironments().getEnv()
+                .stream()
+                .mapToInt(Environment::getThreads)
+                .sum();
+        int cpu = Runtime.getRuntime().availableProcessors();
+        return Math.max(1, Math.min(envThreads, cpu * 2));
+    }
+
 
     /**
      * Formats the test execution summary and exits with the appropriate exit code.
@@ -95,9 +117,10 @@ public class TestRunner implements CommandLineRunner {
         log.info(toString(summary::printTo).lines().filter(line ->
                         !line.contains("container"))
                 .collect(Collectors.joining(System.lineSeparator())));
-        if (summary.getTestsFailedCount() > 0) {
+        if (summary.getTestsFailedCount() > 0 || summary.getFailures() != null && !summary.getFailures().isEmpty()) {
             log.error(toString(summary::printFailuresTo));
         }
+
         System.exit(exitCode.getExitCode());
     }
 

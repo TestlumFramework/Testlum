@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
@@ -34,12 +34,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class ElasticsearchConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-
-    private final Map<String, List<Elasticsearch>> elasticsearchMap =
-            GlobalTestConfigurationProvider.get().getIntegrations()
-                    .entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey,
-                            entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean(name = "restHighLevelClient")
     public Map<AliasEnv, RestHighLevelClient> restHighLevelClient(
@@ -50,7 +45,7 @@ public class ElasticsearchConfiguration {
                             String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch HighLevelClient",
                                     aliasEnv.getAlias()),
                             () -> new RestHighLevelClient(clientBuilder),
-                            HealthCheckFactory.forElasticRestHighLevelClient()
+                            healthCheckFactory.forElasticRestHighLevelClient()
                     );
                     restHighLevelClientMap.put(aliasEnv, checkedClient);
                 });
@@ -64,7 +59,7 @@ public class ElasticsearchConfiguration {
             RestClient resilientClient = connectionTemplate.executeWithRetry(
                     String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch Rest Client", aliasEnv.getAlias()),
                     clientBuilder::build,
-                    HealthCheckFactory.forElasticRestClient()
+                    healthCheckFactory.forElasticRestClient()
             );
             restClientMap.put(aliasEnv, resilientClient);
         });
@@ -85,7 +80,8 @@ public class ElasticsearchConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, RestClientBuilder.HttpClientConfigCallback> httpClientConfigCallback() {
+    public Map<AliasEnv, RestClientBuilder.HttpClientConfigCallback> httpClientConfigCallback(
+            final Map<String, List<Elasticsearch>> elasticsearchMap) {
         final Map<AliasEnv, RestClientBuilder.HttpClientConfigCallback> configCallbackMap = new HashMap<>();
         elasticsearchMap.forEach((env, elasticsearchList) ->
                 addClientConfigCallBack(elasticsearchList, env, configCallbackMap));
@@ -113,7 +109,8 @@ public class ElasticsearchConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, RestClientBuilder.RequestConfigCallback> requestConfigCallback() {
+    public Map<AliasEnv, RestClientBuilder.RequestConfigCallback> requestConfigCallback(
+            final Map<String, List<Elasticsearch>> elasticsearchMap) {
         Map<AliasEnv, RestClientBuilder.RequestConfigCallback> configCallbackMap = new HashMap<>();
         elasticsearchMap.forEach((env, elasticsearchList) ->
                 addRequestConfigCallback(elasticsearchList, env, configCallbackMap));
@@ -133,7 +130,7 @@ public class ElasticsearchConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, HttpHost> esHttpHost() {
+    public Map<AliasEnv, HttpHost> esHttpHost(final Map<String, List<Elasticsearch>> elasticsearchMap) {
         Map<AliasEnv, HttpHost> httpHostMap = new HashMap<>();
         elasticsearchMap.forEach((env, elasticsearchList) -> addEsHttpHost(elasticsearchList, env, httpHostMap));
         return httpHostMap;
@@ -152,10 +149,19 @@ public class ElasticsearchConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, AwsV4HttpSigner> aws4Signer() {
+    public Map<AliasEnv, AwsV4HttpSigner> aws4Signer(final Map<String, List<Elasticsearch>> elasticsearchMap) {
         Map<AliasEnv, AwsV4HttpSigner> signerMap = new HashMap<>();
         elasticsearchMap.forEach((env, elasticsearchList) -> addAWS4Signer(elasticsearchList, env, signerMap));
         return signerMap;
+    }
+
+    @Bean
+    public Map<String, List<Elasticsearch>> getElasticsearchMap(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envTointegrations) {
+        return envTointegrations
+                .entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
     }
 
     private void addAWS4Signer(final List<Elasticsearch> elasticsearchList,

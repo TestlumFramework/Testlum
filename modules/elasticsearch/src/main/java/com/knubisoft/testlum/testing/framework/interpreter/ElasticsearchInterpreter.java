@@ -18,11 +18,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
-import org.elasticsearch.client.ResponseException;
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
@@ -57,15 +54,18 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     @Qualifier("restClient")
     private Map<AliasEnv, RestClient> restClient;
 
+    private final HttpUtil httpUtil;
+
     public ElasticsearchInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+        this.httpUtil = dependencies.getContext().getBean(HttpUtil.class);
     }
 
     @Override
     protected void acceptImpl(final Elasticsearch o, final CommandResult result) {
         Elasticsearch elasticsearch = injectCommand(o);
         checkAlias(elasticsearch);
-        HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = HttpUtil.getESHttpMethodMetadata(elasticsearch);
+        HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = httpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
         Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), result);
@@ -144,7 +144,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         Map<String, String> params = getParams(elasticSearchRequest);
         request.addParameters(params);
 
-        ContentType contentType = HttpUtil.computeContentType(headers);
+        ContentType contentType = httpUtil.computeContentType(headers);
         HttpEntity body = getBody(elasticSearchRequest, contentType);
         logBodyContent(body);
         request.setEntity(body);
@@ -178,7 +178,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
         ElasticSearchRequestWithBody requestWithBody = (ElasticSearchRequestWithBody) request;
         Body body = requestWithBody.getBody();
-        return HttpUtil.extractBody(body, contentType, this, dependencies);
+        return httpUtil.extractBody(body, contentType, this, dependencies);
     }
 
     private void logHttpInfo(final String alias, final String method, final String endpoint) {

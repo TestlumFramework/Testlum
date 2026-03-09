@@ -1,8 +1,5 @@
 package com.knubisoft.testlum.testing.framework.env.parallel;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.model.global_config.Environment;
-import lombok.RequiredArgsConstructor;
 import org.junit.platform.engine.ConfigurationParameters;
 import org.junit.platform.engine.support.hierarchical.ParallelExecutionConfiguration;
 import org.junit.platform.engine.support.hierarchical.ParallelExecutionConfigurationStrategy;
@@ -14,17 +11,14 @@ public class GlobalParallelExecutionConfigStrategy implements ParallelExecutionC
 
     @Override
     public ParallelExecutionConfiguration createConfiguration(final ConfigurationParameters parameters) {
-        boolean isParallelExecutionEnabled = GlobalTestConfigurationProvider.get().provide().isParallelExecution();
-        int parallelism = isParallelExecutionEnabled
-                ? GlobalTestConfigurationProvider.get().getEnabledEnvironments().stream()
-                .mapToInt(Environment::getThreads).sum()
-                : DEFAULT_PARALLELISM;
+        int parallelism = parameters
+                .get("testlum.parallelism")
+                .map(Integer::parseInt)
+                .orElse(DEFAULT_PARALLELISM);
         return new GlobalParallelExecutionConfiguration(parallelism);
     }
 
-    @RequiredArgsConstructor
-    private static class GlobalParallelExecutionConfiguration implements ParallelExecutionConfiguration {
-        private final int parallelism;
+    private record GlobalParallelExecutionConfiguration(int parallelism) implements ParallelExecutionConfiguration {
 
         @Override
         public int getParallelism() {

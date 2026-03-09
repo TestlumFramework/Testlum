@@ -5,9 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.wait.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.UiWait;
@@ -29,10 +26,12 @@ import static java.util.Objects.nonNull;
 public class WaitExecutor extends AbstractUiExecutor<UiWait> {
 
     private final WaitUtil waitUtil;
+    private final ConfigUtil configUtil;
 
     public WaitExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         this.waitUtil = dependencies.getContext().getBean(WaitUtil.class);
+        this.configUtil = dependencies.getContext().getBean(ConfigUtil.class);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
         String time = uiWait.getTime();
         log.info(WAIT_INFO_LOG, time, uiWait.getUnit());
         TimeUnit timeUnit = waitUtil.getTimeUnit(uiWait.getUnit());
-        ResultUtil.addWaitMetaData(time, timeUnit, result);
+        resultUtil.addWaitMetaData(time, timeUnit, result);
         wait(uiWait, time, timeUnit, result);
     }
 
@@ -54,9 +53,9 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
                 waitUtil.sleep(Long.parseLong(time), timeUnit);
             }
         } catch (Exception e) {
-            LogUtil.logException(e);
-            ResultUtil.setExceptionResult(result, e);
-            ConfigUtil.checkIfStopScenarioOnFailure(e);
+            logUtil.logException(e);
+            resultUtil.setExceptionResult(result, e);
+            configUtil.checkIfStopScenarioOnFailure(e);
         }
     }
 
@@ -65,7 +64,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
                                           final CommandResult result) {
         Duration duration = Duration.ofSeconds(seconds);
         WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), duration);
-        WebElement element = UiUtil.findWebElement(dependencies, command.getLocator(), command.getLocatorStrategy());
+        WebElement element = uiUtil.findWebElement(dependencies, command.getLocator(), command.getLocatorStrategy());
         log.info(LOCATOR_LOG, command.getLocator());
         result.put(LOCATOR_ID, command.getLocator());
         if (command instanceof Visible) {

@@ -1,16 +1,10 @@
 package com.knubisoft.testlum.testing;
 
 import com.knubisoft.testlum.log.Color;
-import com.knubisoft.testlum.testing.framework.ConnectionManager;
-import com.knubisoft.testlum.testing.framework.ScenarioArgumentsToNamedConverter;
-import com.knubisoft.testlum.testing.framework.SystemDataStoreCleaner;
-import com.knubisoft.testlum.testing.framework.TestSetCollector;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.*;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.framework.env.service.LockService;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
+import com.knubisoft.testlum.testing.framework.env.service.EnvironmentExecutionService;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
@@ -32,11 +26,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.slf4j.MDC;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -45,33 +38,26 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
-@Configuration
+@RequiredArgsConstructor
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
-@ComponentScan(basePackageClasses = RootTest.class)
+@ComponentScan(basePackageClasses = RootTest.class, basePackages = {"com.knubisoft.testlum.testing.*"})
 @Execution(ExecutionMode.CONCURRENT)
-@ContextConfiguration(classes = RootTest.class)
+@ContextConfiguration(classes = {RootTest.class})
 @TestPropertySource(properties = {"spring.main.banner-mode=off"})
+@ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RootTest {
 
     private final ApplicationContext ctx;
-    private final TestSetCollector testSetCollector;
-    private final LockService envLockService;
-    private final SystemDataStoreCleaner systemDataStoreCleaner;
-    private final AliasToStorageOperation aliasToStorageOperation;
-    private final GlobalScenarioStatCollector globalScenarioStatCollector;
-    private final ReportGenerator reportGenerator;
-    private final ConnectionManager connectionManager;
 
     public Stream<Arguments> prepareTestData() {
-        return testSetCollector.collect();
+        return ctx.getBean(TestSetCollector.class).collect();
     }
 
     @BeforeAll
     public void beforeAll() throws Exception {
-        FileRemover.clearActualFiles(TestResourceSettings.getInstance().getScenariosFolder());
+        TestResourceSettings testResourceSettings = ctx.getBean(TestResourceSettings.class);
+        FileRemover.clearActualFiles(testResourceSettings.getScenariosFolder());
     }
 
     @DisplayName("Execution of test scenarios:")
@@ -79,16 +65,29 @@ public class RootTest {
     @MethodSource("prepareTestData")
     void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments) {
         ScenarioArguments data = arguments.getPayload();
-        envLockService.runLocked(() -> prepareAndRun(data));
+        EnvironmentExecutionService executionService = ctx.getBean(EnvironmentExecutionService.class);
+        executionService.runInEnvironment(data.getEnvironment(), () -> {
+            MDC.put("env", "[".concat(data.getEnvironment()).concat(":"));
+            MDC.put("scenario", data.getPath().concat("]"));
+            try {
+                prepareAndRun(data);
+            } finally {
+                MDC.remove("env");
+                MDC.remove("scenario");
+            }
+        });
     }
 
     private void prepareAndRun(final ScenarioArguments args) {
-        args.setEnvironment(EnvManager.currentEnv());
         boolean ignore = args.getException() instanceof IntegrationDisabledException;
-        LogUtil.logScenarioDetails(args, args.getException(), ignore ? Color.YELLOW : Color.GREEN);
+        LogUtil logUtil = ctx.getBean(LogUtil.class);
+        logUtil.logScenarioDetails(args, args.getException(), ignore ? Color.YELLOW : Color.GREEN);
         if (!ignore) {
             if (args.getScenario().getSettings().isTruncateStorages()) {
-                systemDataStoreCleaner.clearAll(this.aliasToStorageOperation);
+                SystemDataStoreCleaner systemDataStoreCleaner = ctx.getBean(SystemDataStoreCleaner.class);
+
+                AliasToStorageOperation aliasToStorageOperation = ctx.getBean(AliasToStorageOperation.class);
+                systemDataStoreCleaner.clearAll(aliasToStorageOperation);
             }
             runInstructions(args);
         }
@@ -110,6 +109,7 @@ public class RootTest {
     }
 
     private void setTestScenarioResult(final ScenarioResult result) {
+        GlobalScenarioStatCollector globalScenarioStatCollector = ctx.getBean(GlobalScenarioStatCollector.class);
         globalScenarioStatCollector.addResult(result);
         if (StringUtils.isNotBlank(result.getCause())) {
             String[] lines = result.getCause().split(System.lineSeparator());
@@ -120,8 +120,8 @@ public class RootTest {
 
     @AfterEach
     public void afterEach() throws Exception {
-        GlobalTestConfiguration cfg = GlobalTestConfigurationProvider.get().provide();
-        DelayBetweenScenarioRuns delay = cfg.getDelayBetweenScenarioRuns();
+        GlobalTestConfiguration globalTestConfiguration = ctx.getBean(GlobalTestConfiguration.class);
+        DelayBetweenScenarioRuns delay = globalTestConfiguration.getDelayBetweenScenarioRuns();
         if (delay != null && delay.isEnabled()) {
             TimeUnit.SECONDS.sleep(delay.getSeconds());
         }
@@ -129,7 +129,11 @@ public class RootTest {
 
     @AfterAll
     public void afterAll() {
+        ConnectionManager connectionManager = ctx.getBean(ConnectionManager.class);
         connectionManager.closeConnections();
+
+        GlobalScenarioStatCollector globalScenarioStatCollector = ctx.getBean(GlobalScenarioStatCollector.class);
+        ReportGenerator reportGenerator = ctx.getBean(ReportGenerator.class);
         reportGenerator.generateReport(globalScenarioStatCollector);
     }
 }

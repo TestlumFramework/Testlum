@@ -11,7 +11,10 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidato
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.Body;
+import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
+import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
+import com.knubisoft.testlum.testing.model.scenario.SendgridWithBody;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -19,8 +22,8 @@ import com.sendgrid.SendGrid;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,11 +49,13 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
-    @Autowired(required = false)
-    private Map<AliasEnv, SendGrid> sendGrid;
+    private final Map<AliasEnv, SendGrid> sendGrid;
+    private final HttpUtil httpUtil;
 
     public SendGridInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+        this.httpUtil = dependencies.getContext().getBean(HttpUtil.class);
+        this.sendGrid = dependencies.getOptionalBean("sendGridMap", Map.class, Collections::emptyMap);
     }
 
     @Override
@@ -113,7 +118,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private Map<String, String> getHeaders(final SendgridInfo sendgridInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
-        HttpUtil.fillHeadersMap(sendgridInfo.getHeader(), headers, dependencies.getAuthorization());
+        httpUtil.fillHeadersMap(sendgridInfo.getHeader(), headers, dependencies.getAuthorization());
         return headers;
     }
 

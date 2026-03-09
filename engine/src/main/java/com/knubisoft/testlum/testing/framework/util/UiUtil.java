@@ -1,18 +1,19 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
-import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
+import com.knubisoft.testlum.testing.framework.locator.LocatorCollector;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.pages.*;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import io.appium.java_client.AppiumDriver;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
@@ -20,6 +21,7 @@ import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -41,7 +43,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
 
 @Slf4j
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class UiUtil {
 
     private static final String FILE_PATH_PREFIX = "file:";
@@ -51,9 +54,15 @@ public class UiUtil {
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH-mm-ss");
 
+    private final LocatorCollector locatorCollector;
+    private final JavascriptUtil javascriptUtil;
+    private final WebElementFinder webElementFinder;
+    private final FileSearcher fileSearcher;
+    private final EnvironmentLoader environmentLoader;
+
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
-            File file = FileSearcher.searchFileFromDir(fromDir, value.substring(FILE_PATH_PREFIX.length()));
+            File file = fileSearcher.searchFileFromDir(fromDir, value.substring(FILE_PATH_PREFIX.length()));
             return file.getPath();
         }
         element.clear();
@@ -64,7 +73,7 @@ public class UiUtil {
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
         Locator locator = getLocatorByStrategy(locatorId, locatorStrategy);
-        return WebElementFinder.find(locator, dependencies);
+        return webElementFinder.find(locator, dependencies);
     }
 
     //CHECKSTYLE:OFF
@@ -73,7 +82,7 @@ public class UiUtil {
         locator.setLocatorId(locatorId);
         switch (locatorStrategy) {
             case LOCATOR_ID:
-                locator = GlobalLocators.getLocator(locatorId);
+                locator = locatorCollector.getLocator(locatorId);
                 break;
             case XPATH:
                 Xpath xpath = new Xpath();
@@ -111,7 +120,7 @@ public class UiUtil {
                                            final WebElement element,
                                            final WebDriver driver) {
         if (isHighlight && !(driver instanceof AppiumDriver)) {
-            JavascriptUtil.executeJsScript(HIGHLIGHT_SCRIPT, driver, element);
+            javascriptUtil.executeJsScript(HIGHLIGHT_SCRIPT, driver, element);
         }
     }
 
@@ -205,7 +214,7 @@ public class UiUtil {
     }
 
     public String getElementAttribute(final WebElement element, final String attributeName, final WebDriver driver) {
-        String attribute = (String) JavascriptUtil.executeJsScript(
+        String attribute = (String) javascriptUtil.executeJsScript(
                 ELEMENT_ARGUMENTS_SCRIPT, driver, element, attributeName);
         attribute = isBlank(attribute) ? element.getAttribute(attributeName) : attribute;
         if (isBlank(attribute)) {
@@ -245,10 +254,9 @@ public class UiUtil {
             return path;
         }
         if (UiType.MOBILE_BROWSER == uiType) {
-            return GlobalTestConfigurationProvider.get().getMobileBrowserSettings(env)
-                    .getBaseUrl() + path;
+            return environmentLoader.getMobileBrowserSettings(env).get().getBaseUrl() + path;
         }
-        return GlobalTestConfigurationProvider.get().getWebSettings(env).getBaseUrl() + path;
+        return environmentLoader.getWebSettings(env).get().getBaseUrl() + path;
     }
 
     public String getBasePageURL(final String currentPageURL) {

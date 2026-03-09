@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.s3;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;

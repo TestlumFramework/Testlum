@@ -5,11 +5,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
 import org.openqa.selenium.WebElement;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_INDEX;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_LOCATOR;
@@ -17,11 +14,11 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_LOC
 @ExecutorForClass(SwitchToFrame.class)
 public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> {
 
-    @Autowired
-    private SubCommandRunnerImpl subCommandRunner;
+    private final SubCommandRunnerImpl subCommandRunner;
 
     public SwitchToFrameWebExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        this.subCommandRunner = dependencies.getContext().getBean(SubCommandRunnerImpl.class);
     }
 
     @Override
@@ -32,18 +29,18 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
         } else {
             switchToFrameByIndex(switchToFrame, result);
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
 
-        LogUtil.startUiCommandsInFrame();
+        logUtil.startUiCommandsInFrame();
         this.subCommandRunner.runCommands(switchToFrame.getClickOrInputOrAssert(), result, dependencies);
-        LogUtil.endUiCommandsInFrame();
+        logUtil.endUiCommandsInFrame();
         dependencies.getDriver().switchTo().parentFrame();
     }
 
     private void switchToFrameByLocator(final SwitchToFrame switchToFrame, final CommandResult result,
                                         final String locatorId) {
         result.put(SWITCH_LOCATOR, locatorId);
-        WebElement element = UiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
+        WebElement element = uiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
         dependencies.getDriver().switchTo().frame(element);
     }
 

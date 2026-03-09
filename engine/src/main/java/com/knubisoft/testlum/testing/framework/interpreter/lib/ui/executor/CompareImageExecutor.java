@@ -2,14 +2,13 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.*;
+import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
@@ -38,21 +37,25 @@ import static java.util.Objects.nonNull;
 @ExecutorForClass(Image.class)
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
+    private final EnvironmentLoader currentEnvironmentLoader;
+
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        this.currentEnvironmentLoader =
+                dependencies.getContext().getBean(EnvironmentLoader.class);
     }
 
     @SneakyThrows
     @Override
     public void execute(final Image image, final CommandResult result) {
-        LogUtil.logImageComparisonInfo(image);
-        ResultUtil.addImageComparisonMetaData(image, result);
+        logUtil.logImageComparisonInfo(image);
+        resultUtil.addImageComparisonMetaData(image, result);
         File scenarioFile = dependencies.getFile();
-        BufferedImage expected = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+        BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
         List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual, excludeList);
-        ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
+        imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
 
@@ -61,23 +64,23 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                          final Image image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getPicture())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
+            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
                     image.getPicture().getLocatorStrategy());
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
+            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
-            return ImageIO.read(UiUtil.takeScreenshot(webElement));
+            return ImageIO.read(uiUtil.takeScreenshot(webElement));
         }
-        return ImageIO.read(UiUtil.takeScreenshot(webDriver));
+        return ImageIO.read(uiUtil.takeScreenshot(webDriver));
     }
     //CHECKSTYLE:ON
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
-        String urlToImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
+        String urlToImage = uiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
         if (urlToImage.startsWith(DelimiterConstant.SLASH_SEPARATOR)) {
             try {
                 urlToImage = getImageURLStartsWithCurrentPageURL(result, urlToImage);
@@ -113,7 +116,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     private Rectangle getElementArea(final String locatorId, final Scale scale, final LocatorStrategy locatorStrategy) {
         org.openqa.selenium.Rectangle seleniumRectangle =
-                UiUtil.findWebElement(dependencies, locatorId, locatorStrategy).getRect();
+                uiUtil.findWebElement(dependencies, locatorId, locatorStrategy).getRect();
         double x = seleniumRectangle.getX() * scale.getScaleX();
         double y = seleniumRectangle.getY() * scale.getScaleY();
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
@@ -122,18 +125,16 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     }
 
     private String getImageURLStartsWithBaseURL(final CommandResult result, final String urlToImage) {
-        String imageURL;
-        String baseUrl = GlobalTestConfigurationProvider.get().getWebSettings(EnvManager.currentEnv()).getBaseUrl();
-        imageURL = baseUrl + urlToImage;
+        String baseUrl = currentEnvironmentLoader.getCurrentEnvWebSettings().get().getBaseUrl();
+        String imageURL = baseUrl + urlToImage;
         log.info(URL_TO_IMAGE_LOG, imageURL);
         result.put(URL_TO_ACTUAL_IMAGE, imageURL);
         return imageURL;
     }
 
     private String getImageURLStartsWithCurrentPageURL(final CommandResult result, final String urlToImage) {
-        String imageURL;
-        String basePageUrl = UiUtil.getBasePageURL(dependencies.getDriver().getCurrentUrl());
-        imageURL = basePageUrl + urlToImage;
+        String basePageUrl = uiUtil.getBasePageURL(dependencies.getDriver().getCurrentUrl());
+        String imageURL = basePageUrl + urlToImage;
         log.info(URL_TO_IMAGE_LOG, imageURL);
         result.put(URL_TO_ACTUAL_IMAGE, imageURL);
         return imageURL;

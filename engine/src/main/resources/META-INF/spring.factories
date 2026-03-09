@@ -5,3 +5,6 @@ org.springframework.test.context.TestExecutionListener = \
 	org.springframework.test.context.support.DirtiesContextTestExecutionListener,\
 	org.springframework.test.context.transaction.TransactionalTestExecutionListener,\
 	org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener
+
+org.springframework.context.ApplicationContextInitializer = \
+    com.knubisoft.testlum.testing.TestResourceInfrastructureInitializer

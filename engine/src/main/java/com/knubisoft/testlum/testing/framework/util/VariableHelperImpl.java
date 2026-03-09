@@ -24,7 +24,7 @@ import org.cornutum.regexpgen.random.RandomBoundsGen;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -54,16 +54,21 @@ public class VariableHelperImpl implements VariableHelper {
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
-    @Autowired
-    private AliasToStorageOperation aliasToStorageOperation;
 
-    public VariableHelperImpl() {
+    private final AliasToStorageOperation aliasToStorageOperation;
+    private final ResultUtil resultUtil;
+    private final LogUtil logUtil;
+
+    public VariableHelperImpl(final ApplicationContext ctx) {
         RandomStringUtils util = RandomStringUtils.secure();
-        randomGenerateMethodMap = Map.of(
+        this.randomGenerateMethodMap = Map.of(
                 r -> nonNull(r.getNumeric()), r -> util.nextNumeric(r.getLength()),
                 r -> nonNull(r.getAlphabetic()), r -> util.nextAlphabetic(r.getLength()),
                 r -> nonNull(r.getAlphanumeric()), r -> util.nextAlphanumeric(r.getLength()),
                 r -> nonNull(r.getRandomRegexp()), this::generateStringByRegexp);
+        this.aliasToStorageOperation = ctx.getBean(AliasToStorageOperation.class);
+        this.resultUtil = ctx.getBean(ResultUtil.class);
+        this.logUtil = ctx.getBean(LogUtil.class);
     }
 
     @Override
@@ -84,7 +89,7 @@ public class VariableHelperImpl implements VariableHelper {
         String valueResult = getRandomGeneratedString(randomGenerate);
         String exp = nonNull(randomGenerate.getRandomRegexp())
                 ? randomGenerate.getRandomRegexp().getPattern() : NO_EXPRESSION;
-        ResultUtil.addVariableMetaData(GENERATED_STRING, varName, exp, valueResult, result);
+        resultUtil.addVariableMetaData(GENERATED_STRING, varName, exp, valueResult, result);
         return valueResult;
     }
 
@@ -110,7 +115,7 @@ public class VariableHelperImpl implements VariableHelper {
                                 final UnaryOperator<String> fileToString,
                                 final CommandResult result) {
         String valueResult = fileToString.apply(fromFile.getFileName());
-        ResultUtil.addVariableMetaData(FILE, varName, NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(FILE, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
@@ -119,7 +124,7 @@ public class VariableHelperImpl implements VariableHelper {
                                     final String varName,
                                     final CommandResult result) {
         String valueResult = fromConstant.getValue();
-        ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
@@ -131,7 +136,7 @@ public class VariableHelperImpl implements VariableHelper {
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(expression);
         String valueResult = exp.getValue(String.class);
-        ResultUtil.addVariableMetaData(EXPRESSION, varName, expression, valueResult, result);
+        resultUtil.addVariableMetaData(EXPRESSION, varName, expression, valueResult, result);
         return valueResult;
     }
 
@@ -183,7 +188,7 @@ public class VariableHelperImpl implements VariableHelper {
         org.w3c.dom.Document w3cDocument = convertJsoupToW3CDocument(jsoupDoc);
         XPath xPath = XPathFactory.newInstance().newXPath();
         String valueResult = (String) xPath.evaluate(path, w3cDocument, XPathConstants.STRING);
-        ResultUtil.addVariableMetaData(XML_PATH, varName, path, valueResult, result);
+        resultUtil.addVariableMetaData(XML_PATH, varName, path, valueResult, result);
         return valueResult;
     }
 
@@ -201,7 +206,7 @@ public class VariableHelperImpl implements VariableHelper {
                                  final CommandResult result) {
         DocumentContext contextBody = JsonPath.parse(body);
         String valueResult = Objects.nonNull(contextBody.read(path)) ? contextBody.read(path).toString() : null;
-        ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
+        resultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;
     }
 
@@ -213,7 +218,7 @@ public class VariableHelperImpl implements VariableHelper {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
-        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
+        resultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
         return valueResult;
     }
 
@@ -226,7 +231,7 @@ public class VariableHelperImpl implements VariableHelper {
     private String getActualQueryResult(final FromSQL fromSQL, final AbstractStorageOperation storageOperation) {
         String alias = fromSQL.getAlias();
         List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
-        LogUtil.logAllQueries(fromSQL.getDbType().name(), singleQuery, alias);
+        logUtil.logAllQueries(fromSQL.getDbType().name(), singleQuery, alias);
         AbstractStorageOperation.StorageOperationResult queryResult = storageOperation.apply(
                 new ListSource(singleQuery), alias);
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));

@@ -1,18 +1,24 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.scenario.StorageName;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.*;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class DatasetValidator {
+
+    private final FileSearcher fileSearcher;
+
     //CHECKSTYLE:OFF
     public void validateDatasetByExtension(final String datasetFileName, final StorageName name) {
-        FileSearcher.searchFileFromDataFolder(datasetFileName);
+        fileSearcher.searchFileFromDataFolder(datasetFileName);
         switch (name) {
             case CLICKHOUSE:
             case POSTGRES:

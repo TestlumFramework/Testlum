@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.sql.executor.impl;
 
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -16,8 +17,9 @@ public class ClickhouseExecutor extends AbstractSqlExecutor {
             + "OR total_rows = NULL);";
     private static final String SELECT_DATABASE_NAME = "SELECT currentDatabase()";
 
-    public ClickhouseExecutor(final DataSource dataSource) {
-        super(dataSource);
+    public ClickhouseExecutor(final DataSource dataSource,
+                              final LogUtil logUtil) {
+        super(dataSource, logUtil);
     }
 
     @Override

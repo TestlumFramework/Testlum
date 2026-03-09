@@ -7,19 +7,23 @@ import com.knubisoft.testlum.testing.model.global_config.ExtentReports;
 import com.knubisoft.testlum.testing.model.global_config.HtmlReportGenerator;
 import com.knubisoft.testlum.testing.model.global_config.KlovServerReportGenerator;
 import com.knubisoft.testlum.testing.model.global_config.Report;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
 @Slf4j
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class ReportGeneratorFactory {
+
+    private final ExtentReportsGenerator extentReportsGenerator;
 
     public ReportGenerator create(final Report report) {
         if (Objects.nonNull(report.getExtentReports())) {
             checkExtentReportsGenerators(report.getExtentReports());
-            return new ExtentReportsGenerator();
+            return extentReportsGenerator;
         } //add a new branch if another implementation is needed
         throw new UnsupportedOperationException("Report generator type is not supported");
     }

@@ -61,12 +61,15 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     @Autowired
     private ApiClient apiClient;
+
+    private final HttpUtil httpUtil;
     private final IntegrationsProvider integrationsProvider;
 
     public GraphqlInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
-        graphqlMethodMap = Map.of(Graphql::getGet, HttpMethod.GET, Graphql::getPost, HttpMethod.POST);
+        this.httpUtil = dependencies.getContext().getBean(HttpUtil.class);
+        this.graphqlMethodMap = Map.of(Graphql::getGet, HttpMethod.GET, Graphql::getPost, HttpMethod.POST);
     }
 
     @Override
@@ -102,7 +105,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         Map<String, String> headers = getHeaders(httpInfo);
         logHttpInfo(alias, httpMethod.name(), endpoint);
         addGraphQlMetaData(alias, httpMethod, headers, endpoint, result);
-        ContentType contentType = HttpUtil.computeContentType(headers);
+        ContentType contentType = httpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
         logBodyContent(body);
         String url = getFullUrl(httpInfo, endpoint, alias);
@@ -124,7 +127,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private Map<String, String> getHeaders(final HttpInfo httpInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
-        HttpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
+        httpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
         return headers;
     }
 

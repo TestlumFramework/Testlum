@@ -1,12 +1,13 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.PostgresExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,10 @@ public class PostgresSqlOperation extends AbstractStorageOperation {
     private final Map<AliasEnv, AbstractSqlExecutor> postgresExecutor;
 
     public PostgresSqlOperation(@Autowired(required = false) @Qualifier("postgresDataSource")
-                                final Map<AliasEnv, DataSource> postgresDataSource) {
+                                final Map<AliasEnv, DataSource> postgresDataSource,
+                                final LogUtil logUtil) {
         postgresExecutor = new HashMap<>();
-        postgresDataSource.forEach((key, value) -> postgresExecutor.put(key, new PostgresExecutor(value)));
+        postgresDataSource.forEach((key, value) -> postgresExecutor.put(key, new PostgresExecutor(value, logUtil)));
     }
 
     @Override

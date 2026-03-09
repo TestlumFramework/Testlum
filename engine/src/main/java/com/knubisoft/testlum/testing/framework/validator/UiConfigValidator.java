@@ -1,10 +1,11 @@
 package com.knubisoft.testlum.testing.framework.validator;
 
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.*;
@@ -13,22 +14,30 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.UI_CONFIG_FILENAME;
+import static com.knubisoft.testlum.testing.framework.TestResourceSettings.UI_CONFIG_FILENAME;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 import static com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType.*;
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+@Component
 public class UiConfigValidator implements ConfigurationValidator<Map<String, UiConfig>> {
 
     private static final String DEVICE = "device";
     private static final String BROWSER = "browser";
+
     private final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> uiConfigMethodMap;
     private final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap;
     private final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> connectionMethodMap;
 
-    public UiConfigValidator() {
+    private final TestResourceSettings settings;
+    private final FileSearcher fileSearcher;
+
+    public UiConfigValidator(final TestResourceSettings settings, final FileSearcher fileSearcher) {
+        this.settings = settings;
+        this.fileSearcher = fileSearcher;
+
         final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> configMethodMap = new HashMap<>();
         configMethodMap.put(WEB.name(), singletonMap(c -> nonNull(c.getWeb())
                 && c.getWeb().isEnabled(), UiConfig::getWeb));
@@ -321,15 +330,15 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 mobilebrowserLists.get(envNum).forEach(mobileDevice -> {
                     ConnectionType cType = uiConfigs.get(envNum).getMobilebrowser().getConnection();
                     MobilebrowserDevice defaultDevice = mobilebrowserDeviceDefaultMap.get(mobileDevice.getAlias());
-                    checkMobilebrowserAppiumCapabilities(envList.get(envNum), configName, cType, mobileDevice,
+                    checkMobileBrowserAppiumCapabilities(envList.get(envNum), configName, cType, mobileDevice,
                             defaultDevice.getAppiumCapabilities());
-                    checkMobilebrowserBrowserStackCapapabilities(envList.get(envNum), configName, cType, mobileDevice,
+                    checkMobileBrowserBrowserStackCapabilities(envList.get(envNum), configName, cType, mobileDevice,
                             defaultDevice.getBrowserStackCapabilities());
                 })
         );
     }
 
-    private void checkMobilebrowserAppiumCapabilities(final String envName,
+    private void checkMobileBrowserAppiumCapabilities(final String envName,
                                                       final String configName,
                                                       final ConnectionType cType,
                                                       final MobilebrowserDevice device,
@@ -343,11 +352,11 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
         }
     }
 
-    private void checkMobilebrowserBrowserStackCapapabilities(final String envName,
-                                                              final String configName,
-                                                              final ConnectionType cType,
-                                                              final MobilebrowserDevice device,
-                                                              final BrowserStackCapabilities defaultBSCapabilities) {
+    private void checkMobileBrowserBrowserStackCapabilities(final String envName,
+                                                            final String configName,
+                                                            final ConnectionType cType,
+                                                            final MobilebrowserDevice device,
+                                                            final BrowserStackCapabilities defaultBSCapabilities) {
         if (nonNull(cType.getBrowserStack()) && isNull(device.getBrowserStackCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
@@ -419,9 +428,9 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
     }
 
     private String getConfigPath(final String envName) {
-        return FileSearcher.searchFileFromEnvFolder(envName, UI_CONFIG_FILENAME)
-                .map(File::getPath).orElse(TestResourceSettings.getInstance().getEnvConfigFolder().getPath())
-                .replace(TestResourceSettings.getInstance().getTestResourcesFolder().getPath(), StringUtils.EMPTY);
+        return fileSearcher.searchFileFromEnvFolder(envName, UI_CONFIG_FILENAME)
+                .map(File::getPath).orElse(settings.getEnvConfigFolder().getPath())
+                .replace(settings.getTestResourcesFolder().getPath(), StringUtils.EMPTY);
     }
 
     private interface UiConfigPredicate extends Predicate<UiConfig> { }

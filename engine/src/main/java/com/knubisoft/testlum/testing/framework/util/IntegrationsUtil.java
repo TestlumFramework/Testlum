@@ -1,0 +1,108 @@
+package com.knubisoft.testlum.testing.framework.util;
+
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
+import com.knubisoft.testlum.testing.model.global_config.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
+
+@Component
+@Slf4j
+public class IntegrationsUtil {
+
+    private final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations;
+    private final Map<IntegrationsPredicate, IntegrationListMethod> configToIntegrationListMap;
+
+    public IntegrationsUtil(final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
+        this.envToIntegrations = envToIntegrations;
+        this.configToIntegrationListMap = createConfigToIntegratonMap();
+    }
+
+    //CHECKSTYLE:OFF
+    private Map<IntegrationsPredicate, IntegrationListMethod> createConfigToIntegratonMap() {
+        return Map.ofEntries(
+                Map.entry(c -> c.equals(Api.class), i -> i.getApis().getApi()),
+                Map.entry(c -> c.equals(WebsocketApi.class), i -> i.getWebsockets().getApi()),
+                Map.entry(c -> c.equals(S3.class), i -> i.getS3Integration().getS3()),
+                Map.entry(c -> c.equals(Ses.class), i -> i.getSesIntegration().getSes()),
+                Map.entry(c -> c.equals(Sqs.class), i -> i.getSqsIntegration().getSqs()),
+                Map.entry(c -> c.equals(Smtp.class), i -> i.getSmtpIntegration().getSmtp()),
+                Map.entry(c -> c.equals(Redis.class), i -> i.getRedisIntegration().getRedis()),
+                Map.entry(c -> c.equals(Mongo.class), i -> i.getMongoIntegration().getMongo()),
+                Map.entry(c -> c.equals(Mysql.class), i -> i.getMysqlIntegration().getMysql()),
+                Map.entry(c -> c.equals(Kafka.class), i -> i.getKafkaIntegration().getKafka()),
+                Map.entry(c -> c.equals(GraphqlApi.class), i -> i.getGraphqlIntegration().getApi()),
+                Map.entry(c -> c.equals(Twilio.class), i -> i.getTwilioIntegration().getTwilio()),
+                Map.entry(c -> c.equals(Oracle.class), i -> i.getOracleIntegration().getOracle()),
+                Map.entry(c -> c.equals(Dynamo.class), i -> i.getDynamoIntegration().getDynamo()),
+                Map.entry(c -> c.equals(Lambda.class), i -> i.getLambdaIntegration().getLambda()),
+                Map.entry(c -> c.equals(Sendgrid.class), i -> i.getSendgridIntegration().getSendgrid()),
+                Map.entry(c -> c.equals(Postgres.class), i -> i.getPostgresIntegration().getPostgres()),
+                Map.entry(c -> c.equals(SqlDatabase.class),
+                        i -> i.getSqlDatabaseIntegration().getSqlDatabase()),
+                Map.entry(c -> c.equals(Rabbitmq.class), i -> i.getRabbitmqIntegration().getRabbitmq()),
+                Map.entry(c -> c.equals(Clickhouse.class), i -> i.getClickhouseIntegration().getClickhouse()),
+                Map.entry(c -> c.equals(Elasticsearch.class),
+                        i -> i.getElasticsearchIntegration().getElasticsearch()));
+    }
+    //CHECKSTYLE:ON
+
+    public <T extends Integration> T findForAliasEnv(final Class<T> clazz, final AliasEnv aliasEnv) {
+        List<T> intList = findListByEnv(clazz, aliasEnv.getEnvironment());
+        return findForAlias(intList, aliasEnv.getAlias());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Integration> List<T> findListByEnv(final Class<T> clazz, final String env) {
+        Integrations integration = envToIntegrations.get(env);
+        if (integration == null) {
+            return Collections.emptyList();
+        }
+        IntegrationListMethod integrationListMethod = configToIntegrationListMap.entrySet().stream()
+                .filter(e -> e.getKey().test(clazz))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        String.format(INTEGRATION_NOT_FOUND, clazz.getSimpleName())));
+        return (List<T>) integrationListMethod.apply(integration);
+    }
+
+    public <T extends Integration> T findApiForAlias(final List<T> apiIntegrations, final String alias) {
+        return getIntegrationByAliasOrThrow(apiIntegrations, alias, API_NOT_FOUND);
+    }
+
+    public <T extends Integration> T findForAlias(final List<T> integrationList, final String alias) {
+        return getIntegrationByAliasOrThrow(integrationList, alias, ALIAS_NOT_FOUND);
+    }
+
+    private <T extends Integration> T getIntegrationByAliasOrThrow(final List<T> integrations,
+                                                                   final String alias,
+                                                                   final String message) {
+        String computedAlias = alias == null ? "DEFAULT" : alias;
+        return integrations.stream()
+                .filter(Integration::isEnabled)
+                .filter(integration -> integration.getAlias().equals(computedAlias))
+                .findFirst()
+                .orElseThrow(() -> new IntegrationDisabledException(message, computedAlias));
+    }
+
+    public <T extends Integration> boolean isEnabled(final List<T> integrations) {
+        return integrations.stream().anyMatch(Integration::isEnabled);
+    }
+
+    private interface IntegrationsPredicate extends Predicate<Class<? extends Integration>> {
+    }
+
+    private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> {
+    }
+}

@@ -1,13 +1,7 @@
 package com.knubisoft.comparator;
 
 import com.knubisoft.comparator.alias.Alias;
-import com.knubisoft.comparator.condition.BigDecimalComparator;
-import com.knubisoft.comparator.condition.BigIntegerComparator;
-import com.knubisoft.comparator.condition.ConditionType;
-import com.knubisoft.comparator.condition.ConditionComparator;
-import com.knubisoft.comparator.condition.DateComparator;
-import com.knubisoft.comparator.condition.NowComparator;
-import com.knubisoft.comparator.condition.Operator;
+import com.knubisoft.comparator.condition.*;
 import com.knubisoft.comparator.constant.CommonConstant;
 import com.knubisoft.comparator.util.LogMessage;
 import com.knubisoft.comparator.util.Parser;
@@ -18,12 +12,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.knubisoft.comparator.ErrorHelper.raise;
-import static com.knubisoft.comparator.constant.CommonConstant.EXTRACT_ACTION_THREE;
-import static com.knubisoft.comparator.constant.CommonConstant.RIGHT_BRACKET;
-import static com.knubisoft.comparator.constant.CommonConstant.T_LEFT_BRACKET;
-import static com.knubisoft.comparator.constant.RegexpConstant.ALL_EXPRESSION_IN_C_BRACKETS;
-import static com.knubisoft.comparator.constant.RegexpConstant.ALL_EXPRESSION_IN_P_BRACKETS;
-import static com.knubisoft.comparator.constant.RegexpConstant.P_BRACKETS;
+import static com.knubisoft.comparator.constant.CommonConstant.*;
+import static com.knubisoft.comparator.constant.RegexpConstant.*;
 import static java.lang.String.format;
 
 public class StringComparator extends AbstractObjectComparator<String> {

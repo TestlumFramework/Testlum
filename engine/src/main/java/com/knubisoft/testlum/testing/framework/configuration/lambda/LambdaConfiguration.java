@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.lambda;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnLambdaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.condition.OnLambdaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -29,11 +29,13 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class LambdaConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, LambdaClient> awsLambdaClients() {
+    public Map<AliasEnv, LambdaClient> awsLambdaClients(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envTointegrations) {
         final Map<AliasEnv, LambdaClient> lambdaClientMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> addLambdaClient(integrations, env, lambdaClientMap));
         return lambdaClientMap;
     }
@@ -46,7 +48,7 @@ public class LambdaConfiguration {
                 LambdaClient lambdaClient = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "Lambda", lambda.getAlias()),
                         () -> createLambdaClient(lambda),
-                        HealthCheckFactory.forLambda()
+                        healthCheckFactory.forLambda()
                 );
                 lambdaClientMap.put(new AliasEnv(lambda.getAlias(), env), lambdaClient);
             }

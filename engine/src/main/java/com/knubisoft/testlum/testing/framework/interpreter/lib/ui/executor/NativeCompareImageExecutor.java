@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.*;
+import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import lombok.SneakyThrows;
@@ -37,20 +37,20 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
     @SneakyThrows
     @Override
     protected void execute(final NativeImage image, final CommandResult result) {
-        LogUtil.logImageComparisonInfo(image);
-        ResultUtil.addImageComparisonMetaData(image, result);
+        logUtil.logImageComparisonInfo(image);
+        resultUtil.addImageComparisonMetaData(image, result);
         File scenarioFile = dependencies.getFile();
-        BufferedImage expected = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+        BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image);
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual);
-        ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
+        imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final NativeImage image) throws IOException {
         if (nonNull(image.getPart())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
+            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
             File screenshotFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
             BufferedImage fullImage = ImageIO.read(screenshotFile);
@@ -59,7 +59,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
             int elementHeight = webElement.getSize().getHeight();
             return fullImage.getSubimage(point.getX(), point.getY(), elementWidth, elementHeight);
         }
-        BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
+        BufferedImage fullScreen = ImageIO.read(uiUtil.takeScreenshot(webDriver));
         return cutStatusBar(image.getFullScreen(), fullScreen, webDriver);
     }
 
@@ -77,7 +77,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
     private int getStatusBarHeight(final BufferedImage screenshot, final WebDriver driver) {
         Platform platformName = ((RemoteWebDriver) driver).getCapabilities().getPlatformName();
         return platformName.equals(Platform.MAC) || platformName.equals(Platform.IOS)
-                ? getIosStatusBarHeight(screenshot, driver) : ImageComparisonUtil.getStatusBarHeight(driver);
+                ? getIosStatusBarHeight(screenshot, driver) : imageComparisonUtil.getStatusBarHeight(driver);
     }
 
     private int getIosStatusBarHeight(final BufferedImage screenshot, final WebDriver driver) {

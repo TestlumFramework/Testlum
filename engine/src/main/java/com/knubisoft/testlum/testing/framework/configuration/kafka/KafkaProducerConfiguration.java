@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -26,11 +26,13 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class KafkaProducerConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer() {
+    public Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
         Map<AliasEnv, KafkaProducer<String, String>> producerMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envToIntegrations
                 .forEach((env, integrations) -> addConfigProps(integrations, env, producerMap));
         return producerMap;
     }
@@ -43,7 +45,7 @@ public class KafkaProducerConfiguration {
                 KafkaProducer<String, String> checkedKafkaProducer = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "Kafka Producer", kafka.getAlias()),
                         () -> new KafkaProducer<>(createConfigProps(kafka)),
-                        HealthCheckFactory.forKafkaProducer()
+                        healthCheckFactory.forKafkaProducer()
                 );
                 producerMap.put(new AliasEnv(kafka.getAlias(), env), checkedKafkaProducer);
             }

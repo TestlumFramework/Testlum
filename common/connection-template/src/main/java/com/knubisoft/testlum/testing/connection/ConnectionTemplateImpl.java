@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.connection;
 
 import com.knubisoft.testlum.log.LogFormat;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;

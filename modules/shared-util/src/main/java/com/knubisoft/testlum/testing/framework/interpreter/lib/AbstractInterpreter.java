@@ -1,14 +1,15 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,11 +40,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected final InterpreterDependencies dependencies;
     protected final ConfigProvider configurationProvider;
     protected final ConditionProvider conditionProvider;
+    protected final FileSearcher fileSearcher;
+    private final boolean stopScenarioOnFailure;
 
     protected AbstractInterpreter(final InterpreterDependencies dependencies) {
         this.dependencies = dependencies;
         this.configurationProvider = dependencies.getContext().getBean(ConfigProvider.class);
         this.conditionProvider = dependencies.getContext().getBean(ConditionProvider.class);
+        this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
+        this.stopScenarioOnFailure = dependencies.getContext().
+                getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
     }
 
     public final void apply(final T o, final CommandResult result) {
@@ -95,7 +101,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     public String getContentIfFile(final String fileOrContent) {
         if (StringUtils.isNotBlank(fileOrContent) && fileOrContent.endsWith(JSON_EXTENSION)) {
-            String content = FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
+            String content = fileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
             return inject(content);
         }
         return fileOrContent;
@@ -114,16 +120,37 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     @SuppressWarnings("unchecked")
     protected <Y> Y injectCommand(final Y o) {
-        if (Objects.nonNull(o)) {
-            String asJson = JacksonMapperUtil.writeValueToCopiedString(o);
-            String injected = dependencies.getScenarioContext().inject(asJson);
-            return JacksonMapperUtil.readCopiedValue(injected, (Class<Y>) o.getClass());
+        if (Objects.isNull(o)) {
+            return null;
         }
-        return null;
+        String asJson = JacksonMapperUtil.writeValueToCopiedString(o);
+        String injected = dependencies.getScenarioContext().inject(asJson);
+        return JacksonMapperUtil.readCopiedValue(injected, (Class<Y>) o.getClass());
+    }
+
+    protected Var injectVarCommand(final Var var) {
+        if (Objects.isNull(var)) {
+            return null;
+        }
+        Var varCopy = JacksonMapperUtil.deepCopy(var, Var.class);
+        FromExpression expression = varCopy.getExpression();
+        if (Objects.nonNull(expression)) {
+            expression.setValue(dependencies.getScenarioContext().injectSpel(expression.getValue()));
+        }
+        return injectCommand(varCopy);
+    }
+
+    protected Condition injectConditionCommand(final Condition condition) {
+        if (Objects.isNull(condition)) {
+            return null;
+        }
+        Condition conditionCopy = JacksonMapperUtil.deepCopy(condition, Condition.class);
+        conditionCopy.setSpel(dependencies.getScenarioContext().injectSpel(conditionCopy.getSpel()));
+        return injectCommand(conditionCopy);
     }
 
     protected void checkIfStopScenarioOnFailure(final Exception e) {
-        if (configurationProvider.provide().isStopScenarioOnFailure()) {
+        if (stopScenarioOnFailure) {
             throw new DefaultFrameworkException(e);
         }
     }

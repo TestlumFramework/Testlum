@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.mongo;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.condition.OnMongoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -33,11 +33,14 @@ public class MongoConfiguration {
     private static final int TIMEOUT = 5000;
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, MongoDatabase> mongoDatabases() {
+    public Map<AliasEnv, MongoDatabase> mongoDatabases(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envTointegrations
+    ) {
         final Map<AliasEnv, MongoDatabase> databaseMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> addMongoDatabase(integrations, env, databaseMap));
         return databaseMap;
     }
@@ -50,7 +53,7 @@ public class MongoConfiguration {
                 MongoDatabase resilientDb = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "MongoDB", mongo.getAlias()),
                         () -> createMongoClient(mongo).getDatabase(mongo.getDatabase()),
-                        HealthCheckFactory.forMongoDb(mongo)
+                        healthCheckFactory.forMongoDb(mongo)
                 );
                 databaseMap.put(new AliasEnv(mongo.getAlias(), env), resilientDb);
             }

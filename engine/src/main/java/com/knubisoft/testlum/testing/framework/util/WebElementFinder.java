@@ -1,14 +1,14 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import com.knubisoft.testlum.testing.model.pages.*;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -16,6 +16,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.FluentWait;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.*;
@@ -27,26 +28,34 @@ import java.util.stream.Collectors;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 
 @Slf4j
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public final class WebElementFinder {
 
-    private static final Map<Class<?>, ByType> SEARCH_TYPES;
+    private final EnvironmentLoader environmentLoader;
 
-    static {
+    private Map<Class<?>, ByType> searchByTypes;
+
+    @PostConstruct
+    public void init() {
+        this.searchByTypes = createClassToType();
+    }
+
+    private Map<Class<?>, ByType> createClassToType() {
         final Map<Class<?>, ByType> map = new HashMap<>();
         map.put(Xpath.class, l -> By.xpath(getLocatorsByType(l, Xpath.class)));
         map.put(Id.class, l -> By.id(getLocatorsByType(l, Id.class)));
         map.put(ClassName.class, l -> By.className(getLocatorsByType(l, ClassName.class)));
         map.put(CssSelector.class, l -> By.cssSelector(getLocatorsByType(l, CssSelector.class)));
         map.put(Text.class, l -> By.text(getLocatorsByType(l, Text.class)));
-        SEARCH_TYPES = Collections.unmodifiableMap(map);
+        return Collections.unmodifiableMap(map);
     }
 
     public WebElement find(final Locator locator, final ExecutorDependencies dependencies) {
         Set<org.openqa.selenium.By> bySet = new LinkedHashSet<>();
         locator.getXpathOrIdOrClassName().forEach(obj -> {
             Class<?> clazz = obj.getClass();
-            bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
+            bySet.addAll(searchByTypes.get(clazz).apply(locator));
         });
         return getElementFromLocatorList(bySet, dependencies, locator.getLocatorId());
     }
@@ -75,9 +84,9 @@ public final class WebElementFinder {
         return Optional.empty();
     }
 
-    private static WebElement tryToFindElementIfNotFoundBeforeAfterAutoWait(final Set<org.openqa.selenium.By> bySet,
-                                                                            final WebDriver driver,
-                                                                            final String locatorId) {
+    private WebElement tryToFindElementIfNotFoundBeforeAfterAutoWait(final Set<org.openqa.selenium.By> bySet,
+                                                                     final WebDriver driver,
+                                                                     final String locatorId) {
         waitForSecondsDefinedInConfig();
 
         Optional<WebElement> optionalElement = findElement(bySet, driver);
@@ -88,12 +97,14 @@ public final class WebElementFinder {
         return optionalElement.get();
     }
 
-//CHECKSTYLE:OFF
+    //CHECKSTYLE:OFF
     @SneakyThrows(InterruptedException.class)
-    private static void waitForSecondsDefinedInConfig() {
-        Web settings = GlobalTestConfigurationProvider.get().getWebSettings(EnvManager.currentEnv());
-        int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
-        Thread.sleep(secondsToWait * 1000L);
+    private void waitForSecondsDefinedInConfig() {
+        Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();
+        if (settings.isPresent()) {
+            int secondsToWait = settings.get().getBrowserSettings().getElementAutowait().getSeconds();
+            Thread.sleep(secondsToWait * 1000L);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -112,8 +123,8 @@ public final class WebElementFinder {
                 .collect(Collectors.groupingBy(Object::getClass));
     }
 
-    private static WebElement findElementByLocator(final WebDriver driver, final org.openqa.selenium.By by,
-                                                   final List<String> logMessages, final int checkedLocatorCount) {
+    private WebElement findElementByLocator(final WebDriver driver, final org.openqa.selenium.By by,
+                                            final List<String> logMessages, final int checkedLocatorCount) {
         WebElement element = driver.findElement(by);
         printLogsAboutUndiscoveredElements(logMessages);
         if (checkedLocatorCount != 0) {
@@ -122,12 +133,12 @@ public final class WebElementFinder {
         return element;
     }
 
-    private static void waitForDomToComplete(final ExecutorDependencies dependencies) {
+    private void waitForDomToComplete(final ExecutorDependencies dependencies) {
         if (dependencies.getUiType().equals(UiType.NATIVE)) {
             return;
         }
-        Web settings = GlobalTestConfigurationProvider.get().getWebSettings(EnvManager.currentEnv());
-        int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
+        Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();
+        int secondsToWait = settings.get().getBrowserSettings().getElementAutowait().getSeconds();
         FluentWait<WebDriver> wait = new FluentWait<>(dependencies.getDriver())
                 .withTimeout(Duration.ofSeconds(secondsToWait))
                 .pollingEvery(Duration.ofMillis(500L))
@@ -140,13 +151,13 @@ public final class WebElementFinder {
         });
     }
 
-    private static void printLogsAboutUndiscoveredElements(final List<String> logMessages) {
+    private void printLogsAboutUndiscoveredElements(final List<String> logMessages) {
         for (String logMessage : logMessages) {
             log.info(logMessage);
         }
     }
 
-    public static String extractLocatorValue(final org.openqa.selenium.By by) {
+    public String extractLocatorValue(final org.openqa.selenium.By by) {
         String locator = by.toString().substring(3);
         Pattern pattern = Pattern.compile(":\\s*(.*)");
         Matcher matcher = pattern.matcher(locator);

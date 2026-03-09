@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.ses;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnSESEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.condition.OnSESEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -28,11 +28,13 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class SESConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, SesClient> sesClient() {
+    public Map<AliasEnv, SesClient> sesClient(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envTointegrations) {
         Map<AliasEnv, SesClient> amazonSesMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> addAmazonSes(integrations, env, amazonSesMap));
         return amazonSesMap;
     }
@@ -45,7 +47,7 @@ public class SESConfiguration {
                 SesClient checkedSesClient = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "SES", ses.getAlias()),
                         () -> createAmazonSes(ses),
-                        HealthCheckFactory.forSes()
+                        healthCheckFactory.forSes()
                 );
 
                 emailServiceMap.put(new AliasEnv(ses.getAlias(), env), checkedSesClient);

@@ -9,21 +9,18 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.S3;
-import com.knubisoft.testlum.testing.model.scenario.S3Bucket;
-import com.knubisoft.testlum.testing.model.scenario.S3File;
-import com.knubisoft.testlum.testing.model.scenario.S3FileDownload;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.beans.factory.annotation.Autowired;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -64,11 +61,11 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String FILE_VALUE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected value <%s>";
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
-    @Autowired(required = false)
-    private Map<AliasEnv, S3Client> s3Client;
+    private final Map<AliasEnv, S3Client> s3Client;
 
     public S3Interpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+        this.s3Client = dependencies.getOptionalBean("s3Client", Map.class, Collections::emptyMap);
     }
 
     @Override
@@ -193,7 +190,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                 UPLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey());
         log.info(FILE_LOG, fileCommand.getUpload());
         addS3FileMetaData(UPLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
-        File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getUpload());
+        File file = fileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getUpload());
         result.put(FILE_NAME, fileCommand.getUpload());
         checkBucketExist(aliasEnv, bucketName);
         s3Client.get(aliasEnv).putObject(builder -> builder.bucket(bucketName).key(key), file.toPath());
@@ -209,7 +206,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         addS3FileMetaData(DOWNLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         String expected = fileCommand.getDownload().getFile() == null
                 ? fileCommand.getDownload().getValue()
-                : FileSearcher.searchFileToString(fileCommand.getDownload().getFile(), dependencies.getFile());
+                : fileSearcher.searchFileToString(fileCommand.getDownload().getFile(), dependencies.getFile());
         String actual = downloadFile(bucketName, key, aliasEnv);
         setExpectedActual(expected, actual, result);
         compare(expected, actual, fileCommand.getDownload(), key, result);

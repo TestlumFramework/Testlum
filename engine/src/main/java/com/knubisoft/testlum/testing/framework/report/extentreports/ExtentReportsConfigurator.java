@@ -3,23 +3,24 @@ package com.knubisoft.testlum.testing.framework.report.extentreports;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.HtmlReportGenerator;
 import com.knubisoft.testlum.testing.model.global_config.KlovServerReportGenerator;
 import com.knubisoft.testlum.testing.model.global_config.Mongodb;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import static java.io.File.separator;
-import static java.lang.String.format;
 
 @Slf4j
-@UtilityClass
+@RequiredArgsConstructor
+@Component
 public class ExtentReportsConfigurator {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
@@ -28,9 +29,12 @@ public class ExtentReportsConfigurator {
     private static final String REPORT_NAME_TEMPLATE = "%s%s_%s.html";
     private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s%s%s%s";
 
+    private final GlobalTestConfiguration globalTestConfiguration;
+    private final TestResourceSettings testResourceSettings;
+
     public void configure(final ExtentReports extentReports) {
         com.knubisoft.testlum.testing.model.global_config.ExtentReports extentReportsConfig =
-                GlobalTestConfigurationProvider.get().provide().getReport().getExtentReports();
+                globalTestConfiguration.getReport().getExtentReports();
         String projectName = extentReportsConfig.getProjectName();
         HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();
@@ -42,14 +46,16 @@ public class ExtentReportsConfigurator {
         }
     }
 
+    //CHECKSTYLE:OFF
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
         LocalDateTime dateTime = LocalDateTime.now();
-        String pathForReportFolder = format(PATH_FOR_REPORT_FOLDER,
-                TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath(),
-                separator, TestResourceSettings.REPORT_FOLDER);
-        String reportName = format(REPORT_NAME_TEMPLATE, separator, projectName, dateTime.format(DATE_TIME_FORMATTER));
-        String formattedPathForReportSaving = format(TEMPLATE_FOR_REPORT_SAVING_PATH,
-                pathForReportFolder, separator, dateTime.format(DATE_FORMATTER), reportName);
+        String pathForReportFolder = String.format(PATH_FOR_REPORT_FOLDER,
+                testResourceSettings.getTestResourcesFolder().getAbsolutePath(),
+                File.separator, TestResourceSettings.REPORT_FOLDER);
+        String reportName = String.format(REPORT_NAME_TEMPLATE, File.separator,
+                projectName, dateTime.format(DATE_TIME_FORMATTER));
+        String formattedPathForReportSaving = String.format(TEMPLATE_FOR_REPORT_SAVING_PATH,
+                pathForReportFolder, File.separator, dateTime.format(DATE_FORMATTER), reportName);
         try {
             ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
             extentReports.attachReporter(extentSparkReporter);
@@ -57,6 +63,7 @@ public class ExtentReportsConfigurator {
             log.error("Unable to create report file by path: {}", formattedPathForReportSaving);
         }
     }
+    //CHECKSTYLE:ON
 
     private void attachKlovServerReporter(final ExtentReports extentReports,
                                           final KlovServerReportGenerator klovServerGeneratorSettings,

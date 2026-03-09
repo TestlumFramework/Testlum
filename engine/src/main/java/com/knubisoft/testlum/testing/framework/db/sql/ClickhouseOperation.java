@@ -1,12 +1,13 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.ClickhouseExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,11 @@ public class ClickhouseOperation extends AbstractStorageOperation {
     private final Map<AliasEnv, AbstractSqlExecutor> clickhouseExecutor;
 
     public ClickhouseOperation(@Autowired @Qualifier("clickhouseDataSource")
-                               final Map<AliasEnv, DataSource> clickhouseDataSource) {
+                               final Map<AliasEnv, DataSource> clickhouseDataSource,
+                               final LogUtil logUtil) {
         clickhouseExecutor = new HashMap<>();
-        clickhouseDataSource.forEach((key, value) -> clickhouseExecutor.put(key, new ClickhouseExecutor(value)));
+        clickhouseDataSource.forEach((key, value) ->
+                clickhouseExecutor.put(key, new ClickhouseExecutor(value, logUtil)));
     }
 
     @Override

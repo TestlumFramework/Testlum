@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.db.sql.executor.impl;
 
 
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.sql.DataSource;
@@ -22,8 +23,9 @@ public class MySqlExecutor extends AbstractSqlExecutor {
             TRUNCATE_TABLE,
             ENABLE_FOREIGN_KEYS_CHECKS);
 
-    public MySqlExecutor(final DataSource dataSource) {
-        super(dataSource);
+    public MySqlExecutor(final DataSource dataSource,
+                         final LogUtil logUtil) {
+        super(dataSource, logUtil);
     }
 
     @Override

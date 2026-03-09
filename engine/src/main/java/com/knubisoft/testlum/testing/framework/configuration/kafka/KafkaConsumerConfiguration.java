@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -14,10 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
@@ -30,12 +27,13 @@ public class KafkaConsumerConfiguration {
     private static final int TIMEOUT = 5000;
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer() {
+    public Map<AliasEnv, KafkaConsumer<String, String>>
+    kafkaConsumer(final GlobalTestConfigurationProvider.EnvToIntegrationMap envToIntegrations) {
         final Map<AliasEnv, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
-                .forEach((env, integrations) -> addKafkaConsumer(integrations, env, consumerMap));
+        envToIntegrations.forEach((env, integration) -> addKafkaConsumer(integration, env, consumerMap));
         return consumerMap;
     }
 
@@ -56,7 +54,7 @@ public class KafkaConsumerConfiguration {
         return connectionTemplate.executeWithRetry(
                 String.format(CONNECTION_INTEGRATION_DATA, "Kafka Consumer", kafka.getAlias()),
                 () -> new KafkaConsumer<>(props),
-                HealthCheckFactory.forKafkaConsumer()
+                healthCheckFactory.forKafkaConsumer()
         );
     }
 

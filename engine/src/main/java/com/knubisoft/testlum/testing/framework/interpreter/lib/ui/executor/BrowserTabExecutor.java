@@ -6,10 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.BrowserTab;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,13 +25,14 @@ import static java.util.Objects.nonNull;
 public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
 
     private static final String WINDOW_OPEN = "window.open()";
+
     private final WebDriver driver;
     private final LinkedList<String> openedTabs;
 
     public BrowserTabExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        driver = dependencies.getDriver();
-        openedTabs = new LinkedList<>(driver.getWindowHandles());
+        this.driver = dependencies.getDriver();
+        this.openedTabs = new LinkedList<>(driver.getWindowHandles());
     }
 
     @Override
@@ -47,7 +44,7 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
         } else if (nonNull(browserTab.getSwitch())) {
             switchToTab(browserTab.getSwitch().getIndex(), result);
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void closeTab(final Integer tabIndex, final CommandResult result) {
@@ -58,8 +55,8 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
             driver.switchTo().window(openedTabs.get(tabIndex - 1)).close();
             openedTabs.remove(tabIndex - 1);
         }
-        ResultUtil.addCloseOrSwitchTabMetadata(CLOSE_COMMAND, tabIndex, result);
-        LogUtil.logCloseOrSwitchTabCommand(CLOSE_TAB, tabIndex);
+        resultUtil.addCloseOrSwitchTabMetadata(CLOSE_COMMAND, tabIndex, result);
+        logUtil.logCloseOrSwitchTabCommand(CLOSE_TAB, tabIndex);
         driver.switchTo().window(openedTabs.peekLast());
     }
 
@@ -70,23 +67,23 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
         } else {
             driver.switchTo().window(openedTabs.get(tabIndex - 1));
         }
-        ResultUtil.addCloseOrSwitchTabMetadata(SWITCH_COMMAND, tabIndex, result);
-        LogUtil.logCloseOrSwitchTabCommand(SWITCH_TAB, tabIndex);
+        resultUtil.addCloseOrSwitchTabMetadata(SWITCH_COMMAND, tabIndex, result);
+        logUtil.logCloseOrSwitchTabCommand(SWITCH_TAB, tabIndex);
     }
 
     private void openTab(final String url, final CommandResult result) {
         if (dependencies.getUiType() == UiType.MOBILE_BROWSER) {
-            JavascriptUtil.executeJsScript(WINDOW_OPEN, driver);
+            javascriptUtil.executeJsScript(WINDOW_OPEN, driver);
             LinkedList<String> currentTabs = new LinkedList<>(driver.getWindowHandles());
             driver.switchTo().window(currentTabs.pollLast());
         } else {
             driver.switchTo().newWindow(WindowType.TAB);
         }
         if (StringUtils.isNotBlank(url)) {
-            driver.navigate().to(UiUtil.getUrl(url, dependencies.getEnvironment(), dependencies.getUiType()));
+            driver.navigate().to(uiUtil.getUrl(url, dependencies.getEnvironment(), dependencies.getUiType()));
         }
-        ResultUtil.addOpenTabMetadata(url, result);
-        LogUtil.logOpenTabCommand(url);
+        resultUtil.addOpenTabMetadata(url, result);
+        logUtil.logOpenTabCommand(url);
     }
 
     private void validateTabNumberOrThrow(final Integer tabIndex) {

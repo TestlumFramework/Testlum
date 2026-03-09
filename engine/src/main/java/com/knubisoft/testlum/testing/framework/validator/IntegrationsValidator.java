@@ -1,12 +1,13 @@
 package com.knubisoft.testlum.testing.framework.validator;
 
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.global_config.Auth;
 import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.*;
@@ -15,15 +16,22 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
+import static com.knubisoft.testlum.testing.framework.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 import static java.util.Objects.nonNull;
 
+@Component
 public class IntegrationsValidator implements ConfigurationValidator<Map<String, Integrations>> {
 
     private final Map<IntegrationsPredicate, IntegrationListMethod> configToIntegrationListMap;
 
-    public IntegrationsValidator() {
+    private final FileSearcher fileSearcher;
+    private final TestResourceSettings testResourceSettings;
+
+    public IntegrationsValidator(final FileSearcher fileSearcher,
+                                 final TestResourceSettings testResourceSettings) {
+        this.fileSearcher = fileSearcher;
+        this.testResourceSettings = testResourceSettings;
         final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
         map.put(i -> nonNull(i.getApis()), i -> i.getApis().getApi());
         map.put(i -> nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
@@ -45,7 +53,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         map.put(i -> nonNull(i.getRabbitmqIntegration()), i -> i.getRabbitmqIntegration().getRabbitmq());
         map.put(i -> nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
         map.put(i -> nonNull(i.getElasticsearchIntegration()), i -> i.getElasticsearchIntegration().getElasticsearch());
-        configToIntegrationListMap = Collections.unmodifiableMap(map);
+        this.configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 
     @Override
@@ -101,8 +109,8 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                                                      final List<String> defaultAliases,
                                                      final Set<String> aliasSet) {
         if (!aliasSet.add(integration.getAlias())) {
-            String path = FileSearcher.searchFileFromEnvFolder(envFolder, INTEGRATION_CONFIG_FILENAME)
-                    .map(File::getPath).orElse(TestResourceSettings.getInstance().getEnvConfigFolder().getPath());
+            String path = fileSearcher.searchFileFromEnvFolder(envFolder, INTEGRATION_CONFIG_FILENAME)
+                    .map(File::getPath).orElse(testResourceSettings.getEnvConfigFolder().getPath());
             throw new DefaultFrameworkException(SAME_INTEGRATION_ALIAS, integration.getClass().getSimpleName(),
                     integration.getAlias(), path);
         } else if (!defaultAliases.contains(integration.getAlias())) {

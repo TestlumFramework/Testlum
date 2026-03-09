@@ -1,12 +1,6 @@
 package com.knubisoft.testlum.starter;
 
-
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
-import com.knubisoft.testlum.testing.model.global_config.Native;
-import com.knubisoft.testlum.testing.model.global_config.UiConfig;
-import com.knubisoft.testlum.testing.model.global_config.Web;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +13,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.PropertySource;
 
 import java.io.File;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -96,7 +92,6 @@ public class TESTLUMStarter {
         validateParams(configFileName, pathToTestResources);
 
         TestResourceSettings.init(configFileName.get(), pathToTestResources.get(), scenarioScope);
-        initLocatorsFolder();
 
         new SpringApplicationBuilder(TestRunner.class)
                 .bannerMode(Banner.Mode.CONSOLE)
@@ -280,38 +275,5 @@ public class TESTLUMStarter {
             code = ExitCode.TESTS_PASSED;
         }
         return code;
-    }
-
-    /**
-     * Initializes the locators folder if any UI configuration is enabled.
-     *
-     * <p>Checks all UI configurations (web, native, mobile browser) and initializes
-     * the locators folder only when at least one UI testing mode is enabled.</p>
-     */
-    private static void initLocatorsFolder() {
-        Map<String, UiConfig> uiConfigs = GlobalTestConfigurationProvider.get().getUiConfigs();
-
-        boolean isUiConfigEnabled = uiConfigs.values().
-                stream().anyMatch(TESTLUMStarter::isUiConfigEnabled);
-
-        if (isUiConfigEnabled) {
-            TestResourceSettings.getInstance().initLocatorsFolder();
-        }
-    }
-
-    /**
-     * Checks if any UI testing mode is enabled in the given configuration.
-     *
-     * @param uiConfig the UI configuration to check
-     * @return {@code true} if web, native, or mobile browser testing is enabled
-     */
-    private static boolean isUiConfigEnabled(final UiConfig uiConfig) {
-        boolean webEnabled = Optional.ofNullable(uiConfig.getWeb()).
-                map(Web::isEnabled).orElse(false);
-        boolean nativeEnabled = Optional.ofNullable(uiConfig.getNative()).
-                map(Native::isEnabled).orElse(false);
-        boolean mobileEnabled = Optional.ofNullable(uiConfig.getMobilebrowser()).
-                map(Mobilebrowser::isEnabled).orElse(false);
-        return webEnabled || nativeEnabled || mobileEnabled;
     }
 }

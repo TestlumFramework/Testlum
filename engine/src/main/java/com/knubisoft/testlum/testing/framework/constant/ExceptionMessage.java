@@ -4,8 +4,8 @@ import com.knubisoft.testlum.log.LogFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
-import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.UI_CONFIG_FILENAME;
+import static com.knubisoft.testlum.testing.framework.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
+import static com.knubisoft.testlum.testing.framework.TestResourceSettings.UI_CONFIG_FILENAME;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

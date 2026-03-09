@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework;
 
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
@@ -8,14 +8,15 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.HashMap;
@@ -26,26 +27,45 @@ import java.util.stream.Stream;
 import static java.util.Objects.nonNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@Service
+@Component
 public class TestSetCollector {
 
     private final List<String> browsers;
     private final List<String> mobileBrowsers;
     private final List<String> nativeDevices;
+    private final ScenarioCollector scenarioCollector;
+    private final ScenarioFilter scenarioFilter;
+    private final TestResourceSettings testResourceSettings;
+    private final GlobalVariationsProvider globalVariationsProvider;
+    private final List<Environment> environments;
 
-    public TestSetCollector() {
-        this.browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
+    public TestSetCollector(final ScenarioCollector scenarioCollector,
+                            final ScenarioFilter scenarioFilter,
+                            final BrowserUtil browserUtil,
+                            final MobileUtil mobileUtil,
+                            final TestResourceSettings testResourceSettings,
+                            final GlobalVariationsProvider globalVariationsProvider,
+                            final List<Environment> environments) {
+        this.scenarioCollector = scenarioCollector;
+        this.scenarioFilter = scenarioFilter;
+        this.browsers = browserUtil.filterDefaultEnabledBrowsers().stream()
                 .map(AbstractBrowser::getAlias).toList();
-        this.mobileBrowsers = MobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
+        this.mobileBrowsers = mobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
                 .map(MobilebrowserDevice::getAlias).toList();
-        this.nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
+        this.nativeDevices = mobileUtil.filterDefaultEnabledNativeDevices().stream()
                 .map(NativeDevice::getAlias).toList();
+        this.testResourceSettings = testResourceSettings;
+        this.globalVariationsProvider = globalVariationsProvider;
+        this.environments = environments;
     }
 
     public Stream<Arguments> collect() {
-        ScenarioCollector.Result result = new ScenarioCollector().collect();
-        List<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result);
-        return validScenarios.stream().flatMap(this::createArguments);
+        ScenarioCollector.Result result = scenarioCollector.collect();
+        List<MappingResult> validScenarios = scenarioFilter.filterScenarios(result);
+        List<String> executionEnvironments = resolveExecutionEnvironments();
+        return validScenarios.stream()
+                .flatMap(this::createArguments)
+                .flatMap(arguments -> expandByEnvironment(arguments, executionEnvironments));
     }
 
     //CHECKSTYLE:OFF
@@ -157,8 +177,47 @@ public class TestSetCollector {
         return arguments(Named.of(scenarioArguments.getPath(), scenarioArguments));
     }
 
+    private Stream<Arguments> expandByEnvironment(final Arguments argument, final List<String> executionEnvironments) {
+        Object[] values = argument.get();
+        if (values.length == 0 || !(values[0] instanceof Named<?> named)) {
+            return Stream.of(argument);
+        }
+        Object payload = named.getPayload();
+        if (!(payload instanceof ScenarioArguments base)) {
+            return Stream.of(argument);
+        }
+        return executionEnvironments.stream()
+                .map(environment -> cloneForEnvironment(base, environment))
+                .map(scenarioArguments -> arguments(Named.of(
+                        scenarioArguments.getPath() + " [" + scenarioArguments.getEnvironment() + "]",
+                        scenarioArguments)));
+    }
+
+    private List<String> resolveExecutionEnvironments() {
+        if (environments == null || environments.isEmpty()) {
+            throw new DefaultFrameworkException("No enabled environments found for test execution");
+        }
+        return environments.stream().map(Environment::getFolder).toList();
+    }
+
+    private ScenarioArguments cloneForEnvironment(final ScenarioArguments base, final String environment) {
+        ScenarioArguments cloned = ScenarioArguments.builder()
+                .path(base.getPath())
+                .file(base.getFile())
+                .scenario(base.getScenario())
+                .exception(base.getException())
+                .browser(base.getBrowser())
+                .mobileBrowserDevice(base.getMobileBrowserDevice())
+                .nativeDevice(base.getNativeDevice())
+                .variations(base.getVariations() == null ? null : new HashMap<>(base.getVariations()))
+                .containsUiSteps(base.isContainsUiSteps())
+                .build();
+        cloned.setEnvironment(environment);
+        return cloned;
+    }
+
     private String getShortPath(final File file) {
-        File scenariosFolder = TestResourceSettings.getInstance().getScenariosFolder();
+        File scenariosFolder = testResourceSettings.getScenariosFolder();
         return file.getPath().replace(scenariosFolder.toString(), StringUtils.EMPTY);
     }
 
@@ -167,6 +226,6 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return GlobalVariationsProvider.getVariations(entry.scenario.getSettings().getVariations());
+        return globalVariationsProvider.getVariations(entry.scenario.getSettings().getVariations());
     }
 }

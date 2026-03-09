@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
+import com.knubisoft.testlum.testing.framework.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.util.DataSourceUtil;
@@ -25,11 +25,12 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class PostgresDataSourceConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean("postgresDataSource")
-    public Map<AliasEnv, DataSource> postgresDataSource() {
+    public Map<AliasEnv, DataSource> postgresDataSource(final EnvToIntegrationMap envTointegrations) {
         Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
         return dataSourceMap;
     }
@@ -42,7 +43,7 @@ public class PostgresDataSourceConfiguration {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "Postgres", postgres.getAlias()),
                         () -> DataSourceUtil.getHikariDataSource(postgres),
-                        HealthCheckFactory.forJdbc()
+                        healthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(postgres.getAlias(), env), checkedDataSource);
             }

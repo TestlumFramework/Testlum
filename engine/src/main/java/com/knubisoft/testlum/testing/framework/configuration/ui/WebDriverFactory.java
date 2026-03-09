@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.ui;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.connection.ConnectionTemplateImpl;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -14,9 +14,10 @@ import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
 import io.github.bonigarcia.wdm.managers.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -26,33 +27,37 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.http.ClientConfig;
 import org.openqa.selenium.safari.SafariOptions;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@UtilityClass
+@Component
 @Slf4j
+@RequiredArgsConstructor
 public class WebDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
-    private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
+
     private static final int MAX_TIMEOUT_SECONDS = 60;
 
-    static {
-        DRIVER_INITIALIZER_MAP = Map.of(
-                browser -> browser instanceof Chrome, b -> new ChromeDriverInitializer().init((Chrome) b),
-                browser -> browser instanceof Firefox, b -> new FirefoxDriverInitializer().init((Firefox) b),
-                browser -> browser instanceof Safari, b -> new SafariDriverInitializer().init((Safari) b),
-                browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
-    }
+    private final SeleniumDriverUtil seleniumDriverUtil;
+    private final HealthCheckFactory healthCheckFactory;
+    private final BrowserUtil browserUtil;
+    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
+
+    private Map<BrowserPredicate, WebDriverFunction> driverInitializerMap = Map.of(
+            browser -> browser instanceof Chrome, b -> new ChromeDriverInitializer().init((Chrome) b),
+            browser -> browser instanceof Firefox, b -> new FirefoxDriverInitializer().init((Firefox) b),
+            browser -> browser instanceof Safari, b -> new SafariDriverInitializer().init((Safari) b),
+            browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
 
     //CHECKSTYLE:OFF
     public WebDriver createDriver(final AbstractBrowser browser) {
@@ -60,12 +65,12 @@ public class WebDriverFactory {
         return connectionTemplate.executeWithRetry(
                 String.format(CONNECTION_INTEGRATION_DATA, browser.getClass().getSimpleName(), browser.getAlias()),
                 ConnectionTemplate.DEFAULT_ATTEMPTS,
-                () -> DRIVER_INITIALIZER_MAP.entrySet().stream()
+                () -> driverInitializerMap.entrySet().stream()
                         .filter(function -> function.getKey().test(browser))
                         .findFirst()
                         .map(function -> function.getValue().apply(browser))
                         .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND)),
-                HealthCheckFactory.forWebDriver(browser),
+                healthCheckFactory.forWebDriver(browser),
                 integration -> {
                     try {
                         integration.quit();
@@ -81,7 +86,7 @@ public class WebDriverFactory {
                                    final MutableCapabilities browserOptions,
                                    final WebDriverManager driverManager) {
         setCapabilities(browser, browserOptions);
-        switch (BrowserUtil.getBrowserType(browser)) {
+        switch (browserUtil.getBrowserType(browser)) {
             case BROWSER_STACK:
                 return getBrowserStackDriver(browser, browserOptions);
             case REMOTE:
@@ -105,8 +110,8 @@ public class WebDriverFactory {
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
         browserOptions.setCapability("os", browserStack.getOs());
         browserOptions.setCapability("osVersion", browserStack.getOsVersion());
-        String browserStackUrl = SeleniumDriverUtil.getBrowserStackUrl(
-                GlobalTestConfigurationProvider.get().getUiConfigs().get(EnvManager.currentEnv()));
+        String browserStackUrl = seleniumDriverUtil.getBrowserStackUrl(
+                uiConfigs.get(EnvManager.currentEnv()));
         return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);
     }
 
@@ -129,7 +134,7 @@ public class WebDriverFactory {
 
     private WebDriverManager setScreenResolution(final AbstractBrowser browser,
                                                  final WebDriverManager driverManager) {
-        return isNotBlank(browser.getBrowserWindowSize())
+        return StringUtils.isNotBlank(browser.getBrowserWindowSize())
                 ? driverManager.browserInDocker().dockerScreenResolution(browser.getBrowserWindowSize()
                 + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH) : driverManager.browserInDocker();
     }
@@ -143,10 +148,10 @@ public class WebDriverFactory {
         String dockerNetwork = browserInDockerSettings.getDockerNetwork();
         ScreenRecording screenRecordingSettings = browserInDockerSettings.getScreenRecording();
         driverManager.capabilities(browserOptions).browserVersion(browserInDockerSettings.getBrowserVersion());
-        if (isNotBlank(dockerNetwork)) {
+        if (StringUtils.isNotBlank(dockerNetwork)) {
             driverManager.dockerNetwork(dockerNetwork);
         }
-        if (nonNull(screenRecordingSettings) && screenRecordingSettings.isEnabled()) {
+        if (Objects.nonNull(screenRecordingSettings) && screenRecordingSettings.isEnabled()) {
             driverManager.enableRecording().dockerRecordingOutput(screenRecordingSettings.getOutputFolder());
         }
         return browserInDockerSettings.isEnableVNC() ? driverManager.enableVnc().create() : driverManager.create();
@@ -157,7 +162,7 @@ public class WebDriverFactory {
                                      final WebDriverManager driverManager) {
         log.debug("Setting up local {} driver", browserOptions.getBrowserName());
         String driverVersion = localBrowserSettings.getDriverVersion();
-        if (isNotBlank(driverVersion)) {
+        if (StringUtils.isNotBlank(driverVersion)) {
             driverManager.driverVersion(driverVersion);
         }
         driverManager.timeout(MAX_TIMEOUT_SECONDS);
@@ -166,7 +171,7 @@ public class WebDriverFactory {
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
-        if (nonNull(capabilities)) {
+        if (Objects.nonNull(capabilities)) {
             capabilities.getCapability().forEach(cap -> driverOptions.setCapability(cap.getName(), cap.getValue()));
         }
     }
@@ -187,7 +192,7 @@ public class WebDriverFactory {
                 chromeOptions.addArguments("--headless=new");
             }
             BrowserOptionsArguments browserOptionsArguments = browser.getChromeOptionsArguments();
-            if (nonNull(browserOptionsArguments)) {
+            if (Objects.nonNull(browserOptionsArguments)) {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
             }
             chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
@@ -208,7 +213,7 @@ public class WebDriverFactory {
                 firefoxOptions.addArguments("-headless");
             }
             BrowserOptionsArguments browserOptionsArguments = browser.getFirefoxOptionsArguments();
-            if (nonNull(browserOptionsArguments)) {
+            if (Objects.nonNull(browserOptionsArguments)) {
                 firefoxOptions.addArguments(browserOptionsArguments.getArgument());
             }
             return firefoxOptions;
@@ -227,7 +232,7 @@ public class WebDriverFactory {
                 edgeOptions.addArguments("--headless=new");
             }
             BrowserOptionsArguments browserOptionsArguments = browser.getEdgeOptionsArguments();
-            if (nonNull(browserOptionsArguments)) {
+            if (Objects.nonNull(browserOptionsArguments)) {
                 edgeOptions.addArguments(browserOptionsArguments.getArgument());
             }
             return edgeOptions;

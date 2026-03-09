@@ -1,10 +1,10 @@
 package com.knubisoft.testlum.testing.framework.locator;
 
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.model.pages.Component;
 import com.knubisoft.testlum.testing.model.pages.Include;
 import com.knubisoft.testlum.testing.model.pages.Locator;
@@ -15,38 +15,44 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNABLE_PARSE_FILE_WITH_LOCATORS;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 import static java.lang.String.format;
 
+@org.springframework.stereotype.Component
 public class LocatorCollector {
 
-    private static final PageValidator PAGE_VALIDATOR = new PageValidator();
+    private final PageValidator pageValidator;
 
     private final Map<String, File> pageFiles;
     private final Map<String, File> componentFiles;
+    private final Map<String, Locator> locatorMap;
 
-    public LocatorCollector() {
-        TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
-        this.pageFiles = FileSearcher.collectFilesFromFolder(resourceSettings.getPagesFolder());
-        this.componentFiles = FileSearcher.collectFilesFromFolder(resourceSettings.getComponentsFolder());
+    public LocatorCollector(final XMLParsers xmlParsers,
+                            final PageValidator pageValidator,
+                            final TestResourceSettings testResourceSettings,
+                            final FileSearcher fileSearcher) {
+        this.pageValidator = pageValidator;
+        this.pageFiles = fileSearcher.collectFilesFromFolder(testResourceSettings.getPagesFolder());
+        this.componentFiles = fileSearcher.collectFilesFromFolder(testResourceSettings.getComponentsFolder());
+        this.locatorMap = collect(xmlParsers);
     }
 
-    public Map<String, Locator> collect() {
-        Map<File, Page> fileToPage = collectFileToPageMap();
+    private Map<String, Locator> collect(final XMLParsers xmlParsers) {
+        Map<File, Page> fileToPage = collectFileToPageMap(xmlParsers);
         return transformToNameToLocatorMap(fileToPage);
     }
 
-    private Map<File, Page> collectFileToPageMap() {
+    private Map<File, Page> collectFileToPageMap(final XMLParsers xmlParsers) {
         Map<File, Page> fileToPage = new LinkedHashMap<>();
-        pageFiles.values().forEach(each -> fileToPage.put(each, parseLocatorOrThrow(each)));
+        pageFiles.values().forEach(each -> fileToPage.put(each, parseLocatorOrThrow(xmlParsers, each)));
         return fileToPage;
     }
 
-    private Page parseLocatorOrThrow(final File each) {
+    private Page parseLocatorOrThrow(final XMLParsers xmlParsers, final File each) {
         try {
-            Page page = XMLParsers.getInstance().forPageLocator().process(each);
-            addIncludeLocators(page);
-            PAGE_VALIDATOR.validate(page, each);
+            Page page = xmlParsers.forPageLocator().process(each);
+            addIncludeLocators(page, xmlParsers);
+            pageValidator.validate(page, each);
             return page;
         } catch (Exception e) {
             throw new DefaultFrameworkException(
@@ -54,18 +60,18 @@ public class LocatorCollector {
         }
     }
 
-    private void addIncludeLocators(final Page page) {
+    private void addIncludeLocators(final Page page, final XMLParsers xmlParsers) {
         List<Locator> includes = page.getLocators().getLocator();
 
         for (Include include : page.getInclude()) {
-            Component component = parseComponent(include);
+            Component component = parseComponent(include, xmlParsers);
             includes.addAll(component.getLocators().getLocator());
         }
     }
 
-    private Component parseComponent(final Include include) {
+    private Component parseComponent(final Include include, final XMLParsers xmlParsers) {
         File file = componentFiles.get(include.getComponent());
-        return XMLParsers.getInstance().forComponentLocator().process(file);
+        return xmlParsers.forComponentLocator().process(file);
     }
 
     private Map<String, Locator> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {
@@ -82,5 +88,20 @@ public class LocatorCollector {
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {
         String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY);
         return prefix + DelimiterConstant.DOT + locator.getLocatorId();
+    }
+
+    public Locator getLocator(final String name) {
+        Locator locator = locatorMap.get(name);
+        if (locator == null) {
+            throw defaultFrameworkException(name);
+        }
+        return locator;
+    }
+
+    private DefaultFrameworkException defaultFrameworkException(final String name) {
+        if (name.split(DelimiterConstant.DOT_REGEX).length != 2) {
+            return new DefaultFrameworkException(INCORRECT_NAMING_FOR_LOCATOR_ID, name);
+        }
+        return new DefaultFrameworkException(UNABLE_TO_FIND_LOCATOR_BY_PATH, name);
     }
 }

@@ -5,14 +5,13 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwipeDirection;
 import com.knubisoft.testlum.testing.model.scenario.SwipeElement;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.SwipePage;
 import io.appium.java_client.AppiumDriver;
+import lombok.Data;
+import lombok.Getter;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
@@ -33,18 +32,18 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
 
     @Override
     public void execute(final SwipeNative swipeNative, final CommandResult result) {
-        ResultUtil.addSwipeMetaData(swipeNative, result);
-        LogUtil.logSwipeNativeInfo(swipeNative);
+        resultUtil.addSwipeMetaData(swipeNative, result);
+        logUtil.logSwipeNativeInfo(swipeNative);
         performSwipe(swipeNative);
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void performSwipe(final SwipeNative swipeNative) {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
         Swipe swipe = createSwipe(swipeNative, driver);
 
-        for (int i = 0; i < swipe.quantity(); i++) {
-            driver.perform(Collections.singletonList(swipe.sequence()));
+        for (int i = 0; i < swipe.getQuantity(); i++) {
+            driver.perform(Collections.singletonList(swipe.getSequence()));
             driver.switchTo();
         }
     }
@@ -60,7 +59,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         return buildSwipe(
                 swipeElement.getPercent(),
                 swipeElement.getDirection(),
-                UiUtil.findWebElement(dependencies,
+                uiUtil.findWebElement(dependencies,
                         swipeElement.getLocator(),
                         swipeElement.getLocatorStrategy()).getLocation(),
                 driver.manage().window().getSize(),
@@ -72,7 +71,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         return buildSwipe(
                 swipePage.getPercent(),
                 swipePage.getDirection(),
-                UiUtil.getCenterPoint(driver),
+                uiUtil.getCenterPoint(driver),
                 driver.manage().window().getSize(),
                 swipePage.getQuantity()
         );
@@ -84,7 +83,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
                              final Dimension screenSize, final int quantity) {
         int swipeValue = calculateSwipeValue(percent, direction, screenSize);
         Point end = calculateEndPoint(direction, start, swipeValue);
-        return new Swipe(UiUtil.buildSequence(start, end, ACTION_DURATION), quantity);
+        return new Swipe(uiUtil.buildSequence(start, end, ACTION_DURATION), quantity);
     }
 
     private int calculateSwipeValue(final int percent,
@@ -105,7 +104,11 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         };
     }
 
-    private record Swipe(Sequence sequence, int quantity) {
+    @Getter
+    @Data
+    private static class Swipe {
+        private final Sequence sequence;
+        private final int quantity;
     }
 
 }

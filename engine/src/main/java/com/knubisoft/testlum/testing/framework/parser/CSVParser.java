@@ -1,9 +1,10 @@
 package com.knubisoft.testlum.testing.framework.parser;
 
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.opencsv.CSVReader;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,9 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
+@Component
 public final class CSVParser {
 
     public static final int HEADER_ROW = 0;
+
+    private final FileSearcher fileSearcher;
 
     public List<Map<String, String>> parseVariations(final String fileName) {
         List<String[]> variations = readVariationsFile(fileName);
@@ -26,7 +30,7 @@ public final class CSVParser {
 
     @SneakyThrows
     private List<String[]> readVariationsFile(final String variationFileName) {
-        File file = FileSearcher.searchFileFromDataFolder(variationFileName);
+        File file = fileSearcher.searchFileFromDataFolder(variationFileName);
         FileInputStream fileInputStream = new FileInputStream(file);
 
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);

@@ -13,7 +13,7 @@ public enum UiType {
     WEB((env, configurationProvider) -> configurationProvider.getWebSettings(env).getBrowserSettings(),
             InterpreterDependencies::getWebDriver),
 
-    MOBILE_BROWSER((env, configurationProvider) -> configurationProvider.getMobilebrowserSettings(env),
+    MOBILE_BROWSER((env, configurationProvider) -> configurationProvider.getMobileBrowserSettings(env),
             InterpreterDependencies::getMobilebrowserDriver),
 
     NATIVE((env, configurationProvider) -> configurationProvider.getNativeSettings(env),

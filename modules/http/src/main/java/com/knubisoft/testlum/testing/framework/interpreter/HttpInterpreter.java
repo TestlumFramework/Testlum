@@ -55,17 +55,19 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     @Autowired
     private ApiClient apiClient;
     private final IntegrationsProvider integrationsProvider;
+    private final HttpUtil httpUtil;
 
     public HttpInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
+        this.httpUtil = dependencies.getContext().getBean(HttpUtil.class);
     }
 
     @Override
     protected void acceptImpl(final Http o, final CommandResult result) {
         Http http = injectCommand(o);
         checkAlias(http);
-        HttpUtil.HttpMethodMetadata metadata = HttpUtil.getHttpMethodMetadata(http);
+        HttpUtil.HttpMethodMetadata metadata = httpUtil.getHttpMethodMetadata(http);
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
         ApiResponse actual = getActual(httpInfo, httpMethod, http.getAlias(), result);
@@ -124,7 +126,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         Map<String, String> headers = getHeaders(httpInfo);
         logHttpInfo(alias, httpMethod.name(), endpoint);
         addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
-        ContentType contentType = HttpUtil.computeContentType(headers);
+        ContentType contentType = httpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
         mergeContentTypeFromBody(headers, body);
         logBodyContent(body);
@@ -155,7 +157,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private Map<String, String> getHeaders(final HttpInfo httpInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
-        HttpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
+        httpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
         return headers;
     }
 
@@ -165,7 +167,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         }
         HttpInfoWithBody commandWithBody = (HttpInfoWithBody) httpInfo;
         Body body = commandWithBody.getBody();
-        return HttpUtil.extractBody(body, contentType, this, dependencies);
+        return httpUtil.extractBody(body, contentType, this, dependencies);
     }
 
     private String createFullUrl(final String endpoint, final String alias) {

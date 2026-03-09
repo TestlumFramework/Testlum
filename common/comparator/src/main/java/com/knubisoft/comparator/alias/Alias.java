@@ -6,9 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.comparator.constant.RegexpConstant.DATE_TIME_WITH_DASH;
-import static com.knubisoft.comparator.constant.RegexpConstant.DOMAIN_NAME;
-import static com.knubisoft.comparator.constant.RegexpConstant.GOOD_IRI_CHAR;
+import static com.knubisoft.comparator.constant.RegexpConstant.*;
 
 @Getter
 @RequiredArgsConstructor

@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.model.scenario.Javascript;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +23,7 @@ public class JavascriptExecutor extends AbstractUiExecutor<Javascript> {
         String fileName = javascript.getFile();
         result.put(JS_FILE, fileName);
         log.info(JS_FILE_LOG, fileName);
-        String command = JavascriptUtil.readCommands(fileName);
-        JavascriptUtil.executeJsScript(command, dependencies.getDriver());
+        String command = javascriptUtil.readCommands(fileName);
+        javascriptUtil.executeJsScript(command, dependencies.getDriver());
     }
 }

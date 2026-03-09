@@ -3,10 +3,10 @@ package com.knubisoft.testlum.testing.framework.auth;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
@@ -14,7 +14,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,11 +39,13 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     private final IntegrationsProvider integrationsProvider;
     private final List<Api> apiList;
+    private final FileSearcher fileSearcher;
 
     public JwtAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
         this.apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
+        this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
     }
 
     @Override
@@ -97,7 +102,7 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     @SneakyThrows
     private String getCredentialsFromFile(final String fileName) {
-        return FileUtils.readFileToString(FileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+        return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
     }
 
     private void logAuthInfo(final Auth auth) {

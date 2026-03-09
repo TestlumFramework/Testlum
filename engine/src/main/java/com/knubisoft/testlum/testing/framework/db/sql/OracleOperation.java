@@ -1,12 +1,13 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnOracleEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.OracleExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.Oracle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,10 @@ public class OracleOperation extends AbstractStorageOperation {
     private final Map<AliasEnv, AbstractSqlExecutor> oracleExecutor;
 
     public OracleOperation(@Autowired(required = false) @Qualifier("oracleDataSource")
-                           final Map<AliasEnv, DataSource> oracleDataSource) {
+                           final Map<AliasEnv, DataSource> oracleDataSource,
+                           final LogUtil logUtil) {
         oracleExecutor = new HashMap<>();
-        oracleDataSource.forEach((key, value) -> oracleExecutor.put(key, new OracleExecutor(value)));
+        oracleDataSource.forEach((key, value) -> oracleExecutor.put(key, new OracleExecutor(value, logUtil)));
     }
 
     @Override

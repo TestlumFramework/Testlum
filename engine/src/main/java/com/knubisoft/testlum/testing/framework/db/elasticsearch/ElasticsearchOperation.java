@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.elasticsearch;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;

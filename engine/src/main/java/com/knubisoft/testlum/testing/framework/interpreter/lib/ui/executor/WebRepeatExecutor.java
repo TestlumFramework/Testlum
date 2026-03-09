@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.WebRepeat;
@@ -27,8 +26,8 @@ public class WebRepeatExecutor extends AbstractUiExecutor<WebRepeat> {
 
     public WebRepeatExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        repeatCommandsRunner = dependencies.getContext().getBean(SubCommandRunner.class);
-        globalVariations = dependencies.getContext().getBean(GlobalVariations.class);
+        this.repeatCommandsRunner = dependencies.getContext().getBean(SubCommandRunner.class);
+        this.globalVariations = dependencies.getContext().getBean(GlobalVariations.class);
     }
 
     @Override
@@ -51,7 +50,7 @@ public class WebRepeatExecutor extends AbstractUiExecutor<WebRepeat> {
         List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
         List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
                 .flatMap(variation -> commands.stream().map(command ->
-                        InjectionUtil.injectObjectVariation(command, variation, dependencies.getScenarioContext())))
+                        injectionUtil.injectObjectVariation(command, variation, dependencies.getScenarioContext())))
                 .toList();
         this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
     }

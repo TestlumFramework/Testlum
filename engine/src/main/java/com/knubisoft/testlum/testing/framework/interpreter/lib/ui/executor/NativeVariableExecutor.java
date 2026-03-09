@@ -5,17 +5,12 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -31,12 +26,11 @@ import static java.util.Objects.nonNull;
 public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
 
     private final Map<VarPredicate<NativeVar>, VarMethod<NativeVar>> varToMethodMap;
-    @Autowired
-    private VariableHelper variableHelper;
+    private final VariableHelper variableHelper;
 
     public NativeVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        varToMethodMap = Map.of(
+        this.varToMethodMap = Map.of(
                 var -> nonNull(var.getElement()), this::getElementResult,
                 var -> nonNull(var.getPath()), this::getPathResult,
                 var -> nonNull(var.getConstant()), this::getConstantResult,
@@ -44,6 +38,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
                 var -> nonNull(var.getFile()), this::getFileResult,
                 var -> nonNull(var.getSql()), this::getSQLResult,
                 var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
+        this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
     }
 
     @Override
@@ -59,7 +54,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     private void setContextVariable(final NativeVar var, final CommandResult result) {
         String value = getValueForContext(var, result);
         dependencies.getScenarioContext().set(var.getName(), value);
-        LogUtil.logVarInfo(var.getName(), value);
+        logUtil.logVarInfo(var.getName(), value);
     }
 
     private String getValueForContext(final NativeVar var, final CommandResult result) {
@@ -71,18 +66,18 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         String locatorId = var.getElement().getPresent().getLocator();
         LocatorStrategy locatorStrategy = var.getElement().getPresent().getLocatorStrategy();
         try {
-            UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
+            uiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
             valueResult = String.valueOf(true);
         } catch (DefaultFrameworkException e) {
             valueResult = String.valueOf(false);
         }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+        resultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
         return valueResult;
     }
 
     private String getPathResult(final NativeVar var, final CommandResult result) {
         UnaryOperator<String> fileToString = fileName -> {
-            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            String content = fileSearcher.searchFileToString(fileName, dependencies.getFile());
             return inject(content);
         };
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result,

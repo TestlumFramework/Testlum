@@ -1,13 +1,12 @@
 package com.knubisoft.testlum.testing.framework.db.dynamodb;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnDynamoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -28,7 +27,7 @@ public class DynamoDBOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, DynamoDbClient> dynamoDbClient;
 
-    public DynamoDBOperation(@Autowired(required = false) final Map<AliasEnv, DynamoDbClient> dynamoDbClient) {
+    public DynamoDBOperation(final Map<AliasEnv, DynamoDbClient> dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
     }
 

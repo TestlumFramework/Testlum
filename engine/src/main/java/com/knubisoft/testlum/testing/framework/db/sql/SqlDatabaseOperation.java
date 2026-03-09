@@ -1,12 +1,15 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnSqlDatabaseEnableCondition;
+import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.knubisoft.testlum.testing.framework.condition.OnSqlDatabaseEnableCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.SqlDatabaseExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.SqlDatabase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +31,13 @@ public class SqlDatabaseOperation extends AbstractStorageOperation {
     private final Map<AliasEnv, AbstractSqlExecutor> sqlExecutors;
 
     public SqlDatabaseOperation(@Autowired(required = false) @Qualifier("sqlDatabaseDataSource")
-                                final Map<AliasEnv, DataSource> sqlDatabaseDataSource) {
+                                final Map<AliasEnv, DataSource> sqlDatabaseDataSource,
+                                final FileSearcher fileSearcher,
+                                final LogUtil logUtil,
+                                final Integrations integrations) {
         sqlExecutors = new HashMap<>();
         sqlDatabaseDataSource.forEach((key, value) ->
-                sqlExecutors.put(key, new SqlDatabaseExecutor(value, key))
+                sqlExecutors.put(key, new SqlDatabaseExecutor(fileSearcher, value, key, logUtil, integrations))
         );
     }
 

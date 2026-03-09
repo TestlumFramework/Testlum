@@ -72,22 +72,34 @@ public class ScenarioContext {
     }
 
     public String inject(final String original) {
+        return inject(original, false);
+    }
+
+    private String inject(final String original, final boolean escapeSpelQuotes) {
         if (StringUtils.isBlank(original)) {
             return original;
         }
         Matcher m = ROUTE_PATTERN.matcher(original);
-        return getFormattedInject(original, m);
+        return getFormattedInject(original, m, escapeSpelQuotes);
     }
 
-    private String getFormattedInject(final String original, final Matcher m) {
+    public String injectSpel(final String original) {
+        return inject(original, true);
+    }
+
+    private String getFormattedInject(final String original, final Matcher m, final boolean escapeSpelQuotes) {
         String formatted = original;
         while (m.find()) {
             String firstSubsequence = m.group(1);
             String zeroSubsequence = m.group(0);
             String value = get(firstSubsequence);
-            value = StringEscapeUtils.escapeJson(value);
+            value = escapeSpelQuotes ? escapeSpelQuotes(value) : StringEscapeUtils.escapeJson(value);
             formatted = formatted.replace(zeroSubsequence, value);
         }
         return formatted;
+    }
+
+    private String escapeSpelQuotes(final String value) {
+        return value.replaceAll("'", "''");
     }
 }

@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.rabbitmq;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
+import com.knubisoft.testlum.testing.framework.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -38,14 +38,16 @@ public class RabbitMQConfiguration {
     private static final String API_PATH = "/api";
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
-    private final Map<String, List<Rabbitmq>> rabbitmqMap = GlobalTestConfigurationProvider.get().getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getRabbitmqIntegration().getRabbitmq()));
+    @Bean("rabbitmqMap")
+    public Map<String, List<Rabbitmq>> getRabbitmqMap(final EnvToIntegrationMap envTointegrations) {
+        return envTointegrations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+                entry -> entry.getValue().getRabbitmqIntegration().getRabbitmq()));
+    }
 
     @Bean("rabbitMqClient")
-    public Map<AliasEnv, Client> rabbitMqClient() {
+    public Map<AliasEnv, Client> rabbitMqClient(final Map<String, List<Rabbitmq>> rabbitmqMap) {
         final Map<AliasEnv, Client> clientMap = new HashMap<>();
         rabbitmqMap.forEach((env, rabbitmqList) -> addClientParameters(rabbitmqList, env, clientMap));
         return clientMap;
@@ -72,14 +74,13 @@ public class RabbitMQConfiguration {
                         throw new DefaultFrameworkException(e.getMessage());
                     }
                 },
-                HealthCheckFactory.forRabbitMqAdmin()
+                healthCheckFactory.forRabbitMqAdmin()
         );
     }
 
     private ClientParameters createClientParameters(final Rabbitmq rabbitmq) throws MalformedURLException {
         final String url = SCHEMA + rabbitmq.getHost() + COLON + rabbitmq.getApiPort() + API_PATH;
-        return new ClientParameters()
-                .url(url)
+        return new ClientParameters().url(url)
                 .username(rabbitmq.getUsername())
                 .password(rabbitmq.getPassword());
     }
@@ -99,7 +100,7 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, ConnectionFactory> connectionFactory() {
+    public Map<AliasEnv, ConnectionFactory> connectionFactory(final Map<String, List<Rabbitmq>> rabbitmqMap) {
         Map<AliasEnv, ConnectionFactory> connectionFactoryMap = new HashMap<>();
         rabbitmqMap.forEach((env, rabbitmqList) -> addConnectionFactory(rabbitmqList, env, connectionFactoryMap));
         return connectionFactoryMap;
@@ -113,7 +114,7 @@ public class RabbitMQConfiguration {
                 CachingConnectionFactory connectionFactory = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "RabbitMQ-AMQP", rabbitmq.getAlias()),
                         () -> createConnectionFactory(rabbitmq),
-                        HealthCheckFactory.forRabbitMqAmqp()
+                        healthCheckFactory.forRabbitMqAmqp()
                 );
                 connectionFactoryMap.put(new AliasEnv(rabbitmq.getAlias(), env), connectionFactory);
             }

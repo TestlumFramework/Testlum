@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Shell;
 import lombok.SneakyThrows;
@@ -79,7 +78,7 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
     private Process getProcessorForFile(final String shellFileCommand) throws IOException {
         String[] shellFileCommandParts = shellFileCommand.trim().split("\\s+");
-        File shellFileByPath = FileSearcher.searchFileFromDataFolder(shellFileCommandParts[0]);
+        File shellFileByPath = fileSearcher.searchFileFromDataFolder(shellFileCommandParts[0]);
 
         log.info(SHELL_COMMAND_LOG, shellFileCommand);
 
@@ -106,7 +105,7 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
         CompareBuilder compare = newCompare()
                 .withActual(actual)
-                .withExpectedFile(shell.getFile());
+                .withExpectedFile(fileSearcher, shell.getFile());
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));

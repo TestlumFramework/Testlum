@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.redis;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;

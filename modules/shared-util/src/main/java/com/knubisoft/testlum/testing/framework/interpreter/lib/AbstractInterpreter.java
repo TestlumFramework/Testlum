@@ -9,10 +9,7 @@ import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Condition;
-import com.knubisoft.testlum.testing.model.scenario.FromExpression;
-import com.knubisoft.testlum.testing.model.scenario.Var;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -135,22 +132,21 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         if (Objects.isNull(var)) {
             return null;
         }
-
-        FromExpression expression = var.getExpression();
-        if (Objects.isNull(expression)) {
-            return injectCommand(var);
+        Var varCopy = JacksonMapperUtil.deepCopy(var, Var.class);
+        FromExpression expression = varCopy.getExpression();
+        if (Objects.nonNull(expression)) {
+            expression.setValue(dependencies.getScenarioContext().injectSpel(expression.getValue()));
         }
-
-        expression.setValue(dependencies.getScenarioContext().injectSpel(expression.getValue()));
-        return injectCommand(var);
+        return injectCommand(varCopy);
     }
 
     protected Condition injectConditionCommand(final Condition condition) {
         if (Objects.isNull(condition)) {
             return null;
         }
-        condition.setSpel(dependencies.getScenarioContext().injectSpel(condition.getSpel()));
-        return injectCommand(condition);
+        Condition conditionCopy = JacksonMapperUtil.deepCopy(condition, Condition.class);
+        conditionCopy.setSpel(dependencies.getScenarioContext().injectSpel(conditionCopy.getSpel()));
+        return injectCommand(conditionCopy);
     }
 
     protected void checkIfStopScenarioOnFailure(final Exception e) {

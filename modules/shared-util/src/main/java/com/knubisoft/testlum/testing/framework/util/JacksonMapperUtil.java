@@ -58,6 +58,10 @@ public final class JacksonMapperUtil {
         return COPY_MAPPER.writeValueAsString(value);
     }
 
+    public <T> T deepCopy(final Object value, final Class<T> valueType) {
+        return COPY_MAPPER.convertValue(value, valueType);
+    }
+
     public Object toJsonObject(final String content) {
         if (StringUtils.isNotBlank(content)) {
             boolean isObject = content.startsWith(DelimiterConstant.OPEN_BRACE)

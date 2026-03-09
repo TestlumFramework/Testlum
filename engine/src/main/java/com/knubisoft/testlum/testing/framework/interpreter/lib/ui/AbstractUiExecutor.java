@@ -51,16 +51,14 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
             || o instanceof MobilebrowserRepeat) {
             return o;
         }
-
-        if (o instanceof WebVar webVar) {
+        T copiedObject = JacksonMapperUtil.deepCopy(o, (Class<T>) o.getClass());
+        if (copiedObject instanceof WebVar webVar) {
             processExpression(webVar.getExpression());
         }
-
-        if (o instanceof NativeVar nativeVar) {
+        if (copiedObject instanceof NativeVar nativeVar) {
             processExpression(nativeVar.getExpression());
         }
-
-        return injectionUtil.injectObject(o, dependencies.getScenarioContext());
+        return injectionUtil.injectObject(copiedObject, dependencies.getScenarioContext());
     }
 
     private void processExpression(final FromExpression fromExpression) {

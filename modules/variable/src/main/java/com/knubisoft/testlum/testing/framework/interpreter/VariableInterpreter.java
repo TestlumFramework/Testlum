@@ -40,7 +40,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     @Override
     protected void acceptImpl(final Var o, final CommandResult result) {
-        Var var = injectCommand(o);
+        Var var = injectVarCommand(o);
         try {
             setContextVariable(var, result);
         } catch (Exception e) {

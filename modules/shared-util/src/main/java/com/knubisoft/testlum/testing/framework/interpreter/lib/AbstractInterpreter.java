@@ -10,6 +10,9 @@ import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.Condition;
+import com.knubisoft.testlum.testing.model.scenario.FromExpression;
+import com.knubisoft.testlum.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -120,12 +123,34 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     @SuppressWarnings("unchecked")
     protected <Y> Y injectCommand(final Y o) {
-        if (Objects.nonNull(o)) {
-            String asJson = JacksonMapperUtil.writeValueToCopiedString(o);
-            String injected = dependencies.getScenarioContext().inject(asJson);
-            return JacksonMapperUtil.readCopiedValue(injected, (Class<Y>) o.getClass());
+        if (Objects.isNull(o)) {
+            return null;
         }
-        return null;
+        String asJson = JacksonMapperUtil.writeValueToCopiedString(o);
+        String injected = dependencies.getScenarioContext().inject(asJson);
+        return JacksonMapperUtil.readCopiedValue(injected, (Class<Y>) o.getClass());
+    }
+
+    protected Var injectVarCommand(final Var var) {
+        if (Objects.isNull(var)) {
+            return null;
+        }
+
+        FromExpression expression = var.getExpression();
+        if (Objects.isNull(expression)) {
+            return injectCommand(var);
+        }
+
+        expression.setValue(dependencies.getScenarioContext().injectSpel(expression.getValue()));
+        return injectCommand(var);
+    }
+
+    protected Condition injectConditionCommand(final Condition condition) {
+        if (Objects.isNull(condition)) {
+            return null;
+        }
+        condition.setSpel(dependencies.getScenarioContext().injectSpel(condition.getSpel()));
+        return injectCommand(condition);
     }
 
     protected void checkIfStopScenarioOnFailure(final Exception e) {

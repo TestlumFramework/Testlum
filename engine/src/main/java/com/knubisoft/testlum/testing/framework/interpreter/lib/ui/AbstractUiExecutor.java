@@ -3,11 +3,10 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.*;
-import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.MobilebrowserRepeat;
-import com.knubisoft.testlum.testing.model.scenario.NativeRepeat;
-import com.knubisoft.testlum.testing.model.scenario.WebRepeat;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Objects;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -48,10 +47,27 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     private T injectCommand(final T o) {
-        if (!(o instanceof WebRepeat || o instanceof NativeRepeat || o instanceof MobilebrowserRepeat)) {
-            return injectionUtil.injectObject(o, dependencies.getScenarioContext());
+        if (Objects.isNull(o) || o instanceof WebRepeat || o instanceof NativeRepeat
+            || o instanceof MobilebrowserRepeat) {
+            return o;
         }
-        return o;
+
+        if (o instanceof WebVar webVar) {
+            processExpression(webVar.getExpression());
+        }
+
+        if (o instanceof NativeVar nativeVar) {
+            processExpression(nativeVar.getExpression());
+        }
+
+        return injectionUtil.injectObject(o, dependencies.getScenarioContext());
+    }
+
+    private void processExpression(final FromExpression fromExpression) {
+        if (Objects.isNull(fromExpression)) {
+            return;
+        }
+        fromExpression.setValue(dependencies.getScenarioContext().injectSpel(fromExpression.getValue()));
     }
 
     protected abstract void execute(T o, CommandResult result);

@@ -72,38 +72,31 @@ public class ScenarioContext {
     }
 
     public String inject(final String original) {
+        return inject(original, false);
+    }
+
+    private String inject(final String original, final boolean escapeSpelQuotes) {
         if (StringUtils.isBlank(original)) {
             return original;
         }
         Matcher m = ROUTE_PATTERN.matcher(original);
-        return getFormattedInject(original, m);
+        return getFormattedInject(original, m, escapeSpelQuotes);
     }
 
-    private String getFormattedInject(final String original, final Matcher m) {
+    public String injectSpel(final String original) {
+        return inject(original, true);
+    }
+
+    private String getFormattedInject(final String original, final Matcher m, final boolean escapeSpelQuotes) {
         String formatted = original;
         while (m.find()) {
             String firstSubsequence = m.group(1);
             String zeroSubsequence = m.group(0);
             String value = get(firstSubsequence);
-            value = StringEscapeUtils.escapeJson(value);
-            if (isInsideSpelOrExpression(original, m.start())) {
-                value = escapeSpelQuotes(value);
-            }
+            value = escapeSpelQuotes ? escapeSpelQuotes(value) : StringEscapeUtils.escapeJson(value);
             formatted = formatted.replace(zeroSubsequence, value);
         }
         return formatted;
-    }
-
-    private boolean isInsideSpelOrExpression(final String json, final int position) {
-        String prefix = json.substring(0, position);
-        int spelIndex = prefix.lastIndexOf("\"spel\"");
-        int exprIndex = prefix.lastIndexOf("\"expression\"");
-        int nearestKeyIndex = Math.max(spelIndex, exprIndex);
-        if (nearestKeyIndex == -1) {
-            return false;
-        }
-        int colonIndex = json.indexOf(':', nearestKeyIndex);
-        return colonIndex != -1 && colonIndex < position;
     }
 
     private String escapeSpelQuotes(final String value) {

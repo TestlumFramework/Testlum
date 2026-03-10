@@ -1,14 +1,18 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.*;
 
-@UtilityClass
+@RequiredArgsConstructor
+@Service
 public class StringPrettifier {
 
     private static final int CHAR_LIMIT_FOR_CUT = 150;
+
+    private final JacksonService jacksonService;
 
     public String prettify(final String string) {
         if (StringUtils.isNotBlank(string)) {
@@ -27,8 +31,8 @@ public class StringPrettifier {
 
     private String tryToPrettify(final String actual) {
         if (actual.startsWith(OPEN_BRACE) || actual.startsWith(OPEN_SQUARE_BRACKET)) {
-            Object json = JacksonMapperUtil.readValue(actual, Object.class);
-            return JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(json);
+            Object json = jacksonService.readValue(actual, Object.class);
+            return jacksonService.writeValueAsStringWithDefaultPrettyPrinter(json);
         }
         return actual;
     }

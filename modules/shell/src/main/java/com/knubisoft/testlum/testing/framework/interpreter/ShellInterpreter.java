@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Shell;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -107,8 +106,8 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
                 .withActual(actual)
                 .withExpectedFile(fileSearcher, shell.getFile());
 
-        result.setActual(StringPrettifier.asJsonResult(actual));
-        result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
+        result.setActual(stringPrettifier.asJsonResult(actual));
+        result.setExpected(stringPrettifier.asJsonResult(compare.getExpected()));
         compare.exec();
     }
 

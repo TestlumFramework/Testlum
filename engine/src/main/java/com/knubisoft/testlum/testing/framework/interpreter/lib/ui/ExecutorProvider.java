@@ -2,17 +2,27 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import lombok.experimental.UtilityClass;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.EXECUTOR_FOR_UI_COMMAND_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
 
-@UtilityClass
+@RequiredArgsConstructor
+@Service
 public class ExecutorProvider {
 
-    private final CommandToExecutorClassMap executors = ExecutorScanner.getExecutors();
+    private final ExecutorScanner executorScanner;
+
+    private CommandToExecutorClassMap executors;
+
+    @PostConstruct
+    public void init() {
+        this.executors = executorScanner.getExecutors();
+    }
 
     @SuppressWarnings("unchecked")
     public AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand command,

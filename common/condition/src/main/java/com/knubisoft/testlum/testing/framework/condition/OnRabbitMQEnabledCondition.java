@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnRabbitMQEnabledCondition extends AbstractCondition<Rabbitmq> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getRabbitmqIntegration())
-                .map(RabbitmqIntegration::getRabbitmq)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getRabbitmqIntegration).map(RabbitmqIntegration::getRabbitmq);
     }
 }

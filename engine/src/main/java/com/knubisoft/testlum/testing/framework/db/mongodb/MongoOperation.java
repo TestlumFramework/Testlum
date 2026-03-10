@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.model.global_config.Mongo;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
@@ -56,6 +55,6 @@ public class MongoOperation extends AbstractStorageOperation {
         Document document = Document.parse(query);
         Document result =
                 mongoDatabases.get(new AliasEnv(databaseAlias, EnvManager.currentEnv())).runCommand(document);
-        return JacksonMapperUtil.writeValueAsString(result);
+        return getJacksonService().writeValueAsString(result);
     }
 }

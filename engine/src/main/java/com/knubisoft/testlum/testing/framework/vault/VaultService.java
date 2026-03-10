@@ -67,6 +67,7 @@ public class VaultService {
     }
 
     private VaultDto toVaultObject(final Object object) {
+        @SuppressWarnings("unchecked")
         Map<String, String> map = (Map<String, String>) object;
         Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
         if (it.hasNext()) {

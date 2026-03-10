@@ -32,8 +32,11 @@ import static java.util.Objects.nonNull;
 @ExecutorForClass(MobileImage.class)
 public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> {
 
+    private final ImageComparator imageComparator;
+
     public MobileCompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        this.imageComparator = dependencies.getContext().getBean(ImageComparator.class);
     }
 
     @SneakyThrows
@@ -44,7 +47,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
         File scenarioFile = dependencies.getFile();
         BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
-        ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected,
+        ImageComparisonResult comparisonResult = imageComparator.compare(image, expected,
                 cutStatusBar(image.getFullScreen(), actual, dependencies.getDriver()));
         imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);

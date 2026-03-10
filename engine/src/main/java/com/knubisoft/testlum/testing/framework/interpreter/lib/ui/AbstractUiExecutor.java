@@ -23,6 +23,8 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     protected final FileSearcher fileSearcher;
     protected final LogUtil logUtil;
     protected final InjectionUtil injectionUtil;
+    protected final JacksonService jacksonService;
+    protected final StringPrettifier stringPrettifier;
 
     public AbstractUiExecutor(final ExecutorDependencies dependencies) {
         this.dependencies = dependencies;
@@ -35,6 +37,8 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
         this.logUtil = dependencies.getContext().getBean(LogUtil.class);
         this.injectionUtil = dependencies.getContext().getBean(InjectionUtil.class);
+        this.jacksonService = dependencies.getContext().getBean(JacksonService.class);
+        this.stringPrettifier = dependencies.getContext().getBean(StringPrettifier.class);
     }
 
     public final void apply(final T o, final CommandResult result) {
@@ -51,7 +55,8 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
             || o instanceof MobilebrowserRepeat) {
             return o;
         }
-        T copiedObject = JacksonMapperUtil.deepCopy(o, (Class<T>) o.getClass());
+        @SuppressWarnings("unchecked")
+        T copiedObject = jacksonService.deepCopy(o, (Class<T>) o.getClass());
         if (copiedObject instanceof WebVar webVar) {
             processExpression(webVar.getExpression());
         }

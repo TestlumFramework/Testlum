@@ -10,7 +10,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
 import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
@@ -51,18 +50,20 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private final Map<AliasEnv, SendGrid> sendGrid;
     private final HttpUtil httpUtil;
+    private final SendGridUtil sendGridUtil;
 
     public SendGridInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.httpUtil = dependencies.getContext().getBean(HttpUtil.class);
         this.sendGrid = dependencies.getOptionalBean("sendGridMap", Map.class, Collections::emptyMap);
+        this.sendGridUtil = dependencies.getContext().getBean(SendGridUtil.class);
     }
 
     @Override
     protected void acceptImpl(final Sendgrid o, final CommandResult result) {
         Sendgrid sendgrid = injectCommand(o);
         checkAlias(sendgrid);
-        SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
+        SendGridUtil.SendGridMethodMetadata metadata = sendGridUtil.getSendgridMethodMetadata(sendgrid);
         String endpoint = metadata.getHttpInfo().getEndpoint();
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
@@ -85,7 +86,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         String body = StringUtils.isBlank(response.getFile())
                 ? DelimiterConstant.EMPTY
                 : getContentIfFile(response.getFile());
-        return new ApiResponse(response.getCode(), headers, StringPrettifier.asJsonResult(body));
+        return new ApiResponse(response.getCode(), headers, stringPrettifier.asJsonResult(body));
     }
 
     @SneakyThrows
@@ -96,7 +97,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
                                final CommandResult result) {
         String body = getBody(sendgridInfo, method);
         Request request = getRequest(body, method, sendgridInfo, endpoint);
-        result.put(CONTENT_TO_SEND, StringPrettifier.asJsonResult(body));
+        result.put(CONTENT_TO_SEND, stringPrettifier.asJsonResult(body));
         logHttpInfo(alias, method.name(), endpoint);
         logBody(request.getBody());
         return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
@@ -104,12 +105,12 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {
         String expectedBody = expected.getBody();
-        result.setExpected(StringPrettifier.asJsonResult(expectedBody));
-        result.setActual(StringPrettifier.asJsonResult(actual.getBody()));
+        result.setExpected(stringPrettifier.asJsonResult(expectedBody));
+        result.setActual(stringPrettifier.asJsonResult(actual.getBody()));
         result.put(EXPECTED_CODE, expected.getCode());
         result.put(ACTUAL_CODE, actual.getStatusCode());
 
-        HttpValidator httpValidator = new HttpValidator(this);
+        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         httpValidator.validateCode(expected.getCode(), actual.getStatusCode());
         httpValidator.validateBody(expectedBody, actual.getBody());
         httpValidator.validateHeaders(expected.getHeaders(), actual.getHeaders());
@@ -128,7 +129,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         }
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
         Body body = commandWithBody.getBody();
-        return SendGridUtil.extractBody(body, this);
+        return sendGridUtil.extractBody(body, this);
     }
 
     private Request getRequest(final String body,
@@ -156,7 +157,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private void logBody(final String body) {
         if (StringUtils.isNotBlank(body)) {
-            log.info(BODY_LOG, StringPrettifier.asJsonResult(StringPrettifier.cut(body))
+            log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(body))
                     .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
     }

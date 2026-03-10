@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnClickhouseEnabledCondition extends AbstractCondition<Clickhouse> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getClickhouseIntegration())
-                .map(ClickhouseIntegration::getClickhouse)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getClickhouseIntegration).map(ClickhouseIntegration::getClickhouse);
     }
 }

@@ -13,9 +13,9 @@ import java.util.Optional;
 public class OnElasticEnabledCondition extends AbstractCondition<Elasticsearch> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getElasticsearchIntegration())
-                .map(ElasticsearchIntegration::getElasticsearch)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations
+                .map(Integrations::getElasticsearchIntegration)
+                .map(ElasticsearchIntegration::getElasticsearch);
     }
 }

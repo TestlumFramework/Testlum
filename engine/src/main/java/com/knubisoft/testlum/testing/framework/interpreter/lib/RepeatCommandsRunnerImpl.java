@@ -18,6 +18,7 @@ public class RepeatCommandsRunnerImpl implements RepeatCommandRunner {
     private final ResultUtil resultUtil;
     private final ConfigUtil configUtil;
     private final LogUtil logUtil;
+    private final InterpreterProvider interpreterProvider;
 
     public void runCommands(final List<AbstractCommand> commandList,
                             final InterpreterDependencies dependencies,
@@ -57,7 +58,7 @@ public class RepeatCommandsRunnerImpl implements RepeatCommandRunner {
     private AbstractInterpreter<AbstractCommand> getAppropriateInterpreter(final AbstractCommand command,
                                                                            final InterpreterDependencies dependencies) {
         AbstractInterpreter<AbstractCommand> interpreter =
-                InterpreterProvider.getAppropriateInterpreter(command, dependencies);
+                interpreterProvider.getAppropriateInterpreter(command, dependencies);
         dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(interpreter);
         return interpreter;
     }

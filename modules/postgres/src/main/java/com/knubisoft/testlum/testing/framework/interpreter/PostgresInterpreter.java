@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Postgres;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +47,8 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
                 .withActual(actualPostgres)
                 .withExpected(getContentIfFile(postgres.getFile()));
 
-        result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
-        result.setActual(StringPrettifier.asJsonResult(actualPostgres));
+        result.setExpected(stringPrettifier.asJsonResult(compare.getExpected()));
+        result.setActual(stringPrettifier.asJsonResult(actualPostgres));
         compare.exec();
         setContextBody(getContextBodyKey(postgres.getFile()), actualPostgres);
     }

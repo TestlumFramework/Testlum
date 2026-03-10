@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnSESEnabledCondition extends AbstractCondition<Ses> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getSesIntegration())
-                .map(SesIntegration::getSes)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getSesIntegration).map(SesIntegration::getSes);
     }
 }

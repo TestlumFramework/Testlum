@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnPostgresEnabledCondition extends AbstractCondition<Postgres> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getPostgresIntegration())
-                .map(PostgresIntegration::getPostgres)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getPostgresIntegration).map(PostgresIntegration::getPostgres);
     }
 }

@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnOracleEnabledCondition extends AbstractCondition<Oracle> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getOracleIntegration())
-                .map(OracleIntegration::getOracle)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getOracleIntegration).map(OracleIntegration::getOracle);
     }
 }

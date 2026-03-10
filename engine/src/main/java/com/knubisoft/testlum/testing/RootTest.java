@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing;
 import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.testing.framework.*;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
-import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.env.service.EnvironmentExecutionService;
+import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
@@ -26,10 +26,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.MDC;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.slf4j.MDC;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -57,7 +57,7 @@ public class RootTest {
     @BeforeAll
     public void beforeAll() throws Exception {
         TestResourceSettings testResourceSettings = ctx.getBean(TestResourceSettings.class);
-        FileRemover.clearActualFiles(testResourceSettings.getScenariosFolder());
+        ctx.getBean(FileRemover.class).clearActualFiles(testResourceSettings.getScenariosFolder());
     }
 
     @DisplayName("Execution of test scenarios:")

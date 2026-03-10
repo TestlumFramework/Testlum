@@ -33,6 +33,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 public final class WebElementFinder {
 
     private final EnvironmentLoader environmentLoader;
+    private final ByService byService;
 
     private Map<Class<?>, ByType> searchByTypes;
 
@@ -42,13 +43,12 @@ public final class WebElementFinder {
     }
 
     private Map<Class<?>, ByType> createClassToType() {
-        final Map<Class<?>, ByType> map = new HashMap<>();
-        map.put(Xpath.class, l -> By.xpath(getLocatorsByType(l, Xpath.class)));
-        map.put(Id.class, l -> By.id(getLocatorsByType(l, Id.class)));
-        map.put(ClassName.class, l -> By.className(getLocatorsByType(l, ClassName.class)));
-        map.put(CssSelector.class, l -> By.cssSelector(getLocatorsByType(l, CssSelector.class)));
-        map.put(Text.class, l -> By.text(getLocatorsByType(l, Text.class)));
-        return Collections.unmodifiableMap(map);
+        return Map.of(
+                Xpath.class, l -> byService.xpath(getLocatorsByType(l, Xpath.class)),
+                Id.class, l -> byService.id(getLocatorsByType(l, Id.class)),
+                ClassName.class, l -> byService.className(getLocatorsByType(l, ClassName.class)),
+                CssSelector.class, l -> byService.cssSelector(getLocatorsByType(l, CssSelector.class)),
+                Text.class, l -> byService.text(getLocatorsByType(l, Text.class)));
     }
 
     public WebElement find(final Locator locator, final ExecutorDependencies dependencies) {

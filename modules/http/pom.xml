@@ -17,7 +17,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-api-util</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>

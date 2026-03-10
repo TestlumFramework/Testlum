@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnWebsocketEnabledCondition extends AbstractCondition<WebsocketApi> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getWebsockets())
-                .map(Websockets::getApi)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getWebsockets).map(Websockets::getApi);
     }
 }

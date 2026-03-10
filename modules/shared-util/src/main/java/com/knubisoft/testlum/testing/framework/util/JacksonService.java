@@ -12,54 +12,54 @@ import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
-@UtilityClass
-public final class JacksonMapperUtil {
+@Service
+public final class JacksonService {
 
-    private static final ObjectMapper MAPPER = buildObjectMapper();
-    private static final ObjectMapper DYNAMODB_MAPPER = createObjectMapperWithFieldVisibility();
-    private static final ObjectMapper COPY_MAPPER = createObjectMapperForDeepCopy();
+    private final ObjectMapper mapper = buildObjectMapper();
+    private final ObjectMapper dynamodbMapper = createObjectMapperWithFieldVisibility();
+    private final ObjectMapper deepCopy = createObjectMapperForDeepCopy();
 
     @SneakyThrows
     public <T> T readValue(final String content, final Class<T> valueType) {
-        return MAPPER.readValue(content, valueType);
+        return mapper.readValue(content, valueType);
     }
 
     @SneakyThrows
     public <T> T readValue(final byte[] content, final Class<T> valueType) {
-        return MAPPER.readValue(content, valueType);
+        return mapper.readValue(content, valueType);
     }
 
     @SneakyThrows
     public String writeValueAsString(final Object value) {
-        return MAPPER.writeValueAsString(value);
+        return mapper.writeValueAsString(value);
     }
 
     @SneakyThrows
     public String writeValueAsStringWithDefaultPrettyPrinter(final Object value) {
-        return MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(value);
+        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value);
     }
 
     @SneakyThrows
     public String writeAsStringForDynamoDbOnly(final Object value) {
-        return DYNAMODB_MAPPER.writeValueAsString(value);
+        return dynamodbMapper.writeValueAsString(value);
     }
 
     @SneakyThrows
     public <T> T readCopiedValue(final String content, final Class<T> valueType) {
-        JavaType javaType = COPY_MAPPER.getTypeFactory().constructType(valueType);
-        return COPY_MAPPER.readValue(content, javaType);
+        JavaType javaType = deepCopy.getTypeFactory().constructType(valueType);
+        return deepCopy.readValue(content, javaType);
     }
 
     @SneakyThrows
     public String writeValueToCopiedString(final Object value) {
-        return COPY_MAPPER.writeValueAsString(value);
+        return deepCopy.writeValueAsString(value);
     }
 
     public <T> T deepCopy(final Object value, final Class<T> valueType) {
-        return COPY_MAPPER.convertValue(value, valueType);
+        return deepCopy.convertValue(value, valueType);
     }
 
     public Object toJsonObject(final String content) {
@@ -71,7 +71,7 @@ public final class JacksonMapperUtil {
                     &&
                     content.endsWith(DelimiterConstant.CLOSE_SQUARE_BRACKET);
             if (isObject || isArray) {
-                return JacksonMapperUtil.readValue(content, Object.class);
+                return readValue(content, Object.class);
             }
         }
         return content;

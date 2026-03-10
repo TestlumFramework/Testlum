@@ -51,6 +51,7 @@ public class ScenarioRunner {
     private final NativeDriverFactory nativeDriverFactory;
     private final InjectionUtil injectionUtil;
     private final LogUtil logUtil;
+    private final InterpreterScanner interpreterScanner;
 
     public ScenarioRunner(final ScenarioArguments scenarioArguments,
                           final ApplicationContext ctx) {
@@ -64,6 +65,7 @@ public class ScenarioRunner {
         this.nativeDriverFactory = ctx.getBean(NativeDriverFactory.class);
         this.injectionUtil = ctx.getBean(InjectionUtil.class);
         this.logUtil = ctx.getBean(LogUtil.class);
+        this.interpreterScanner = ctx.getBean(InterpreterScanner.class);
         this.stopScenarioOnFailure = ctx.getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
 
         this.dependencies = createDependencies();
@@ -175,7 +177,7 @@ public class ScenarioRunner {
 
     private CommandToInterpreterMap createClassToInterpreterMap(final InterpreterDependencies dependencies) {
         CommandToInterpreterMap interpreterMap = new CommandToInterpreterMap();
-        InterpreterScanner.getInterpreters().forEach((key, value) -> {
+        interpreterScanner.getInterpreters().forEach((key, value) -> {
             try {
                 interpreterMap.put(key, createInterpreterInstance(dependencies, value));
             } catch (Exception e) {

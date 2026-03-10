@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
@@ -10,8 +10,8 @@ import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
 import com.sendgrid.Method;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,7 +22,8 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 
-@UtilityClass
+@RequiredArgsConstructor
+@Service
 public final class SendGridUtil {
 
     private static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
@@ -36,6 +37,8 @@ public final class SendGridUtil {
         HTTP_METHOD_MAP.put(Sendgrid::getPatch, Method.PATCH);
         HTTP_METHOD_MAP.put(Sendgrid::getDelete, Method.DELETE);
     }
+
+    private final JacksonService jacksonService;
 
     public SendGridMethodMetadata getSendgridMethodMetadata(final Sendgrid sendgrid) {
         return HTTP_METHOD_MAP.entrySet().stream()
@@ -75,7 +78,7 @@ public final class SendGridUtil {
     private String getFromParam(final Body body) {
         Map<String, String> bodyParamMap = body.getParam().stream()
                 .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
-        return JacksonMapperUtil.writeValueAsString(bodyParamMap);
+        return jacksonService.writeValueAsString(bodyParamMap);
     }
 
     @RequiredArgsConstructor

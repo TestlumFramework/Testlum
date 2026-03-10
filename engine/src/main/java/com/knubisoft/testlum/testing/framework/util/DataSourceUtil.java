@@ -3,12 +3,12 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.model.global_config.DatabaseConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 
-@UtilityClass
+@Service
 public final class DataSourceUtil {
 
     public DataSource getHikariDataSource(final DatabaseConfig dataSource) {

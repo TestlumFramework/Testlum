@@ -2,17 +2,27 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import lombok.experimental.UtilityClass;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INTERPRETER_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
 
-@UtilityClass
+@RequiredArgsConstructor
+@Service
 public class InterpreterProvider {
 
-    private final CommandToInterpreterClassMap interpreters = InterpreterScanner.getInterpreters();
+    private final InterpreterScanner scanner;
+
+    private CommandToInterpreterClassMap interpreters;
+
+    @PostConstruct
+    public void init() {
+        this.interpreters = scanner.getInterpreters();
+    }
 
     @SuppressWarnings("unchecked")
     public AbstractInterpreter<AbstractCommand> getAppropriateInterpreter(final AbstractCommand command,

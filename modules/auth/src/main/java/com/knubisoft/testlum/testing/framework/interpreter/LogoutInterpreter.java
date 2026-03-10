@@ -13,14 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 @InterpreterForClass(Logout.class)
 public class LogoutInterpreter extends AbstractInterpreter<Logout> {
 
+    private final AuthFactory authFactory;
+
     public LogoutInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+        this.authFactory = dependencies.getContext().getBean(AuthFactory.class);
     }
 
     @Override
     protected void acceptImpl(final Logout o, final CommandResult result) {
         Logout logout = injectCommand(o);
-        AuthStrategy authStrategy = AuthFactory.create(dependencies, logout.getAlias());
+        AuthStrategy authStrategy = authFactory.create(dependencies, logout.getAlias());
         authStrategy.logout();
     }
 }

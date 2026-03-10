@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Header;
 import com.knubisoft.testlum.testing.model.scenario.Lambda;
 import com.knubisoft.testlum.testing.model.scenario.LambdaBody;
@@ -92,7 +91,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     }
 
     private void compareResult(final Response expected, final InvokeResponse response, final CommandResult result) {
-        HttpValidator httpValidator = new HttpValidator(this);
+        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         validateBody(expected, response.payload().asUtf8String(), httpValidator, result);
         validateHeaders(expected, response.sdkHttpResponse().headers(), httpValidator);
         httpValidator.validateCode(expected.getCode(), response.sdkHttpResponse().statusCode());
@@ -106,8 +105,8 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         String body = StringUtils.isBlank(expected.getFile())
                 ? DelimiterConstant.EMPTY
                 : getContentIfFile(expected.getFile());
-        result.setActual(StringPrettifier.asJsonResult(actualBody));
-        result.setExpected(StringPrettifier.asJsonResult(body));
+        result.setActual(stringPrettifier.asJsonResult(actualBody));
+        result.setExpected(stringPrettifier.asJsonResult(body));
         httpValidator.validateBody(body, actualBody);
     }
 
@@ -131,7 +130,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         log.info(ALIAS_LOG, alias);
         log.info(LAMBDA_FUNCTION_LOG, functionName);
         if (StringUtils.isNotBlank(payload)) {
-            log.info(LAMBDA_PAYLOAD_LOG, StringPrettifier.asJsonResult(payload).
+            log.info(LAMBDA_PAYLOAD_LOG, stringPrettifier.asJsonResult(payload).
                     replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
     }
@@ -142,6 +141,6 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
                                           final CommandResult result) {
         result.put(ALIAS, alias);
         result.put(LAMBDA_FUNCTION_NAME, functionName);
-        result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
+        result.put(LAMBDA_PAYLOAD, stringPrettifier.asJsonResult(payload));
     }
 }

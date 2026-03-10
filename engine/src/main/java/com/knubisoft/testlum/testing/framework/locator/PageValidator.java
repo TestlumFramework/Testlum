@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.locator;
 
-import com.knubisoft.testlum.testing.framework.xml.XMLValidator;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.xml.XMLValidator;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import com.knubisoft.testlum.testing.model.pages.Page;
 import org.springframework.stereotype.Component;

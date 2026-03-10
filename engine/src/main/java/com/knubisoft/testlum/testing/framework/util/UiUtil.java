@@ -59,6 +59,7 @@ public class UiUtil {
     private final WebElementFinder webElementFinder;
     private final FileSearcher fileSearcher;
     private final EnvironmentLoader environmentLoader;
+    private final ImageCompressor imageCompressor;
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
@@ -205,7 +206,7 @@ public class UiUtil {
 
     @SneakyThrows
     public void putScreenshotToResult(final CommandResult result, final File screenshot) {
-        final MultipartFile image = ImageCompressor.compress(screenshot);
+        final MultipartFile image = imageCompressor.compress(screenshot);
         if (Objects.nonNull(image)) {
             byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
             String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);

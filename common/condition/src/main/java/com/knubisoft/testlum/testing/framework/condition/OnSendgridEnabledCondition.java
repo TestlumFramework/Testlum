@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnSendgridEnabledCondition extends AbstractCondition<Sendgrid> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getSendgridIntegration())
-                .map(SendgridIntegration::getSendgrid)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getSendgridIntegration).map(SendgridIntegration::getSendgrid);
     }
 }

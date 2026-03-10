@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnTwilioEnabledCondition extends AbstractCondition<Twilio> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getTwilioIntegration())
-                .map(TwilioIntegration::getTwilio)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getTwilioIntegration).map(TwilioIntegration::getTwilio);
     }
 }

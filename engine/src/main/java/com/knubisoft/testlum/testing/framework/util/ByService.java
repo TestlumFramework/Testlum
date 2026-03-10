@@ -1,14 +1,14 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.model.pages.*;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static java.lang.String.format;
 
-@UtilityClass
-public class By {
+@Service
+public class ByService {
 
     private static final String XPATH_TEMPLATE_FOR_TEXT_SEARCH = "//*[contains(text(), '%s')]";
     private static final String XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER = "//*[@placeholder='%s']";
@@ -40,7 +40,7 @@ public class By {
                 .toList();
     }
 
-    public static List<org.openqa.selenium.By> text(final List<Text> textList) {
+    public List<org.openqa.selenium.By> text(final List<Text> textList) {
         return textList.stream()
                 .map(text -> org.openqa.selenium.By.xpath(text.isPlaceholder()
                         ? format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue())

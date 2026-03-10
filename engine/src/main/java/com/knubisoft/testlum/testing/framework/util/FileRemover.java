@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED
 import static java.util.Objects.nonNull;
 
 @Slf4j
-@UtilityClass
+@Service
 public final class FileRemover {
 
     private static final FileVisitor FILE_VISITOR = new FileVisitor();

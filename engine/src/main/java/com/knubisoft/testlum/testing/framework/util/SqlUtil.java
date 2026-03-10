@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@UtilityClass
+@Service
 public class SqlUtil {
     private static final int CUT_LIMIT = 100;
     private static final int OFFSET_LIMIT = 2;

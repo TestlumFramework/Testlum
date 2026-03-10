@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +94,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private void logVarInfo(final String name, final String value) {
         log.info(NAME_LOG, name);
-        log.info(VALUE_LOG, StringPrettifier.cut(value));
+        log.info(VALUE_LOG, stringPrettifier.cut(value));
     }
 }

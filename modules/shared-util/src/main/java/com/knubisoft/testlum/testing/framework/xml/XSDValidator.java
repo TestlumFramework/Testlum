@@ -5,8 +5,8 @@ import com.google.common.collect.Multimap;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @Getter
 @Slf4j
-@UtilityClass
+@Service
 public final class XSDValidator {
 
     public static void validateBySchema(final File file, final Schema schema) {

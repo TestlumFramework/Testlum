@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-@UtilityClass
+@Service
 public class ImageCompressor {
 
     private static final String IMAGE_JPEG = "image" + File.separator + "jpeg";

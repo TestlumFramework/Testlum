@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ENV_VARIABLE_NOT_FOUND;
 
-@UtilityClass
+@Service
 public class SystemVariableService {
     private static final String ROUTE_REGEXP = "\\$\\{(.*?)}";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);

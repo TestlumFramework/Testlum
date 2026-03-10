@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.SqlDatabase;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +44,8 @@ public class SqlDatabaseInterpreter extends AbstractInterpreter<SqlDatabase> {
                 .withActual(actualSqlDatabase)
                 .withExpected(getContentIfFile(database.getFile()));
 
-        result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
-        result.setActual(StringPrettifier.asJsonResult(actualSqlDatabase));
+        result.setExpected(stringPrettifier.asJsonResult(compare.getExpected()));
+        result.setActual(stringPrettifier.asJsonResult(actualSqlDatabase));
         compare.exec();
         setContextBody(getContextBodyKey(database.getFile()), actualSqlDatabase);
     }

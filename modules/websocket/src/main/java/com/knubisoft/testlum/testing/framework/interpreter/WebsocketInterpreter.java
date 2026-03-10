@@ -8,8 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -162,8 +160,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getComment(), wsReceive.getTopic(), expectedContent);
 
         final List<Object> actualContent = getMessagesToCompare(wsReceive, aliasEnv);
-        result.setActual(StringPrettifier.asJsonResult(toString(actualContent)));
-        result.setExpected(StringPrettifier.asJsonResult(expectedContent));
+        result.setActual(stringPrettifier.asJsonResult(toString(actualContent)));
+        result.setExpected(stringPrettifier.asJsonResult(expectedContent));
 
         executeComparison(actualContent, expectedContent);
     }
@@ -185,7 +183,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         return IntStream.range(0, limit)
                 .mapToObj(id -> receivedMessages.pollFirst())
                 .filter(Objects::nonNull)
-                .map(JacksonMapperUtil::toJsonObject)
+                .map(jacksonService::toJsonObject)
                 .toList();
     }
 
@@ -277,7 +275,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             log.info(DESTINATION_LOG, destination);
         }
         if (StringUtils.isNotBlank(content)) {
-            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).
+            log.info(CONTENT_LOG, stringPrettifier.asJsonResult(content).
                     replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
     }

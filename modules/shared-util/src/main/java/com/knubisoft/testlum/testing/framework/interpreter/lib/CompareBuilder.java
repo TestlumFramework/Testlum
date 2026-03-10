@@ -4,9 +4,10 @@ import com.knubisoft.comparator.Comparator;
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,18 +27,26 @@ public class CompareBuilder {
 
     private final File scenarioFile;
     private final int position;
+    private final JacksonService jacksonService;
+    private final StringPrettifier stringPrettifier;
+
     private String expected;
     private Supplier<String> supplierActual;
     private boolean isStrict;
 
-    public CompareBuilder(final File scenarioFile, final int position) {
+    public CompareBuilder(final File scenarioFile,
+                          final int position,
+                          final JacksonService jacksonService,
+                          final StringPrettifier stringPrettifier) {
         this.scenarioFile = scenarioFile;
         this.position = position;
         this.isStrict = true;
+        this.jacksonService = jacksonService;
+        this.stringPrettifier = stringPrettifier;
     }
 
     public CompareBuilder withActual(final Object actual) {
-        this.supplierActual = () -> JacksonMapperUtil.writeValueAsString(actual);
+        this.supplierActual = () -> jacksonService.writeValueAsString(actual);
         return this;
     }
 
@@ -83,8 +92,8 @@ public class CompareBuilder {
 
     private void tryToCompare(final String actual) {
         try {
-            final String newActual = StringPrettifier.prettify(actual);
-            final String newExpected = StringPrettifier.prettify(expected);
+            final String newActual = stringPrettifier.prettify(actual);
+            final String newExpected = stringPrettifier.prettify(expected);
 
             new TreeComparator(isStrict()).compare(newExpected, newActual);
         } catch (ComparisonException e) {
@@ -96,23 +105,21 @@ public class CompareBuilder {
     private void save(final String actual) {
         try {
             File target = new File(scenarioFile.getParent(), String.format(FILENAME_FORMAT_TO_SAVE, position));
-            FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new DefaultFrameworkException(e);
         }
     }
 
+    @RequiredArgsConstructor
     private static final class TreeComparator {
 
-        private final Comparator comparator;
-
-        TreeComparator(final boolean strict) {
-            this.comparator = strict ? Comparator.strict() : Comparator.lenient();
-        }
+        private final boolean strict;
 
         public void compare(final String expected, final String actual) throws ComparisonException {
             try {
+                Comparator comparator = strict ? Comparator.strict() : Comparator.lenient();
                 comparator.compare(expected, actual);
             } catch (Throwable t) {
                 throw new ComparisonException(t.getMessage());

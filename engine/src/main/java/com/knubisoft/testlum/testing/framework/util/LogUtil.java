@@ -26,6 +26,8 @@ public class LogUtil {
 
     private final BrowserUtil browserUtil;
     private final MobileUtil mobileUtil;
+    private final StringPrettifier stringPrettifier;
+    private final SqlUtil sqlUtil;
 
     //CHECKSTYLE:OFF
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
@@ -145,7 +147,7 @@ public class LogUtil {
         if (StringUtils.isNotBlank(ex.getMessage())) {
             log.error(LogMessage.ERROR_SQL_QUERY,
                     ex.getMessage().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()),
-                    SqlUtil.getBrokenQuery(ex, query).replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
+                    sqlUtil.getBrokenQuery(ex, query).replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
         } else {
             log.error(LogMessage.ERROR_SQL_QUERY,
                     ex.toString().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
@@ -154,7 +156,7 @@ public class LogUtil {
 
     public void logVarInfo(final String name, final String value) {
         log.info(LogMessage.NAME_LOG, name);
-        log.info(LogMessage.VALUE_LOG, StringPrettifier.cut(value));
+        log.info(LogMessage.VALUE_LOG, stringPrettifier.cut(value));
     }
 
     /* ui log */
@@ -312,7 +314,7 @@ public class LogUtil {
         log.info(LogMessage.NEGATIVE_LOG, attribute.isNegative());
         log.info(LogMessage.LOCATOR_LOG, attribute.getLocator());
         log.info(LogMessage.ATTRIBUTE_LOG, attribute.getName());
-        log.info(LogMessage.CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
+        log.info(LogMessage.CONTENT_LOG, stringPrettifier.cut(attribute.getContent()));
     }
 
     public void logAssertTitleCommand(final AssertTitle title) {

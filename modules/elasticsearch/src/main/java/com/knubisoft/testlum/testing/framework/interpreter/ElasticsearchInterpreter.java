@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -80,7 +79,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     }
 
     private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
-        HttpValidator httpValidator = new HttpValidator(this);
+        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
         validateHeadersIfExists(expected, actual, httpValidator);
         validateBodyIfFile(expected, actual, httpValidator, result);
@@ -96,8 +95,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         if (StringUtils.isNotBlank(expectedBody)) {
             String actualBody = Objects.nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
             setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
-            result.setActual(StringPrettifier.asJsonResult(actualBody));
-            result.setExpected(StringPrettifier.asJsonResult(expectedBody));
+            result.setActual(stringPrettifier.asJsonResult(actualBody));
+            result.setExpected(stringPrettifier.asJsonResult(expectedBody));
             httpValidator.validateBody(expectedBody, actualBody);
         }
     }
@@ -192,9 +191,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
             String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
             if (StringUtils.isNotBlank(stringBody)) {
-                log.info(BODY_LOG,
-                        StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
-                                .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                        .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
             }
         }
     }

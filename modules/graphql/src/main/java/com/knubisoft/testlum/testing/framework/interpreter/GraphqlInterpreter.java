@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidato
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.GraphqlApi;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Getter;
@@ -168,7 +167,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private void compareResult(final Response expected,
                                final ApiResponse actual,
                                final CommandResult result) {
-        HttpValidator httpValidator = new HttpValidator(this);
+        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         httpValidator.validateCode(expected.getCode(), actual.getCode());
         String actualBody = actual.getBody();
         setContextBody(getContextBodyKey(expected.getFile()), actualBody);
@@ -184,8 +183,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         String body = StringUtils.isBlank(expected.getFile())
                 ? DelimiterConstant.EMPTY
                 : getContentIfFile(expected.getFile());
-        result.setActual(StringPrettifier.asJsonResult(actualBody));
-        result.setExpected(StringPrettifier.asJsonResult(body));
+        result.setActual(stringPrettifier.asJsonResult(actualBody));
+        result.setExpected(stringPrettifier.asJsonResult(body));
         httpValidator.validateBody(body, actualBody);
     }
 
@@ -217,9 +216,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
             String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
             if (StringUtils.isNotBlank(stringBody)) {
-                log.info(BODY_LOG,
-                        StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
-                                .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                        .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
             }
         }
     }

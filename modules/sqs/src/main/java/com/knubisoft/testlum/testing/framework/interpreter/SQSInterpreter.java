@@ -9,8 +9,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
@@ -129,7 +127,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         String message = sendRequest.messageBody();
         logSQSSendInfo(send, message);
         addSqsSendInfo(send, aliasEnv.getAlias(), result);
-        result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
+        result.put(MESSAGE_TO_SEND, stringPrettifier.asJsonResult(message));
         this.sqsClient.get(aliasEnv).sendMessage(sendRequest);
     }
 
@@ -161,7 +159,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         return receiveMessageResult.messages()
                 .stream()
                 .map(message -> message.body().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, StringUtils.EMPTY))
-                .map(JacksonMapperUtil::toJsonObject)
+                .map(jacksonService::toJsonObject)
                 .toList();
     }
 
@@ -180,8 +178,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         final CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
                 .withActual(messages);
-        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
-        result.setActual(StringPrettifier.asJsonResult(toString(messages)));
+        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(stringPrettifier.asJsonResult(toString(messages)));
         comparator.exec();
     }
 
@@ -229,7 +227,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                                  final String content) {
         log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
         log.info(QUEUE_LOG, topicOrRoutingKeyOrQueueValue);
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(
+        log.info(CONTENT_LOG, stringPrettifier.asJsonResult(content.replaceAll(
                         DelimiterConstant.REGEX_MANY_SPACES,
                         DelimiterConstant.SPACE))
                 .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));

@@ -6,10 +6,13 @@ import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.Condition;
+import com.knubisoft.testlum.testing.model.scenario.FromExpression;
+import com.knubisoft.testlum.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +44,9 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected final ConfigProvider configurationProvider;
     protected final ConditionProvider conditionProvider;
     protected final FileSearcher fileSearcher;
+    protected final JacksonService jacksonService;
+    protected final StringPrettifier stringPrettifier;
+
     private final boolean stopScenarioOnFailure;
 
     protected AbstractInterpreter(final InterpreterDependencies dependencies) {
@@ -48,6 +54,8 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         this.configurationProvider = dependencies.getContext().getBean(ConfigProvider.class);
         this.conditionProvider = dependencies.getContext().getBean(ConditionProvider.class);
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
+        this.jacksonService = dependencies.getContext().getBean(JacksonService.class);
+        this.stringPrettifier = dependencies.getContext().getBean(StringPrettifier.class);
         this.stopScenarioOnFailure = dependencies.getContext().
                 getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
     }
@@ -77,14 +85,15 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected abstract void acceptImpl(T o, CommandResult result);
 
     public CompareBuilder newCompare() {
-        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get());
+        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get(),
+                jacksonService, stringPrettifier);
     }
 
     public void save(final String actual) {
         try {
             File target = new File(dependencies.getFile().getParent(),
                     String.format(FILENAME_TO_SAVE, dependencies.getPosition().get()));
-            FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new DefaultFrameworkException(e);
@@ -92,7 +101,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     public String toString(final Object o) {
-        return JacksonMapperUtil.writeValueAsString(o);
+        return jacksonService.writeValueAsString(o);
     }
 
     public String inject(final String original) {
@@ -123,16 +132,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         if (Objects.isNull(o)) {
             return null;
         }
-        String asJson = JacksonMapperUtil.writeValueToCopiedString(o);
+        String asJson = jacksonService.writeValueToCopiedString(o);
         String injected = dependencies.getScenarioContext().inject(asJson);
-        return JacksonMapperUtil.readCopiedValue(injected, (Class<Y>) o.getClass());
+        return jacksonService.readCopiedValue(injected, (Class<Y>) o.getClass());
     }
 
     protected Var injectVarCommand(final Var var) {
         if (Objects.isNull(var)) {
             return null;
         }
-        Var varCopy = JacksonMapperUtil.deepCopy(var, Var.class);
+        Var varCopy = jacksonService.deepCopy(var, Var.class);
         FromExpression expression = varCopy.getExpression();
         if (Objects.nonNull(expression)) {
             expression.setValue(dependencies.getScenarioContext().injectSpel(expression.getValue()));
@@ -144,7 +153,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         if (Objects.isNull(condition)) {
             return null;
         }
-        Condition conditionCopy = JacksonMapperUtil.deepCopy(condition, Condition.class);
+        Condition conditionCopy = jacksonService.deepCopy(condition, Condition.class);
         conditionCopy.setSpel(dependencies.getScenarioContext().injectSpel(conditionCopy.getSpel()));
         return injectCommand(conditionCopy);
     }

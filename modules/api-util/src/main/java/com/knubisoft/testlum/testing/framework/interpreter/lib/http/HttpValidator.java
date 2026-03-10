@@ -23,7 +23,9 @@ public final class HttpValidator {
     public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s]%n but was [%s]";
 
     private final List<String> result = new ArrayList<>();
+
     private final AbstractInterpreter<?> interpreter;
+    private final StringPrettifier prettifier;
 
     public void validateCode(final int expectedCode, final int actualCode) {
         if (expectedCode != actualCode) {
@@ -55,7 +57,7 @@ public final class HttpValidator {
         String expected = interpreter.toString(expectedHeaders);
         String actual = interpreter.toString(actualHeaderMap);
         result.add(format(HTTP_HEADERS_EXPECTED_BUT_WAS,
-                StringPrettifier.cut(expected), StringPrettifier.cut(actual)));
+                prettifier.cut(expected), prettifier.cut(actual)));
         interpreter.save(actual);
     }
 
@@ -72,8 +74,8 @@ public final class HttpValidator {
                     .exec();
         } catch (ComparisonException e) {
             result.add(format(HTTP_BODY_EXPECTED_BUT_WAS,
-                    StringPrettifier.asJsonResult(StringPrettifier.cut(expectedBody)),
-                    StringPrettifier.asJsonResult(StringPrettifier.cut(actualBody))));
+                    prettifier.asJsonResult(prettifier.cut(expectedBody)),
+                    prettifier.asJsonResult(prettifier.cut(actualBody))));
         }
     }
 

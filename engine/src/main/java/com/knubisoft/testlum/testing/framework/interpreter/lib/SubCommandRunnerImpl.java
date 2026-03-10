@@ -27,6 +27,7 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
     private final ResultUtil resultUtil;
     private final ConfigUtil configUtil;
     private final LogUtil logUtil;
+    private final ExecutorProvider executorProvider;
 
     public void runCommands(final List<AbstractUiCommand> commandList,
                             final CommandResult result,
@@ -74,7 +75,7 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
 
     private AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand command,
                                                                          final ExecutorDependencies dependencies) {
-        AbstractUiExecutor<AbstractUiCommand> executor = ExecutorProvider.getAppropriateExecutor(command, dependencies);
+        AbstractUiExecutor<AbstractUiCommand> executor = executorProvider.getAppropriateExecutor(command, dependencies);
         dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(executor);
         return executor;
     }

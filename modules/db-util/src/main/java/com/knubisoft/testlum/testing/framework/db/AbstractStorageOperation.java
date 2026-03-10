@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.db;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.model.global_config.StorageIntegration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,10 @@ public abstract class AbstractStorageOperation {
 
     @Autowired
     private IntegrationsProvider integrationsProvider;
+
+    @Getter
+    @Autowired
+    private JacksonService jacksonService;
 
     public List<StorageOperationResult> apply(final List<Source> sources, final String databaseAlias) {
         return sources.stream()

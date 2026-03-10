@@ -69,7 +69,8 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
 
     private void executeComparison(final String actual, final String expected, final CommandResult result) {
         try {
-            new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get())
+            new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get(),
+                    jacksonService, stringPrettifier)
                     .withActual(actual)
                     .withExpected(expected)
                     .exec();

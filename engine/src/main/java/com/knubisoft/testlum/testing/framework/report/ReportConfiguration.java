@@ -3,12 +3,11 @@ package com.knubisoft.testlum.testing.framework.report;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.extentreports.ExtentReportsGenerator;
-import com.knubisoft.testlum.testing.model.global_config.ExtentReports;
-import com.knubisoft.testlum.testing.model.global_config.HtmlReportGenerator;
-import com.knubisoft.testlum.testing.model.global_config.KlovServerReportGenerator;
-import com.knubisoft.testlum.testing.model.global_config.Report;
+import com.knubisoft.testlum.testing.model.global_config.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -16,19 +15,24 @@ import java.util.Objects;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ReportGeneratorFactory {
+public class ReportConfiguration {
 
     private final ExtentReportsGenerator extentReportsGenerator;
+    private final GlobalTestConfiguration globalTestConfiguration;
 
-    public ReportGenerator create(final Report report) {
-        if (Objects.nonNull(report.getExtentReports())) {
-            checkExtentReportsGenerators(report.getExtentReports());
+    @Primary
+    @Bean
+    public ReportGenerator create() {
+        Report report = globalTestConfiguration.getReport();
+        if (report != null) {
+            validateReport(report.getExtentReports());
             return extentReportsGenerator;
-        } //add a new branch if another implementation is needed
-        throw new UnsupportedOperationException("Report generator type is not supported");
+        } else {
+            throw new UnsupportedOperationException("Report generator type is not supported");
+        }
     }
 
-    private void checkExtentReportsGenerators(final ExtentReports extentReports) {
+    private void validateReport(final ExtentReports extentReports) {
         HtmlReportGenerator htmlReportGenerator = extentReports.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerReportGenerator = extentReports.getKlovServerReportGenerator();
         if (!htmlReportGenerator.isEnabled()) {

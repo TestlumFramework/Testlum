@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnDynamoEnabledCondition extends AbstractCondition<Dynamo> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getDynamoIntegration())
-                .map(DynamoIntegration::getDynamo)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getDynamoIntegration).map(DynamoIntegration::getDynamo);
     }
 }

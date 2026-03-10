@@ -26,6 +26,7 @@ public class SqlDatabaseDataSourceConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
     private final HealthCheckFactory healthCheckFactory;
+    private final DataSourceUtil dataSourceUtil;
 
     @Bean("sqlDatabaseDataSource")
     public Map<AliasEnv, DataSource> sqlDatabaseDataSource(final EnvToIntegrationMap envTointegrations) {
@@ -42,7 +43,7 @@ public class SqlDatabaseDataSourceConfiguration {
             if (sqlDatabase.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "SqlDatabase", sqlDatabase.getAlias()),
-                        () -> DataSourceUtil.getHikariDataSource(sqlDatabase),
+                        () -> dataSourceUtil.getHikariDataSource(sqlDatabase),
                         healthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(sqlDatabase.getAlias(), env), checkedDataSource);

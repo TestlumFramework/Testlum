@@ -5,14 +5,14 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.global_config.Auth;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 
-@UtilityClass
+@Service
 public class AuthFactory {
 
     private static final String AUTH_NOT_FOUND = "Cannot find <auth> configuration for <api> with alias <%s>";

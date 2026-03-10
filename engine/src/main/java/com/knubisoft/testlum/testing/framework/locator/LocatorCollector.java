@@ -2,9 +2,9 @@ package com.knubisoft.testlum.testing.framework.locator;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.model.pages.Component;
 import com.knubisoft.testlum.testing.model.pages.Include;
 import com.knubisoft.testlum.testing.model.pages.Locator;

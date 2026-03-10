@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnRedisEnabledCondition extends AbstractCondition<Redis> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getRedisIntegration())
-                .map(RedisIntegration::getRedis)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getRedisIntegration).map(RedisIntegration::getRedis);
     }
 }

@@ -30,8 +30,11 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
     private static final String IOS_NAVIGATION_BAR = "XCUIElementTypeNavigationBar";
     private static final String Y_MIN_POINT = "y=\"(\\d+)\"";
 
+    private final ImageComparator imageComparator;
+
     public NativeCompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        this.imageComparator = dependencies.getContext().getBean(ImageComparator.class);
     }
 
     @SneakyThrows
@@ -42,7 +45,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         File scenarioFile = dependencies.getFile();
         BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image);
-        ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual);
+        ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual);
         imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }

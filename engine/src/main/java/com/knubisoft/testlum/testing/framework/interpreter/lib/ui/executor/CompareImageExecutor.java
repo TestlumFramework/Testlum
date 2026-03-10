@@ -38,11 +38,12 @@ import static java.util.Objects.nonNull;
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     private final EnvironmentLoader currentEnvironmentLoader;
+    private final ImageComparator imageComparator;
 
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        this.currentEnvironmentLoader =
-                dependencies.getContext().getBean(EnvironmentLoader.class);
+        this.currentEnvironmentLoader = dependencies.getContext().getBean(EnvironmentLoader.class);
+        this.imageComparator = dependencies.getContext().getBean(ImageComparator.class);
     }
 
     @SneakyThrows
@@ -54,7 +55,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
         List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
-        ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual, excludeList);
+        ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual, excludeList);
         imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }

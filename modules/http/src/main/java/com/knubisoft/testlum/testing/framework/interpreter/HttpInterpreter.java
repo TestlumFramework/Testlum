@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidato
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
@@ -83,7 +82,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private void compareResult(final Response expected,
                                final ApiResponse actual,
                                final CommandResult result) {
-        HttpValidator httpValidator = new HttpValidator(this);
+        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         String actualBody = actual.getBody();
         setContextBody(getContextBodyKey(expected.getFile()), actualBody);
         httpValidator.validateCode(expected.getCode(), actual.getCode());
@@ -98,8 +97,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                               final CommandResult result) {
         String body = getContentIfFile(expected.getFile());
         if (StringUtils.isNotBlank(body)) {
-            result.setActual(StringPrettifier.asJsonResult(actualBody));
-            result.setExpected(StringPrettifier.asJsonResult(body));
+            result.setActual(stringPrettifier.asJsonResult(actualBody));
+            result.setExpected(stringPrettifier.asJsonResult(body));
             httpValidator.validateBody(body, actualBody, Mode.STRICT.equals(expected.getMode()));
         } else {
             logBodyValidationSkipped();
@@ -187,9 +186,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
             String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
             if (StringUtils.isNotBlank(stringBody)) {
-                log.info(BODY_LOG,
-                        StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
-                                .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                        .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
             }
         }
     }

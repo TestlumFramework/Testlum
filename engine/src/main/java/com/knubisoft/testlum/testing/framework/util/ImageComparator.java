@@ -5,7 +5,7 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.*;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.util.Objects.nonNull;
 
-@UtilityClass
+@Service
 public class ImageComparator {
 
     private static final double MAX_PERCENT = 100;

@@ -26,6 +26,7 @@ public class OracleDataSourceConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
     private final HealthCheckFactory healthCheckFactory;
+    private final DataSourceUtil dataSourceUtil;
 
     @Bean("oracleDataSource")
     public Map<AliasEnv, DataSource> oracleDataSource(final EnvToIntegrationMap envTointegrations) {
@@ -42,7 +43,7 @@ public class OracleDataSourceConfiguration {
             if (oracle.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "Oracle", oracle.getAlias()),
-                        () -> DataSourceUtil.getHikariDataSource(oracle),
+                        () -> dataSourceUtil.getHikariDataSource(oracle),
                         healthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(oracle.getAlias(), env), checkedDataSource);

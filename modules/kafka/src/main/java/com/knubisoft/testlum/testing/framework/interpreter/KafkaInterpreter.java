@@ -8,8 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -151,8 +149,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         CompareBuilder comparator = newCompare()
                 .withExpected(value)
                 .withActual(actualKafkaMessages);
-        result.setActual(StringPrettifier.asJsonResult(toString(actualKafkaMessages)));
-        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(stringPrettifier.asJsonResult(toString(actualKafkaMessages)));
+        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
         comparator.exec();
     }
 
@@ -285,7 +283,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                                  final String content) {
         log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
         log.info(TOPIC_LOG, topicOrRoutingKeyOrQueueValue);
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+        log.info(CONTENT_LOG, stringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
                 .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
     }
 
@@ -363,7 +361,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     @Data
-    private static class KafkaMessage {
+    private class KafkaMessage {
         private final String key;
         private final Object value;
         private final String correlationId;
@@ -371,7 +369,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
         KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();
-            this.value = JacksonMapperUtil.readValue(consumerRecord.value(), Object.class);
+            this.value = jacksonService.readValue(consumerRecord.value(), Object.class);
             this.correlationId = Optional.ofNullable(consumerRecord.headers().lastHeader(CORRELATION_ID))
                     .map(h -> new String(h.value(), StandardCharsets.UTF_8)).orElse(null);
         }

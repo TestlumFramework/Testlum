@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.model.global_config.Redis;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +58,7 @@ public class RedisOperation extends AbstractStorageOperation {
     }
 
     private String executeQuery(final String query, final String databaseAlias) {
-        RedisQuery redisQuery = JacksonMapperUtil.readValue(query, RedisQuery.class);
+        RedisQuery redisQuery = getJacksonService().readValue(query, RedisQuery.class);
         String command = Optional.of(redisQuery.getCommand())
                 .orElseThrow(() -> new DefaultFrameworkException(REDIS_COMMAND_NOT_FOUND));
         String[] args = redisQuery.getArg().toArray(new String[0]);

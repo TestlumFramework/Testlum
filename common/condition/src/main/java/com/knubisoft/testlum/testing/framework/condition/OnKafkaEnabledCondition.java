@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnKafkaEnabledCondition extends AbstractCondition<Kafka> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getKafkaIntegration())
-                .map(KafkaIntegration::getKafka)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getKafkaIntegration).map(KafkaIntegration::getKafka);
     }
 }

@@ -161,8 +161,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private void executeComparison(final String actual, final String expected, final CommandResult result,
                                    final boolean isNegative) {
         try {
-            new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get()).withActual(actual)
-                    .withExpected(expected).exec();
+            new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get(),
+                    jacksonService, stringPrettifier).withActual(actual).withExpected(expected).exec();
             if (isNegative) {
                 Exception e = new DefaultFrameworkException(String
                         .format(ASSERT_FAILED_EQUAL, expected, actual));

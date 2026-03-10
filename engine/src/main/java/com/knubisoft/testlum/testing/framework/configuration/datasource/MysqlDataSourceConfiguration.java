@@ -26,6 +26,7 @@ public class MysqlDataSourceConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
     private final HealthCheckFactory healthCheckFactory;
+    private final DataSourceUtil dataSourceUtil;
 
     @Bean("mySqlDataSource")
     public Map<AliasEnv, DataSource> mysqlDataSource(final EnvToIntegrationMap envTointegrations) {
@@ -42,7 +43,7 @@ public class MysqlDataSourceConfiguration {
             if (mysql.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "MySQL", mysql.getAlias()),
-                        () -> DataSourceUtil.getHikariDataSource(mysql),
+                        () -> dataSourceUtil.getHikariDataSource(mysql),
                         healthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(mysql.getAlias(), env), checkedDataSource);

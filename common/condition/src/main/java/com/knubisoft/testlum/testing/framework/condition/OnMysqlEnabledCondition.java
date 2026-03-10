@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnMysqlEnabledCondition extends AbstractCondition<Mysql> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getMysqlIntegration())
-                .map(MysqlIntegration::getMysql)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getMysqlIntegration).map(MysqlIntegration::getMysql);
     }
 }

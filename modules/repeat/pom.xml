@@ -15,7 +15,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-repeat-util</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>

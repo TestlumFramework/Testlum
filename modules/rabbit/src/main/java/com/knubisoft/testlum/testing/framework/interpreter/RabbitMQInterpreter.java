@@ -8,8 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -202,8 +200,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         CompareBuilder comparator = newCompare()
                 .withExpected(message)
                 .withActual(actualRmqMessages);
-        result.setActual(StringPrettifier.asJsonResult(toString(actualRmqMessages)));
-        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(stringPrettifier.asJsonResult(toString(actualRmqMessages)));
+        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
         comparator.exec();
     }
 
@@ -244,7 +242,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                                  final String content) {
         log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
         log.info(topicOrRoutingKeyOrQueue, topicOrRoutingKeyOrQueueValue);
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+        log.info(CONTENT_LOG, stringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
                 .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
     }
 
@@ -325,13 +323,13 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     @Data
-    private static class RabbitMQMessage {
+    private class RabbitMQMessage {
         private final Object message;
         private final String correlationId;
         private Map<String, Object> headers;
 
         RabbitMQMessage(final Message message) {
-            this.message = JacksonMapperUtil.readValue(message.getBody(), Object.class);
+            this.message = jacksonService.readValue(message.getBody(), Object.class);
             Object header = message.getMessageProperties().getHeader(CORRELATION_ID);
             this.correlationId = String.valueOf(header);
         }

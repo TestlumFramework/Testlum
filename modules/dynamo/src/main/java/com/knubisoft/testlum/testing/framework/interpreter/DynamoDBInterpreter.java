@@ -8,8 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Dynamo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +47,8 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
                 .withActual(actual)
                 .withExpected(getContentIfFile(ddb.getFile()));
 
-        result.setActual(StringPrettifier.asJsonResult(actual));
-        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(stringPrettifier.asJsonResult(actual));
+        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
 
         comparator.exec();
         setContextBody(getContextBodyKey(ddb.getFile()), actual);
@@ -68,7 +66,7 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
         logAllQueries(queries, alias);
         addDatabaseMetaData(alias, queries, result);
         StorageOperationResult apply = dynamoDBOperation.apply(new ListSource(queries), alias);
-        return JacksonMapperUtil.writeAsStringForDynamoDbOnly(apply.getRaw());
+        return jacksonService.writeAsStringForDynamoDbOnly(apply.getRaw());
     }
 
     private void logAllQueries(final List<String> queries, final String alias) {

@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnSqlDatabaseEnableCondition extends AbstractCondition<SqlDatabase> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getSqlDatabaseIntegration())
-                .map(SqlDatabaseIntegration::getSqlDatabase)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getSqlDatabaseIntegration).map(SqlDatabaseIntegration::getSqlDatabase);
     }
 }

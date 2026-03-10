@@ -6,9 +6,11 @@ import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.SendGridUtil;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
+import com.knubisoft.testlum.testing.framework.xml.XMLValidator;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.Clickhouse;
@@ -31,7 +33,6 @@ import com.knubisoft.testlum.testing.model.scenario.Sqs;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Web;
 import com.knubisoft.testlum.testing.model.scenario.*;
-import com.knubisoft.testlum.testing.framework.xml.XMLValidator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -58,6 +59,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private final TestResourceSettings testResourceSettings;
     private final HttpUtil httpUtil;
     private final FileSearcher fileSearcher;
+    private final SendGridUtil sendGridUtil;
     private final BrowserUtil browserUtil;
     private final DatasetValidator datasetValidator;
     private final GlobalVariationsProvider globalVariationsProvider;
@@ -556,7 +558,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {
-        SendgridInfo sendgridInfo = SendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
+        SendgridInfo sendgridInfo = sendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
         Response response = sendgridInfo.getResponse();
         if (Objects.nonNull(response) && StringUtils.isNotBlank(response.getFile())) {
             validateFileIfExist(xmlFile, response.getFile());

@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnLambdaEnabledCondition extends AbstractCondition<Lambda> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getLambdaIntegration())
-                .map(LambdaIntegration::getLambda)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getLambdaIntegration).map(LambdaIntegration::getLambda);
     }
 }

@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.RepeatCommandRunner;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Repeat;
@@ -71,8 +70,8 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
 
     @SuppressWarnings("unchecked")
     private <T> T injectObjectVariation(final T t, final Map<String, String> variation) {
-        String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
+        String asJson = jacksonService.writeValueToCopiedString(t);
         String injected = globalVariations.getValue(asJson, variation, dependencies.getScenarioContext());
-        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+        return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 }

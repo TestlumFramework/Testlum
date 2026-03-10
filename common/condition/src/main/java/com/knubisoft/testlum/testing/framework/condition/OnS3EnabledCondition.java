@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnS3EnabledCondition extends AbstractCondition<S3> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getS3Integration())
-                .map(S3Integration::getS3)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getS3Integration).map(S3Integration::getS3);
     }
 }

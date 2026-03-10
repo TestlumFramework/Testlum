@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnSQSEnabledCondition extends AbstractCondition<Sqs> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getSqsIntegration())
-                .map(SqsIntegration::getSqs)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getSqsIntegration).map(SqsIntegration::getSqs);
     }
 }

@@ -4,7 +4,7 @@ import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +65,7 @@ public final class HttpUtil {
     }
 
     private final FileSearcher fileSearcher;
+    private final JacksonService jacksonService;
 
     public HttpMethodMetadata getHttpMethodMetadata(final Http http) {
         return HTTP_METHOD_MAP.entrySet().stream()
@@ -163,7 +164,7 @@ public final class HttpUtil {
                 .collect(Collectors.toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
 
         if (ContentType.APPLICATION_JSON.getMimeType().equalsIgnoreCase(contentType.getMimeType())) {
-            String params = JacksonMapperUtil.writeValueAsString(bodyParamMap);
+            String params = jacksonService.writeValueAsString(bodyParamMap);
             return newStringEntity(params, contentType);
         }
         List<BasicNameValuePair> paramList = bodyParamMap.entrySet().stream()

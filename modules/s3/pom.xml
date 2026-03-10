@@ -17,7 +17,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shared-util</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- AWS SDK for Amazon S3 -->

@@ -13,9 +13,7 @@ import java.util.Optional;
 public class OnMongoEnabledCondition extends AbstractCondition<Mongo> {
 
     @Override
-    List<? extends Integration> getIntegrations(final Integrations integrations) {
-        return Optional.ofNullable(integrations.getMongoIntegration())
-                .map(MongoIntegration::getMongo)
-                .orElse(null);
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
+        return integrations.map(Integrations::getMongoIntegration).map(MongoIntegration::getMongo);
     }
 }

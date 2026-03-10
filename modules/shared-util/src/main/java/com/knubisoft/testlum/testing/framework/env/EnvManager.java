@@ -6,6 +6,10 @@ public class EnvManager {
 
     private static final ThreadLocal<String> THREAD_ENV = new ThreadLocal<>();
 
+    private EnvManager() {
+        // hidden
+    }
+
     public static String currentEnv() {
         String environment = THREAD_ENV.get();
         if (environment == null) {

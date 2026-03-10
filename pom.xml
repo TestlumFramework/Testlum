@@ -84,7 +84,7 @@
         <http-client.version>5.4.0</http-client.version>
         <spring-rabbit.version>3.2.5</spring-rabbit.version>
         <kafka-clients.version>3.9.1</kafka-clients.version>
-        <spring-vault-core.version>2.3.3</spring-vault-core.version>
+        <spring-vault-core.version>3.2.0</spring-vault-core.version>
         <com.twilio.sdk.version>10.9.2</com.twilio.sdk.version>
 
         <!--

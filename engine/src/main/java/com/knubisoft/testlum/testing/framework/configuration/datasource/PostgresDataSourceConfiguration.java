@@ -26,6 +26,7 @@ public class PostgresDataSourceConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
     private final HealthCheckFactory healthCheckFactory;
+    private final DataSourceUtil dataSourceUtil;
 
     @Bean("postgresDataSource")
     public Map<AliasEnv, DataSource> postgresDataSource(final EnvToIntegrationMap envTointegrations) {
@@ -42,7 +43,7 @@ public class PostgresDataSourceConfiguration {
             if (postgres.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "Postgres", postgres.getAlias()),
-                        () -> DataSourceUtil.getHikariDataSource(postgres),
+                        () -> dataSourceUtil.getHikariDataSource(postgres),
                         healthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(postgres.getAlias(), env), checkedDataSource);

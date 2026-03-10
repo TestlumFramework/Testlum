@@ -18,7 +18,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-models</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>

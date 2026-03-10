@@ -14,42 +14,44 @@ import java.util.Map;
 public class InjectionUtil {
 
     private final GlobalVariationsProvider globalVariationsProvider;
+    private final JacksonService jacksonService;
+    private final SystemVariableService systemVariableService;
 
     @SuppressWarnings("unchecked")
     public <T> T injectObject(final T t, final ScenarioContext scenarioContext) {
-        String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
+        String asJson = jacksonService.writeValueToCopiedString(t);
         String injected = scenarioContext.inject(asJson);
-        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+        return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 
     @SuppressWarnings("unchecked")
     public <T> T injectObjectVariation(final T t, final Map<String, String> variation) {
-        String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
+        String asJson = jacksonService.writeValueToCopiedString(t);
         String injected = globalVariationsProvider.getValue(asJson, variation);
-        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+        return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 
     @SuppressWarnings("unchecked")
     public <T> T injectObjectVariation(final T t,
                                        final Map<String, String> variation,
                                        final ScenarioContext scenarioContext) {
-        String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
+        String asJson = jacksonService.writeValueToCopiedString(t);
         String injected = globalVariationsProvider.getValue(asJson, variation, scenarioContext);
-        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+        return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T> T injectFromVault(final VaultService vaultService, final T t) {
-        String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
+        String asJson = jacksonService.writeValueToCopiedString(t);
         String injected = vaultService.inject(asJson);
-        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+        return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 
     @SuppressWarnings("unchecked")
     public <T> T injectFromSystem(final T t) {
-        String asJason = JacksonMapperUtil.writeValueToCopiedString(t);
-        String injected = SystemVariableService.inject(asJason);
-        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+        String asJason = jacksonService.writeValueToCopiedString(t);
+        String injected = systemVariableService.inject(asJason);
+        return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 }

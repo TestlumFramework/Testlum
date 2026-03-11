@@ -42,7 +42,7 @@ jobs:
             APP_VERSION=${{ steps.testlum_version.outputs.version }}
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: false
           tags: |
             ghcr.io/testlumframework/testlum:${{ steps.testlum_version.outputs.version }}
             ghcr.io/testlumframework/testlum:latest

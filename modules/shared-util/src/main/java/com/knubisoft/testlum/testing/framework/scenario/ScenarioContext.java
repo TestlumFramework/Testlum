@@ -19,7 +19,7 @@ public class ScenarioContext {
     private final Map<String, Boolean> conditionMap = new HashMap<>();
 
     private final List<ScenarioContextVariationInjectionStrategy> variationInjectionStrategies =
-            List.of(new DefaultVariationInjectionStrategy(), new JsonBodyValuesInjectionStrategy());
+            List.of(new DefaultVariationInjectionStrategy(), new JsonVariationInjectionStrategy());
 
     public ScenarioContext(final Map<String, String> contextMap) {
         this.contextMap = new LinkedHashMap<>(contextMap);

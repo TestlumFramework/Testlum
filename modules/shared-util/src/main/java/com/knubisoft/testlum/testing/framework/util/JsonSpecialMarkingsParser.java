@@ -10,7 +10,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * Old replace strategy. Kept for now
+ *
+ */
+@Deprecated
 public class JsonSpecialMarkingsParser {
 
     private static final String ABSENT_MARKER = "j(absent)";
@@ -31,16 +35,13 @@ public class JsonSpecialMarkingsParser {
         return StringEscapeUtils.escapeJson(json);
     }
 
-
     private static Map<String, Object> removeFromContextMapKeysSpecialJsonMarks(Map<String, String> contextMap) {
         Map<String, Object> result = new LinkedHashMap<>();
         for (Map.Entry<String, String> stringObjectEntry : contextMap.entrySet()) {
-            if (stringObjectEntry.getKey().contains("expected")) {
-                result.put(stringObjectEntry.getKey(), stringObjectEntry.getValue());
-            } else {
-            String csvColumnName = stringObjectEntry.getKey().trim();
-            String csvColumnNameSanitized = csvColumnName.substring(2, csvColumnName.length() - 1);
-            result.put(csvColumnNameSanitized, stringObjectEntry.getValue());
+            if (!stringObjectEntry.getKey().contains("expected")) {
+                String csvColumnName = stringObjectEntry.getKey().trim();
+                String csvColumnNameSanitized = csvColumnName.substring(2, csvColumnName.length() - 1);
+                result.put(csvColumnNameSanitized, stringObjectEntry.getValue());
             }
         }
         return result;

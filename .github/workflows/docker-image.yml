@@ -46,3 +46,5 @@ jobs:
           tags: |
             ghcr.io/testlumframework/testlum:${{ steps.testlum_version.outputs.version }}
             ghcr.io/testlumframework/testlum:latest
+          provenance: false
+          sbom: false

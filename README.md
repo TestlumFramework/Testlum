@@ -4,10 +4,9 @@
 </h1>
 <h2 align="center">The best codeless end-to-end testing framework</h2>
 
-<p>[![Testlum Engine Build](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml/badge.svg)](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml)
+[![Testlum Engine Build](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml/badge.svg)](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![FullRegression](https://github.com/TestlumFramework/Demo/actions/workflows/test.yml/badge.svg)](https://github.com/TestlumFramework/Demo/actions/workflows/test.yml)
-</p>
 
 # Key Features
 

@@ -196,9 +196,12 @@ public class VariableHelperImpl implements VariableHelper {
         if (fromPath.getFromFile() == null && fromPath.getFromVar() == null) {
             return scenarioContext.getBody().getValue();
         }
-        return fromPath.getFromFile() == null
-                ? scenarioContext.get(fromPath.getFromVar())
-                : fileToString.apply(fromPath.getFromFile());
+        if (fromPath.getFromFile() != null) {
+            return fromPath.getFromFile().startsWith("expected")
+                    ? scenarioContext.get(fromPath.getFromFile())
+                    : fileToString.apply(fromPath.getFromFile());
+        }
+        return scenarioContext.get(fromPath.getFromVar());
     }
 
 

@@ -47,11 +47,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Component
 public class ScenarioValidator implements XMLValidator<Scenario> {
+
+    private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>.";
+    private static final Pattern VARIATION_VARIABLE_PATTERN = Pattern.compile("\\{\\{(.*?)}}");
 
     private final Integrations integrations;
     private final MobileUtil mobileUtil;
@@ -364,9 +369,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private File validateFileNamesIfVariations(final File xmlFile, final String fileName) {
+        String fileNameKey = this.extractFileNameFromVariationVariable(fileName);
         String variationValue = variationList.stream()
+                .filter(variatonsMap -> variatonsMap.containsKey(fileNameKey))
                 .map(variationsMap -> globalVariationsProvider.getValue(fileName, variationsMap))
-                .findFirst().get();
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, fileName)));
         return Objects.nonNull(xmlFile) ? fileSearcher.searchFileFromDir(xmlFile, variationValue)
                 : fileSearcher.searchFileFromDataFolder(variationValue);
     }
@@ -387,27 +395,24 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileIfExist(xmlFile, fromFile.getFileName());
         }
         if (Objects.nonNull(fromSQL)) {
-            List<? extends Integration> integrationList;
-            switch (fromSQL.getDbType()) {
-                case POSTGRES:
+            List<? extends Integration> integrationList = switch (fromSQL.getDbType()) {
+                case POSTGRES -> {
                     checkIntegrationExistence(integrations.getPostgresIntegration(), PostgresIntegration.class);
-                    integrationList = integrations.getPostgresIntegration().getPostgres();
-                    break;
-                case MYSQL:
+                    yield integrations.getPostgresIntegration().getPostgres();
+                }
+                case MYSQL -> {
                     checkIntegrationExistence(integrations.getMysqlIntegration(), MysqlIntegration.class);
-                    integrationList = integrations.getMysqlIntegration().getMysql();
-                    break;
-                case ORACLE:
+                    yield integrations.getMysqlIntegration().getMysql();
+                }
+                case ORACLE -> {
                     checkIntegrationExistence(integrations.getOracleIntegration(), OracleIntegration.class);
-                    integrationList = integrations.getOracleIntegration().getOracle();
-                    break;
-                case CLICKHOUSE:
+                    yield integrations.getOracleIntegration().getOracle();
+                }
+                case CLICKHOUSE -> {
                     checkIntegrationExistence(integrations.getClickhouseIntegration(), ClickhouseIntegration.class);
-                    integrationList = integrations.getClickhouseIntegration().getClickhouse();
-                    break;
-                default:
-                    throw new DefaultFrameworkException(ExceptionMessage.DB_NOT_SUPPORTED, fromSQL.getDbType());
-            }
+                    yield integrations.getClickhouseIntegration().getClickhouse();
+                }
+            };
             validateAlias(integrationList, fromSQL.getAlias());
         }
     }
@@ -564,8 +569,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileIfExist(xmlFile, response.getFile());
         }
 
-        if (sendgridInfo instanceof SendgridWithBody) {
-            SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
+        if (sendgridInfo instanceof SendgridWithBody commandWithBody) {
             Body body = commandWithBody.getBody();
             if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
                 validateFileIfExist(xmlFile, body.getFrom().getFile());
@@ -643,6 +647,18 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .filter(validator -> validator.getKey().test(command))
                 .findFirst()
                 .ifPresent(validator -> validator.getValue().accept(xmlFile, command));
+    }
+
+    private String extractFileNameFromVariationVariable(final String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return fileName;
+        }
+        Matcher matcher = VARIATION_VARIABLE_PATTERN.matcher(fileName);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return fileName;
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {

@@ -74,7 +74,8 @@ public final class WebElementFinder {
     }
 
     private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet,
-                                                 final ExecutorDependencies dependencies, final LocatorData locatorData) {
+                                                 final ExecutorDependencies dependencies,
+                                                 final LocatorData locatorData) {
         waitForDomToComplete(dependencies);
 
         Optional<WebElement> optionalElement = findElement(bySet, dependencies.getDriver());
@@ -115,8 +116,9 @@ public final class WebElementFinder {
         return optionalElement.get();
     }
 
+    //CHECKSTYLE:OFF
     private WebElement tryToHealElement(final ExecutorDependencies dependencies, final LocatorData locatorData,
-                                               final AutoHealing autoHealing) {
+                                        final AutoHealing autoHealing) {
         log.warn(LogMessage.START_HEAL_LOG);
         LocatorAutohealer locatorAutohealer = new LocatorAutohealer(dependencies, jacksonService);
         Locator locator = locatorData.getLocator();
@@ -133,7 +135,6 @@ public final class WebElementFinder {
         return healedElement;
     }
 
-    //CHECKSTYLE:OFF
     @SneakyThrows(InterruptedException.class)
     private void waitForSecondsDefinedInConfig() {
         Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();

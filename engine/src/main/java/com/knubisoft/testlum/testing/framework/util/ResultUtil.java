@@ -119,8 +119,6 @@ public class ResultUtil {
     private static final String ACTUAL_IMAGE_SIZE = "Actual image size";
     private static final String EXPECTED_IMAGE_SIZE = "Expected image size";
 
-    private final ImageComparisonUtil imageComparisonUtil;
-
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);
@@ -339,7 +337,7 @@ public class ResultUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             result.put(EXCLUDED_ELEMENT, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(imageComparisonUtil::addExcludedMetaData)
+                    .map(ImageComparisonUtil::addExcludedMetaData)
                     .collect(Collectors.joining(DelimiterConstant.COMMA + DelimiterConstant.SPACE))));
         }
     }

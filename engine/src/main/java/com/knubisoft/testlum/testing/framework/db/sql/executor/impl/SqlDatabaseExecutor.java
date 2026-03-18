@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter

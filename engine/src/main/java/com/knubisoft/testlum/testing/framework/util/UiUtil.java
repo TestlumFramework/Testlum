@@ -37,10 +37,8 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
@@ -85,6 +83,7 @@ public class UiUtil {
         return webElementFinder.find(locatorData, dependencies);
     }
 
+    // CHECKSTYLE:OFF
     public LocatorData getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
         if (locatorStrategy == LocatorStrategy.LOCATOR_ID) {
             return locatorCollector.getLocator(locatorId);

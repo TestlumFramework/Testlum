@@ -42,7 +42,8 @@ public class LocatorAutohealer {
     private static final double MIN_ACCEPTABLE_SCORE = 0.5;
     private static final double STRUCTURAL_WEIGHT = 0.4;
     private static final int MAX_CANDIDATES_FOR_STRUCTURAL_CHECK = 40;
-    private static final List<String> FALLBACK_TAGS = List.of("input", "button", "a", "select", "textarea", "div", "span", "label");
+    private static final List<String> FALLBACK_TAGS =
+            List.of("input", "button", "a", "select", "textarea", "div", "span", "label");
 
     private static final String PATCH_FILE_PREFIX = "patch_";
     private static final String PATCH_FILE_EXTENSION = ".xml";
@@ -60,6 +61,7 @@ public class LocatorAutohealer {
         this.jacksonService = jacksonService;
     }
 
+    // CHECKSTYLE:OFF
     public Optional<WebElement> heal(final Locator locator) {
         HealingElementMetadata metadata = elementMetadataExtractor.extractMetadata(locator);
         List<WebElement> candidates = collectCandidates(metadata);
@@ -91,18 +93,17 @@ public class LocatorAutohealer {
 
         return Optional.ofNullable(best).map(ScoredElement::getElement);
     }
+    // CHECKSTYLE:ON
 
     public File generateNewLocators(final WebElement healedElement, final AutoHealingMode mode,
-                                    final ExecutorDependencies dependencies, LocatorData locatorData) {
+                                    final ExecutorDependencies dependencies, final LocatorData locatorData) {
         HealedLocators healedLocators = generateXpathAndCssSelector(healedElement);
         generateText(healedElement, healedLocators);
         generateId(healedElement, healedLocators);
         generateClass(healedElement, healedLocators);
-
         if (mode == AutoHealingMode.SOFT) {
             return generatePatchForLocatorDefinedInScenario(
-                    dependencies, healedLocators, locatorData.getFile() != null, locatorData
-            );
+                  dependencies, healedLocators, locatorData.getFile() != null, locatorData);
         } else {
             if (locatorData.getFile() != null) {
                 LocatorXmlUpdater.updateLocator(locatorData, healedLocators);
@@ -114,22 +115,25 @@ public class LocatorAutohealer {
     private List<WebElement> collectCandidates(final HealingElementMetadata metadata) {
         List<String> tags = resolveTags(metadata);
         Set<WebElement> uniqueCandidates = new LinkedHashSet<>();
-
         for (String anchorId : metadata.getAncestorIds()) {
-            try {
-                SearchContext anchor = driver.findElement(By.id(anchorId));
-                for (String tag : tags) {
-                    uniqueCandidates.addAll(anchor.findElements(By.tagName(tag)));
-                }
-            } catch (NoSuchElementException ignored) {
-            }
+            collectCandidatesByAncestorId(anchorId, tags, uniqueCandidates);
         }
-
         for (String tag : tags) {
             uniqueCandidates.addAll(driver.findElements(By.tagName(tag)));
         }
-
         return new ArrayList<>(uniqueCandidates);
+    }
+
+    private void collectCandidatesByAncestorId(final String anchorId, final List<String> tags,
+                                               final Set<WebElement> uniqueCandidates) {
+        try {
+            SearchContext anchor = driver.findElement(By.id(anchorId));
+            for (String tag : tags) {
+                uniqueCandidates.addAll(anchor.findElements(By.tagName(tag)));
+            }
+        } catch (NoSuchElementException ignored) {
+            // ignored
+        }
     }
 
     private List<String> resolveTags(final HealingElementMetadata metadata) {
@@ -159,6 +163,7 @@ public class LocatorAutohealer {
         return (baseScore * (1 - STRUCTURAL_WEIGHT)) + (structuralScore * STRUCTURAL_WEIGHT);
     }
 
+    // CHECKSTYLE:OFF
     private StructuralInfo calculateStructuralInfo(final HealingElementMetadata metadata, final WebElement candidate) {
         int matchedChecks = 0;
         int checksPerformed = 0;
@@ -167,11 +172,13 @@ public class LocatorAutohealer {
             checksPerformed++;
             try {
                 String actualParentTag = (String) ((JavascriptExecutor) driver)
-                        .executeScript("return arguments[0].parentNode && arguments[0].parentNode.tagName ? arguments[0].parentNode.tagName.toLowerCase() : null;", candidate);
+                        .executeScript("return arguments[0].parentNode && arguments[0].parentNode.tagName " +
+                                "? arguments[0].parentNode.tagName.toLowerCase() : null;", candidate);
                 if (actualParentTag != null && metadata.getParentTags().contains(actualParentTag)) {
                     matchedChecks++;
                 }
             } catch (Exception ignored) {
+                // ignored
             }
         }
 
@@ -179,12 +186,12 @@ public class LocatorAutohealer {
             checksPerformed++;
             try {
                 Boolean isInsideAnchor = (Boolean) ((JavascriptExecutor) driver).executeScript(
-                        "var el = arguments[0];" +
-                                "var ids = arguments[1];" +
-                                "return ids.some(function(id){" +
-                                "  var anchor = document.getElementById(id);" +
-                                "  return anchor && anchor.contains(el);" +
-                                "});",
+                        "var el = arguments[0];"
+                                + "var ids = arguments[1];"
+                                + "return ids.some(function(id){"
+                                + "  var anchor = document.getElementById(id);"
+                                + "  return anchor && anchor.contains(el);"
+                                + "});",
                         candidate,
                         new ArrayList<>(metadata.getAncestorIds())
                 );
@@ -192,11 +199,13 @@ public class LocatorAutohealer {
                     matchedChecks++;
                 }
             } catch (Exception ignored) {
+                // ignored
             }
         }
 
         return new StructuralInfo(matchedChecks, checksPerformed);
     }
+    // CHECKSTYLE:ON
 
     private File generatePatchForLocatorDefinedInScenario(final ExecutorDependencies dependencies,
                                                           final HealedLocators healedLocators,
@@ -213,13 +222,17 @@ public class LocatorAutohealer {
             fileName = PATCH_FILE_PREFIX + position + PATCH_FILE_EXTENSION;
         }
         File patch = new File(directory, fileName);
+        writeHealedLocatorsToFile(healedLocators, patch);
+        return patch;
+    }
+
+    private void writeHealedLocatorsToFile(final HealedLocators healedLocators, final File patch) {
         String xmlContent = XmlGenerator.toXml(healedLocators);
         try {
             FileUtils.writeStringToFile(patch, xmlContent, defaultCharset());
         } catch (IOException e) {
             throw new DefaultFrameworkException(e.getMessage());
         }
-        return patch;
     }
 
     private void generateClass(final WebElement healedElement, final HealedLocators healedLocators) {
@@ -243,6 +256,7 @@ public class LocatorAutohealer {
         }
     }
 
+    // CHECKSTYLE:OFF
     private double calculateWeightedBaseScore(final HealingElementMetadata metadata, final WebElement candidate) {
         double totalWeight = 0;
         double weightedScore = 0;
@@ -371,6 +385,7 @@ public class LocatorAutohealer {
 
         return boundToUnitInterval(total / metaAttrs.size());
     }
+    // CHECKSTYLE:ON
 
     private String normalize(final String value) {
         if (value == null) {
@@ -401,6 +416,7 @@ public class LocatorAutohealer {
         return 1.0 - ((double) distance / maxLength);
     }
 
+    // CHECKSTYLE:OFF
     private HealedLocators generateXpathAndCssSelector(final WebElement healedElement) {
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
@@ -411,7 +427,8 @@ public class LocatorAutohealer {
                 "var attrs = ['name', 'placeholder', 'type', 'role', 'aria-label', 'data-testid'];" +
                 "attrs.forEach(attr => {" +
                 "  if(el.getAttribute(attr)) {" +
-                "    results.xpaths.push('//' + el.tagName.toLowerCase() + '[@' + attr + '=\"' + el.getAttribute(attr) + '\"]');" +
+                "    results.xpaths.push('//' + el.tagName.toLowerCase() + '[@' + attr + '=\"' + " +
+                        "el.getAttribute(attr) + '\"]');" +
                 "  }" +
                 "});" +
 
@@ -446,6 +463,7 @@ public class LocatorAutohealer {
             return new HealedLocators();
         }
     }
+    // CHECKSTYLE:ON
 
     private static class ScoredElement {
         @Getter

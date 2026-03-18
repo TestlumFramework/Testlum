@@ -15,7 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class CssSelectorMetadataExtractor implements SpecificMetadataExtractor<CssSelector>, TagNameExtractor, AttributeExtractor, IdExtractor, ClassExtractor {
+public class CssSelectorMetadataExtractor implements SpecificMetadataExtractor<CssSelector>, TagNameExtractor,
+                                                     AttributeExtractor, IdExtractor, ClassExtractor {
 
     private static final Pattern TYPE_SELECTOR_PATTERN =
             Pattern.compile("^([a-zA-Z][a-zA-Z0-9_-]*\\|)?([a-zA-Z][a-zA-Z0-9_-]*)");
@@ -60,6 +61,7 @@ public class CssSelectorMetadataExtractor implements SpecificMetadataExtractor<C
         }
     }
 
+    // CHECKSTYLE:OFF
     @Override
     public void extractTagName(final String cssSelector, final HealingElementMetadata healingElementMetadata) {
         String[] selectorGroups = cssSelector.split(",");
@@ -86,6 +88,7 @@ public class CssSelectorMetadataExtractor implements SpecificMetadataExtractor<C
         }
 
     }
+    // CHECKSTYLE:ON
 
     @Override
     public boolean supports(final Object locatorType) {

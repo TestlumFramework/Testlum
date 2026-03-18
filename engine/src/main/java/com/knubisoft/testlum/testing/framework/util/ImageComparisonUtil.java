@@ -110,7 +110,7 @@ public class ImageComparisonUtil {
         return (int) (screenHeight - windowHeight);
     }
 
-    public String addExcludedMetaData(Exclude exclude) {
+    public static String addExcludedMetaData(final Exclude exclude) {
         if (exclude.getByLocator() != null) {
             return exclude.getByLocator().getLocator();
         } else {

@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.Ai;
 import com.knubisoft.testlum.testing.model.scenario.UiAi;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
@@ -29,12 +28,13 @@ public class UiAiExecutor extends AbstractUiExecutor<UiAi> {
     private static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     private static final String PROMPT_LOG = format(TABLE_FORMAT, "Prompt", "{}");
     private static final String ANSWER_LOG = format(TABLE_FORMAT, "Answer", "{}");
-    public static final String ALIAS = "Alias";
-    public static final String NAME = "Name";
-    public static final String PROMPT = "Prompt";
-    public static final String ANSWER = "Answer";
+    private static final String ALIAS = "Alias";
+    private static final String NAME = "Name";
+    private static final String PROMPT = "Prompt";
+    private static final String ANSWER = "Answer";
 
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+    private static final int MAX_MESSAGES = 10;
 
     @Autowired(required = false)
     private Map<AliasEnv, ChatModel> aiChatModels;
@@ -65,7 +65,7 @@ public class UiAiExecutor extends AbstractUiExecutor<UiAi> {
         AliasEnv aliasEnv = new AliasEnv(uiAi.getAlias(), dependencies.getEnvironment());
         ChatModel chatModel = aiChatModels.get(aliasEnv);
         ChatMemory chatMemory = chatMemoryMap
-                .computeIfAbsent(aliasEnv, env -> MessageWindowChatMemory.withMaxMessages(10));
+                .computeIfAbsent(aliasEnv, env -> MessageWindowChatMemory.withMaxMessages(MAX_MESSAGES));
 
         AiUtil aiService = AiServices.builder(AiUtil.class)
                 .chatModel(chatModel)

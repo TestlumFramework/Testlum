@@ -38,13 +38,14 @@ public abstract class AbstractSqlExecutor {
     private static final String CALL = "CALL";
     private static final String COUNT = "count";
 
-    protected final JdbcTemplate template;
-    protected final LogUtil logUtil;
-
     private static final Pattern STATEMENT = Pattern.compile(
-            ";\\s*(?:(?:/\\*.*?\\*/)|(?:--.*?$))*\\s*(?=(?i)(?:insert\\s+into|update|delete|create|alter|drop|with|do)\\b)",
+            ";\\s*(?:(?:/\\*.*?\\*/)|(?:--.*?$))*\\s*(?=(?i)"
+                    + "(?:insert\\s+into|update|delete|create|alter|drop|with|do)\\b)",
             Pattern.DOTALL | Pattern.MULTILINE
     );
+
+    protected final JdbcTemplate template;
+    protected final LogUtil logUtil;
 
     public AbstractSqlExecutor(final DataSource dataSource, final LogUtil logUtil) {
         this.template = Objects.isNull(dataSource) ? null : new JdbcTemplate(dataSource);
@@ -84,18 +85,18 @@ public abstract class AbstractSqlExecutor {
         return queryResult;
     }
 
-    private QueryResult<Object> createCleanedQueryResult(String query) {
+    private QueryResult<Object> createCleanedQueryResult(final String query) {
         String cleanedQuery = query.replaceAll(LF, EMPTY)
                 .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
                 .trim();
         return new QueryResult<>(cleanedQuery);
     }
 
-    private boolean shouldExecuteAsSingleQuery(List<String> statements) {
+    private boolean shouldExecuteAsSingleQuery(final List<String> statements) {
         return statements.size() <= 1;
     }
 
-    private Object executeStatementBatch(List<String> statements) {
+    private Object executeStatementBatch(final List<String> statements) {
         Object lastResult = null;
         for (String statement : statements) {
             lastResult = executeSingleStatement(statement);
@@ -103,7 +104,7 @@ public abstract class AbstractSqlExecutor {
         return lastResult;
     }
 
-    private Object executeSingleStatement(String statement) {
+    private Object executeSingleStatement(final String statement) {
         try {
             return executeAppropriateQuery(statement);
         } catch (InvalidDataAccessResourceUsageException e) {
@@ -113,7 +114,7 @@ public abstract class AbstractSqlExecutor {
     }
 
     protected List<String> splitSqlStatements(final String script) {
-        if (script == null || script.isBlank()){
+        if (script == null || script.isBlank()) {
             return List.of();
         }
         final String source = script.replace("\uFEFF", "");

@@ -245,19 +245,22 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     @Override
-    public String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result) {
+    public String getAlertResult(final FromAlert fromAlert, final String varName,
+                                 final Alert browserAlert, final CommandResult result) {
         String valueResult = browserAlert.getText();
         resultUtil.addVariableMetaData(ALERT, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
     @Override
-    public String getDateResult(final FromDate fromDate, final String variableName, final CommandResult commandResult) {
+    public String getDateResult(final FromDate fromDate, final String variableName,
+                                final CommandResult commandResult) {
         String dateFormatPattern = normalizeDateFormat(fromDate.getFormat());
         ZoneId zoneId = resolveZoneId(fromDate.getTimezone());
         DateTimeFormatter dateTimeFormatter = createDateTimeFormatter(dateFormatPattern);
         ZonedDateTime calculatedDateTime = calculateDateTime(fromDate, dateFormatPattern, dateTimeFormatter, zoneId);
-        return formatAndRegisterResult(calculatedDateTime, dateTimeFormatter, variableName, dateFormatPattern, commandResult);
+        return formatAndRegisterResult(calculatedDateTime, dateTimeFormatter,
+                variableName, dateFormatPattern, commandResult);
     }
 
     private ZonedDateTime calculateDateTime(final FromDate fromDate, final String dateFormatPattern,
@@ -275,29 +278,28 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     private String formatAndRegisterResult(final ZonedDateTime dateTime, final DateTimeFormatter dateTimeFormatter,
-                                           final String variableName, final String pattern, final CommandResult commandResult) {
+                                           final String variableName, final String pattern,
+                                           final CommandResult commandResult) {
         try {
             String formattedResult = dateTime.format(dateTimeFormatter);
             resultUtil.addVariableMetaData(GENERATED_STRING, variableName, pattern, formattedResult, commandResult);
             return formattedResult;
         } catch (DateTimeException e) {
-            throw new DefaultFrameworkException(String.format(ExceptionMessage.DATE_FORMATTING_FAILED, pattern, e.getMessage()));
+            throw new DefaultFrameworkException(String.format(ExceptionMessage.DATE_FORMATTING_FAILED,
+                                                pattern, e.getMessage()));
         }
     }
 
     private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
         try {
-            ZonedDateTime now = ZonedDateTime.now();
-            return new DateTimeFormatterBuilder()
-                    .appendPattern(dateFormatPattern)
-                    .parseDefaulting(ChronoField.YEAR, now.getYear())
-                    .parseDefaulting(ChronoField.MONTH_OF_YEAR, now.getMonthValue())
-                    .parseDefaulting(ChronoField.DAY_OF_MONTH, now.getDayOfMonth())
+            return new DateTimeFormatterBuilder().appendPattern(dateFormatPattern)
+                    .parseDefaulting(ChronoField.YEAR, ZonedDateTime.now().getYear())
+                    .parseDefaulting(ChronoField.MONTH_OF_YEAR, ZonedDateTime.now().getMonthValue())
+                    .parseDefaulting(ChronoField.DAY_OF_MONTH, ZonedDateTime.now().getDayOfMonth())
                     .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
                     .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                     .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
                     .toFormatter();
-
         } catch (IllegalArgumentException e) {
             throw new DefaultFrameworkException(
                     String.format(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN, dateFormatPattern, e.getMessage()));
@@ -354,7 +356,8 @@ public class VariableHelperImpl implements VariableHelper {
                 String.format(ExceptionMessage.POOR_DATETIME_INFORMATION, originalValue, pattern));
     }
 
-    private ZonedDateTime applyDateShift(final ZonedDateTime zonedDateTime, final DateShift dateShift, final int signMultiplier) {
+    private ZonedDateTime applyDateShift(final ZonedDateTime zonedDateTime, final DateShift dateShift,
+                                         final int signMultiplier) {
         int value;
         try {
             value = Integer.parseInt(dateShift.getValue());
@@ -364,6 +367,11 @@ public class VariableHelperImpl implements VariableHelper {
             );
         }
         int shiftAmount = value * signMultiplier;
+        return calculateDateWithShift(zonedDateTime, dateShift, shiftAmount);
+    }
+
+    private ZonedDateTime calculateDateWithShift(final ZonedDateTime zonedDateTime, final DateShift dateShift,
+                                                 final int shiftAmount) {
         return switch (dateShift.getUnit()) {
             case MINUTES -> zonedDateTime.plusMinutes(shiftAmount);
             case SECONDS -> zonedDateTime.plusSeconds(shiftAmount);

@@ -110,7 +110,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return Collections.emptyList();
     }
 
-    private Rectangle getExcludeArea(Exclude exclude, Scale scale) {
+    private Rectangle getExcludeArea(final Exclude exclude, final Scale scale) {
         if (exclude.getByLocator() != null) {
             ByLocator byLocator = exclude.getByLocator();
             return getElementArea(byLocator.getLocator(), scale, byLocator.getLocatorStrategy());
@@ -138,7 +138,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
     }
 
-    private Rectangle getAreaByCoordinates(Exclude exclude) {
+    private Rectangle getAreaByCoordinates(final Exclude exclude) {
         ByArea byArea = exclude.getByArea();
         int minX = byArea.getX().intValue();
         int minY = byArea.getY().intValue();

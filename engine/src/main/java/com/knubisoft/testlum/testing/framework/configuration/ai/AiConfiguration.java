@@ -19,6 +19,8 @@ import static com.knubisoft.testlum.testing.framework.GlobalTestConfigurationPro
 @Conditional(OnAiEnabledCondition.class)
 public class AiConfiguration {
 
+    private static final int MAX_COMPLETION_TOKENS = 50;
+
     @Bean
     public Map<AliasEnv, ChatModel> aiChatModel(final EnvToIntegrationMap envTointegrations) {
         Map<AliasEnv, ChatModel> aiChatModelMap = new HashMap<>();
@@ -43,7 +45,7 @@ public class AiConfiguration {
                 .baseUrl(ai.getBaseUrl())
                 .modelName(ai.getModelName())
                 .temperature(0.0)
-                .maxCompletionTokens(50)
+                .maxCompletionTokens(MAX_COMPLETION_TOKENS)
                 .build();
     }
 

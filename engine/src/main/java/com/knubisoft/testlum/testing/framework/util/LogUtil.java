@@ -28,7 +28,6 @@ public class LogUtil {
     private final MobileUtil mobileUtil;
     private final StringPrettifier stringPrettifier;
     private final SqlUtil sqlUtil;
-    private final ImageComparisonUtil imageComparisonUtil;
 
     //CHECKSTYLE:OFF
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
@@ -248,7 +247,7 @@ public class LogUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             log.info(LogMessage.IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(imageComparisonUtil::addExcludedMetaData)
+                    .map(ImageComparisonUtil::addExcludedMetaData)
                     .collect(Collectors.joining(DelimiterConstant.COMMA + DelimiterConstant.SPACE))));
         }
     }

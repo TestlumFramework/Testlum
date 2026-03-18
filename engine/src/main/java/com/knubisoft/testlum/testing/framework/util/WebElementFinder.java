@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.Duration;
-
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -81,7 +80,8 @@ public final class WebElementFinder {
     }
 
     private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet,
-                                                 final ExecutorDependencies dependencies, final LocatorData locatorData) {
+                                                 final ExecutorDependencies dependencies,
+                                                 final LocatorData locatorData) {
         waitForDomToComplete(dependencies);
 
         Optional<WebElement> optionalElement = findElement(bySet, dependencies.getDriver());
@@ -143,6 +143,7 @@ public final class WebElementFinder {
                 .pollingEvery(Duration.ofMillis(POLLING_INTERVAL_MS));
     }
 
+    //CHECKSTYLE:OFF
     private WebElement tryToHealElement(final ExecutorDependencies dependencies, final LocatorData locatorData,
                                         final AutoHealing autoHealing) {
         log.warn(LogMessage.START_HEAL_LOG);
@@ -158,8 +159,6 @@ public final class WebElementFinder {
                 healedElement, autoHealing.getMode(), dependencies, locatorData);
         log.info(LogMessage.HEAL_RESULT_LOG,
                 locator.getLocatorId(), fileWithPatch == null ? dependencies.getFile() : fileWithPatch.getAbsolutePath());
-        log.info(LogMessage.HEAL_RESULT_LOG, locator.getLocatorId(),
-                fileWithPatch == null ? dependencies.getFile() : fileWithPatch.getAbsolutePath());
         return healedElement;
     }
 

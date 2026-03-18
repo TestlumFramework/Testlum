@@ -103,7 +103,9 @@ public class ScenarioRunner {
         if (nonNull(scenarioDir)) {
             try {
                 java.nio.file.Files.createDirectories(scenarioDir);
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+                // ignored
+            }
         }
         this.preExistingFiles = webDownloadUtil.snapshotFileNames(scenarioDir);
     }
@@ -136,22 +138,26 @@ public class ScenarioRunner {
             log.error(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
             if (scenarioArguments.isContainsUiSteps()) {
-                dependencies.getNativeDriver().quit();
-                dependencies.getWebDriver().quit();
-                dependencies.getMobilebrowserDriver().quit();
+                quitUiDrivers();
             }
-
-            AbstractBrowser browserConfig = browserUtil
-                    .getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
-                    .orElse(null);
-
-            if (browserConfig instanceof Safari) {
-                webDownloadUtil.moveSystemDownloadsToScenarioDir(scenarioDir, executionStartTime);
-            }
-
-            boolean keep = nonNull(browserConfig) && browserConfig.isKeepDownloadedFiles();
-            webDownloadUtil.cleanupDownloadedFiles(scenarioDir, preExistingFiles, keep);
+            cleanupDownloadedFiles();
         }
+    }
+
+    private void cleanupDownloadedFiles() {
+        AbstractBrowser browserConfig = browserUtil.getBrowserBy(
+                scenarioArguments.getEnvironment(), scenarioArguments.getBrowser()).orElse(null);
+        if (browserConfig instanceof Safari) {
+            webDownloadUtil.moveSystemDownloadsToScenarioDir(scenarioDir, executionStartTime);
+        }
+        boolean keep = nonNull(browserConfig) && browserConfig.isKeepDownloadedFiles();
+        webDownloadUtil.cleanupDownloadedFiles(scenarioDir, preExistingFiles, keep);
+    }
+
+    private void quitUiDrivers() {
+        dependencies.getNativeDriver().quit();
+        dependencies.getWebDriver().quit();
+        dependencies.getMobilebrowserDriver().quit();
     }
 
     private void runCommands(final List<AbstractCommand> commands) {

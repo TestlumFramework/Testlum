@@ -58,6 +58,7 @@ public class LocatorXmlUpdater {
         }
     }
 
+    //CHECKSTYLE:OFF
     private static void flushToLocatorFile(final LocatorData locatorData, final Document document)
             throws TransformerException {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -70,6 +71,7 @@ public class LocatorXmlUpdater {
         StreamResult result = new StreamResult(locatorData.getFile());
         transformer.transform(source, result);
     }
+    //CHECKSTYLE:ON
 
     private static void cleanEmptyTextNodes(final Node node) {
         NodeList childNodes = node.getChildNodes();

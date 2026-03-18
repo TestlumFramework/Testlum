@@ -22,19 +22,19 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.PROMPT_TEX
 @ExecutorForClass(Alert.class)
 public class AlertExecutor extends AbstractUiExecutor<Alert> {
 
-    public AlertExecutor(ExecutorDependencies dependencies) {
+    public AlertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    public void execute(Alert alert, CommandResult result) {
+    public void execute(final Alert alert, final CommandResult result) {
         result.put(ALERT_TYPE, alert.getType().value());
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         waitForAlertVisibleIfRequired(alert, result);
         handleAlertInteraction(alert, result);
     }
 
-    private void waitForAlertVisibleIfRequired(Alert alert, CommandResult result) {
+    private void waitForAlertVisibleIfRequired(final Alert alert, final CommandResult result) {
         if (alert.isWaitUntilVisible() != null && Boolean.TRUE.equals(alert.isWaitUntilVisible())) {
             int timeoutValue = alert.getTimeout().intValue();
             result.put(ALERT_WAIT, timeoutValue);
@@ -47,12 +47,12 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
         }
     }
 
-    private void handleAlertInteraction(Alert alert, CommandResult result) {
+    private void handleAlertInteraction(final Alert alert, final CommandResult result) {
         fillPromptTextIfRequired(alert, result);
         finalizeAlert(alert);
     }
 
-    private void fillPromptTextIfRequired(Alert alert, CommandResult result) {
+    private void fillPromptTextIfRequired(final Alert alert, final CommandResult result) {
         if (AlertType.PROMPT == alert.getType() && alert.getText() != null) {
             String promptText = alert.getText();
             result.put(PROMPT_TEXT, promptText);
@@ -60,7 +60,7 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
         }
     }
 
-    private void finalizeAlert(Alert alert) {
+    private void finalizeAlert(final Alert alert) {
         if (AlertAction.ACCEPT == alert.getAction()) {
             acceptAlert();
         } else {
@@ -76,7 +76,7 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
         dependencies.getDriver().switchTo().alert().dismiss();
     }
 
-    private void setPromptText(String alertText) {
+    private void setPromptText(final String alertText) {
         dependencies.getDriver().switchTo().alert().sendKeys(alertText);
     }
 }

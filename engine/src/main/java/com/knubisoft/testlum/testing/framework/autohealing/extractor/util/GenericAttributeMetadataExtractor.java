@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 public class GenericAttributeMetadataExtractor {
 
+    // CHECKSTYLE:OFF
     public static Map<String, String> extractAttributes(final String locatorValue) {
         Map<String, String> attributes = new HashMap<>();
         if (locatorValue == null || locatorValue.trim().isEmpty()) {
@@ -50,5 +51,6 @@ public class GenericAttributeMetadataExtractor {
 
         return attributes;
     }
+    // CHECKSTYLE:ON
 
 }

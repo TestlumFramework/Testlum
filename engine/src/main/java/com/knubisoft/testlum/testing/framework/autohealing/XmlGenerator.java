@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 
-import java.io.IOException;
-
 public class XmlGenerator {
     private static final XmlMapper XML_MAPPER = new XmlMapper();
 
@@ -16,7 +14,7 @@ public class XmlGenerator {
         XML_MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public static String toXml(Object obj) {
+    public static String toXml(final Object obj) {
         try {
             return XML_MAPPER.writeValueAsString(obj);
         } catch (JsonProcessingException e) {

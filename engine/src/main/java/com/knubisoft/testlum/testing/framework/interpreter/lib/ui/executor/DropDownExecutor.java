@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -79,17 +81,21 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         String value = oneValue.getValue();
         validateByMethodForCustomDropDown(oneValue.getBy());
         resultUtil.addDropDownForOneValueMetaData(oneValue.getType().value(), oneValue.getBy().value(), value, result);
-        log.info(LogMessage.COMMAND_TYPE_LOG, String.format(ResultUtil.ONE_VALUE_TEMPLATE, type.value()));
-        log.info(LogMessage.BY_LOG, oneValue.getBy().value());
-        log.info(LogMessage.VALUE_LOG, value);
+        logOneValueDropDownData(type, oneValue, value);
         if ("mat-select".equalsIgnoreCase(dropDownElement.getTagName())) {
-            uiUtil.processMatSelect(dependencies, dropDownElement, value);
-            uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+            processMatSelect(dependencies, dropDownElement, value, result);
             return;
         }
         dropDownElement.click();
         List<WebElement> dropDownParentElements = dropDownElement.findElements(By.xpath("ancestor::*"));
         selectSearchableOptionForCustomDropDown(dropDownParentElements, value);
+    }
+
+    private void logOneValueDropDownData(final TypeForOneValue type, final OneValue oneValue,
+                                         final String value) {
+        log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
+        log.info(BY_LOG, oneValue.getBy().value());
+        log.info(VALUE_LOG, value);
     }
 
     private void selectSearchableOptionForCustomDropDown(final List<WebElement> dropDownParentElements,
@@ -121,9 +127,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();
         resultUtil.addDropDownForOneValueMetaData(type.value(), method.value(), value, result);
-        log.info(LogMessage.COMMAND_TYPE_LOG, String.format(ResultUtil.ONE_VALUE_TEMPLATE, type.value()));
-        log.info(LogMessage.BY_LOG, oneValue.getBy().value());
-        log.info(LogMessage.VALUE_LOG, value);
+        logOneValueDropDownData(type, oneValue, value);
         if (type == TypeForOneValue.SELECT) {
             selectByMethod(select, method, value);
         } else {
@@ -200,12 +204,14 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         select.deselectAll();
     }
 
-    public void processMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect, final String value) {
+    public void processMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect,
+                                 final String value, final CommandResult result) {
         openMatSelect(dependencies, matSelect);
         WebElement panel = getMatSelectPanel(dependencies, matSelect);
         WebElement option = findMatchingOption(panel, value);
         clickMatOption(dependencies, option);
         uiUtil.waitForMatSelectToClose(dependencies, matSelect);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void openMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect) {
@@ -217,7 +223,8 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
     private WebElement getMatSelectPanel(final ExecutorDependencies dependencies, final WebElement matSelect) {
         String panelId = matSelect.getAttribute("aria-controls");
         if (isBlank(panelId)) {
-            throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. Cannot find dropdown panel.");
+            throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. "
+                    + "Cannot find dropdown panel.");
         }
         WebElement panel = dependencies.getDriver().findElement(By.id(panelId));
         uiUtil.waitForElementVisibility(dependencies, panel);
@@ -237,8 +244,8 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(
                         format("Option '%s' not found. Available options: %s", value,
-                                options.stream().map(o -> normalizeText(extractOptionText(o))).collect(Collectors.toList()))
-                ));
+                                options.stream().map(o -> normalizeText(extractOptionText(o)))
+                                        .collect(Collectors.toList()))));
     }
 
     private void clickMatOption(final ExecutorDependencies dependencies, final WebElement option) {

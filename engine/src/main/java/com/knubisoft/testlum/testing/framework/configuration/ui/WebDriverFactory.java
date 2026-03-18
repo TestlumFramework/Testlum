@@ -32,7 +32,6 @@ import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -225,7 +224,7 @@ public class WebDriverFactory {
     private class ChromeDriverInitializer implements WebDriverInitializer {
         private final Path downloadPath;
 
-        public ChromeDriverInitializer(final Path downloadPath) {
+        private ChromeDriverInitializer(final Path downloadPath) {
             this.downloadPath = downloadPath;
         }
 
@@ -235,34 +234,40 @@ public class WebDriverFactory {
 
         private ChromeOptions getChromeOptions(final Chrome browser) {
             ChromeOptions chromeOptions = new ChromeOptions();
-
             if (Objects.nonNull(downloadPath)) {
-                Map<String, Object> prefs = new HashMap<>();
-                prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
-                prefs.put("download.prompt_for_download", false);
-                prefs.put("download.directory_upgrade", true);
-                prefs.put("safebrowsing.enabled", true);
-                prefs.put("profile.default_content_settings.popups", 0);
-                chromeOptions.setExperimentalOption("prefs", prefs);
+                setChromeOptions(chromeOptions);
             }
-
             if (browser.isHeadlessMode()) {
                 chromeOptions.addArguments("--headless=new");
             }
+            addChromeArgument(browser, chromeOptions);
+            chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+            chromeOptions.setExperimentalOption("useAutomationExtension", false);
+            return chromeOptions;
+        }
+
+        private void setChromeOptions(final ChromeOptions chromeOptions) {
+            Map<String, Object> prefs = new HashMap<>();
+            prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
+            prefs.put("download.prompt_for_download", false);
+            prefs.put("download.directory_upgrade", true);
+            prefs.put("safebrowsing.enabled", true);
+            prefs.put("profile.default_content_settings.popups", 0);
+            chromeOptions.setExperimentalOption("prefs", prefs);
+        }
+
+        private void addChromeArgument(final Chrome browser, final ChromeOptions chromeOptions) {
             BrowserOptionsArguments browserOptionsArguments = browser.getChromeOptionsArguments();
             if (Objects.nonNull(browserOptionsArguments)) {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
             }
-            chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-            chromeOptions.setExperimentalOption("useAutomationExtension", false);
-            return chromeOptions;
         }
     }
 
     private class FirefoxDriverInitializer implements WebDriverInitializer {
         private final Path downloadPath;
 
-        public FirefoxDriverInitializer(final Path downloadPath) {
+        private FirefoxDriverInitializer(final Path downloadPath) {
             this.downloadPath = downloadPath;
         }
 
@@ -273,12 +278,7 @@ public class WebDriverFactory {
         private FirefoxOptions getFirefoxOptions(final Firefox browser) {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
             if (Objects.nonNull(downloadPath)) {
-                firefoxOptions.addPreference("browser.download.folderList", 2);
-                firefoxOptions.addPreference("browser.download.dir", downloadPath.toAbsolutePath().toString());
-                firefoxOptions.addPreference("browser.download.useDownloadDir", true);
-                firefoxOptions.addPreference("browser.helperApps.neverAsk.saveToDisk",
-                        "application/pdf,application/zip,application/octet-stream,text/csv,image/jpeg,image/png,application/json");
-                firefoxOptions.addPreference("pdfjs.disabled", true);
+                setFirefoxOptions(firefoxOptions);
             }
             if (browser.isHeadlessMode()) {
                 firefoxOptions.addArguments("-headless");
@@ -289,12 +289,22 @@ public class WebDriverFactory {
             }
             return firefoxOptions;
         }
+
+        private void setFirefoxOptions(final FirefoxOptions firefoxOptions) {
+            firefoxOptions.addPreference("browser.download.folderList", 2);
+            firefoxOptions.addPreference("browser.download.dir", downloadPath.toAbsolutePath().toString());
+            firefoxOptions.addPreference("browser.download.useDownloadDir", true);
+            firefoxOptions.addPreference("browser.helperApps.neverAsk.saveToDisk",
+                    "application/pdf,application/zip,application/octet-stream,"
+                            + "text/csv,image/jpeg,image/png,application/json");
+            firefoxOptions.addPreference("pdfjs.disabled", true);
+        }
     }
 
     private class EdgeDriverInitializer implements WebDriverInitializer {
         private final Path downloadPath;
 
-        public EdgeDriverInitializer(final Path downloadPath) {
+        private EdgeDriverInitializer(final Path downloadPath) {
             this.downloadPath = downloadPath;
         }
 
@@ -305,10 +315,7 @@ public class WebDriverFactory {
         private EdgeOptions getEdgeOptions(final Edge browser) {
             EdgeOptions edgeOptions = new EdgeOptions();
             if (Objects.nonNull(downloadPath)) {
-                Map<String, Object> prefs = new HashMap<>();
-                prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
-                prefs.put("download.prompt_for_download", false);
-                edgeOptions.setExperimentalOption("prefs", prefs);
+                setEdgeOptions(edgeOptions);
             }
             if (browser.isHeadlessMode()) {
                 edgeOptions.addArguments("--headless=new");
@@ -318,6 +325,13 @@ public class WebDriverFactory {
                 edgeOptions.addArguments(browserOptionsArguments.getArgument());
             }
             return edgeOptions;
+        }
+
+        private void setEdgeOptions(final EdgeOptions edgeOptions) {
+            Map<String, Object> prefs = new HashMap<>();
+            prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
+            prefs.put("download.prompt_for_download", false);
+            edgeOptions.setExperimentalOption("prefs", prefs);
         }
     }
 

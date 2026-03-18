@@ -28,12 +28,13 @@ public class AiInterpreter extends AbstractInterpreter<Ai> {
     private static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     private static final String PROMPT_LOG = format(TABLE_FORMAT, "Prompt", "{}");
     private static final String ANSWER_LOG = format(TABLE_FORMAT, "Answer", "{}");
-    public static final String ALIAS = "Alias";
-    public static final String NAME = "Name";
-    public static final String PROMPT = "Prompt";
-    public static final String ANSWER = "Answer";
+    private static final String ALIAS = "Alias";
+    private static final String NAME = "Name";
+    private static final String PROMPT = "Prompt";
+    private static final String ANSWER = "Answer";
 
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+    private static final int MAX_MESSAGES = 10;
 
     private final Map<AliasEnv, ChatMemory> chatMemoryMap = new ConcurrentHashMap<>();
 
@@ -65,7 +66,7 @@ public class AiInterpreter extends AbstractInterpreter<Ai> {
         AliasEnv aliasEnv = new AliasEnv(ai.getAlias(), dependencies.getEnvironment());
         ChatModel chatModel = aiChatModels.get(aliasEnv);
         ChatMemory chatMemory = chatMemoryMap
-                .computeIfAbsent(aliasEnv, env -> MessageWindowChatMemory.withMaxMessages(10));
+                .computeIfAbsent(aliasEnv, env -> MessageWindowChatMemory.withMaxMessages(MAX_MESSAGES));
 
         AiUtil aiService = AiServices.builder(AiUtil.class)
                 .chatModel(chatModel)

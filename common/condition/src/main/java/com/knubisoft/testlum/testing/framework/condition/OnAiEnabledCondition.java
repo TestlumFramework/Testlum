@@ -11,7 +11,7 @@ import java.util.Optional;
 public class OnAiEnabledCondition extends AbstractCondition<Ai> {
 
     @Override
-    protected Optional<List<? extends Integration>> getIntegrations(Optional<Integrations> integrations) {
+    protected Optional<List<? extends Integration>> getIntegrations(final Optional<Integrations> integrations) {
         return integrations.map(Integrations::getAiIntegration).map(AiIntegration::getAi);
     }
 }

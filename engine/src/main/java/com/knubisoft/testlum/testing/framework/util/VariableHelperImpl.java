@@ -293,7 +293,7 @@ public class VariableHelperImpl implements VariableHelper {
     private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
         try {
             return new DateTimeFormatterBuilder().appendPattern(dateFormatPattern)
-                    .parseDefaulting(ChronoField.YEAR, ZonedDateTime.now().getYear())
+                    .parseDefaulting(ChronoField.YEAR_OF_ERA, ZonedDateTime.now().getYear())
                     .parseDefaulting(ChronoField.MONTH_OF_YEAR, ZonedDateTime.now().getMonthValue())
                     .parseDefaulting(ChronoField.DAY_OF_MONTH, ZonedDateTime.now().getDayOfMonth())
                     .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)

@@ -115,7 +115,7 @@ public class WebDownloadUtil {
 
     private boolean isStabilityThresholdMet(final long stableSinceTimestamp) {
         return stableSinceTimestamp > 0
-               && (System.currentTimeMillis() - stableSinceTimestamp > STABILITY_THRESHOLD_MS);
+               && System.currentTimeMillis() - stableSinceTimestamp > STABILITY_THRESHOLD_MS;
     }
 
     public boolean isTempDownloadFile(final Path path) {
@@ -185,19 +185,21 @@ public class WebDownloadUtil {
     private void performCleanup(final Path directory, final Set<String> existingFiles) {
         try (Stream<Path> stream = Files.list(directory)) {
             stream.filter(Files::isRegularFile)
-                    .filter(path -> {
-                        String fileName = path.getFileName().toString();
-                        boolean isActual = fileName.startsWith(FINAL_ACTUAL_FILENAME);
-                        boolean isImage = fileName.startsWith(ACTUAL_IMAGE_PREFIX);
-                        if (isActual || isImage) {
-                            return false;
-                        }
-                        return !existingFiles.contains(fileName);
-                    })
-                    .forEach(this::deleteFile);
+                  .filter(path -> shouldFileBeDeleted(existingFiles, path))
+                  .forEach(this::deleteFile);
         } catch (IOException exception) {
             log.warn("Failed to cleanup directory: {}", directory, exception);
         }
+    }
+
+    private boolean shouldFileBeDeleted(final Set<String> existingFiles, final Path path) {
+        String fileName = path.getFileName().toString();
+        boolean isActual = fileName.startsWith(FINAL_ACTUAL_FILENAME);
+        boolean isImage = fileName.startsWith(ACTUAL_IMAGE_PREFIX);
+        if (isActual || isImage) {
+            return false;
+        }
+        return !existingFiles.contains(fileName);
     }
 
     private void deleteFile(final Path path) {

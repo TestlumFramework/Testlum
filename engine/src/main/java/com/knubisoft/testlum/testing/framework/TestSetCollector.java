@@ -193,7 +193,7 @@ public class TestSetCollector {
         return cloned;
     }
 
-    private Scenario deepCopyScenario(Scenario src) {
+    private Scenario deepCopyScenario(final Scenario src) {
         String json = jacksonService.writeValueToCopiedString(src);
         return jacksonService.readCopiedValue(json, Scenario.class);
     }

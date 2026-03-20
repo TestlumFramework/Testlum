@@ -106,8 +106,15 @@ jobs:
           }
           Copy-Item $jar "engine/target/testlum-$version.jar"
 
-      - name: Set up Docker Engine
-        uses: docker/setup-docker-action@v4
+      - name: Check Docker availability on ARM runner
+        shell: pwsh
+        run: |
+          if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+            Write-Error "Docker CLI is not available on windows-11-arm runner. Use a self-hosted ARM runner with Docker installed."
+            exit 1
+          }
+          docker version
+          docker info
 
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -115,12 +122,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check Docker
-        shell: pwsh
-        run: |
-          docker version
-          docker info
 
       - name: Build and push Windows ARM64 image
         shell: pwsh

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
@@ -97,14 +98,20 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     }
 
     private void checkContentIsEqual(final AssertEqual equal) {
-        if (equal.getContent().stream().distinct().count() != 1) {
+        if (equal.getContent().stream()
+                    .map(this::normalizeLineEndings)
+                    .distinct()
+                    .count() != 1) {
             throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_NOT_EQUAL, formatContent(equal)));
         }
     }
 
     private void checkContentNotEqual(final AssertNotEqual notEqual) {
         List<String> content = notEqual.getContent();
-        if (content.stream().distinct().count() == 1) {
+        if (content.stream()
+                    .map(this::normalizeLineEndings)
+                    .distinct()
+                    .count() == 1) {
             throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_IS_EQUAL, formatContent(notEqual)));
         }
     }
@@ -185,6 +192,14 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         if (!exceptions.isEmpty()) {
             throw new DefaultFrameworkException(exceptions);
         }
+    }
+
+    private String normalizeLineEndings(final String content) {
+        if (content == null) {
+            return null;
+        }
+        return content.lines()
+                .collect(Collectors.joining("\n"));
     }
 
     private interface AssertCmdPredicate extends Predicate<AbstractCommand> {

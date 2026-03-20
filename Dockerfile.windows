@@ -1,6 +1,6 @@
 ARG APP_VERSION=0.0.0
 
-FROM 17-ea-18-jdk-nanoserver-1809
+FROM openjdk:17-ea-18-jdk-nanoserver-1809
 
 ARG APP_VERSION
 RUN echo Container version: %APP_VERSION%

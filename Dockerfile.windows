@@ -1,0 +1,12 @@
+ARG APP_VERSION=0.0.0
+
+FROM eclipse-temurin:17-jdk-nanoserver-ltsc2025
+
+ARG APP_VERSION
+RUN echo Container version: %APP_VERSION%
+
+WORKDIR C:/testlum
+
+COPY engine/target/testlum-${APP_VERSION}.jar C:/testlum/testlum-final.jar
+
+ENTRYPOINT ["java", "-jar", "C:\\testlum\\testlum-final.jar"]

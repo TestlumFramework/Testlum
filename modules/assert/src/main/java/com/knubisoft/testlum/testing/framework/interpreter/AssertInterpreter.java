@@ -13,6 +13,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 
@@ -79,14 +80,20 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
     }
 
     private void checkContentIsEqual(final AssertEqual equal) {
-        if (equal.getContent().stream().distinct().count() != 1) {
+        if (equal.getContent().stream()
+                    .map(this::normalizeLineEndings)
+                    .distinct()
+                    .count() != 1) {
             throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_NOT_EQUAL, formatContent(equal)));
         }
     }
 
     private void checkContentNotEqual(final AssertNotEqual notEqual) {
         List<String> content = notEqual.getContent();
-        if (content.stream().distinct().count() == 1) {
+        if (content.stream()
+                    .map(this::normalizeLineEndings)
+                    .distinct()
+                    .count() == 1) {
             throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_IS_EQUAL, formatContent(notEqual)));
         }
     }
@@ -127,6 +134,14 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
         log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
+    }
+
+    private String normalizeLineEndings(final String content) {
+        if (content == null) {
+            return null;
+        }
+        return content.lines()
+                .collect(Collectors.joining("\n"));
     }
 
 }

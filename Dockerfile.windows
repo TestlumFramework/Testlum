@@ -1,6 +1,6 @@
 ARG APP_VERSION=0.0.0
 
-FROM mcr.microsoft.com/openjdk/jdk:17-windowsservercore-ltsc2022
+FROM mcr.microsoft.com/openjdk/jdk17-mariner
 
 ARG APP_VERSION
 RUN echo Container version: %APP_VERSION%

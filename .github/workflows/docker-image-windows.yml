@@ -73,7 +73,7 @@ jobs:
           $imageVersion = "ghcr.io/testlumframework/testlum:$version-windows-amd64"
           $imageLatest = "ghcr.io/testlumframework/testlum:latest-windows-amd64"
 
-          docker build -f Dockerfile.windows.amd64 --build-arg APP_VERSION=$version -t $imageVersion -t $imageLatest .
+          docker build -f Dockerfile.windows --build-arg APP_VERSION=$version -t $imageVersion -t $imageLatest .
           docker push $imageVersion
           docker push $imageLatest
 
@@ -129,6 +129,6 @@ jobs:
           $imageVersion = "ghcr.io/testlumframework/testlum:$version-windows-arm64"
           $imageLatest = "ghcr.io/testlumframework/testlum:latest-windows-arm64"
 
-          docker build -f Dockerfile.windows.arm64 --build-arg APP_VERSION=$version -t $imageVersion -t $imageLatest .
+          docker build -f Dockerfile.windows --build-arg APP_VERSION=$version -t $imageVersion -t $imageLatest .
           docker push $imageVersion
           docker push $imageLatest

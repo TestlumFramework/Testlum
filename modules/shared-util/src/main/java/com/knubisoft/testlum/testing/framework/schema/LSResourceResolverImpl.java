@@ -7,13 +7,11 @@ import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.lang.String.format;
 import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 public class LSResourceResolverImpl implements LSResourceResolver {
@@ -52,6 +50,6 @@ public class LSResourceResolverImpl implements LSResourceResolver {
     }
 
     private String getPathToSchema(final String schemaName) {
-        return format("%s%s%s", schemaBasePath, File.separator, schemaName);
+        return String.join("/", schemaBasePath, schemaName);
     }
 }

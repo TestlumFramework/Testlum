@@ -1,6 +1,6 @@
 ARG APP_VERSION=0.0.0
 
-FROM openjdk:17-ea-18-jdk-nanoserver-1809
+FROM eclipse-temurin:17-jdk-nanoserver-ltsc2025
 
 ARG APP_VERSION
 RUN echo Container version: %APP_VERSION%

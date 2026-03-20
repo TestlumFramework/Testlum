@@ -1,6 +1,6 @@
 ARG APP_VERSION=0.0.0
 
-FROM mcr.microsoft.com/openjdk/jdk17-mariner
+FROM 17-ea-18-jdk-nanoserver-1809
 
 ARG APP_VERSION
 RUN echo Container version: %APP_VERSION%

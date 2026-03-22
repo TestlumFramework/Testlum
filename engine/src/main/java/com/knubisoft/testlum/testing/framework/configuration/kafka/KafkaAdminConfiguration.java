@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnKafkaEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,10 @@ import org.springframework.kafka.core.KafkaAdmin;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
@@ -28,9 +29,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class KafkaAdminConfiguration {
 
     private static final int TIMEOUT = 10000;
+    private static final int TIME = 5;
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<String, List<Kafka>> getKafkaMap(
@@ -83,12 +84,16 @@ public class KafkaAdminConfiguration {
 
     private AdminClient createAdminClient(final Kafka kafka) {
         return connectionTemplate.executeWithRetry(
-                String.format(CONNECTION_INTEGRATION_DATA, "Kafka Admin", kafka.getAlias()),
+                String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "Kafka Admin", kafka.getAlias()),
                 () -> KafkaAdminClient.create(Map.of(
                         AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress(),
                         AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, TIMEOUT,
                         AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, TIMEOUT
                 )),
-                healthCheckFactory.forKafkaAdmin());
+                forKafkaAdmin());
+    }
+
+    private IntegrationHealthCheck<AdminClient> forKafkaAdmin() {
+        return client -> client.listTopics().names().get(TIME, TimeUnit.SECONDS);
     }
 }

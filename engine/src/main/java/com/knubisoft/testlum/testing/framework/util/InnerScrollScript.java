@@ -13,11 +13,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
 
 @Getter
 @Component
@@ -30,28 +29,28 @@ public class InnerScrollScript {
 
     public InnerScrollScript(final WebElementFinder webElementFinder) {
         this.verticalByCssSelector = new InnerScrollScriptItem(locator ->
-                nonNull(webElementFinder.getLocatorsByType(locator, CssSelector.class)),
+                Objects.nonNull(webElementFinder.getLocatorsByType(locator, CssSelector.class)),
                 locator -> webElementFinder.getLocatorsByType(locator, CssSelector.class)
                         .stream().map(CssSelector::getValue).toList(),
                 "document.querySelector('%s').scrollBy(0, %s)",
                 "document.querySelector('%s').scrollBy(0, document.querySelector('%s')"
                         + ".scrollHeight * %s)");
         this.verticalById = new InnerScrollScriptItem(locator ->
-                nonNull(webElementFinder.getLocatorsByType(locator, Id.class)),
+                Objects.nonNull(webElementFinder.getLocatorsByType(locator, Id.class)),
                 locator -> webElementFinder.getLocatorsByType(locator, Id.class)
                         .stream().map(Id::getValue).toList(),
                 "document.getElementById('%s').scrollBy(0, %s)",
                 "document.getElementById('%s').scrollBy(0, document.getElementById('%s')"
                         + ".scrollHeight * %s)");
         this.verticalByClass = new InnerScrollScriptItem(locator ->
-                nonNull(webElementFinder.getLocatorsByType(locator, ClassName.class)),
+                Objects.nonNull(webElementFinder.getLocatorsByType(locator, ClassName.class)),
                 locator -> webElementFinder.getLocatorsByType(locator, ClassName.class)
                         .stream().map(ClassName::getValue).toList(),
                 "document.getElementsByClassName('%s').scrollBy(0, %s)",
                 "document.getElementsByClassName('%s').scrollBy(0, "
                         + "document.getElementsByClassName('%s').scrollHeight * %s)");
         this.verticalByXpath = new InnerScrollScriptItem(locator ->
-                nonNull(webElementFinder.getLocatorsByType(locator, Xpath.class)),
+                Objects.nonNull(webElementFinder.getLocatorsByType(locator, Xpath.class)),
                 locator -> webElementFinder.getLocatorsByType(locator, Xpath.class)
                         .stream().map(Xpath::getValue).toList(),
                 "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
@@ -92,7 +91,7 @@ public class InnerScrollScript {
                                           final String selector,
                                           final int value,
                                           final ScrollDirection scrollDirection) {
-        return format(script,
+        return String.format(script,
                 selector,
                 ScrollDirection.UP == scrollDirection ? DelimiterConstant.DASH + value : value);
     }
@@ -103,7 +102,7 @@ public class InnerScrollScript {
                                             final ScrollDirection scrollDirection,
                                             final UiUtil uiUtil) {
         float percent = uiUtil.calculatePercentageValue(value);
-        return format(script,
+        return String.format(script,
                 selector,
                 selector,
                 ScrollDirection.UP == scrollDirection ? DelimiterConstant.DASH + percent : percent);

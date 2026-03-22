@@ -8,9 +8,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.comparator.constant.CommonConstant.ALL_EXPRESSION_TO_REGEXP;
-import static com.knubisoft.comparator.constant.RegexpConstant.P_BRACKETS;
-import static java.lang.String.format;
+import com.knubisoft.comparator.constant.CommonConstant;
+import com.knubisoft.comparator.constant.RegexpConstant;
 
 @UtilityClass
 public class Parser {
@@ -21,7 +20,7 @@ public class Parser {
     }
 
     private Set<String> getAllPBracketsFromExpression(final String expression) {
-        Matcher matcher = P_BRACKETS.matcher(expression);
+        Matcher matcher = RegexpConstant.P_BRACKETS.matcher(expression);
         Set<String> pBrackets = new HashSet<>();
         while (matcher.find()) {
             pBrackets.add(matcher.group());
@@ -36,6 +35,6 @@ public class Parser {
             String regexp = Alias.getPattern(aliasName).pattern();
             result = result.replaceAll(Pattern.quote(p), Matcher.quoteReplacement(regexp));
         }
-        return format(ALL_EXPRESSION_TO_REGEXP, result);
+        return String.format(CommonConstant.ALL_EXPRESSION_TO_REGEXP, result);
     }
 }

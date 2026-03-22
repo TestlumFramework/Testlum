@@ -1,10 +1,11 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnWebsocketEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
@@ -25,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional(OnWebsocketEnabledCondition.class)
@@ -33,7 +34,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class WebsocketConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, WebsocketConnectionManager> websocketConnectionSupplier(
@@ -58,15 +58,38 @@ public class WebsocketConfiguration {
 
     private WebsocketConnectionManager getWebsocketConnectionManager(final WebsocketApi websocket) {
         return connectionTemplate.executeWithRetry(
-                String.format(CONNECTION_INTEGRATION_DATA, "Websocket", websocket.getAlias()), () -> {
+                String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "Websocket", websocket.getAlias()), () -> {
                     if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
                         return getWsStompConnectionManager(websocket.getUrl());
                     } else {
                         return getWsStandardConnectionManager(websocket.getUrl());
                     }
                 },
-                healthCheckFactory.forWebSocket(websocket)
+                forWebSocket(websocket)
         );
+    }
+
+    private IntegrationHealthCheck<WebsocketConnectionManager> forWebSocket(final WebsocketApi websocket) {
+        return wsManager -> {
+            try {
+                wsManager.openConnection();
+                if (!wsManager.isConnected()) {
+                    throw new DefaultFrameworkException("failed to connect");
+                }
+            } catch (Exception e) {
+                closeConnectionManager(wsManager);
+                throw new DefaultFrameworkException(
+                        "handshake failed for - " + websocket.getUrl() + " " + e.getMessage());
+            }
+        };
+    }
+
+    private void closeConnectionManager(final WebsocketConnectionManager wsManager) {
+        try {
+            wsManager.closeConnection();
+        } catch (Exception ex) {
+            throw new DefaultFrameworkException(ex.getMessage());
+        }
     }
 
     private WebsocketStandardConnectionManager getWsStandardConnectionManager(final String url) {

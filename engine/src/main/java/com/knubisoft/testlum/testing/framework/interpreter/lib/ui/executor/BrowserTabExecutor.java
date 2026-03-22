@@ -1,11 +1,13 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.BrowserTab;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,11 +16,6 @@ import org.openqa.selenium.WindowType;
 
 import java.util.LinkedList;
 import java.util.Objects;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.TAB_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.TAB_OUT_OF_BOUNDS;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
-import static java.util.Objects.nonNull;
 
 @Slf4j
 @ExecutorForClass(BrowserTab.class)
@@ -37,11 +34,11 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
 
     @Override
     public void execute(final BrowserTab browserTab, final CommandResult result) {
-        if (nonNull(browserTab.getClose())) {
+        if (Objects.nonNull(browserTab.getClose())) {
             closeTab(browserTab.getClose().getIndex(), result);
-        } else if (nonNull(browserTab.getOpen())) {
+        } else if (Objects.nonNull(browserTab.getOpen())) {
             openTab(browserTab.getOpen().getUrl(), result);
-        } else if (nonNull(browserTab.getSwitch())) {
+        } else if (Objects.nonNull(browserTab.getSwitch())) {
             switchToTab(browserTab.getSwitch().getIndex(), result);
         }
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
@@ -55,8 +52,8 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
             driver.switchTo().window(openedTabs.get(tabIndex - 1)).close();
             openedTabs.remove(tabIndex - 1);
         }
-        resultUtil.addCloseOrSwitchTabMetadata(CLOSE_COMMAND, tabIndex, result);
-        logUtil.logCloseOrSwitchTabCommand(CLOSE_TAB, tabIndex);
+        resultUtil.addCloseOrSwitchTabMetadata(ResultUtil.CLOSE_COMMAND, tabIndex, result);
+        logUtil.logCloseOrSwitchTabCommand(ResultUtil.CLOSE_TAB, tabIndex);
         driver.switchTo().window(openedTabs.peekLast());
     }
 
@@ -67,8 +64,8 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
         } else {
             driver.switchTo().window(openedTabs.get(tabIndex - 1));
         }
-        resultUtil.addCloseOrSwitchTabMetadata(SWITCH_COMMAND, tabIndex, result);
-        logUtil.logCloseOrSwitchTabCommand(SWITCH_TAB, tabIndex);
+        resultUtil.addCloseOrSwitchTabMetadata(ResultUtil.SWITCH_COMMAND, tabIndex, result);
+        logUtil.logCloseOrSwitchTabCommand(ResultUtil.SWITCH_TAB, tabIndex);
     }
 
     private void openTab(final String url, final CommandResult result) {
@@ -88,10 +85,10 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
 
     private void validateTabNumberOrThrow(final Integer tabIndex) {
         if (openedTabs.size() < 2) {
-            throw new DefaultFrameworkException(TAB_NOT_FOUND);
+            throw new DefaultFrameworkException(ExceptionMessage.TAB_NOT_FOUND);
         }
-        if (nonNull(tabIndex) && tabIndex > openedTabs.size()) {
-            throw new DefaultFrameworkException(TAB_OUT_OF_BOUNDS, tabIndex, openedTabs.size());
+        if (Objects.nonNull(tabIndex) && tabIndex > openedTabs.size()) {
+            throw new DefaultFrameworkException(ExceptionMessage.TAB_OUT_OF_BOUNDS, tabIndex, openedTabs.size());
         }
     }
 }

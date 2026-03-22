@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.knubisoft.comparator.ErrorHelper.raise;
-
 public class XMLComparator extends AbstractObjectComparator<Node> {
 
     public XMLComparator(final Mode mode) {
@@ -20,7 +18,7 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
 
     @Override
     public void compare(final Node expected, final Node actual) throws MatchException {
-        raise(!Objects.equals(expected.getNodeName(), actual.getNodeName()),
+        ErrorHelper.raise(!Objects.equals(expected.getNodeName(), actual.getNodeName()),
                 "Expected node name [" + expected.getNodeName() + "] but was [" + actual.getNodeName() + "]");
 
         if (expected.hasAttributes()) {
@@ -33,15 +31,15 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
 
     private void compareChildNodes(final Node expected, final Node actual) throws MatchException {
         if (expected.hasChildNodes()) {
-            raise(!actual.hasChildNodes(), "Child nodes not found");
+            ErrorHelper.raise(!actual.hasChildNodes(), "Child nodes not found");
             compareNodesList(expected.getChildNodes(), actual.getChildNodes());
         }
-        mode.onStrict(() -> raise(actual.hasChildNodes(), "Additional child nodes found"));
+        mode.onStrict(() -> ErrorHelper.raise(actual.hasChildNodes(), "Additional child nodes found"));
     }
 
 
     private void compareNodesList(final NodeList expected, final NodeList actual) throws MatchException {
-        raise(expected.getLength() != actual.getLength(), "Child nodes length not equals");
+        ErrorHelper.raise(expected.getLength() != actual.getLength(), "Child nodes length not equals");
 
         for (int i = 0, length = expected.getLength(); i < length; i++) {
             compare(expected.item(i), actual.item(i));
@@ -49,9 +47,10 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
     }
 
     private void compareNodes(final Node expected, final Node actual) throws MatchException {
-        raise(!actual.hasAttributes(), "Attributes not found in actual document for node " + actual.getNodeName());
+        ErrorHelper.raise(!actual.hasAttributes(),
+                "Attributes not found in actual document for node " + actual.getNodeName());
         compareAttributes(expected.getAttributes(), actual.getAttributes());
-        mode.onStrict(() -> raise(actual.hasAttributes(),
+        mode.onStrict(() -> ErrorHelper.raise(actual.hasAttributes(),
                 "Additional attributes found in actual document for node " + actual.getNodeName()));
     }
 
@@ -63,7 +62,7 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
 
         for (Map.Entry<String, String> expectedEntry : expectedMap.entrySet()) {
             String actualValue = actualMap.get(expectedEntry.getKey());
-            raise(actualValue == null, "Attribute with name " + expectedMap.keySet());
+            ErrorHelper.raise(actualValue == null, "Attribute with name " + expectedMap.keySet());
             new StringComparator(mode).compare(expectedEntry.getValue(), actualValue);
         }
     }
@@ -75,8 +74,8 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
         if (expected.getLength() != actual.getLength()) {
             Set<String> props = expectedMap.keySet();
             props.removeAll(actualMap.keySet());
-            raise(!props.isEmpty(), "Attributes length not match. Missing property");
-            raise("Attributes length not match. Found unexpected property " + String.join(", ", props));
+            ErrorHelper.raise(!props.isEmpty(), "Attributes length not match. Missing property");
+            ErrorHelper.raise("Attributes length not match. Found unexpected property " + String.join(", ", props));
         }
     }
 

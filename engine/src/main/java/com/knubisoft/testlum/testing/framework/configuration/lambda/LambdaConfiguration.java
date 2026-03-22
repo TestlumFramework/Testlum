@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.lambda;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnLambdaEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Lambda;
@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnLambdaEnabledCondition.class})
@@ -29,7 +29,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class LambdaConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, LambdaClient> awsLambdaClients(
@@ -46,9 +45,9 @@ public class LambdaConfiguration {
         for (Lambda lambda : integrations.getLambdaIntegration().getLambda()) {
             if (lambda.isEnabled()) {
                 LambdaClient lambdaClient = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "Lambda", lambda.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "Lambda", lambda.getAlias()),
                         () -> createLambdaClient(lambda),
-                        healthCheckFactory.forLambda()
+                        forLambda()
                 );
                 lambdaClientMap.put(new AliasEnv(lambda.getAlias(), env), lambdaClient);
             }
@@ -62,5 +61,9 @@ public class LambdaConfiguration {
                 .region(Region.of(lambda.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();
+    }
+
+    private IntegrationHealthCheck<LambdaClient> forLambda() {
+        return client -> client.listFunctions(lf -> lf.maxItems(1));
     }
 }

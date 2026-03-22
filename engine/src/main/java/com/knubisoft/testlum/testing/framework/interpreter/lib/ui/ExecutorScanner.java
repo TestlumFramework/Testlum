@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 
 import com.google.common.base.Suppliers;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import org.reflections.Reflections;
@@ -11,9 +12,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS;
-
 
 @Service
 public class ExecutorScanner {
@@ -35,7 +33,7 @@ public class ExecutorScanner {
                                           final Class<AbstractUiExecutor<? extends AbstractUiCommand>> executor) {
         ExecutorForClass executorForClass = executor.getAnnotation(ExecutorForClass.class);
         if (Objects.isNull(executorForClass)) {
-            throw new DefaultFrameworkException(NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS, executor);
+            throw new DefaultFrameworkException(ExceptionMessage.NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS, executor);
         }
         map.put(executorForClass.value(), executor);
     }

@@ -5,9 +5,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 
 import javax.sql.DataSource;
 import java.util.List;
-
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 
 public class ClickhouseExecutor extends AbstractSqlExecutor {
 
@@ -25,9 +23,9 @@ public class ClickhouseExecutor extends AbstractSqlExecutor {
     @Override
     public void truncate() {
         String databaseName = template.queryForObject(SELECT_DATABASE_NAME, String.class);
-        List<String> tables = template.queryForList(format(SELECT_TABLE_NAMES, databaseName), String.class);
+        List<String> tables = template.queryForList(String.format(SELECT_TABLE_NAMES, databaseName), String.class);
         for (String table : tables) {
-            requireNonNull(template).execute(format(TRUNCATE_TABLE, databaseName, table));
+            Objects.requireNonNull(template).execute(String.format(TRUNCATE_TABLE, databaseName, table));
         }
     }
 }

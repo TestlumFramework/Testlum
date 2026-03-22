@@ -1,10 +1,9 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.*;
 
 @RequiredArgsConstructor
 @Service
@@ -16,7 +15,7 @@ public class StringPrettifier {
 
     public String prettify(final String string) {
         if (StringUtils.isNotBlank(string)) {
-            return string.replaceAll("\\s+", EMPTY);
+            return string.replaceAll("\\s+", DelimiterConstant.EMPTY);
         }
         return string;
     }
@@ -30,7 +29,8 @@ public class StringPrettifier {
     }
 
     private String tryToPrettify(final String actual) {
-        if (actual.startsWith(OPEN_BRACE) || actual.startsWith(OPEN_SQUARE_BRACKET)) {
+        if (actual.startsWith(DelimiterConstant.OPEN_BRACE)
+                || actual.startsWith(DelimiterConstant.OPEN_SQUARE_BRACKET)) {
             Object json = jacksonService.readValue(actual, Object.class);
             return jacksonService.writeValueAsStringWithDefaultPrettyPrinter(json);
         }
@@ -45,6 +45,6 @@ public class StringPrettifier {
     }
 
     public String asJsonResult(final String json) {
-        return StringUtils.isBlank(json) ? EMPTY : prettifyToSave(json);
+        return StringUtils.isBlank(json) ? DelimiterConstant.EMPTY : prettifyToSave(json);
     }
 }

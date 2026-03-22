@@ -16,11 +16,10 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toMap;
 
 @RequiredArgsConstructor
 @Service
@@ -43,7 +42,7 @@ public final class SendGridUtil {
     public SendGridMethodMetadata getSendgridMethodMetadata(final Sendgrid sendgrid) {
         return HTTP_METHOD_MAP.entrySet().stream()
                 .map(e -> new SendGridMethodMetadata(e.getKey().apply(sendgrid), e.getValue()))
-                .filter(p -> nonNull(p.getHttpInfo()))
+                .filter(p -> Objects.nonNull(p.getHttpInfo()))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
@@ -57,11 +56,11 @@ public final class SendGridUtil {
     }
 
     private String getAppropriateBody(final Body body, final AbstractInterpreter<?> interpreter) {
-        if (isNull(body)) {
+        if (Objects.isNull(body)) {
             return StringUtils.EMPTY;
-        } else if (nonNull(body.getRaw())) {
+        } else if (Objects.nonNull(body.getRaw())) {
             return getFromRaw(body);
-        } else if (nonNull(body.getFrom())) {
+        } else if (Objects.nonNull(body.getFrom())) {
             return getFromFile(body, interpreter);
         }
         return getFromParam(body);
@@ -77,7 +76,7 @@ public final class SendGridUtil {
 
     private String getFromParam(final Body body) {
         Map<String, String> bodyParamMap = body.getParam().stream()
-                .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
+                .collect(Collectors.toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
         return jacksonService.writeValueAsString(bodyParamMap);
     }
 

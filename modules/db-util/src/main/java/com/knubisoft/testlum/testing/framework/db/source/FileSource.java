@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.source;
 
+import com.knubisoft.testlum.testing.framework.constant.MigrationConstant;
 import com.knubisoft.testlum.testing.framework.db.util.CsvDatasetParser;
 import com.knubisoft.testlum.testing.framework.db.util.ExcelDatasetParser;
 import lombok.SneakyThrows;
@@ -10,8 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.*;
-
 public class FileSource implements Source {
 
     private final ListSource listSource;
@@ -19,9 +18,10 @@ public class FileSource implements Source {
     @SneakyThrows
     public FileSource(final File file) {
         final String datasetName = file.getName();
-        if (file.getName().endsWith(XLSX_EXTENSION) || datasetName.endsWith(XLS_EXTENSION)) {
+        if (file.getName().endsWith(MigrationConstant.XLSX_EXTENSION)
+                || datasetName.endsWith(MigrationConstant.XLS_EXTENSION)) {
             this.listSource = ExcelDatasetParser.getSource(file);
-        } else if (datasetName.endsWith(CSV_EXTENSION)) {
+        } else if (datasetName.endsWith(MigrationConstant.CSV_EXTENSION)) {
             this.listSource = CsvDatasetParser.getSource(file);
         } else {
             String queries = FileUtils.readFileToString(file, StandardCharsets.UTF_8);

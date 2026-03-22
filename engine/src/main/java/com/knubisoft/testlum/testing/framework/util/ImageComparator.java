@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-
-import static java.util.Objects.nonNull;
+import java.util.Objects;
 
 @Service
 public class ImageComparator {
@@ -47,9 +46,9 @@ public class ImageComparator {
         if (!excludedElements.isEmpty()) {
             setExcludedElements(excludedElements, imageComparison);
         }
-        if (nonNull(fullScreen) && nonNull(fullScreen.getPercentage())) {
+        if (Objects.nonNull(fullScreen) && Objects.nonNull(fullScreen.getPercentage())) {
             imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - fullScreen.getPercentage());
-        } else if (nonNull(part) && nonNull(part.getPercentage())) {
+        } else if (Objects.nonNull(part) && Objects.nonNull(part.getPercentage())) {
             imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - part.getPercentage());
         }
         return imageComparison.compareImages();

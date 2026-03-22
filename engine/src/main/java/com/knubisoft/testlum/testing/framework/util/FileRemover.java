@@ -11,9 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VISITING_PATH_LOG;
-import static java.util.Objects.nonNull;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Slf4j
 @Service
@@ -45,7 +45,7 @@ public final class FileRemover {
         @Override
         public FileVisitResult visitFileFailed(final Path file,
                                                final IOException exception) {
-            log.error(FAILED_VISITING_PATH_LOG, file, exception);
+            log.error(LogMessage.FAILED_VISITING_PATH_LOG, file, exception);
             return FileVisitResult.CONTINUE;
         }
 
@@ -63,12 +63,12 @@ public final class FileRemover {
 
         private boolean isFileWithSuffix(final Path file, final String suffix) {
             Path path = file.getFileName();
-            return nonNull(path) && path.toString().endsWith(suffix);
+            return Objects.nonNull(path) && path.toString().endsWith(suffix);
         }
 
         private boolean isFileWithPrefix(final Path file, final String prefix) {
             Path path = file.getFileName();
-            return nonNull(path) && path.toString().startsWith(prefix);
+            return Objects.nonNull(path) && path.toString().startsWith(prefix);
         }
     }
 }

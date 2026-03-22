@@ -15,8 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
-import static java.lang.String.format;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 
 @org.springframework.stereotype.Component
 public class LocatorCollector {
@@ -56,7 +55,7 @@ public class LocatorCollector {
             return page;
         } catch (Exception e) {
             throw new DefaultFrameworkException(
-                    format(UNABLE_PARSE_FILE_WITH_LOCATORS, each.getName(), e.getMessage()), e);
+                    String.format(ExceptionMessage.UNABLE_PARSE_FILE_WITH_LOCATORS, each.getName(), e.getMessage()), e);
         }
     }
 
@@ -100,8 +99,8 @@ public class LocatorCollector {
 
     private DefaultFrameworkException defaultFrameworkException(final String name) {
         if (name.split(DelimiterConstant.DOT_REGEX).length != 2) {
-            return new DefaultFrameworkException(INCORRECT_NAMING_FOR_LOCATOR_ID, name);
+            return new DefaultFrameworkException(ExceptionMessage.INCORRECT_NAMING_FOR_LOCATOR_ID, name);
         }
-        return new DefaultFrameworkException(UNABLE_TO_FIND_LOCATOR_BY_PATH, name);
+        return new DefaultFrameworkException(ExceptionMessage.UNABLE_TO_FIND_LOCATOR_BY_PATH, name);
     }
 }

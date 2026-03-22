@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -16,9 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
-import static java.util.Objects.nonNull;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Component
@@ -88,8 +87,9 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
         result.setExecutionTime(execTime);
         logUtil.logExecutionTime(execTime, command);
         Integer threshold = command.getThreshold();
-        if (nonNull(threshold) && execTime > threshold) {
-            processException(new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, execTime, threshold), result);
+        if (Objects.nonNull(threshold) && execTime > threshold) {
+            processException(new DefaultFrameworkException(
+                    ExceptionMessage.SLOW_COMMAND_PROCESSING, execTime, threshold), result);
         }
     }
 

@@ -4,8 +4,7 @@ import com.knubisoft.testlum.log.LogFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import static com.knubisoft.testlum.testing.framework.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
-import static com.knubisoft.testlum.testing.framework.TestResourceSettings.UI_CONFIG_FILENAME;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -87,47 +86,47 @@ public class ExceptionMessage {
     public static final String UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS = LogFormat.withRed("Number of enabled <%s> blocks does not"
             + " match the number of enabled environments");
     public static final String BASE_URLS_ARE_SAME = LogFormat.withRed("<baseUrl> must be different for each <%s> block in all "
-            + "enabled environments (" + UI_CONFIG_FILENAME + " files)");
+            + "enabled environments (" + TestResourceSettings.UI_CONFIG_FILENAME + " files)");
     public static final String ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS = LogFormat.withRed("One or more of your environments "
             + "does not have enabled <%ss> in <%s> block");
     public static final String UI_ALIASES_NOT_DIFFER = LogFormat.withRed("More than one enabled <%s> was found in "
             + "<%s> settings with alias <%s> in the config by path: %s");
     public static final String UI_ALIASES_NOT_MATCH = LogFormat.withRed("Enabled %s <%s> in <%s> block with alias <%s> not"
-            + " found or not enabled in all enabled environments (" + UI_CONFIG_FILENAME + " files)");
+            + " found or not enabled in all enabled environments (" + TestResourceSettings.UI_CONFIG_FILENAME + " files)");
     public static final String CONNECTION_TYPE_NOT_MATCH = LogFormat.withRed("Connection type in <%s> block must be the same "
-            + "in all enabled environments (" + UI_CONFIG_FILENAME + " files)");
+            + "in all enabled environments (" + TestResourceSettings.UI_CONFIG_FILENAME + " files)");
     public static final String SAME_APPIUM_SERVER_URLS = LogFormat.withRed("<AppiumServer> connection url must be different "
-            + "for each <%s> settings in all enabled environments (" + UI_CONFIG_FILENAME + " files)");
+            + "for each <%s> settings in all enabled environments (" + TestResourceSettings.UI_CONFIG_FILENAME + " files)");
     public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = LogFormat.withRed("To use the <BrowserStack> connection "
             + "type requires <browserStackLogin> settings to be configured in all enabled environments "
-            + "(" + UI_CONFIG_FILENAME + " files)");
+            + "(" + TestResourceSettings.UI_CONFIG_FILENAME + " files)");
     public static final String DEVICE_PLATFORMS_NOT_MATCH = LogFormat.withRed("<device> in <%s> block with alias <%s> must "
-            + "have the same <platformName> param in all enabled environments (" + UI_CONFIG_FILENAME + " files)"
+            + "have the same <platformName> param in all enabled environments (" + TestResourceSettings.UI_CONFIG_FILENAME + " files)"
     );
     public static final String CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE = LogFormat.withRed("<device> with alias <%s> "
             + "in <%s> block has capabilities type that does not match with block <connection> type in the config by "
             + "path: %s");
     public static final String CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS = LogFormat.withRed("<device> with alias <%s> in <%s> "
             + "block has capabilities type that does not match with this device capabilities type in other enabled "
-            + "environments (" + UI_CONFIG_FILENAME + " files)");
+            + "environments (" + TestResourceSettings.UI_CONFIG_FILENAME + " files)");
     public static final String INTEGRATIONS_MISMATCH_ENVS = LogFormat.withRed("<%s> integration must be configured and "
             + "enabled in all enabled environments or not configured/disabled at all");
     public static final String SAME_INTEGRATION_ALIAS = LogFormat.withRed("More than one enabled <%s> integration was found "
             + "with alias <%s> in the config by path: %s");
     public static final String INTEGRATION_ALIAS_NOT_MATCH = LogFormat.withRed("<%s> integration with alias <%s> not found "
-            + "in all enabled environments (" + INTEGRATION_CONFIG_FILENAME + " files)");
+            + "in all enabled environments (" + TestResourceSettings.INTEGRATION_CONFIG_FILENAME + " files)");
     public static final String AUTH_NOT_PRESENT_IN_ALL_ENVS = LogFormat.withRed("<Api> integration with alias <%s> have "
-            + "configuration for <auth> command, but not in all enabled environments (" + INTEGRATION_CONFIG_FILENAME
+            + "configuration for <auth> command, but not in all enabled environments (" + TestResourceSettings.INTEGRATION_CONFIG_FILENAME
             + " files)");
     public static final String AUTH_LOGOUT_NOT_MATCH = LogFormat.withRed("<Api> integration with alias <%s> must have the "
             + "same setup for <autoLogout> argument in <auth> command in all enabled environments ("
-            + INTEGRATION_CONFIG_FILENAME + " files)");
+            + TestResourceSettings.INTEGRATION_CONFIG_FILENAME + " files)");
     public static final String AUTH_STRATEGY_NOT_MATCH = LogFormat.withRed("<Api> integration with alias <%s> must have the "
             + "same setup for <authStrategy> argument in <auth> command in all enabled environments ("
-            + INTEGRATION_CONFIG_FILENAME + " files)");
+            + TestResourceSettings.INTEGRATION_CONFIG_FILENAME + " files)");
     public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = LogFormat.withRed("<Api> integration with alias <%s> must "
             + "have the same setup for <authCustomClassName> argument in <auth> command in all enabled environments"
-            + " (" + INTEGRATION_CONFIG_FILENAME + " files)");
+            + " (" + TestResourceSettings.INTEGRATION_CONFIG_FILENAME + " files)");
 
     public static final String FAILED_CONDITION_EXPRESSION = LogFormat.withRed(
             """

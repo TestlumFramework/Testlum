@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
 import com.google.common.base.Suppliers;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import org.reflections.Reflections;
@@ -11,8 +12,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS;
 
 @Service
 public class InterpreterScanner {
@@ -34,7 +33,7 @@ public class InterpreterScanner {
                                              final Class<AbstractInterpreter<? extends AbstractCommand>> interpreter) {
         InterpreterForClass interpreterForClass = interpreter.getAnnotation(InterpreterForClass.class);
         if (Objects.isNull(interpreterForClass)) {
-            throw new DefaultFrameworkException(NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS, interpreter);
+            throw new DefaultFrameworkException(ExceptionMessage.NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS, interpreter);
         }
         map.put(interpreterForClass.value(), interpreter);
     }

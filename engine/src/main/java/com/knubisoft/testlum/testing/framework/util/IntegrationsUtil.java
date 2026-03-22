@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
@@ -13,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 
 @Component
 @Slf4j
@@ -73,16 +72,16 @@ public class IntegrationsUtil {
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElseThrow(() -> new DefaultFrameworkException(
-                        String.format(INTEGRATION_NOT_FOUND, clazz.getSimpleName())));
+                        String.format(ExceptionMessage.INTEGRATION_NOT_FOUND, clazz.getSimpleName())));
         return (List<T>) integrationListMethod.apply(integration);
     }
 
     public <T extends Integration> T findApiForAlias(final List<T> apiIntegrations, final String alias) {
-        return getIntegrationByAliasOrThrow(apiIntegrations, alias, API_NOT_FOUND);
+        return getIntegrationByAliasOrThrow(apiIntegrations, alias, ExceptionMessage.API_NOT_FOUND);
     }
 
     public <T extends Integration> T findForAlias(final List<T> integrationList, final String alias) {
-        return getIntegrationByAliasOrThrow(integrationList, alias, ALIAS_NOT_FOUND);
+        return getIntegrationByAliasOrThrow(integrationList, alias, ExceptionMessage.ALIAS_NOT_FOUND);
     }
 
     private <T extends Integration> T getIntegrationByAliasOrThrow(final List<T> integrations,

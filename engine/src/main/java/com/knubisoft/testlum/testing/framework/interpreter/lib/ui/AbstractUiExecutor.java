@@ -5,10 +5,9 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
-
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @RequiredArgsConstructor
 public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
@@ -80,7 +79,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     protected String getContentIfFile(final String fileOrContent) {
-        if (isNotBlank(fileOrContent)) {
+        if (StringUtils.isNotBlank(fileOrContent)) {
             String content = fileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
             return inject(content);
         }

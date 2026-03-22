@@ -12,12 +12,4 @@ public class MigrationConstant {
     public static final String PARTIQL_EXTENSION = ".partiql";
     public static final String SQL_EXTENSION = ".sql";
 
-    public static final String ELASTICSEARCH = "Elasticsearch";
-    public static final String KAFKA = "Kafka";
-    public static final String RABBITMQ = "Rabbitmq";
-    public static final String S3 = "S3";
-    public static final String SES = "Ses";
-    public static final String SQS = "Sqs";
-    public static final String SENDGRID = "Sendgrid";
-    public static final String SQL_DATABASE = "SQLDATABASE";
 }

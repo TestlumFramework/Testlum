@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
@@ -23,18 +22,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 
 @Component
 @RequiredArgsConstructor
@@ -70,7 +62,7 @@ public final class HttpUtil {
     public HttpMethodMetadata getHttpMethodMetadata(final Http http) {
         return HTTP_METHOD_MAP.entrySet().stream()
                 .map(e -> new HttpMethodMetadata(e.getKey().apply(http), e.getValue()))
-                .filter(p -> nonNull(p.getHttpInfo()))
+                .filter(p -> Objects.nonNull(p.getHttpInfo()))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
@@ -78,7 +70,7 @@ public final class HttpUtil {
     public ESHttpMethodMetadata getESHttpMethodMetadata(final Elasticsearch elasticsearch) {
         return ES_HTTP_METHOD_MAP.entrySet().stream()
                 .map(e -> new ESHttpMethodMetadata(e.getKey().apply(elasticsearch), e.getValue()))
-                .filter(p -> nonNull(p.getElasticSearchRequest()))
+                .filter(p -> Objects.nonNull(p.getElasticSearchRequest()))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
@@ -98,13 +90,13 @@ public final class HttpUtil {
                                             final ContentType contentType,
                                             final AbstractInterpreter<?> interpreter,
                                             final InterpreterDependencies dependencies) {
-        if (isNull(body)) {
+        if (Objects.isNull(body)) {
             return newStringEntity(StringUtils.EMPTY, null);
-        } else if (nonNull(body.getRaw())) {
+        } else if (Objects.nonNull(body.getRaw())) {
             return getFromRaw(body, contentType);
-        } else if (nonNull(body.getFrom())) {
+        } else if (Objects.nonNull(body.getFrom())) {
             return getFromFile(body, contentType, interpreter);
-        } else if (nonNull(body.getMultipart())) {
+        } else if (Objects.nonNull(body.getMultipart())) {
             return getFromMultipart(body, contentType, dependencies);
         } else if (!body.getParam().isEmpty()) {
             return getFromParameters(body, contentType);
@@ -117,7 +109,7 @@ public final class HttpUtil {
     }
 
     private HttpEntity getFromRaw(final Body body, final ContentType contentType) {
-        String content = body.getRaw().replaceAll(REGEX_MANY_SPACES, SPACE).trim();
+        String content = body.getRaw().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE).trim();
         return newStringEntity(content, contentType);
     }
 
@@ -147,7 +139,7 @@ public final class HttpUtil {
     }
 
     private void addTextBody(final MultipartEntityBuilder builder, final PartParam param) {
-        builder.addTextBody(param.getName(), param.getData(), isNotBlank(param.getContentType())
+        builder.addTextBody(param.getName(), param.getData(), StringUtils.isNotBlank(param.getContentType())
                 ? ContentType.parse(param.getContentType()) : ContentType.DEFAULT_TEXT);
     }
 
@@ -155,7 +147,7 @@ public final class HttpUtil {
                              final PartFile file,
                              final File fromDir) {
         File from = fileSearcher.searchFileFromDir(fromDir, file.getFileName());
-        builder.addBinaryBody(file.getName(), from, isNotBlank(file.getContentType())
+        builder.addBinaryBody(file.getName(), from, StringUtils.isNotBlank(file.getContentType())
                 ? ContentType.parse(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }
 
@@ -176,7 +168,7 @@ public final class HttpUtil {
     public void fillHeadersMap(final List<com.knubisoft.testlum.testing.model.scenario.Header> headerList,
                                final Map<String, String> headers,
                                final InterpreterDependencies.Authorization authorization) {
-        if (nonNull(authorization) && !authorization.getHeaders().isEmpty()) {
+        if (Objects.nonNull(authorization) && !authorization.getHeaders().isEmpty()) {
             headers.putAll(authorization.getHeaders());
         }
         for (com.knubisoft.testlum.testing.model.scenario.Header header : headerList) {
@@ -184,25 +176,9 @@ public final class HttpUtil {
         }
     }
 
-    public Map<String, String> injectAndGetHeaders(final Map<String, String> headersMap,
-                                                   final AbstractInterpreter<?> interpreter) {
-        Map<String, String> injected = new LinkedHashMap<>(headersMap.size());
-        for (Map.Entry<String, String> each : headersMap.entrySet()) {
-            injected.put(interpreter.inject(each.getKey()), interpreter.inject(each.getValue()));
-        }
-        return injected;
-    }
-
     public ContentType computeContentType(final Map<String, String> headers) {
         String typeValue = headers.computeIfAbsent(HttpHeaders.CONTENT_TYPE, type -> MediaType.APPLICATION_JSON_VALUE);
         return ContentType.parse(typeValue);
-    }
-
-    public boolean checkIfContentTypeIsJson(final Header contentTypeHeader) {
-        if (nonNull(contentTypeHeader)) {
-            return contentTypeHeader.getValue().contains(MediaType.APPLICATION_JSON_VALUE);
-        }
-        return false;
     }
 
     @RequiredArgsConstructor

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.variations;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
@@ -9,9 +10,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_USED;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATION_FILE_IS_EMPTY;
 
 @RequiredArgsConstructor
 @Component
@@ -25,7 +23,7 @@ public class VariationsValidator {
                                    final Scenario scenario,
                                    final File filePath) {
         if (variationList.isEmpty()) {
-            throw new DefaultFrameworkException(VARIATION_FILE_IS_EMPTY,
+            throw new DefaultFrameworkException(ExceptionMessage.VARIATION_FILE_IS_EMPTY,
                     scenario.getSettings().getVariations(), filePath.getAbsolutePath());
         }
         String scenarioAsText = jacksonService.writeValueAsString(scenario);
@@ -33,7 +31,7 @@ public class VariationsValidator {
                 .map(var -> String.format(VARIABLE_FORMAT, var))
                 .noneMatch(scenarioAsText::contains);
         if (variablesNotUsedInCommands) {
-            throw new DefaultFrameworkException(VARIATIONS_NOT_USED, filePath.getAbsolutePath());
+            throw new DefaultFrameworkException(ExceptionMessage.VARIATIONS_NOT_USED, filePath.getAbsolutePath());
         }
     }
 }

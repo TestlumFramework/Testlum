@@ -1,14 +1,13 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.JavascriptConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.ScrollTo;
 import org.openqa.selenium.WebElement;
-
-import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SCROLL_LOCATOR;
 
 @ExecutorForClass(ScrollTo.class)
 public class ScrollToWebExecutor extends AbstractUiExecutor<ScrollTo> {
@@ -21,8 +20,8 @@ public class ScrollToWebExecutor extends AbstractUiExecutor<ScrollTo> {
     public void execute(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocator();
         WebElement element = uiUtil.findWebElement(dependencies, locatorId, scrollTo.getLocatorStrategy());
-        result.put(SCROLL_LOCATOR, locatorId);
-        javascriptUtil.executeJsScript(SCROLL_TO_ELEMENT_SCRIPT, dependencies.getDriver(), element);
+        result.put(ResultUtil.SCROLL_LOCATOR, locatorId);
+        javascriptUtil.executeJsScript(JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT, dependencies.getDriver(), element);
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

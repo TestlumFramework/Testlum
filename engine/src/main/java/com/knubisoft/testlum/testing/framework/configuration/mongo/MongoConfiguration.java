@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.mongo;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnMongoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Mongo;
@@ -14,6 +14,9 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import lombok.RequiredArgsConstructor;
+import org.bson.BsonDocument;
+import org.bson.BsonInt64;
+import org.bson.conversions.Bson;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnMongoEnabledCondition.class})
@@ -33,7 +36,6 @@ public class MongoConfiguration {
     private static final int TIMEOUT = 5000;
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, MongoDatabase> mongoDatabases(
@@ -51,13 +53,20 @@ public class MongoConfiguration {
         for (Mongo mongo : integrations.getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
                 MongoDatabase resilientDb = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "MongoDB", mongo.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "MongoDB", mongo.getAlias()),
                         () -> createMongoClient(mongo).getDatabase(mongo.getDatabase()),
-                        healthCheckFactory.forMongoDb(mongo)
+                        forMongoDb(mongo)
                 );
                 databaseMap.put(new AliasEnv(mongo.getAlias(), env), resilientDb);
             }
         }
+    }
+
+    private IntegrationHealthCheck<MongoDatabase> forMongoDb(final Mongo mongo) {
+        return mongoDatabase -> {
+            Bson ping = new BsonDocument("ping", new BsonInt64(1));
+            mongoDatabase.runCommand(ping);
+        };
     }
 
     private MongoClient createMongoClient(final Mongo mongo) {

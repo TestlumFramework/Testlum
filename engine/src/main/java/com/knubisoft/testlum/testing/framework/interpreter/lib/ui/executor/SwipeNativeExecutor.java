@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -17,8 +18,6 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
 
 import java.util.Collections;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SWIPE_TYPE_NOT_FOUND;
 
 @ExecutorForClass(SwipeNative.class)
 public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
@@ -100,7 +99,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
             case DOWN -> new Point(start.getX(), start.getY() + swipeValue);
             case LEFT -> new Point(start.getX() - swipeValue, start.getY());
             case RIGHT -> new Point(start.getX() + swipeValue, start.getY());
-            default -> throw new DefaultFrameworkException(SWIPE_TYPE_NOT_FOUND, direction);
+            default -> throw new DefaultFrameworkException(ExceptionMessage.SWIPE_TYPE_NOT_FOUND, direction);
         };
     }
 

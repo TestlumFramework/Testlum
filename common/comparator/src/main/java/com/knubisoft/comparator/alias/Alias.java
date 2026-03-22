@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.comparator.constant.RegexpConstant.*;
+import com.knubisoft.comparator.constant.RegexpConstant;
 
 @Getter
 @RequiredArgsConstructor
@@ -29,9 +29,9 @@ public enum Alias {
             + "//(?:(?:[a-zA-Z0-9$\\-_.+!*'()"
             + ",;?&=]|(?:%[a-fA-F0-9]{2})){1,64}(?::(?:[a-zA-Z0-9$\\-_"
             + ".+!*'(),;?&=]|%[a-fA-F0-9]{2}){1,25})?@)?)?"
-            + "(?:" + DOMAIN_NAME + ")"
+            + "(?:" + RegexpConstant.DOMAIN_NAME + ")"
             + "(?::\\d{1,5})?)"
-            + "(/(?:(?:[" + GOOD_IRI_CHAR + ";/?:@&=#~"
+            + "(/(?:(?:[" + RegexpConstant.GOOD_IRI_CHAR + ";/?:@&=#~"
             + "\\-.+!*'(),_])|(?:%[a-fA-F0-9]{2}))*)?"
             + "(?:\\b|$)")),
     UUID("uuid",
@@ -42,7 +42,7 @@ public enum Alias {
     D_M_Y_DASH("d-m-y", Pattern.compile("((?:0[1-9]|[12][0-9]|3[01])-(?:0[1-9]|1[012])-\\d{4})")),
     D_M_Y_SLASH("d/m/y", Pattern.compile("((?:0[1-9]|[12][0-9]|3[01])/(?:0[1-9]|1[012])/\\d{4})")),
     NOT_EMPTY("notEmpty", Pattern.compile("(?=\\s*\\S).*", Pattern.DOTALL)),
-    DATE_TIME("dateTime", Pattern.compile(DATE_TIME_WITH_DASH));
+    DATE_TIME("dateTime", Pattern.compile(RegexpConstant.DATE_TIME_WITH_DASH));
 
     private final String aliasName;
     private final Pattern pattern;

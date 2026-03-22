@@ -15,8 +15,6 @@ import org.apache.commons.io.FileUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.*;
-
 @Slf4j
 public class BasicAuth extends AbstractAuthStrategy {
 
@@ -34,15 +32,16 @@ public class BasicAuth extends AbstractAuthStrategy {
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
-        result.put(AUTHENTICATION_TYPE, HEADER_BASIC);
+        result.put(AUTHENTICATION_TYPE, AuthorizationConstant.HEADER_BASIC);
         String credentials = encodedCredentials(auth);
-        login(credentials, HEADER_BASIC);
+        login(credentials, AuthorizationConstant.HEADER_BASIC);
     }
 
     private String encodedCredentials(final Auth auth) {
         String credentials = getCredentialsFromFile(auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);
-        credentials = context.read(USERNAME_JPATH) + DelimiterConstant.COLON + context.read(PASSWORD_JPATH);
+        credentials = context.read(AuthorizationConstant.USERNAME_JPATH)
+                + DelimiterConstant.COLON + context.read(AuthorizationConstant.PASSWORD_JPATH);
         logAuthInfo(auth);
         return Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
     }

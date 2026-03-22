@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
@@ -34,13 +35,8 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
-import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.ELEMENT_ARGUMENTS_SCRIPT;
-import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.HIGHLIGHT_SCRIPT;
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.JavascriptConstant;
 
 @Slf4j
 @Component
@@ -121,7 +117,7 @@ public class UiUtil {
                                            final WebElement element,
                                            final WebDriver driver) {
         if (isHighlight && !(driver instanceof AppiumDriver)) {
-            javascriptUtil.executeJsScript(HIGHLIGHT_SCRIPT, driver, element);
+            javascriptUtil.executeJsScript(JavascriptConstant.HIGHLIGHT_SCRIPT, driver, element);
         }
     }
 
@@ -189,7 +185,7 @@ public class UiUtil {
                                             final File screenshotsFolder,
                                             final ExecutorDependencies dependencies) throws IOException {
         LocalTime dateTime = LocalTime.now();
-        String screenshotFileName = format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,
+        String screenshotFileName = String.format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,
                 dateTime.format(TIME_FORMATTER),
                 dependencies.getPosition().get());
         File newScreenshot = new File(screenshotsFolder.getPath(), screenshotFileName);
@@ -216,10 +212,10 @@ public class UiUtil {
 
     public String getElementAttribute(final WebElement element, final String attributeName, final WebDriver driver) {
         String attribute = (String) javascriptUtil.executeJsScript(
-                ELEMENT_ARGUMENTS_SCRIPT, driver, element, attributeName);
-        attribute = isBlank(attribute) ? element.getAttribute(attributeName) : attribute;
-        if (isBlank(attribute)) {
-            throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
+                JavascriptConstant.ELEMENT_ARGUMENTS_SCRIPT, driver, element, attributeName);
+        attribute = StringUtils.isBlank(attribute) ? element.getAttribute(attributeName) : attribute;
+        if (StringUtils.isBlank(attribute)) {
+            throw new DefaultFrameworkException(ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }
         return attribute;
     }
@@ -231,7 +227,7 @@ public class UiUtil {
     public float calculatePercentageValue(final float value) {
         float percent = value / MAX_PERCENTS_VALUE;
         if (percent > 1) {
-            throw new DefaultFrameworkException(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value);
+            throw new DefaultFrameworkException(ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED, value);
         }
         return percent;
     }
@@ -239,9 +235,11 @@ public class UiUtil {
     public Sequence buildSequence(final Point start, final Point end, final int duration) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         return new Sequence(finger, 1)
-                .addAction(finger.createPointerMove(Duration.ofMillis(0), viewport(), start.getX(), start.getY()))
+                .addAction(finger.createPointerMove(Duration.ofMillis(0),
+                        PointerInput.Origin.viewport(), start.getX(), start.getY()))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                .addAction(finger.createPointerMove(Duration.ofMillis(duration), viewport(), end.getX(), end.getY()))
+                .addAction(finger.createPointerMove(Duration.ofMillis(duration),
+                        PointerInput.Origin.viewport(), end.getX(), end.getY()))
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
     }
 

@@ -5,11 +5,9 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
 import org.openqa.selenium.WebElement;
-
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_INDEX;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_LOCATOR;
 
 @ExecutorForClass(SwitchToFrame.class)
 public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> {
@@ -39,13 +37,13 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
 
     private void switchToFrameByLocator(final SwitchToFrame switchToFrame, final CommandResult result,
                                         final String locatorId) {
-        result.put(SWITCH_LOCATOR, locatorId);
+        result.put(ResultUtil.SWITCH_LOCATOR, locatorId);
         WebElement element = uiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
         dependencies.getDriver().switchTo().frame(element);
     }
 
     private void switchToFrameByIndex(final SwitchToFrame switchToFrame, final CommandResult result) {
-        result.put(SWITCH_INDEX, switchToFrame.getIndex());
+        result.put(ResultUtil.SWITCH_INDEX, switchToFrame.getIndex());
         dependencies.getDriver().switchTo().frame(Integer.parseInt(switchToFrame.getIndex()));
     }
 }

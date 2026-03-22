@@ -18,10 +18,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.util.Objects.nonNull;
 
 @Slf4j
 @ExecutorForClass(NativeImage.class)
@@ -52,7 +51,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
 
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final NativeImage image) throws IOException {
-        if (nonNull(image.getPart())) {
+        if (Objects.nonNull(image.getPart())) {
             WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
             File screenshotFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
@@ -69,7 +68,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
     public BufferedImage cutStatusBar(final FullScreen fullScreen,
                                       final BufferedImage screenshot,
                                       final WebDriver driver) {
-        if (nonNull(fullScreen)) {
+        if (Objects.nonNull(fullScreen)) {
             int statusBarHeight = getStatusBarHeight(screenshot, driver);
             return screenshot.getSubimage(0, statusBarHeight, screenshot.getWidth(),
                     screenshot.getHeight() - statusBarHeight);

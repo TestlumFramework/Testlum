@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.comparator.ErrorHelper.raise;
-import static com.knubisoft.comparator.constant.CommonConstant.*;
-import static com.knubisoft.comparator.constant.RegexpConstant.*;
-import static java.lang.String.format;
+import com.knubisoft.comparator.constant.RegexpConstant;
 
 public class StringComparator extends AbstractObjectComparator<String> {
 
@@ -34,7 +31,7 @@ public class StringComparator extends AbstractObjectComparator<String> {
             } else if (result instanceof ConditionComparison) {
                 conditionComparison(actual, (ConditionComparison) result);
             } else {
-                raise(format(LogMessage.PROPERTY_NOT_EQUAL, expected, actual));
+                ErrorHelper.raise(String.format(LogMessage.PROPERTY_NOT_EQUAL, expected, actual));
             }
         }
     }
@@ -43,7 +40,8 @@ public class StringComparator extends AbstractObjectComparator<String> {
     private void patternComparison(final String actual, final PatternComparison result) {
         String aliasOrRawPattern = result.getPattern();
         Pattern pattern = Alias.getPattern(aliasOrRawPattern);
-        raise(!pattern.matcher(actual).matches(), format(LogMessage.PROPERTY_NOT_MATCH, actual, aliasOrRawPattern));
+        ErrorHelper.raise(!pattern.matcher(actual).matches(),
+                String.format(LogMessage.PROPERTY_NOT_MATCH, actual, aliasOrRawPattern));
     }
 
     private void treeComparison(final String actual, final TreeComparison result) {
@@ -54,13 +52,13 @@ public class StringComparator extends AbstractObjectComparator<String> {
         Operator operator = Operator.getOperatorFromExpression(conditionComparison.getExpression());
         String expected = conditionComparison.getExpression().replace(operator.getOperatorSign(), CommonConstant.EMPTY);
         boolean result = conditionComparison.getConditionalComparator().compare(actual, expected, operator);
-        raise(!result, format(LogMessage.CONDITIONALS_DO_NOT_MATCH, actual, expected));
+        ErrorHelper.raise(!result, String.format(LogMessage.CONDITIONALS_DO_NOT_MATCH, actual, expected));
     }
 
 
     private ComparisonResult extractAction(final String v) {
-        if (v.length() > EXTRACT_ACTION_THREE) {
-            if (v.startsWith(T_LEFT_BRACKET) && v.endsWith(RIGHT_BRACKET)) {
+        if (v.length() > CommonConstant.EXTRACT_ACTION_THREE) {
+            if (v.startsWith(CommonConstant.T_LEFT_BRACKET) && v.endsWith(CommonConstant.RIGHT_BRACKET)) {
                 return new TreeComparison(v.substring(2, v.length() - 1));
             } else {
                 return getComparisonResult(v);
@@ -70,9 +68,9 @@ public class StringComparator extends AbstractObjectComparator<String> {
     }
 
     private ComparisonResult getComparisonResult(final String expression) {
-        if (P_BRACKETS.matcher(expression).find()) {
+        if (RegexpConstant.P_BRACKETS.matcher(expression).find()) {
             return getPatternComparison(expression);
-        } else if (ALL_EXPRESSION_IN_C_BRACKETS.matcher(expression).matches()) {
+        } else if (RegexpConstant.ALL_EXPRESSION_IN_C_BRACKETS.matcher(expression).matches()) {
             return getConditionComparison(expression.substring(2, expression.length() - 1));
         } else {
             return new Empty();
@@ -80,7 +78,7 @@ public class StringComparator extends AbstractObjectComparator<String> {
     }
 
     private PatternComparison getPatternComparison(final String expression) {
-        if (ALL_EXPRESSION_IN_P_BRACKETS.matcher(expression).matches()) {
+        if (RegexpConstant.ALL_EXPRESSION_IN_P_BRACKETS.matcher(expression).matches()) {
             return new PatternComparison(expression.substring(2, expression.length() - 1));
         } else {
             return new PatternComparison(Parser.parseAllPBracketsToRegexp(expression));

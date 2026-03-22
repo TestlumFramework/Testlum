@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
 import com.knubisoft.testlum.testing.framework.condition.OnSQSEnabledCondition;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sqs.SQSOperation;
@@ -11,9 +12,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.UNDERSCORE;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.SQS;
 
 @Conditional({OnSQSEnabledCondition.class})
 @Component
@@ -27,7 +25,7 @@ public class AliasSQSAdapter implements AliasAdapter {
     public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
         for (Sqs sqs : integrations.getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
-                aliasMap.put(SQS + UNDERSCORE + sqs.getAlias(), sqsOperation);
+                aliasMap.put("SQS" + DelimiterConstant.UNDERSCORE + sqs.getAlias(), sqsOperation);
             }
         }
     }

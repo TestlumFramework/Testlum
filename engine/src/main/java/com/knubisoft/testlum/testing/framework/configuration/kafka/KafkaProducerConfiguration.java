@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnKafkaEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
@@ -15,18 +15,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
 @RequiredArgsConstructor
 public class KafkaProducerConfiguration {
 
+    private static final int TIME = 5;
+
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer(
@@ -43,9 +45,9 @@ public class KafkaProducerConfiguration {
         for (Kafka kafka : integrations.getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 KafkaProducer<String, String> checkedKafkaProducer = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "Kafka Producer", kafka.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "Kafka Producer", kafka.getAlias()),
                         () -> new KafkaProducer<>(createConfigProps(kafka)),
-                        healthCheckFactory.forKafkaProducer()
+                        forKafkaProducer()
                 );
                 producerMap.put(new AliasEnv(kafka.getAlias(), env), checkedKafkaProducer);
             }
@@ -58,5 +60,9 @@ public class KafkaProducerConfiguration {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return configProps;
+    }
+
+    private IntegrationHealthCheck<KafkaProducer<String, String>> forKafkaProducer() {
+        return kafkaProducer -> kafkaProducer.clientInstanceId(Duration.ofSeconds(TIME));
     }
 }

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -9,11 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BROWSER_STACK_CONFIGURATION_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_CONNECTION_TYPE;
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-
 @Component
 public class SeleniumDriverUtil {
 
@@ -21,10 +17,10 @@ public class SeleniumDriverUtil {
 
     public String getBrowserStackUrl(final UiConfig uiConfig) {
         BrowserStackLogin browserStack = uiConfig.getBrowserStackLogin();
-        if (nonNull(browserStack)) {
-            return format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());
+        if (Objects.nonNull(browserStack)) {
+            return String.format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());
         }
-        throw new DefaultFrameworkException(BROWSER_STACK_CONFIGURATION_NOT_FOUND);
+        throw new DefaultFrameworkException(ExceptionMessage.BROWSER_STACK_CONFIGURATION_NOT_FOUND);
     }
 
     public String getMobileBrowserConnectionUrl(final UiConfig uiConfig) {
@@ -41,14 +37,15 @@ public class SeleniumDriverUtil {
         } else if (Objects.nonNull(connectionType.getBrowserStack())) {
             return getBrowserStackUrl(uiConfig);
         }
-        throw new DefaultFrameworkException(UNKNOWN_CONNECTION_TYPE, connectionType.getClass().getSimpleName());
+        throw new DefaultFrameworkException(
+                ExceptionMessage.UNKNOWN_CONNECTION_TYPE, connectionType.getClass().getSimpleName());
     }
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,
                                        final DesiredCapabilities desiredCapabilities) {
         desiredCapabilities.setCapability("appium:newCommandTimeout", "5000");
         Capabilities capabilities = abstractDevice.getCapabilities();
-        if (nonNull(capabilities)) {
+        if (Objects.nonNull(capabilities)) {
             capabilities.getCapability()
                     .forEach(cap -> desiredCapabilities.setCapability(cap.getName(), cap.getValue()));
         }

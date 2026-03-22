@@ -25,13 +25,18 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-log</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-log</artifactId>
+            <artifactId>xml-parser</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-shared-util</artifactId>
         </dependency>
 
         <dependency>
@@ -39,10 +44,7 @@
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-shared-util</artifactId>
-        </dependency>
+
     </dependencies>
 
 </project>

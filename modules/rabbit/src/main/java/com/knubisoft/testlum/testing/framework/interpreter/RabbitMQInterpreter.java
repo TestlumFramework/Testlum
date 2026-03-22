@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -21,9 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.IntStream;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 
 @Slf4j
 @InterpreterForClass(Rabbit.class)
@@ -242,7 +240,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                                  final String content) {
         log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
         log.info(topicOrRoutingKeyOrQueue, topicOrRoutingKeyOrQueueValue);
-        log.info(CONTENT_LOG, stringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+        log.info(CONTENT_LOG, stringPrettifier.asJsonResult(
+                content.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE))
                 .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
     }
 

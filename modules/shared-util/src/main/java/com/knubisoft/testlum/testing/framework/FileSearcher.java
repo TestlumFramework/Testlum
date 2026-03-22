@@ -14,13 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -63,7 +57,7 @@ public final class FileSearcher {
             return Optional.empty();
         }
         File[] files = fromDir.listFiles(filter);
-        if (nonNull(files) && files.length == 1) {
+        if (Objects.nonNull(files) && files.length == 1) {
             return Optional.of(files[0]);
         }
         return find(fromDir.getParentFile(), filter);
@@ -80,7 +74,7 @@ public final class FileSearcher {
                 ? fileName.substring(1) : fileName;
         String finalFileName = targetName.split("\\s+")[0];
         File file = dataFolderFiles.get(finalFileName);
-        if (isNull(file)) {
+        if (Objects.isNull(file)) {
             throw new FileLinkingException(dataFolder, testResourcesFolder, finalFileName);
         }
         return file;
@@ -88,7 +82,7 @@ public final class FileSearcher {
 
     public Optional<File> searchFileFromEnvFolder(final String folder, final String fileName) {
         Map<String, File> files = envFoldersFiles.get(folder);
-        if (isNull(files)) {
+        if (Objects.isNull(files)) {
             throw new FileLinkingException(String.format(ENV_FOLDER_NOT_EXIST, folder), envFolder);
         }
         return Optional.ofNullable(files.get(fileName));

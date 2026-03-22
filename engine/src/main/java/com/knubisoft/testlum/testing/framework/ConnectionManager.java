@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
-
-import static java.util.Objects.nonNull;
+import java.util.Objects;
 
 @Component
 public class ConnectionManager {
@@ -36,19 +35,19 @@ public class ConnectionManager {
     }
 
     private void closeRabbitmqConnections() {
-        if (nonNull(rabbitConnectionFactoryMap)) {
+        if (Objects.nonNull(rabbitConnectionFactoryMap)) {
             rabbitConnectionFactoryMap.values().forEach(connectionFactory ->
                     ((CachingConnectionFactory) connectionFactory).resetConnection());
         }
     }
 
     private void closeElasticsearchConnections() throws IOException {
-        if (nonNull(elasticRestClientMap)) {
+        if (Objects.nonNull(elasticRestClientMap)) {
             for (RestClient restClient : elasticRestClientMap.values()) {
                 restClient.close();
             }
         }
-        if (nonNull(elasticRestHighLevelClientMap)) {
+        if (Objects.nonNull(elasticRestHighLevelClientMap)) {
             for (RestHighLevelClient restClient : elasticRestHighLevelClientMap.values()) {
                 restClient.close();
             }

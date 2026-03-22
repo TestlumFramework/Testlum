@@ -1,10 +1,11 @@
 package com.knubisoft.testlum.testing.framework.configuration.redis;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnRedisEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Redis;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnRedisEnabledCondition.class})
@@ -33,7 +34,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class RedisConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, StringRedisConnection> stringRedisConnection(
@@ -45,13 +45,22 @@ public class RedisConfiguration {
             jedisConnectionFactory.afterPropertiesSet();
             JedisConnection connection = (JedisConnection) jedisConnectionFactory.getConnection();
             StringRedisConnection checkedConnection = connectionTemplate.executeWithRetry(
-                    String.format(CONNECTION_INTEGRATION_DATA, "Redis", aliasEnv.getAlias()),
+                    String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "Redis", aliasEnv.getAlias()),
                     () -> new DefaultStringRedisConnection(connection, new StringRedisSerializer()),
-                    healthCheckFactory.forRedis(connection)
+                    forRedis(connection)
             );
             redisConnectionMap.put(aliasEnv, checkedConnection);
         });
         return redisConnectionMap;
+    }
+
+    private IntegrationHealthCheck<DefaultStringRedisConnection> forRedis(final JedisConnection jedisConnection) {
+        return connection -> {
+            String response = jedisConnection.ping();
+            if (!"PONG".equalsIgnoreCase(response)) {
+                throw new DefaultFrameworkException("Redis did not respond");
+            }
+        };
     }
 
     @Bean("redisConnectionFactory")

@@ -2,9 +2,9 @@ package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
 import com.clickhouse.jdbc.DataSourceImpl;
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
 import com.knubisoft.testlum.testing.framework.condition.OnClickhouseEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -14,19 +14,21 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnClickhouseEnabledCondition.class})
 @RequiredArgsConstructor
 public class ClickhouseDataSourceConfiguration {
 
+    private static final int TIME = 5;
+
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean("clickhouseDataSource")
     public Map<AliasEnv, DataSource> dataSource(final EnvToIntegrationMap envTointegrations) {
@@ -43,9 +45,9 @@ public class ClickhouseDataSourceConfiguration {
         for (Clickhouse clickhouse : integrations.getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "ClickHouse", clickhouse.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "ClickHouse", clickhouse.getAlias()),
                         () -> new DataSourceImpl(clickhouse.getConnectionUrl(), clickHouseProperties(clickhouse)),
-                        healthCheckFactory.forJdbc()
+                        forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env), checkedDataSource);
             }
@@ -57,5 +59,13 @@ public class ClickhouseDataSourceConfiguration {
         properties.put("user", clickhouse.getUsername());
         properties.put("password", clickhouse.getPassword());
         return properties;
+    }
+
+    private IntegrationHealthCheck<DataSource> forJdbc() {
+        return ds -> {
+            try (Connection conn = ds.getConnection()) {
+                conn.isValid(TIME);
+            }
+        };
     }
 }

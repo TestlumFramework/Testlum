@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.xml;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.knubisoft.testlum.testing.framework.schema.LSResourceResolverImpl;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
@@ -28,17 +27,17 @@ public class XMLParsers {
 
     private final Supplier<XMLParser<Integrations>> integrationsXMLParser = Suppliers.
             memoize(() -> new XMLParser<>(initSchema("schema/integration-config.xsd"),
-                    com.knubisoft.testlum.testing.model.global_config.Integrations.class,
+                    Integrations.class,
                     com.knubisoft.testlum.testing.model.global_config.ObjectFactory.class));
 
     private final Supplier<XMLParser<UiConfig>> uiConfigXMLParser = Suppliers.
             memoize(() -> new XMLParser<>(initSchema("schema/ui-config.xsd"),
-                    com.knubisoft.testlum.testing.model.global_config.UiConfig.class,
+                    UiConfig.class,
                     com.knubisoft.testlum.testing.model.global_config.ObjectFactory.class));
 
     private final Supplier<XMLParser<Page>> pageXMLParser = Suppliers.
             memoize(() -> new XMLParser<>(initSchema("schema/pages.xsd"),
-                    com.knubisoft.testlum.testing.model.pages.Page.class,
+                    Page.class,
                     com.knubisoft.testlum.testing.model.pages.ObjectFactory.class));
 
     private final Supplier<XMLParser<com.knubisoft.testlum.testing.model.pages.Component>> componentXMLParser =
@@ -48,7 +47,7 @@ public class XMLParsers {
 
     private final Supplier<XMLParser<Scenario>> scenarioXMLParser = Suppliers.
             memoize(() -> new XMLParser<>(initSchema("schema/scenario.xsd"),
-                    com.knubisoft.testlum.testing.model.scenario.Scenario.class,
+                    Scenario.class,
                     com.knubisoft.testlum.testing.model.scenario.ObjectFactory.class));
 
     public XMLParser<GlobalTestConfiguration> forGlobalTestConfiguration() {

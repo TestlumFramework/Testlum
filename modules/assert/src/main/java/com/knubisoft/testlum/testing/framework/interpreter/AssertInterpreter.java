@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -13,9 +14,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
-
 
 @Slf4j
 @InterpreterForClass(Assert.class)
@@ -92,7 +90,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
     }
 
     private String formatContent(final AssertEquality action) {
-        return String.join(COMMA, action.getContent());
+        return String.join(DelimiterConstant.COMMA, action.getContent());
     }
 
     private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
@@ -107,7 +105,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
 
     private void addAssertEqualityMetaData(final AssertEquality action, final CommandResult result) {
         result.setComment(action.getComment());
-        result.put(CONTENT, String.join(COMMA, action.getContent()));
+        result.put(CONTENT, String.join(DelimiterConstant.COMMA, action.getContent()));
     }
 
     private void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
@@ -126,7 +124,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
     private void logAssertEqualityCommand(final AssertEquality command, final int position) {
         log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
-        log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
+        log.info(CONTENT_LOG, String.join(DelimiterConstant.COMMA, command.getContent()));
     }
 
 }

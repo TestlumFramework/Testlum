@@ -40,11 +40,6 @@ import java.io.StringReader;
 import java.util.*;
 import java.util.function.UnaryOperator;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
-import static java.util.Objects.nonNull;
 
 @Slf4j
 @Component
@@ -62,10 +57,10 @@ public class VariableHelperImpl implements VariableHelper {
     public VariableHelperImpl(final ApplicationContext ctx) {
         RandomStringUtils util = RandomStringUtils.secure();
         this.randomGenerateMethodMap = Map.of(
-                r -> nonNull(r.getNumeric()), r -> util.nextNumeric(r.getLength()),
-                r -> nonNull(r.getAlphabetic()), r -> util.nextAlphabetic(r.getLength()),
-                r -> nonNull(r.getAlphanumeric()), r -> util.nextAlphanumeric(r.getLength()),
-                r -> nonNull(r.getRandomRegexp()), this::generateStringByRegexp);
+                r -> Objects.nonNull(r.getNumeric()), r -> util.nextNumeric(r.getLength()),
+                r -> Objects.nonNull(r.getAlphabetic()), r -> util.nextAlphabetic(r.getLength()),
+                r -> Objects.nonNull(r.getAlphanumeric()), r -> util.nextAlphanumeric(r.getLength()),
+                r -> Objects.nonNull(r.getRandomRegexp()), this::generateStringByRegexp);
         this.aliasToStorageOperation = ctx.getBean(AliasToStorageOperation.class);
         this.resultUtil = ctx.getBean(ResultUtil.class);
         this.logUtil = ctx.getBean(LogUtil.class);
@@ -87,9 +82,9 @@ public class VariableHelperImpl implements VariableHelper {
                                           final String varName,
                                           final CommandResult result) {
         String valueResult = getRandomGeneratedString(randomGenerate);
-        String exp = nonNull(randomGenerate.getRandomRegexp())
-                ? randomGenerate.getRandomRegexp().getPattern() : NO_EXPRESSION;
-        resultUtil.addVariableMetaData(GENERATED_STRING, varName, exp, valueResult, result);
+        String exp = Objects.nonNull(randomGenerate.getRandomRegexp())
+                ? randomGenerate.getRandomRegexp().getPattern() : ResultUtil.NO_EXPRESSION;
+        resultUtil.addVariableMetaData(ResultUtil.GENERATED_STRING, varName, exp, valueResult, result);
         return valueResult;
     }
 
@@ -115,7 +110,7 @@ public class VariableHelperImpl implements VariableHelper {
                                 final UnaryOperator<String> fileToString,
                                 final CommandResult result) {
         String valueResult = fileToString.apply(fromFile.getFileName());
-        resultUtil.addVariableMetaData(FILE, varName, NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.FILE, varName, ResultUtil.NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
@@ -124,7 +119,7 @@ public class VariableHelperImpl implements VariableHelper {
                                     final String varName,
                                     final CommandResult result) {
         String valueResult = fromConstant.getValue();
-        resultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.CONSTANT, varName, ResultUtil.NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
@@ -136,7 +131,7 @@ public class VariableHelperImpl implements VariableHelper {
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(expression);
         String valueResult = exp.getValue(String.class);
-        resultUtil.addVariableMetaData(EXPRESSION, varName, expression, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.EXPRESSION, varName, expression, valueResult, result);
         return valueResult;
     }
 
@@ -149,10 +144,10 @@ public class VariableHelperImpl implements VariableHelper {
                                 final UnaryOperator<String> fileToString) {
         String path = fromPath.getValue();
         String body = getBodyFromContext(fromPath, scenarioContext, fileToString);
-        if (path.startsWith(DOLLAR_SIGN)) {
+        if (path.startsWith(DelimiterConstant.DOLLAR_SIGN)) {
             return evaluateJPath(path, varName, body, result);
         }
-        if (path.startsWith(SLASH_SEPARATOR)) {
+        if (path.startsWith(DelimiterConstant.SLASH_SEPARATOR)) {
             return evaluateXPath(path, varName, body, result);
         }
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
@@ -191,7 +186,7 @@ public class VariableHelperImpl implements VariableHelper {
         org.w3c.dom.Document w3cDocument = convertJsoupToW3CDocument(jsoupDoc);
         XPath xPath = XPathFactory.newInstance().newXPath();
         String valueResult = (String) xPath.evaluate(path, w3cDocument, XPathConstants.STRING);
-        resultUtil.addVariableMetaData(XML_PATH, varName, path, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.XML_PATH, varName, path, valueResult, result);
         return valueResult;
     }
 
@@ -209,7 +204,7 @@ public class VariableHelperImpl implements VariableHelper {
                                  final CommandResult result) {
         DocumentContext contextBody = JsonPath.parse(body);
         String valueResult = Objects.nonNull(contextBody.read(path)) ? contextBody.read(path).toString() : null;
-        resultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.JSON_PATH, varName, path, valueResult, result);
         return valueResult;
     }
 
@@ -221,7 +216,7 @@ public class VariableHelperImpl implements VariableHelper {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
-        resultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
         return valueResult;
     }
 
@@ -254,7 +249,7 @@ public class VariableHelperImpl implements VariableHelper {
 
     private void verifyIfContentNotEmpty(final List<LinkedCaseInsensitiveMap<String>> content) {
         if (content.isEmpty()) {
-            throw new DefaultFrameworkException(VAR_QUERY_RESULT_ERROR);
+            throw new DefaultFrameworkException(ExceptionMessage.VAR_QUERY_RESULT_ERROR);
         }
     }
 

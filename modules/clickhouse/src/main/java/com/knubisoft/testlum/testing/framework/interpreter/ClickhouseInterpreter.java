@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -14,10 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.StorageOperationResult;
 
 @Slf4j
 @InterpreterForClass(Clickhouse.class)
@@ -66,13 +63,15 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
         List<String> queries = clickhouse.getQuery();
         logAllQueries(queries, alias);
         addDatabaseMetaData(alias, queries, result);
-        StorageOperationResult applyClickhouse = clickhouseOperation.apply(new ListSource(queries), alias);
+        AbstractStorageOperation.StorageOperationResult applyClickhouse =
+                clickhouseOperation.apply(new ListSource(queries), alias);
         return toString(applyClickhouse.getRaw());
     }
 
     private void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
-        queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
+        queries.forEach(query -> log.info(QUERY,
+                query.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE)));
     }
 
     private void addDatabaseMetaData(final String databaseAlias,

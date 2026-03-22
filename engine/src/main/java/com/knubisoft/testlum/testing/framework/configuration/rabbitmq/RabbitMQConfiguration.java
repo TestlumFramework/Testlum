@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.rabbitmq;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
 import com.knubisoft.testlum.testing.framework.condition.OnRabbitMQEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COLON;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnRabbitMQEnabledCondition.class})
@@ -38,7 +38,6 @@ public class RabbitMQConfiguration {
     private static final String API_PATH = "/api";
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean("rabbitmqMap")
     public Map<String, List<Rabbitmq>> getRabbitmqMap(final EnvToIntegrationMap envTointegrations) {
@@ -66,7 +65,7 @@ public class RabbitMQConfiguration {
 
     private Client buildAdminClient(final Rabbitmq rabbitmq) {
         return connectionTemplate.executeWithRetry(
-                String.format(CONNECTION_INTEGRATION_DATA, "RabbitMQ-Admin", rabbitmq.getAlias()),
+                String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "RabbitMQ-Admin", rabbitmq.getAlias()),
                 () -> {
                     try {
                         return new Client(createClientParameters(rabbitmq));
@@ -74,12 +73,12 @@ public class RabbitMQConfiguration {
                         throw new DefaultFrameworkException(e.getMessage());
                     }
                 },
-                healthCheckFactory.forRabbitMqAdmin()
+                forRabbitMqAdmin()
         );
     }
 
     private ClientParameters createClientParameters(final Rabbitmq rabbitmq) throws MalformedURLException {
-        final String url = SCHEMA + rabbitmq.getHost() + COLON + rabbitmq.getApiPort() + API_PATH;
+        final String url = SCHEMA + rabbitmq.getHost() + DelimiterConstant.COLON + rabbitmq.getApiPort() + API_PATH;
         return new ClientParameters().url(url)
                 .username(rabbitmq.getUsername())
                 .password(rabbitmq.getPassword());
@@ -112,9 +111,9 @@ public class RabbitMQConfiguration {
         for (Rabbitmq rabbitmq : rabbitmqList) {
             if (rabbitmq.isEnabled()) {
                 CachingConnectionFactory connectionFactory = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "RabbitMQ-AMQP", rabbitmq.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "RabbitMQ-AMQP", rabbitmq.getAlias()),
                         () -> createConnectionFactory(rabbitmq),
-                        healthCheckFactory.forRabbitMqAmqp()
+                        forRabbitMqAmqp()
                 );
                 connectionFactoryMap.put(new AliasEnv(rabbitmq.getAlias(), env), connectionFactory);
             }
@@ -130,4 +129,13 @@ public class RabbitMQConfiguration {
         connectionFactory.setVirtualHost(rabbitmq.getVirtualHost());
         return connectionFactory;
     }
+
+    private IntegrationHealthCheck<CachingConnectionFactory> forRabbitMqAmqp() {
+        return connectionFactory -> connectionFactory.createConnection().close();
+    }
+
+    private IntegrationHealthCheck<Client> forRabbitMqAdmin() {
+        return Client::getVhosts;
+    }
+
 }

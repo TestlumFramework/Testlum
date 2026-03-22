@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.smtp;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnSmtpEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional(OnSmtpEnabledCondition.class)
@@ -28,7 +28,6 @@ public class SmtpConfiguration {
     private static final int TIMEOUT = 5000;
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean("javaMailSender")
     public Map<AliasEnv, JavaMailSenderImpl> javaMailSender(
@@ -45,9 +44,9 @@ public class SmtpConfiguration {
         for (Smtp smtp : integrations.getSmtpIntegration().getSmtp()) {
             if (smtp.isEnabled()) {
                 JavaMailSenderImpl resilientSender = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "SMTP", smtp.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "SMTP", smtp.getAlias()),
                         () -> createJavaMailSender(smtp),
-                        healthCheckFactory.forSmtp()
+                        forSmtp()
                 );
 
                 senderMap.put(new AliasEnv(smtp.getAlias(), env), resilientSender);
@@ -71,5 +70,9 @@ public class SmtpConfiguration {
         properties.put("mail.smtp.starttls.enable", smtpSettings.isSmtpStarttlsEnable());
         properties.put("mail.smtp.connectiontimout", TIMEOUT);
         properties.put("mail.smtp.timeout", TIMEOUT);
+    }
+
+    private IntegrationHealthCheck<JavaMailSenderImpl> forSmtp() {
+        return JavaMailSenderImpl::testConnection;
     }
 }

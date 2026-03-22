@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.dynamo;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
 import com.knubisoft.testlum.testing.framework.condition.OnDynamoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnDynamoEnabledCondition.class})
@@ -29,7 +29,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class DynamoDBConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, DynamoDbClient> dynamodb(final EnvToIntegrationMap envTointegrations) {
@@ -45,9 +44,9 @@ public class DynamoDBConfiguration {
         for (Dynamo dynamo : integrations.getDynamoIntegration().getDynamo()) {
             if (dynamo.isEnabled()) {
                 DynamoDbClient checkedDynamoDbClient = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "DynamoDB", dynamo.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "DynamoDB", dynamo.getAlias()),
                         () -> createDynamoDbClient(dynamo),
-                        healthCheckFactory.forDynamoDb()
+                        forDynamoDb()
                 );
                 dbClientMap.put(new AliasEnv(dynamo.getAlias(), env), checkedDynamoDbClient);
             }
@@ -71,5 +70,9 @@ public class DynamoDBConfiguration {
                 .region(region)
                 .credentialsProvider(awsCredentialsProvider)
                 .build();
+    }
+
+    private IntegrationHealthCheck<DynamoDbClient> forDynamoDb() {
+        return client -> client.listTables(lt -> lt.limit(1));
     }
 }

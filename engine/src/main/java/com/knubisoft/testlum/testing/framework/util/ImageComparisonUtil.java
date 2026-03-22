@@ -18,11 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_MISMATCH;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_SIZE_MISMATCH;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 
 @RequiredArgsConstructor
 @Component
@@ -36,6 +32,7 @@ public class ImageComparisonUtil {
     private final ResultUtil resultUtil;
     private final JavascriptUtil javascriptUtil;
 
+    //CHECKSTYLE:OFF
     @SneakyThrows
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
                                              final String expectedImageFullName,
@@ -47,20 +44,22 @@ public class ImageComparisonUtil {
             File actualImage =
                     saveActualImage(comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
             uiUtil.putScreenshotToResult(result, actualImage);
-            result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
+            result.put(ResultUtil.ADDITIONAL_INFO, ResultUtil.IMAGE_ATTACHED_TO_STEP);
             if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
                 processSizeMismatchException(comparisonResult, result);
             } else {
-                result.put(IMAGE_MISMATCH_PERCENT, comparisonResult.getDifferencePercent());
-                throw new ImageComparisonException(format(IMAGES_MISMATCH, comparisonResult.getDifferencePercent()));
+                result.put(ResultUtil.IMAGE_MISMATCH_PERCENT, comparisonResult.getDifferencePercent());
+                throw new ImageComparisonException(String.format(ExceptionMessage.IMAGES_MISMATCH,
+                        comparisonResult.getDifferencePercent()));
             }
         }
     }
+    //CHECKSTYLE:ON
 
     private void processSizeMismatchException(final ImageComparisonResult comparisonResult,
                                               final CommandResult result) {
         resultUtil.addImagesSizeMetaData(comparisonResult, result);
-        throw new ImageComparisonException(format(IMAGES_SIZE_MISMATCH,
+        throw new ImageComparisonException(String.format(ExceptionMessage.IMAGES_SIZE_MISMATCH,
                 comparisonResult.getExpected().getWidth(), comparisonResult.getExpected().getHeight(),
                 comparisonResult.getActual().getWidth(), comparisonResult.getActual().getHeight()));
     }
@@ -86,13 +85,13 @@ public class ImageComparisonUtil {
 
     private void verifyDirectoryToSave(final File directoryToSave) {
         if (Objects.isNull(directoryToSave) || !directoryToSave.exists() || !directoryToSave.isDirectory()) {
-            throw new ImageComparisonException(format("[%s] doesn't exist or not directory",
+            throw new ImageComparisonException(String.format("[%s] doesn't exist or not directory",
                     directoryToSave.getAbsolutePath()));
         }
     }
 
     private String getImageNameToSave(final String expectedImageFullName) {
-        return format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
+        return String.format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
     }
@@ -100,7 +99,7 @@ public class ImageComparisonUtil {
     public int getStatusBarHeight(final WebDriver driver) {
         Capabilities deviceCapabilities = ((RemoteWebDriver) driver).getCapabilities();
         Object capability = deviceCapabilities.getCapability(STATUS_BAR_HEIGHT);
-        if (nonNull(capability)) {
+        if (Objects.nonNull(capability)) {
             return (int) ((long) capability);
         }
         long screenHeight = (Long) javascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);

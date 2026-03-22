@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.ses;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnSESEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Ses;
@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnSESEnabledCondition.class})
@@ -28,7 +28,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class SESConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, SesClient> sesClient(
@@ -45,9 +44,9 @@ public class SESConfiguration {
         for (Ses ses : integrations.getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
                 SesClient checkedSesClient = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "SES", ses.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "SES", ses.getAlias()),
                         () -> createAmazonSes(ses),
-                        healthCheckFactory.forSes()
+                        forSes()
                 );
 
                 emailServiceMap.put(new AliasEnv(ses.getAlias(), env), checkedSesClient);
@@ -69,5 +68,9 @@ public class SESConfiguration {
                 .credentialsProvider(credentialsProvider)
                 .endpointOverride(URI.create(ses.getEndpoint()))
                 .build();
+    }
+
+    private IntegrationHealthCheck<SesClient> forSes() {
+        return sesClient -> sesClient.listIdentities(li -> li.maxItems(1));
     }
 }

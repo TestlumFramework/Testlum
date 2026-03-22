@@ -1,5 +1,7 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -15,9 +17,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 
 @RequiredArgsConstructor
 @Component
@@ -35,10 +34,10 @@ public class ScenarioFilter {
                 logUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
             }
             if (globalTestConfiguration.isStopIfInvalidScenario()) {
-                throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
+                throw new DefaultFrameworkException(ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO);
             }
         } else if (original.isEmpty()) {
-            throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
+            throw new DefaultFrameworkException(ExceptionMessage.VALID_SCENARIOS_NOT_FOUND);
         }
         List<MappingResult> originalWithoutNonParsed = new ArrayList<>(original);
         originalWithoutNonParsed.removeAll(nonParsedScenarios);
@@ -73,7 +72,7 @@ public class ScenarioFilter {
                 .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
                 .collect(Collectors.toCollection(ArrayList::new));
         if (filteredByTags.isEmpty()) {
-            throw new DefaultFrameworkException(NO_SCENARIOS_FILTERED_BY_TAGS);
+            throw new DefaultFrameworkException(ExceptionMessage.NO_SCENARIOS_FILTERED_BY_TAGS);
         }
         return filteredByTags;
     }
@@ -89,7 +88,8 @@ public class ScenarioFilter {
             logUtil.logScenarioWithoutTags(entry.file.getPath());
             return false;
         }
-        List<String> scenarioTags = Arrays.asList((entry.scenario.getSettings().getTags()).split(COMMA));
+        List<String> scenarioTags =
+                Arrays.asList((entry.scenario.getSettings().getTags()).split(DelimiterConstant.COMMA));
         return scenarioTags.stream().anyMatch(enabledTags::contains);
     }
 
@@ -99,7 +99,7 @@ public class ScenarioFilter {
                 .map(TagValue::getName)
                 .toList();
         if (enabledTags.isEmpty()) {
-            throw new DefaultFrameworkException(NO_ENABLED_TAGS_CONFIG);
+            throw new DefaultFrameworkException(ExceptionMessage.NO_ENABLED_TAGS_CONFIG);
         }
         return enabledTags;
     }

@@ -1,9 +1,11 @@
 package com.knubisoft.testlum.testing.framework.db.sql.executor;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.QueryResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -14,11 +16,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUCCESS_QUERY;
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.*;
 
 public abstract class AbstractSqlExecutor {
 
@@ -43,12 +40,12 @@ public abstract class AbstractSqlExecutor {
     public abstract void truncate();
 
     protected void defaultTruncate(final String selectTableNamesQuery, final List<String> truncateQueries) {
-        HikariDataSource dataSource = (HikariDataSource) requireNonNull(template.getDataSource());
+        HikariDataSource dataSource = (HikariDataSource) Objects.requireNonNull(template.getDataSource());
         final String schemaName = dataSource.getSchema();
-        List<String> tables = template.queryForList(format(selectTableNamesQuery, schemaName), String.class);
+        List<String> tables = template.queryForList(String.format(selectTableNamesQuery, schemaName), String.class);
         for (String table : tables) {
             for (String query : truncateQueries) {
-                requireNonNull(template).execute(format(query, table));
+                Objects.requireNonNull(template).execute(String.format(query, table));
             }
         }
     }
@@ -59,8 +56,8 @@ public abstract class AbstractSqlExecutor {
 
     private QueryResult<Object> executeQuery(final String query) {
         QueryResult<Object> queryResult =
-                new QueryResult<>(query.replaceAll(LF, EMPTY)
-                        .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
+                new QueryResult<>(query.replaceAll(StringUtils.LF, StringUtils.EMPTY)
+                        .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, StringUtils.SPACE)
                         .trim());
 
         try {
@@ -83,24 +80,24 @@ public abstract class AbstractSqlExecutor {
     }
 
     private Map<String, Integer> executeDMLQuery(final String query) {
-        int affected = requireNonNull(template).update(connection -> connection.prepareStatement(query));
+        int affected = Objects.requireNonNull(template).update(connection -> connection.prepareStatement(query));
         return Collections.singletonMap(COUNT, affected);
     }
 
     private String executeDDLQuery(final String query) {
-        requireNonNull(template).execute(query);
-        return SUCCESS_QUERY;
+        Objects.requireNonNull(template).execute(query);
+        return LogMessage.SUCCESS_QUERY;
     }
 
     private List<Map<String, Object>> executeDQLQuery(final String query) {
-        return requireNonNull(template).queryForList(query);
+        return Objects.requireNonNull(template).queryForList(query);
     }
 
     private Boolean checkMatchQuery(final String query,
                                     final String... operations) {
         Predicate<String> validatedQuery = s ->
                 query.toUpperCase().startsWith(s)
-                        || query.toUpperCase().startsWith(SPACE + s);
+                        || query.toUpperCase().startsWith(StringUtils.SPACE + s);
         return Stream.of(operations).anyMatch(validatedQuery);
     }
 }

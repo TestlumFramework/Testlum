@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.sqs;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.condition.OnSQSEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
@@ -19,8 +19,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnSQSEnabledCondition.class})
@@ -28,7 +28,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class SQSConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, SqsClient> sqsClient(final EnvToIntegrationMap envTointegrations) {
@@ -44,9 +43,9 @@ public class SQSConfiguration {
         for (Sqs sqs : integrations.getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
                 SqsClient checkedSqsClient = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "SQS", sqs.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "SQS", sqs.getAlias()),
                         () -> createAmazonSqs(sqs),
-                        healthCheckFactory.forSqs()
+                        forSqs()
                 );
 
                 amazonSqsMap.put(new AliasEnv(sqs.getAlias(), env), checkedSqsClient);
@@ -68,5 +67,9 @@ public class SQSConfiguration {
                 .credentialsProvider(awsStaticCredentialsProvider)
                 .endpointOverride(URI.create(sqs.getEndpoint()))
                 .build();
+    }
+
+    private IntegrationHealthCheck<SqsClient> forSqs() {
+        return sqsClient -> sqsClient.listQueues(lq -> lq.maxResults(1));
     }
 }

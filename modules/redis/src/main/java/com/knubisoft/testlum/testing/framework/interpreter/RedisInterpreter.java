@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -15,9 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.StorageOperationResult;
 
 @Slf4j
 @InterpreterForClass(Redis.class)
@@ -66,7 +64,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
         List<String> queries = convertToStringQueries(redisQueries);
         logAllRedisQueries(redisQueries, alias);
         addDatabaseMetaData(alias, queries, result);
-        StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
+        AbstractStorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
         return toString(apply.getRaw());
     }
 
@@ -79,7 +77,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     private void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
         log.info(ALIAS_LOG, alias);
         redisQueries.forEach(query ->
-                log.info(REDIS_QUERY, query.getCommand(), String.join(SPACE, query.getArg())));
+                log.info(REDIS_QUERY, query.getCommand(), String.join(DelimiterConstant.SPACE, query.getArg())));
     }
 
     private void addDatabaseMetaData(final String databaseAlias,

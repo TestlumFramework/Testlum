@@ -22,10 +22,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
-
-import static java.util.Objects.nonNull;
-import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @Component
 public class TestSetCollector {
@@ -174,7 +172,7 @@ public class TestSetCollector {
     }
 
     private Arguments convertToNamedArguments(final ScenarioArguments scenarioArguments) {
-        return arguments(Named.of(scenarioArguments.getPath(), scenarioArguments));
+        return Arguments.arguments(Named.of(scenarioArguments.getPath(), scenarioArguments));
     }
 
     private Stream<Arguments> expandByEnvironment(final Arguments argument, final List<String> executionEnvironments) {
@@ -188,7 +186,7 @@ public class TestSetCollector {
         }
         return executionEnvironments.stream()
                 .map(environment -> cloneForEnvironment(base, environment))
-                .map(scenarioArguments -> arguments(Named.of(
+                .map(scenarioArguments -> Arguments.arguments(Named.of(
                         scenarioArguments.getPath() + " [" + scenarioArguments.getEnvironment() + "]",
                         scenarioArguments)));
     }
@@ -222,7 +220,8 @@ public class TestSetCollector {
     }
 
     private boolean variationsExist(final MappingResult entry) {
-        return nonNull(entry.scenario) && StringUtils.isNotBlank(entry.scenario.getSettings().getVariations());
+        return Objects.nonNull(entry.scenario)
+                && StringUtils.isNotBlank(entry.scenario.getSettings().getVariations());
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {

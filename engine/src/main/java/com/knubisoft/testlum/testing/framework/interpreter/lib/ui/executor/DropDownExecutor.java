@@ -1,10 +1,13 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -15,12 +18,6 @@ import org.openqa.selenium.support.ui.Select;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
-import static java.lang.String.format;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -35,7 +32,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
     @Override
     public void execute(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocator();
-        result.put(DROP_DOWN_LOCATOR, locatorId);
+        result.put(ResultUtil.DROP_DOWN_LOCATOR, locatorId);
         WebElement dropDownElement = uiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy());
         if (dropDownElement.getTagName().equals("select")) {
             processSelectDropDown(dropDown, result, dropDownElement);
@@ -50,7 +47,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         if (Objects.nonNull(oneValue)) {
             processOneValueForCustomDropDown(dropDownElement, dropDown, result);
         } else {
-            throw new DefaultFrameworkException(CUSTOM_DROP_DOWN_NOT_SUPPORTED,
+            throw new DefaultFrameworkException(ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED,
                     dropDown.getAllValues().getType().value());
         }
 
@@ -75,22 +72,23 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         String value = oneValue.getValue();
         validateByMethodForCustomDropDown(oneValue.getBy());
         resultUtil.addDropDownForOneValueMetaData(oneValue.getType().value(), oneValue.getBy().value(), value, result);
-        log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
-        log.info(BY_LOG, oneValue.getBy().value());
-        log.info(VALUE_LOG, value);
+        log.info(LogMessage.COMMAND_TYPE_LOG, String.format(ResultUtil.ONE_VALUE_TEMPLATE, type.value()));
+        log.info(LogMessage.BY_LOG, oneValue.getBy().value());
+        log.info(LogMessage.VALUE_LOG, value);
         dropDownElement.click();
         List<WebElement> dropDownParentElements = dropDownElement.findElements(By.xpath("ancestor::*"));
         selectSearchableOptionForCustomDropDown(dropDownParentElements, value);
     }
 
+    //CHECKSTYLE:OFF
     private void selectSearchableOptionForCustomDropDown(final List<WebElement> dropDownParentElements,
                                                          final String value) {
         Collections.reverse(dropDownParentElements);
-
         for (int i = 0; i < dropDownParentElements.size(); i++) {
             WebElement element = dropDownParentElements.get(i);
             try {
-                WebElement searchableOption = element.findElement(By.xpath(format(CONTAINS_TEXT_PATTERN, value)));
+                WebElement searchableOption =
+                        element.findElement(By.xpath(String.format(CONTAINS_TEXT_PATTERN, value)));
                 searchableOption.click();
                 break;
             } catch (NoSuchElementException e) {
@@ -100,6 +98,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
             }
         }
     }
+    //CHECKSTYLE:ON
 
     private void processOneValueFromSelectDropDown(final OneValue oneValue, final Select select,
                                                    final CommandResult result) {
@@ -107,9 +106,9 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();
         resultUtil.addDropDownForOneValueMetaData(type.value(), method.value(), value, result);
-        log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
-        log.info(BY_LOG, oneValue.getBy().value());
-        log.info(VALUE_LOG, value);
+        log.info(LogMessage.COMMAND_TYPE_LOG, String.format(ResultUtil.ONE_VALUE_TEMPLATE, type.value()));
+        log.info(LogMessage.BY_LOG, oneValue.getBy().value());
+        log.info(LogMessage.VALUE_LOG, value);
         if (type == TypeForOneValue.SELECT) {
             selectByMethod(select, method, value);
         } else {
@@ -124,9 +123,9 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 break;
             case INDEX:
             case VALUE:
-                throw new DefaultFrameworkException(CUSTOM_DROP_DOWN_NOT_SUPPORTED, method.value());
+                throw new DefaultFrameworkException(ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED, method.value());
             default:
-                throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
+                throw new DefaultFrameworkException(ExceptionMessage.DROP_DOWN_NOT_SUPPORTED, method.value());
         }
     }
 
@@ -152,7 +151,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 select.selectByValue(value);
                 break;
             default:
-                throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
+                throw new DefaultFrameworkException(ExceptionMessage.DROP_DOWN_NOT_SUPPORTED, method.value());
         }
     }
 
@@ -168,7 +167,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 select.deselectByValue(value);
                 break;
             default:
-                throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
+                throw new DefaultFrameworkException(ExceptionMessage.DROP_DOWN_NOT_SUPPORTED, method.value());
         }
     }
 
@@ -176,13 +175,13 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         for (int i = 0; i < select.getOptions().size(); i++) {
             select.selectByIndex(i);
         }
-        log.info(COMMAND_TYPE_LOG, ALL_VALUES_SELECT);
-        result.put(DROP_DOWN_FOR, ALL_VALUES_SELECT);
+        log.info(LogMessage.COMMAND_TYPE_LOG, ResultUtil.ALL_VALUES_SELECT);
+        result.put(ResultUtil.DROP_DOWN_FOR, ResultUtil.ALL_VALUES_SELECT);
     }
 
     private void deselectAll(final Select select, final CommandResult result) {
-        log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
-        result.put(DROP_DOWN_FOR, ALL_VALUES_DESELECT);
+        log.info(LogMessage.COMMAND_TYPE_LOG, ResultUtil.ALL_VALUES_DESELECT);
+        result.put(ResultUtil.DROP_DOWN_FOR, ResultUtil.ALL_VALUES_DESELECT);
         select.deselectAll();
     }
 }

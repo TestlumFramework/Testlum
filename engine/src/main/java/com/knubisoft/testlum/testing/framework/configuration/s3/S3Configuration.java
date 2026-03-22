@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.configuration.s3;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnS3EnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.S3;
@@ -20,7 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnS3EnabledCondition.class})
@@ -28,7 +28,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class S3Configuration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean("s3Client")
     public Map<AliasEnv, S3Client> s3Client(
@@ -45,14 +44,18 @@ public class S3Configuration {
         for (S3 s3 : integrations.getS3Integration().getS3()) {
             if (s3.isEnabled()) {
                 S3Client resilientClient = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "S3", s3.getAlias()),
+                        String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "S3", s3.getAlias()),
                         () -> createAmazonS3(s3),
-                        healthCheckFactory.forS3()
+                        forS3()
                 );
 
                 amazonS3Map.put(new AliasEnv(s3.getAlias(), env), resilientClient);
             }
         }
+    }
+
+    private IntegrationHealthCheck<S3Client> forS3() {
+        return S3Client::listBuckets;
     }
 
     private S3Client createAmazonS3(final S3 s3) {

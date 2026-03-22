@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
@@ -24,8 +25,6 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 
 @Slf4j
 @Component
@@ -78,7 +77,8 @@ public final class WebElementFinder {
                 return Optional.of(findElementByLocator(driver, by, logMessages, checkedLocatorCount));
             } catch (NoSuchElementException e) {
                 checkedLocatorCount++;
-                logMessages.add(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE, extractLocatorValue(by)));
+                logMessages.add(String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE,
+                        extractLocatorValue(by)));
             }
         }
         return Optional.empty();
@@ -92,7 +92,7 @@ public final class WebElementFinder {
         Optional<WebElement> optionalElement = findElement(bySet, driver);
 
         if (optionalElement.isEmpty()) {
-            throw new DefaultFrameworkException(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
+            throw new DefaultFrameworkException(String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
         }
         return optionalElement.get();
     }
@@ -128,7 +128,7 @@ public final class WebElementFinder {
         WebElement element = driver.findElement(by);
         printLogsAboutUndiscoveredElements(logMessages);
         if (checkedLocatorCount != 0) {
-            log.info(ELEMENT_WAS_FOUND_BY_LOCATOR, extractLocatorValue(by));
+            log.info(LogMessage.ELEMENT_WAS_FOUND_BY_LOCATOR, extractLocatorValue(by));
         }
         return element;
     }

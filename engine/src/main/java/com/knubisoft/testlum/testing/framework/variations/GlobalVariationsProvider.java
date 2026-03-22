@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.variations;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.parser.CSVParser;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
@@ -12,12 +13,9 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
 @Component
@@ -36,7 +34,7 @@ public class GlobalVariationsProvider {
         String fileName = scenario.getSettings().getVariations();
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
 
-        if (isNull(variationList)) {
+        if (Objects.isNull(variationList)) {
             variationList = csvParser.parseVariations(fileName);
             VARIATIONS.putIfAbsent(fileName, variationList);
         }
@@ -46,7 +44,7 @@ public class GlobalVariationsProvider {
     public void process(final String variationsFileName) {
         if (StringUtils.isNotBlank(variationsFileName)) {
             List<Map<String, String>> variationList = VARIATIONS.get(variationsFileName);
-            if (isNull(variationList)) {
+            if (Objects.isNull(variationList)) {
                 variationList = csvParser.parseVariations(variationsFileName);
                 VARIATIONS.putIfAbsent(variationsFileName, variationList);
             }
@@ -55,8 +53,8 @@ public class GlobalVariationsProvider {
 
     public List<Map<String, String>> getVariations(final String fileName) {
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
-        if (isNull(variationList)) {
-            throw new DefaultFrameworkException(VARIATIONS_NOT_FOUND, fileName);
+        if (Objects.isNull(variationList)) {
+            throw new DefaultFrameworkException(ExceptionMessage.VARIATIONS_NOT_FOUND, fileName);
         }
         return variationList;
     }
@@ -104,7 +102,7 @@ public class GlobalVariationsProvider {
                                         final String variationValue,
                                         final Map<String, String> variationMap,
                                         final ScenarioContext scenarioContext) {
-        if (isNull(variationValue)) {
+        if (Objects.isNull(variationValue)) {
             if (isContextValue(variationKey, scenarioContext)) {
                 return true;
             }
@@ -114,7 +112,7 @@ public class GlobalVariationsProvider {
     }
 
     private boolean isContextValue(final String variationKey, final ScenarioContext scenarioContext) {
-        if (nonNull(scenarioContext)) {
+        if (Objects.nonNull(scenarioContext)) {
             try {
                 scenarioContext.inject(variationKey);
                 return true;

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static com.knubisoft.comparator.util.LogMessage.CONTENT_DOES_MATCH;
+import com.knubisoft.comparator.util.LogMessage;
 
 public class Comparator extends AbstractObjectComparator<String> {
 
@@ -51,7 +51,7 @@ public class Comparator extends AbstractObjectComparator<String> {
         );
 
         if (handlers.stream().noneMatch(handler -> handler.test(request))) {
-            throw new MatchException(CONTENT_DOES_MATCH);
+            throw new MatchException(LogMessage.CONTENT_DOES_MATCH);
         }
     }
 

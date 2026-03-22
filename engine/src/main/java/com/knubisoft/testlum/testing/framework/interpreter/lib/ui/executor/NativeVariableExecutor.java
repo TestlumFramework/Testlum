@@ -1,10 +1,12 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
@@ -13,13 +15,8 @@ import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
-
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_FORM;
-import static java.util.Objects.nonNull;
-
 
 @Slf4j
 @ExecutorForClass(NativeVar.class)
@@ -31,13 +28,13 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     public NativeVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         this.varToMethodMap = Map.of(
-                var -> nonNull(var.getElement()), this::getElementResult,
-                var -> nonNull(var.getPath()), this::getPathResult,
-                var -> nonNull(var.getConstant()), this::getConstantResult,
-                var -> nonNull(var.getExpression()), this::getExpressionResult,
-                var -> nonNull(var.getFile()), this::getFileResult,
-                var -> nonNull(var.getSql()), this::getSQLResult,
-                var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
+                var -> Objects.nonNull(var.getElement()), this::getElementResult,
+                var -> Objects.nonNull(var.getPath()), this::getPathResult,
+                var -> Objects.nonNull(var.getConstant()), this::getConstantResult,
+                var -> Objects.nonNull(var.getExpression()), this::getExpressionResult,
+                var -> Objects.nonNull(var.getFile()), this::getFileResult,
+                var -> Objects.nonNull(var.getSql()), this::getSQLResult,
+                var -> Objects.nonNull(var.getGenerate()), this::getRandomGenerateResult);
         this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
     }
 
@@ -46,7 +43,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         try {
             setContextVariable(var, result);
         } catch (Exception e) {
-            log.info(FAILED_VARIABLE_LOG, var.getName(), var.getComment());
+            log.info(LogMessage.FAILED_VARIABLE_LOG, var.getName(), var.getComment());
             throw e;
         }
     }
@@ -71,7 +68,8 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         } catch (DefaultFrameworkException e) {
             valueResult = String.valueOf(false);
         }
-        resultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.ELEMENT_PRESENT, var.getName(),
+                ResultUtil.LOCATOR_FORM, locatorId, valueResult, result);
         return valueResult;
     }
 

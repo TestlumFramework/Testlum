@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.util;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.MigrationConstant;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import lombok.experimental.UtilityClass;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.SQL_INSERT;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
-
 @UtilityClass
 public class ExcelDatasetParser {
 
@@ -34,7 +32,7 @@ public class ExcelDatasetParser {
 
     private Workbook getWorkbook(final File excelFile) {
         try {
-            if (excelFile.toString().endsWith(XLSX_EXTENSION)) {
+            if (excelFile.toString().endsWith(MigrationConstant.XLSX_EXTENSION)) {
                 return new XSSFWorkbook(Files.newInputStream(excelFile.toPath()));
             }
             return new HSSFWorkbook(Files.newInputStream(excelFile.toPath()));
@@ -49,7 +47,7 @@ public class ExcelDatasetParser {
         for (Row row : sheet) {
             String values = getValues(row);
             String tableName = getTableName(row);
-            queries.add(String.format(SQL_INSERT, tableName, values));
+            queries.add(String.format(MigrationConstant.SQL_INSERT, tableName, values));
         }
     }
 

@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -14,8 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
 
 @Slf4j
 @ExecutorForClass(NativeRepeat.class)
@@ -39,7 +38,7 @@ public class NativeRepeatExecutor extends AbstractUiExecutor<NativeRepeat> {
         } else {
             runSimpleRepeat(repeat, result, subCommandsResult);
         }
-        log.info(REPEAT_FINISHED_LOG);
+        log.info(LogMessage.REPEAT_FINISHED_LOG);
     }
 
     private void runRepeatWithVariations(final NativeRepeat repeat,

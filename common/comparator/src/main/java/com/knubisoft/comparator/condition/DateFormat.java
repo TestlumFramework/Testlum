@@ -11,16 +11,20 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.comparator.constant.CommonConstant.*;
-import static java.lang.String.format;
 
 @Getter
 @RequiredArgsConstructor
 public enum DateFormat {
-    DATE_TIME_FORMAT_WITH_DASH(format(DATE_TIME_TEMPLATE, DASH, DASH), RegexpConstant.DATE_TIME_WITH_DASH_PATTERN),
-    DATE_TIME_FORMAT_WITH_SLASH(format(DATE_TIME_TEMPLATE, SLASH, SLASH), RegexpConstant.DATE_TIME_WITH_SLASH_PATTERN),
-    DATE_FORMAT_WITH_DASH(format(DATE_TEMPLATE, DASH, DASH), RegexpConstant.DATE_WITH_DASH_PATTERN),
-    DATE_FORMAT_WITH_SLASH(format(DATE_TEMPLATE, SLASH, SLASH), RegexpConstant.DATE_WITH_SLASH_PATTERN),
+    DATE_TIME_FORMAT_WITH_DASH(String.format(CommonConstant.DATE_TIME_TEMPLATE,
+            CommonConstant.DASH, CommonConstant.DASH),
+            RegexpConstant.DATE_TIME_WITH_DASH_PATTERN),
+    DATE_TIME_FORMAT_WITH_SLASH(String.format(CommonConstant.DATE_TIME_TEMPLATE,
+            CommonConstant.SLASH, CommonConstant.SLASH),
+            RegexpConstant.DATE_TIME_WITH_SLASH_PATTERN),
+    DATE_FORMAT_WITH_DASH(String.format(CommonConstant.DATE_TEMPLATE, CommonConstant.DASH, CommonConstant.DASH),
+            RegexpConstant.DATE_WITH_DASH_PATTERN),
+    DATE_FORMAT_WITH_SLASH(String.format(CommonConstant.DATE_TEMPLATE, CommonConstant.SLASH, CommonConstant.SLASH),
+            RegexpConstant.DATE_WITH_SLASH_PATTERN),
     TIME_FORMAT(CommonConstant.TIME_FORMAT, Pattern.compile(RegexpConstant.TIME));
 
     private final String format;

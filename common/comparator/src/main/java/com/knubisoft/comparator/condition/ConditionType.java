@@ -10,8 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static java.lang.String.format;
-
 @RequiredArgsConstructor
 @Getter
 public enum ConditionType {
@@ -62,6 +60,6 @@ public enum ConditionType {
         return Arrays.stream(ConditionType.values())
                 .filter(type -> type.getPatterns().stream().anyMatch(pattern -> pattern.matcher(expression).matches()))
                 .findFirst()
-                .orElseThrow(() -> new MatchException(format(LogMessage.WRONG_OPERATION, expression)));
+                .orElseThrow(() -> new MatchException(String.format(LogMessage.WRONG_OPERATION, expression)));
     }
 }

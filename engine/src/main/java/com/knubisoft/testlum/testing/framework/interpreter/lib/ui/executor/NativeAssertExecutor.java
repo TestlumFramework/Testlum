@@ -1,11 +1,14 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
@@ -13,10 +16,6 @@ import org.openqa.selenium.WebElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT;
 
 @Slf4j
 @ExecutorForClass(NativeAssert.class)
@@ -82,8 +81,8 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     }
 
     private void executeEqualityCommand(final AssertEquality action, final CommandResult result) {
-        log.info(CONTENT_LOG, String.join(COMMA, action.getContent()));
-        result.put(CONTENT, String.join(COMMA, action.getContent()));
+        log.info(LogMessage.CONTENT_LOG, String.join(DelimiterConstant.COMMA, action.getContent()));
+        result.put(ResultUtil.CONTENT, String.join(DelimiterConstant.COMMA, action.getContent()));
         if (action instanceof AssertEqual) {
             checkContentIsEqual((AssertEqual) action);
         } else {
@@ -119,7 +118,7 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     }
 
     private String formatContent(final AssertEquality action) {
-        return String.join(COMMA, action.getContent());
+        return String.join(DelimiterConstant.COMMA, action.getContent());
     }
 
 }

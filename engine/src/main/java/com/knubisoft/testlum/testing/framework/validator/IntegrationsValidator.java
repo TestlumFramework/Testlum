@@ -16,9 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
-import static java.util.Objects.nonNull;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 
 @Component
 public class IntegrationsValidator implements ConfigurationValidator<Map<String, Integrations>> {
@@ -33,26 +31,27 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         this.fileSearcher = fileSearcher;
         this.testResourceSettings = testResourceSettings;
         final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
-        map.put(i -> nonNull(i.getApis()), i -> i.getApis().getApi());
-        map.put(i -> nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
-        map.put(i -> nonNull(i.getS3Integration()), i -> i.getS3Integration().getS3());
-        map.put(i -> nonNull(i.getSesIntegration()), i -> i.getSesIntegration().getSes());
-        map.put(i -> nonNull(i.getSqsIntegration()), i -> i.getSqsIntegration().getSqs());
-        map.put(i -> nonNull(i.getSmtpIntegration()), i -> i.getSmtpIntegration().getSmtp());
-        map.put(i -> nonNull(i.getRedisIntegration()), i -> i.getRedisIntegration().getRedis());
-        map.put(i -> nonNull(i.getMongoIntegration()), i -> i.getMongoIntegration().getMongo());
-        map.put(i -> nonNull(i.getMysqlIntegration()), i -> i.getMysqlIntegration().getMysql());
-        map.put(i -> nonNull(i.getKafkaIntegration()), i -> i.getKafkaIntegration().getKafka());
-        map.put(i -> nonNull(i.getGraphqlIntegration()), i -> i.getGraphqlIntegration().getApi());
-        map.put(i -> nonNull(i.getTwilioIntegration()), i -> i.getTwilioIntegration().getTwilio());
-        map.put(i -> nonNull(i.getOracleIntegration()), i -> i.getOracleIntegration().getOracle());
-        map.put(i -> nonNull(i.getDynamoIntegration()), i -> i.getDynamoIntegration().getDynamo());
-        map.put(i -> nonNull(i.getLambdaIntegration()), i -> i.getLambdaIntegration().getLambda());
-        map.put(i -> nonNull(i.getSendgridIntegration()), i -> i.getSendgridIntegration().getSendgrid());
-        map.put(i -> nonNull(i.getPostgresIntegration()), i -> i.getPostgresIntegration().getPostgres());
-        map.put(i -> nonNull(i.getRabbitmqIntegration()), i -> i.getRabbitmqIntegration().getRabbitmq());
-        map.put(i -> nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
-        map.put(i -> nonNull(i.getElasticsearchIntegration()), i -> i.getElasticsearchIntegration().getElasticsearch());
+        map.put(i -> Objects.nonNull(i.getApis()), i -> i.getApis().getApi());
+        map.put(i -> Objects.nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
+        map.put(i -> Objects.nonNull(i.getS3Integration()), i -> i.getS3Integration().getS3());
+        map.put(i -> Objects.nonNull(i.getSesIntegration()), i -> i.getSesIntegration().getSes());
+        map.put(i -> Objects.nonNull(i.getSqsIntegration()), i -> i.getSqsIntegration().getSqs());
+        map.put(i -> Objects.nonNull(i.getSmtpIntegration()), i -> i.getSmtpIntegration().getSmtp());
+        map.put(i -> Objects.nonNull(i.getRedisIntegration()), i -> i.getRedisIntegration().getRedis());
+        map.put(i -> Objects.nonNull(i.getMongoIntegration()), i -> i.getMongoIntegration().getMongo());
+        map.put(i -> Objects.nonNull(i.getMysqlIntegration()), i -> i.getMysqlIntegration().getMysql());
+        map.put(i -> Objects.nonNull(i.getKafkaIntegration()), i -> i.getKafkaIntegration().getKafka());
+        map.put(i -> Objects.nonNull(i.getGraphqlIntegration()), i -> i.getGraphqlIntegration().getApi());
+        map.put(i -> Objects.nonNull(i.getTwilioIntegration()), i -> i.getTwilioIntegration().getTwilio());
+        map.put(i -> Objects.nonNull(i.getOracleIntegration()), i -> i.getOracleIntegration().getOracle());
+        map.put(i -> Objects.nonNull(i.getDynamoIntegration()), i -> i.getDynamoIntegration().getDynamo());
+        map.put(i -> Objects.nonNull(i.getLambdaIntegration()), i -> i.getLambdaIntegration().getLambda());
+        map.put(i -> Objects.nonNull(i.getSendgridIntegration()), i -> i.getSendgridIntegration().getSendgrid());
+        map.put(i -> Objects.nonNull(i.getPostgresIntegration()), i -> i.getPostgresIntegration().getPostgres());
+        map.put(i -> Objects.nonNull(i.getRabbitmqIntegration()), i -> i.getRabbitmqIntegration().getRabbitmq());
+        map.put(i -> Objects.nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
+        map.put(i -> Objects.nonNull(i.getElasticsearchIntegration()),
+                i -> i.getElasticsearchIntegration().getElasticsearch());
         this.configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 
@@ -62,7 +61,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
             List<List<? extends Integration>> integrationLists = getAllEnvsIntegrations(
                     new ArrayList<>(integrationsMap.values()), nonNullCheck, toIntegrationList);
             if (!integrationLists.isEmpty() && integrationLists.size() != integrationsMap.keySet().size()) {
-                throw new DefaultFrameworkException(INTEGRATIONS_MISMATCH_ENVS,
+                throw new DefaultFrameworkException(ExceptionMessage.INTEGRATIONS_MISMATCH_ENVS,
                         integrationLists.get(0).get(0).getClass().getSimpleName());
             } else if (!integrationLists.isEmpty()) {
                 List<String> defaultAliases = getDefaultAliases(integrationLists);
@@ -109,12 +108,14 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                                                      final List<String> defaultAliases,
                                                      final Set<String> aliasSet) {
         if (!aliasSet.add(integration.getAlias())) {
-            String path = fileSearcher.searchFileFromEnvFolder(envFolder, INTEGRATION_CONFIG_FILENAME)
+            String path = fileSearcher.searchFileFromEnvFolder(envFolder,
+                            TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
                     .map(File::getPath).orElse(testResourceSettings.getEnvConfigFolder().getPath());
-            throw new DefaultFrameworkException(SAME_INTEGRATION_ALIAS, integration.getClass().getSimpleName(),
+            throw new DefaultFrameworkException(ExceptionMessage.SAME_INTEGRATION_ALIAS,
+                    integration.getClass().getSimpleName(),
                     integration.getAlias(), path);
         } else if (!defaultAliases.contains(integration.getAlias())) {
-            throw new DefaultFrameworkException(INTEGRATION_ALIAS_NOT_MATCH,
+            throw new DefaultFrameworkException(ExceptionMessage.INTEGRATION_ALIAS_NOT_MATCH,
                     integration.getClass().getSimpleName(), integration.getAlias());
         }
     }
@@ -136,23 +137,23 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                 .map(integrations -> integrations.stream()
                         .filter(integration -> integration instanceof Api)
                         .map(Api.class::cast)
-                        .filter(api -> nonNull(api.getAuth()))
+                        .filter(api -> Objects.nonNull(api.getAuth()))
                         .collect(Collectors.toMap(Api::getAlias, Api::getAuth)))
                 .toList();
     }
 
     private void checkAuth(final Auth auth, final String alias, final Map<String, Auth> defaultAuthMap) {
         if (!defaultAuthMap.containsKey(alias)) {
-            throw new DefaultFrameworkException(AUTH_NOT_PRESENT_IN_ALL_ENVS, alias);
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_PRESENT_IN_ALL_ENVS, alias);
         }
         if (!defaultAuthMap.get(alias).isAutoLogout() == auth.isAutoLogout()) {
-            throw new DefaultFrameworkException(AUTH_LOGOUT_NOT_MATCH, alias);
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_LOGOUT_NOT_MATCH, alias);
         }
         if (!Objects.equals(defaultAuthMap.get(alias).getAuthStrategy(), auth.getAuthStrategy())) {
-            throw new DefaultFrameworkException(AUTH_STRATEGY_NOT_MATCH, alias);
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_STRATEGY_NOT_MATCH, alias);
         }
         if (!Objects.equals(defaultAuthMap.get(alias).getAuthCustomClassName(), auth.getAuthCustomClassName())) {
-            throw new DefaultFrameworkException(AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, alias);
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, alias);
         }
     }
 

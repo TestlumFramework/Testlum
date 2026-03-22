@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import static java.lang.String.format;
-
 @Getter
 @RequiredArgsConstructor
 public enum Operator {
@@ -25,7 +23,7 @@ public enum Operator {
         return Arrays.stream(Operator.values())
                 .filter(o -> o.getPattern().matcher(expression).matches())
                 .findFirst()
-                .orElseThrow(() -> new MatchException(format(LogMessage.WRONG_OPERATOR, expression)));
+                .orElseThrow(() -> new MatchException(String.format(LogMessage.WRONG_OPERATOR, expression)));
     }
 
 }

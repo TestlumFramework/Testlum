@@ -393,6 +393,11 @@
             </dependency>
             <dependency>
                 <groupId>com.knubisoft</groupId>
+                <artifactId>xml-parser</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
                 <artifactId>testlum-condition</artifactId>
                 <version>${project.version}</version>
             </dependency>

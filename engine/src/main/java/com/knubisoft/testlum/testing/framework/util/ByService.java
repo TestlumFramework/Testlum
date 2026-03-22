@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static java.lang.String.format;
-
 @Service
 public class ByService {
 
@@ -35,7 +33,7 @@ public class ByService {
     public List<org.openqa.selenium.By> className(final List<ClassName> classNameList) {
         return classNameList.stream()
                 .map(className -> org.openqa.selenium.By.xpath(
-                        format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, className.getValue())
+                        String.format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, className.getValue())
                 ))
                 .toList();
     }
@@ -43,8 +41,8 @@ public class ByService {
     public List<org.openqa.selenium.By> text(final List<Text> textList) {
         return textList.stream()
                 .map(text -> org.openqa.selenium.By.xpath(text.isPlaceholder()
-                        ? format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue())
-                        : format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, text.getValue())))
+                        ? String.format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue())
+                        : String.format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, text.getValue())))
                 .toList();
     }
 }

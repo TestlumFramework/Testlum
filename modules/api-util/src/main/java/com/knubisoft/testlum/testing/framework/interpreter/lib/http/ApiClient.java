@@ -17,8 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.springframework.http.HttpMethod.*;
-
 @Slf4j
 @Component
 public class ApiClient {
@@ -72,21 +70,21 @@ public class ApiClient {
     private HttpUriRequest getHttpRequest(final HttpMethod httpMethod,
                                           final String url,
                                           final HttpEntity body) {
-        if (httpMethod.equals(GET)) {
+        if (httpMethod.equals(HttpMethod.GET)) {
             return new HttpGet(url);
-        } else if (httpMethod.equals(DELETE)) {
+        } else if (httpMethod.equals(HttpMethod.DELETE)) {
             return new HttpDelete(url);
-        } else if (httpMethod.equals(HEAD)) {
+        } else if (httpMethod.equals(HttpMethod.HEAD)) {
             return new HttpHead(url);
-        } else if (httpMethod.equals(OPTIONS)) {
+        } else if (httpMethod.equals(HttpMethod.OPTIONS)) {
             return new HttpOptions(url);
-        } else if (httpMethod.equals(TRACE)) {
+        } else if (httpMethod.equals(HttpMethod.TRACE)) {
             return new HttpTrace(url);
-        } else if (httpMethod.equals(POST)) {
+        } else if (httpMethod.equals(HttpMethod.POST)) {
             return setRequestBody(new HttpPost(url), body);
-        } else if (httpMethod.equals(PUT)) {
+        } else if (httpMethod.equals(HttpMethod.PUT)) {
             return setRequestBody(new HttpPut(url), body);
-        } else if (httpMethod.equals(PATCH)) {
+        } else if (httpMethod.equals(HttpMethod.PATCH)) {
             return setRequestBody(new HttpPatch(url), body);
         }
         throw new DefaultFrameworkException(UNKNOWN_HTTP_METHOD, httpMethod);

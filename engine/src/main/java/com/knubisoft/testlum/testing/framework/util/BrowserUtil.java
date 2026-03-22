@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.global_config.Web;
@@ -17,8 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_INFO;
 
 @Component
 @RequiredArgsConstructor
@@ -66,7 +65,7 @@ public class BrowserUtil {
         String browserName = browser.getClass().getSimpleName();
         BrowserType browserType = getBrowserType(browser);
         String browserVersion = getBrowserVersion(browser, browserType);
-        return String.format(BROWSER_INFO, browserName, browserType.getTypeName(), browserVersion);
+        return String.format(LogMessage.BROWSER_INFO, browserName, browserType.getTypeName(), browserVersion);
     }
 
     public BrowserType getBrowserType(final AbstractBrowser browser) {

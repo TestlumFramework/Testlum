@@ -1,6 +1,8 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.JavascriptExecutor;
@@ -11,9 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.JS_FILE_UNREADABLE;
 
 @RequiredArgsConstructor
 @Component
@@ -30,9 +29,9 @@ public class JavascriptUtil {
         try {
             File jsFile = fileSearcher.searchFileFromDataFolder(filePath);
             List<String> commands = Files.readAllLines(jsFile.toPath());
-            return String.join(EMPTY, commands);
+            return String.join(DelimiterConstant.EMPTY, commands);
         } catch (IOException e) {
-            throw new DefaultFrameworkException(JS_FILE_UNREADABLE, filePath);
+            throw new DefaultFrameworkException(ExceptionMessage.JS_FILE_UNREADABLE, filePath);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunnerImpl;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
@@ -11,8 +12,6 @@ import io.appium.java_client.remote.SupportsContextSwitching;
 
 import java.util.Locale;
 import java.util.Set;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CANNOT_SWITCH_TO_WEBVIEW;
 
 @ExecutorForClass(WebView.class)
 public class WebViewExecutor extends AbstractUiExecutor<WebView> {
@@ -31,7 +30,7 @@ public class WebViewExecutor extends AbstractUiExecutor<WebView> {
         String contextName = contextNames.stream()
                 .filter(context -> context.toLowerCase(Locale.US).contains("web"))
                 .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(CANNOT_SWITCH_TO_WEBVIEW));
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.CANNOT_SWITCH_TO_WEBVIEW));
         driver.context(contextName);
 
         logUtil.startUiCommandsInWebView();

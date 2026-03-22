@@ -10,10 +10,7 @@ import org.apache.commons.lang3.Strings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.String.format;
-import static java.lang.String.valueOf;
-import static java.util.Objects.nonNull;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public final class HttpValidator {
@@ -29,13 +26,13 @@ public final class HttpValidator {
 
     public void validateCode(final int expectedCode, final int actualCode) {
         if (expectedCode != actualCode) {
-            result.add(format(HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
-            interpreter.save(valueOf(actualCode));
+            result.add(String.format(HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
+            interpreter.save(String.valueOf(actualCode));
         }
     }
 
     public void validateHeaders(final Map<String, String> expectedHeaders, final Map<String, String> actualHeaderMap) {
-        if (nonNull(expectedHeaders)) {
+        if (Objects.nonNull(expectedHeaders)) {
             try {
                 expectedHeaders.entrySet().forEach(each -> validateHeader(each, actualHeaderMap));
             } catch (RuntimeException e) {
@@ -56,7 +53,7 @@ public final class HttpValidator {
                                            final Map<String, String> actualHeaderMap) {
         String expected = interpreter.toString(expectedHeaders);
         String actual = interpreter.toString(actualHeaderMap);
-        result.add(format(HTTP_HEADERS_EXPECTED_BUT_WAS,
+        result.add(String.format(HTTP_HEADERS_EXPECTED_BUT_WAS,
                 prettifier.cut(expected), prettifier.cut(actual)));
         interpreter.save(actual);
     }
@@ -73,7 +70,7 @@ public final class HttpValidator {
                     .withMode(isStrict)
                     .exec();
         } catch (ComparisonException e) {
-            result.add(format(HTTP_BODY_EXPECTED_BUT_WAS,
+            result.add(String.format(HTTP_BODY_EXPECTED_BUT_WAS,
                     prettifier.asJsonResult(prettifier.cut(expectedBody)),
                     prettifier.asJsonResult(prettifier.cut(actualBody))));
         }

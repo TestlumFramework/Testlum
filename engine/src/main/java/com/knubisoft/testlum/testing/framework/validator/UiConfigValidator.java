@@ -14,12 +14,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.TestResourceSettings.UI_CONFIG_FILENAME;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
-import static com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType.*;
-import static java.util.Collections.singletonMap;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 
 @Component
 public class UiConfigValidator implements ConfigurationValidator<Map<String, UiConfig>> {
@@ -38,28 +34,23 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
         this.settings = settings;
         this.fileSearcher = fileSearcher;
 
-        final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> configMethodMap = new HashMap<>();
-        configMethodMap.put(WEB.name(), singletonMap(c -> nonNull(c.getWeb())
-                && c.getWeb().isEnabled(), UiConfig::getWeb));
-        configMethodMap.put(NATIVE.name(), singletonMap(c -> nonNull(c.getNative())
-                && c.getNative().isEnabled(), UiConfig::getNative));
-        configMethodMap.put(MOBILE_BROWSER.name(), singletonMap(c -> nonNull(c.getMobilebrowser())
+        this.uiConfigMethodMap = Map.of(UiType.WEB.name(), Collections.singletonMap(c -> Objects.nonNull(c.getWeb())
+                && c.getWeb().isEnabled(), UiConfig::getWeb), UiType.NATIVE.name(),
+                Collections.singletonMap(c -> Objects.nonNull(c.getNative())
+                && c.getNative().isEnabled(), UiConfig::getNative), UiType.MOBILE_BROWSER.name(),
+                Collections.singletonMap(c -> Objects.nonNull(c.getMobilebrowser())
                 && c.getMobilebrowser().isEnabled(), UiConfig::getMobilebrowser));
-        uiConfigMethodMap = Collections.unmodifiableMap(configMethodMap);
 
-        final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap = new HashMap<>();
-        baseUrlMethodMap.put(WEB.name(), singletonMap(c -> nonNull(c.getWeb())
-                && c.getWeb().isEnabled(), c -> c.getWeb().getBaseUrl()));
-        baseUrlMethodMap.put(MOBILE_BROWSER.name(), singletonMap(c -> nonNull(c.getMobilebrowser())
+        this.baseUrlMethodMap = Map.of(UiType.WEB.name(), Collections.singletonMap(c -> Objects.nonNull(c.getWeb())
+                && c.getWeb().isEnabled(), c -> c.getWeb().getBaseUrl()), UiType.MOBILE_BROWSER.name(),
+                Collections.singletonMap(c -> Objects.nonNull(c.getMobilebrowser())
                 && c.getMobilebrowser().isEnabled(), c -> c.getMobilebrowser().getBaseUrl()));
-        this.baseUrlMethodMap = Collections.unmodifiableMap(baseUrlMethodMap);
 
-        final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> cTypeMethodMap = new HashMap<>();
-        cTypeMethodMap.put(NATIVE.name(), singletonMap(c -> nonNull(c.getNative())
-                && c.getNative().isEnabled(), c -> c.getNative().getConnection()));
-        cTypeMethodMap.put(MOBILE_BROWSER.name(), singletonMap(c -> nonNull(c.getMobilebrowser())
+        this.connectionMethodMap = Map.of(UiType.NATIVE.name(),
+                Collections.singletonMap(c -> Objects.nonNull(c.getNative())
+                && c.getNative().isEnabled(), c -> c.getNative().getConnection()), UiType.MOBILE_BROWSER.name(),
+                Collections.singletonMap(c -> Objects.nonNull(c.getMobilebrowser())
                 && c.getMobilebrowser().isEnabled(), c -> c.getMobilebrowser().getConnection()));
-        connectionMethodMap = Collections.unmodifiableMap(cTypeMethodMap);
     }
 
     @Override
@@ -82,7 +73,8 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                             .map(uiConfigToNativeOrMobileOrWebMethod)
                             .toList();
                     if (!nativeOrMobileOrWebList.isEmpty() && nativeOrMobileOrWebList.size() != envNum) {
-                        throw new DefaultFrameworkException(UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS, nativeOrMobileOrWebName);
+                        throw new DefaultFrameworkException(
+                                ExceptionMessage.UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS, nativeOrMobileOrWebName);
                     }
                 })
         );
@@ -96,7 +88,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                             .map(baseUrlMethod)
                             .toList();
                     if (!baseUrlList.isEmpty() && baseUrlList.stream().distinct().count() != envNum) {
-                        throw new DefaultFrameworkException(BASE_URLS_ARE_SAME, mobileOrWebConfigName);
+                        throw new DefaultFrameworkException(ExceptionMessage.BASE_URLS_ARE_SAME, mobileOrWebConfigName);
                     }
                 })
         );
@@ -117,12 +109,12 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
     private void checkConnectionType(final String mobileOrNativeConfigName,
                                      final List<UiConfig> uiConfigs,
                                      final List<ConnectionType> cTypeList) {
-        if (cTypeList.stream().allMatch(cType -> nonNull(cType.getAppiumServer()))) {
+        if (cTypeList.stream().allMatch(cType -> Objects.nonNull(cType.getAppiumServer()))) {
             checkAppiumServerUrl(mobileOrNativeConfigName, cTypeList);
-        } else if (cTypeList.stream().allMatch(cType -> nonNull(cType.getBrowserStack()))) {
+        } else if (cTypeList.stream().allMatch(cType -> Objects.nonNull(cType.getBrowserStack()))) {
             checkBrowserStackLogin(uiConfigs);
         } else {
-            throw new DefaultFrameworkException(CONNECTION_TYPE_NOT_MATCH, mobileOrNativeConfigName);
+            throw new DefaultFrameworkException(ExceptionMessage.CONNECTION_TYPE_NOT_MATCH, mobileOrNativeConfigName);
         }
     }
 
@@ -132,7 +124,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
         cTypeList.forEach(cType -> {
             String serverUrl = cType.getAppiumServer().getServerUrl();
             if (!serverUrlList.add(serverUrl)) {
-                throw new DefaultFrameworkException(SAME_APPIUM_SERVER_URLS, mobileOrNativeConfigName);
+                throw new DefaultFrameworkException(ExceptionMessage.SAME_APPIUM_SERVER_URLS, mobileOrNativeConfigName);
             }
         });
     }
@@ -143,7 +135,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 .filter(Objects::nonNull)
                 .toList();
         if (browserStackLoginList.size() != uiConfigs.size()) {
-            throw new DefaultFrameworkException(BROWSERSTACK_LOGIN_NOT_CONFIGURED);
+            throw new DefaultFrameworkException(ExceptionMessage.BROWSERSTACK_LOGIN_NOT_CONFIGURED);
         }
     }
 
@@ -152,7 +144,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 configMap.forEach((nonNullCheck, configMethod) -> {
                     List<List<?>> deviceOrBrowserLists = getDevicesOrBrowsers(uiConfigs, nonNullCheck, configMethod);
                     if (!deviceOrBrowserLists.isEmpty() && deviceOrBrowserLists.size() != envList.size()) {
-                        throw new DefaultFrameworkException(ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS,
+                        throw new DefaultFrameworkException(ExceptionMessage.ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS,
                                 deviceOrBrowserLists.get(0).get(0).getClass().getSimpleName(), nativeOrMobileOrWeb);
                     } else if (!deviceOrBrowserLists.isEmpty()) {
                         devicesAndBrowsersValidation(nativeOrMobileOrWeb, envList, uiConfigs, deviceOrBrowserLists);
@@ -194,7 +186,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                               final List<List<?>> deviceOrBrowserLists) {
         List<?> defaultDeviceOrBrowserList = deviceOrBrowserLists.stream()
                 .min(Comparator.comparingInt(List::size)).orElse(Collections.emptyList());
-        if (configName.equals(WEB.name())) {
+        if (configName.equals(UiType.WEB.name())) {
             Map<String, String> defaultBrowserMap = filterAbstractBrowser(defaultDeviceOrBrowserList).stream()
                     .collect(Collectors.toMap(AbstractBrowser::getAlias, b -> b.getClass().getSimpleName()));
             List<List<? extends AbstractBrowser>> browserLists = deviceOrBrowserLists.stream()
@@ -213,6 +205,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 .toList();
     }
 
+    //CHECKSTYLE:OFF
     private void checkBrowserAliasesDifferAndMatch(final String configName,
                                                    final List<String> envList,
                                                    final Map<String, String> defaultBrowserMap,
@@ -221,16 +214,18 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
             Set<String> aliasSet = new HashSet<>();
             browserLists.get(envNum).forEach(browser -> {
                 if (!aliasSet.add(browser.getAlias())) {
-                    throw new DefaultFrameworkException(UI_ALIASES_NOT_DIFFER, BROWSER,
+                    throw new DefaultFrameworkException(ExceptionMessage.UI_ALIASES_NOT_DIFFER, BROWSER,
                             configName, browser.getAlias(), getConfigPath(envList.get(envNum)));
                 } else if (!defaultBrowserMap.containsKey(browser.getAlias())
                         || !defaultBrowserMap.get(browser.getAlias()).equals(browser.getClass().getSimpleName())) {
-                    throw new DefaultFrameworkException(UI_ALIASES_NOT_MATCH, browser.getClass().getSimpleName(),
+                    throw new DefaultFrameworkException(
+                            ExceptionMessage.UI_ALIASES_NOT_MATCH, browser.getClass().getSimpleName(),
                             BROWSER, configName, browser.getAlias());
                 }
             });
         });
     }
+    //CHECKSTYLE:ON
 
     private void validateDevices(final String configName,
                                  final List<String> envList,
@@ -263,10 +258,11 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
             Set<String> aliasSet = new HashSet<>();
             deviceLists.get(envNum).forEach(device -> {
                 if (!aliasSet.add(device.getAlias())) {
-                    throw new DefaultFrameworkException(UI_ALIASES_NOT_DIFFER, DEVICE,
+                    throw new DefaultFrameworkException(ExceptionMessage.UI_ALIASES_NOT_DIFFER, DEVICE,
                             configName, device.getAlias(), getConfigPath(envList.get(envNum)));
                 } else if (!defaultAliasList.contains(device.getAlias())) {
-                    throw new DefaultFrameworkException(UI_ALIASES_NOT_MATCH, device.getClass().getSimpleName(),
+                    throw new DefaultFrameworkException(
+                            ExceptionMessage.UI_ALIASES_NOT_MATCH, device.getClass().getSimpleName(),
                             DEVICE, configName, device.getAlias());
                 }
             });
@@ -281,7 +277,8 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                     .filter(d -> device.getAlias().equals(d.getAlias()))
                     .anyMatch(d -> !d.getPlatformName().value().equals(device.getPlatformName().value()));
             if (platformNameNoneMatch) {
-                throw new DefaultFrameworkException(DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
+                throw new DefaultFrameworkException(
+                        ExceptionMessage.DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
             }
         }));
     }
@@ -291,13 +288,13 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                             final List<UiConfig> uiConfigs,
                                             final List<? extends AbstractDevice> defaultDeviceList,
                                             final List<List<? extends AbstractDevice>> deviceLists) {
-        if (configName.equals(MOBILE_BROWSER.name())) {
+        if (configName.equals(UiType.MOBILE_BROWSER.name())) {
             List<List<MobilebrowserDevice>> mobilebrowserDevices = getAllMobilebrowserDevices(deviceLists);
             Map<String, MobilebrowserDevice> defaultMobileDeviceMap = getMobilebrowserDeviceMap(defaultDeviceList);
             checkMobilebrowserCapabilities(configName, envList, uiConfigs,
                     mobilebrowserDevices, defaultMobileDeviceMap);
         }
-        if (configName.equals(NATIVE.name())) {
+        if (configName.equals(UiType.NATIVE.name())) {
             List<List<NativeDevice>> nativeDevices = getAllNativeDevices(deviceLists);
             Map<String, NativeDevice> defaultNativeDeviceMap = getDefaultNativeDeviceMap(defaultDeviceList);
             checkNativeCapabilities(configName, envList, uiConfigs, nativeDevices, defaultNativeDeviceMap);
@@ -343,12 +340,13 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                       final ConnectionType cType,
                                                       final MobilebrowserDevice device,
                                                       final AppiumCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cType.getAppiumServer()) && isNull(device.getAppiumCapabilities())) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
+        if (Objects.nonNull(cType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+            throw new DefaultFrameworkException(ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
-        } else if (nonNull(cType.getAppiumServer())
-                && (isNull(device.getAppiumCapabilities()) || isNull(defaultAppiumCapabilities))) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
+        } else if (Objects.nonNull(cType.getAppiumServer())
+                && (Objects.isNull(device.getAppiumCapabilities()) || Objects.isNull(defaultAppiumCapabilities))) {
+            throw new DefaultFrameworkException(
+                    ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
     }
 
@@ -357,12 +355,13 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                             final ConnectionType cType,
                                                             final MobilebrowserDevice device,
                                                             final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cType.getBrowserStack()) && isNull(device.getBrowserStackCapabilities())) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
+        if (Objects.nonNull(cType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+            throw new DefaultFrameworkException(ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
-        } else if (nonNull(cType.getBrowserStack())
-                && (isNull(device.getBrowserStackCapabilities()) || isNull(defaultBSCapabilities))) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
+        } else if (Objects.nonNull(cType.getBrowserStack())
+                && (Objects.isNull(device.getBrowserStackCapabilities()) || Objects.isNull(defaultBSCapabilities))) {
+            throw new DefaultFrameworkException(
+                    ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
     }
 
@@ -404,12 +403,13 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                final ConnectionType cType,
                                                final NativeDevice device,
                                                final AppiumNativeCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cType.getAppiumServer()) && isNull(device.getAppiumCapabilities())) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
+        if (Objects.nonNull(cType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+            throw new DefaultFrameworkException(ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
-        } else if (nonNull(cType.getAppiumServer())
-                && (isNull(device.getAppiumCapabilities()) || isNull(defaultAppiumCapabilities))) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
+        } else if (Objects.nonNull(cType.getAppiumServer())
+                && (Objects.isNull(device.getAppiumCapabilities()) || Objects.isNull(defaultAppiumCapabilities))) {
+            throw new DefaultFrameworkException(
+                    ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
     }
 
@@ -418,17 +418,18 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                      final ConnectionType cType,
                                                      final NativeDevice device,
                                                      final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cType.getBrowserStack()) && isNull(device.getBrowserStackCapabilities())) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
+        if (Objects.nonNull(cType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+            throw new DefaultFrameworkException(ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
-        } else if (nonNull(cType.getBrowserStack())
-                && (isNull(device.getBrowserStackCapabilities()) || isNull(defaultBSCapabilities))) {
-            throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
+        } else if (Objects.nonNull(cType.getBrowserStack())
+                && (Objects.isNull(device.getBrowserStackCapabilities()) || Objects.isNull(defaultBSCapabilities))) {
+            throw new DefaultFrameworkException(
+                    ExceptionMessage.CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
     }
 
     private String getConfigPath(final String envName) {
-        return fileSearcher.searchFileFromEnvFolder(envName, UI_CONFIG_FILENAME)
+        return fileSearcher.searchFileFromEnvFolder(envName, TestResourceSettings.UI_CONFIG_FILENAME)
                 .map(File::getPath).orElse(settings.getEnvConfigFolder().getPath())
                 .replace(settings.getTestResourcesFolder().getPath(), StringUtils.EMPTY);
     }

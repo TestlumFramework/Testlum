@@ -4,11 +4,13 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ImageComparator;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
@@ -28,10 +30,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
-import static java.util.Objects.nonNull;
+import java.util.Objects;
 
 @Slf4j
 @ExecutorForClass(Image.class)
@@ -64,12 +63,12 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final Image image,
                                          final CommandResult result) throws IOException {
-        if (nonNull(image.getPicture())) {
+        if (Objects.nonNull(image.getPicture())) {
             WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
                     image.getPicture().getLocatorStrategy());
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
-        if (nonNull(image.getPart())) {
+        if (Objects.nonNull(image.getPart())) {
             WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
             return ImageIO.read(uiUtil.takeScreenshot(webElement));
@@ -97,7 +96,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private List<Rectangle> getExcludeList(final WebFullScreen fullScreen,
                                            final BufferedImage expected,
                                            final WebDriver driver) {
-        if (nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
+        if (Objects.nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
             Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
                     .map(element -> getElementArea(element.getLocator(), scale, element.getLocatorStrategy()))
@@ -128,16 +127,16 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private String getImageURLStartsWithBaseURL(final CommandResult result, final String urlToImage) {
         String baseUrl = currentEnvironmentLoader.getCurrentEnvWebSettings().get().getBaseUrl();
         String imageURL = baseUrl + urlToImage;
-        log.info(URL_TO_IMAGE_LOG, imageURL);
-        result.put(URL_TO_ACTUAL_IMAGE, imageURL);
+        log.info(LogMessage.URL_TO_IMAGE_LOG, imageURL);
+        result.put(ResultUtil.URL_TO_ACTUAL_IMAGE, imageURL);
         return imageURL;
     }
 
     private String getImageURLStartsWithCurrentPageURL(final CommandResult result, final String urlToImage) {
         String basePageUrl = uiUtil.getBasePageURL(dependencies.getDriver().getCurrentUrl());
         String imageURL = basePageUrl + urlToImage;
-        log.info(URL_TO_IMAGE_LOG, imageURL);
-        result.put(URL_TO_ACTUAL_IMAGE, imageURL);
+        log.info(LogMessage.URL_TO_IMAGE_LOG, imageURL);
+        result.put(ResultUtil.URL_TO_ACTUAL_IMAGE, imageURL);
         return imageURL;
     }
 

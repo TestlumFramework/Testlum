@@ -7,9 +7,7 @@ import javax.sql.DataSource;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 
 public class OracleExecutor extends AbstractSqlExecutor {
 
@@ -45,11 +43,11 @@ public class OracleExecutor extends AbstractSqlExecutor {
     @Override
     public void truncate() {
         SELECT_TO_TRUNCATE_QUERIES.forEach((selectQuery, tableQuery) -> {
-            List<Map<String, Object>> tableList = requireNonNull(template).queryForList(selectQuery);
+            List<Map<String, Object>> tableList = Objects.requireNonNull(template).queryForList(selectQuery);
             tableList.forEach(row -> {
                 String tableName = (String) row.get(TABLE_NAME);
                 String constraint = (String) row.get(CONSTRAINT_NAME);
-                template.execute(format(tableQuery, tableName, constraint));
+                template.execute(String.format(tableQuery, tableName, constraint));
             });
         });
     }

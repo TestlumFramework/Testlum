@@ -2,8 +2,11 @@ package com.knubisoft.testlum.testing.framework.configuration.ui;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.connection.ConnectionTemplateImpl;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
@@ -33,11 +36,10 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Component
 @Slf4j
@@ -49,11 +51,11 @@ public class WebDriverFactory {
     private static final int MAX_TIMEOUT_SECONDS = 60;
 
     private final SeleniumDriverUtil seleniumDriverUtil;
-    private final HealthCheckFactory healthCheckFactory;
+    private final EnvironmentLoader environmentLoader;
     private final BrowserUtil browserUtil;
     private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
 
-    private Map<BrowserPredicate, WebDriverFunction> driverInitializerMap = Map.of(
+    private final Map<BrowserPredicate, WebDriverFunction> driverInitializerMap = Map.of(
             browser -> browser instanceof Chrome, b -> new ChromeDriverInitializer().init((Chrome) b),
             browser -> browser instanceof Firefox, b -> new FirefoxDriverInitializer().init((Firefox) b),
             browser -> browser instanceof Safari, b -> new SafariDriverInitializer().init((Safari) b),
@@ -63,14 +65,17 @@ public class WebDriverFactory {
     public WebDriver createDriver(final AbstractBrowser browser) {
         ConnectionTemplate connectionTemplate = new ConnectionTemplateImpl();
         return connectionTemplate.executeWithRetry(
-                String.format(CONNECTION_INTEGRATION_DATA, browser.getClass().getSimpleName(), browser.getAlias()),
+                String.format(LogMessage.CONNECTION_INTEGRATION_DATA,
+                        browser.getClass().getSimpleName(),
+                        browser.getAlias()),
                 ConnectionTemplate.DEFAULT_ATTEMPTS,
                 () -> driverInitializerMap.entrySet().stream()
                         .filter(function -> function.getKey().test(browser))
                         .findFirst()
                         .map(function -> function.getValue().apply(browser))
-                        .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND)),
-                healthCheckFactory.forWebDriver(browser),
+                        .orElseThrow(() ->
+                                new DefaultFrameworkException(ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND)),
+                forWebDriver(browser),
                 integration -> {
                     try {
                         integration.quit();
@@ -81,23 +86,46 @@ public class WebDriverFactory {
         );
     }
     //CHECKSTYLE:ON
+    private IntegrationHealthCheck<WebDriver> forWebDriver(final AbstractBrowser browser) {
+        return webDriver -> {
+            try {
+                safeInitWebdriverWithTimeouts(browser, webDriver);
+            } catch (Exception e) {
+                log.error("Failed to initialize driver or reach base URL within {}s", MAX_TIMEOUT_SECONDS);
+                if (webDriver != null) {
+                    webDriver.quit();
+                }
+                throw new DefaultFrameworkException(e.getMessage());
+            }
+        };
+    }
+
+    private void safeInitWebdriverWithTimeouts(final AbstractBrowser browser, final WebDriver webDriver) {
+        webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+        browserUtil.manageWindowSize(browser, webDriver);
+        Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();
+        if (settings.isPresent()) {
+            String url = settings.get().getBaseUrl();
+            log.debug("Navigating to base URL: {}", url);
+            webDriver.get(url);
+        }
+    }
 
     private WebDriver getWebDriver(final AbstractBrowser browser,
                                    final MutableCapabilities browserOptions,
                                    final WebDriverManager driverManager) {
         setCapabilities(browser, browserOptions);
-        switch (browserUtil.getBrowserType(browser)) {
-            case BROWSER_STACK:
-                return getBrowserStackDriver(browser, browserOptions);
-            case REMOTE:
-                return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
-            case IN_DOCKER:
+        return switch (browserUtil.getBrowserType(browser)) {
+            case BROWSER_STACK -> getBrowserStackDriver(browser, browserOptions);
+            case REMOTE -> getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
+            case IN_DOCKER -> {
                 WebDriverManager webDriverManager = setScreenResolution(browser, driverManager);
-                return getBrowserInDocker(browser.getBrowserType().getBrowserInDocker(),
+                yield getBrowserInDocker(browser.getBrowserType().getBrowserInDocker(),
                         browserOptions, webDriverManager);
-            default:
-                return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
-        }
+            }
+            default -> getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
+        };
     }
 
     @SneakyThrows
@@ -176,13 +204,12 @@ public class WebDriverFactory {
         }
     }
 
-    private interface WebDriverInitializer<T extends AbstractBrowser> {
-        WebDriver init(T browser);
+    private interface WebDriverInitializer {
     }
 
-    private class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
+    private class ChromeDriverInitializer implements WebDriverInitializer {
 
-        public WebDriver init(final Chrome browser) {
+        private WebDriver init(final Chrome browser) {
             return getWebDriver(browser, getChromeOptions(browser), new ChromeDriverManager());
         }
 
@@ -201,9 +228,9 @@ public class WebDriverFactory {
         }
     }
 
-    private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
+    private class FirefoxDriverInitializer implements WebDriverInitializer {
 
-        public WebDriver init(final Firefox browser) {
+        private WebDriver init(final Firefox browser) {
             return getWebDriver(browser, getFirefoxOptions(browser), new FirefoxDriverManager());
         }
 
@@ -220,9 +247,9 @@ public class WebDriverFactory {
         }
     }
 
-    private class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
+    private class EdgeDriverInitializer implements WebDriverInitializer {
 
-        public WebDriver init(final Edge browser) {
+        private WebDriver init(final Edge browser) {
             return getWebDriver(browser, getEdgeOptions(browser), new EdgeDriverManager());
         }
 
@@ -239,9 +266,9 @@ public class WebDriverFactory {
         }
     }
 
-    private class SafariDriverInitializer implements WebDriverInitializer<Safari> {
+    private class SafariDriverInitializer implements WebDriverInitializer {
 
-        public WebDriver init(final Safari browser) {
+        private WebDriver init(final Safari browser) {
             return getWebDriver(browser, new SafariOptions(), new SafariDriverManager());
         }
     }

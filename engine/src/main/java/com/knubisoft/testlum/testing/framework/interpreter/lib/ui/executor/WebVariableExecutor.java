@@ -1,11 +1,13 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
@@ -18,14 +20,10 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
-
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
-import static java.util.Objects.nonNull;
-
 
 @Slf4j
 @ExecutorForClass(WebVar.class)
@@ -38,16 +36,16 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         super(dependencies);
         this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
         this.varToMethodMap = Map.of(
-                var -> nonNull(var.getElement()), this::getElementResult,
-                var -> nonNull(var.getDom()), this::getDomResult,
-                var -> nonNull(var.getCookie()), this::getWebCookiesResult,
-                var -> nonNull(var.getUrl()), this::getUrlResult,
-                var -> nonNull(var.getPath()), this::getPathResult,
-                var -> nonNull(var.getConstant()), this::getConstantResult,
-                var -> nonNull(var.getExpression()), this::getExpressionResult,
-                var -> nonNull(var.getFile()), this::getFileResult,
-                var -> nonNull(var.getSql()), this::getSQLResult,
-                var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
+                var -> Objects.nonNull(var.getElement()), this::getElementResult,
+                var -> Objects.nonNull(var.getDom()), this::getDomResult,
+                var -> Objects.nonNull(var.getCookie()), this::getWebCookiesResult,
+                var -> Objects.nonNull(var.getUrl()), this::getUrlResult,
+                var -> Objects.nonNull(var.getPath()), this::getPathResult,
+                var -> Objects.nonNull(var.getConstant()), this::getConstantResult,
+                var -> Objects.nonNull(var.getExpression()), this::getExpressionResult,
+                var -> Objects.nonNull(var.getFile()), this::getFileResult,
+                var -> Objects.nonNull(var.getSql()), this::getSQLResult,
+                var -> Objects.nonNull(var.getGenerate()), this::getRandomGenerateResult);
     }
 
     @Override
@@ -55,7 +53,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         try {
             setContextVariable(var, result);
         } catch (Exception e) {
-            log.info(FAILED_VARIABLE_LOG, var.getName(), var.getComment());
+            log.info(LogMessage.FAILED_VARIABLE_LOG, var.getName(), var.getComment());
             throw e;
         }
     }
@@ -75,7 +73,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         ElementAttribute attribute = webVar.getElement().getAttribute();
         ElementPresent present = webVar.getElement().getPresent();
         String valueResult;
-        if (nonNull(attribute)) {
+        if (Objects.nonNull(attribute)) {
             valueResult = getAttributeValue(attribute, webVar.getName(), result);
         } else {
             valueResult = getPresentValue(present, webVar.getName(), result);
@@ -91,7 +89,8 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         } catch (DefaultFrameworkException e) {
             value = String.valueOf(false);
         }
-        resultUtil.addVariableMetaData(ELEMENT_PRESENT, varName, LOCATOR_FORM, present.getLocator(), value, r);
+        resultUtil.addVariableMetaData(ResultUtil.ELEMENT_PRESENT, varName,
+                ResultUtil.LOCATOR_FORM, present.getLocator(), value, r);
         return value;
     }
 
@@ -99,7 +98,8 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
                 attribute.getLocatorStrategy());
         String value = uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
-        resultUtil.addVariableMetaData(ELEMENT_ATTRIBUTE, varName, LOCATOR_FORM, attribute.getLocator(), value, r);
+        resultUtil.addVariableMetaData(ResultUtil.ELEMENT_ATTRIBUTE, varName,
+                ResultUtil.LOCATOR_FORM, attribute.getLocator(), value, r);
         return value;
     }
 
@@ -108,11 +108,13 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         if (StringUtils.isNotBlank(locatorId)) {
             String valueResult = uiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy())
                     .getAttribute("outerHTML");
-            resultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+            resultUtil.addVariableMetaData(ResultUtil.HTML_DOM, webVar.getName(),
+                    ResultUtil.LOCATOR_FORM, locatorId, valueResult, result);
             return valueResult;
         }
         String valueResult = dependencies.getDriver().getPageSource();
-        resultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.HTML_DOM, webVar.getName(),
+                ResultUtil.FULL_DOM, valueResult, result);
         return valueResult;
     }
 
@@ -121,13 +123,14 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String valueResult = cookies.stream()
                 .map(cookie -> String.join(DelimiterConstant.EQUALS_MARK, cookie.getName(), cookie.getValue()))
                 .collect(Collectors.joining(DelimiterConstant.SEMICOLON));
-        resultUtil.addVariableMetaData(COOKIES, var.getName(), NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.COOKIES, var.getName(),
+                ResultUtil.NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
     private String getUrlResult(final WebVar var, final CommandResult result) {
         String valueResult = dependencies.getDriver().getCurrentUrl();
-        resultUtil.addVariableMetaData(URL, var.getName(), NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(ResultUtil.URL, var.getName(), ResultUtil.NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 

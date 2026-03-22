@@ -20,8 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.REDIS_COMMAND_NOT_FOUND;
-import static java.util.Objects.isNull;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 
 @Conditional({OnRedisEnabledCondition.class})
 @Component("redisOperation")
@@ -60,7 +59,7 @@ public class RedisOperation extends AbstractStorageOperation {
     private String executeQuery(final String query, final String databaseAlias) {
         RedisQuery redisQuery = getJacksonService().readValue(query, RedisQuery.class);
         String command = Optional.of(redisQuery.getCommand())
-                .orElseThrow(() -> new DefaultFrameworkException(REDIS_COMMAND_NOT_FOUND));
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.REDIS_COMMAND_NOT_FOUND));
         String[] args = redisQuery.getArg().toArray(new String[0]);
 
         Object response =
@@ -74,7 +73,8 @@ public class RedisOperation extends AbstractStorageOperation {
             return new String((byte[]) result, StandardCharsets.UTF_8);
         } else if (result instanceof List<?>) {
             return ((List<byte[]>) result).stream()
-                    .map(bytes -> isNull(bytes) ? DelimiterConstant.EMPTY : new String(bytes, StandardCharsets.UTF_8))
+                    .map(bytes -> Objects.isNull(bytes)
+                            ? DelimiterConstant.EMPTY : new String(bytes, StandardCharsets.UTF_8))
                     .toList()
                     .toString();
         }

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -9,8 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ENV_VARIABLE_NOT_FOUND;
 
 @Service
 public class SystemVariableService {
@@ -40,7 +39,7 @@ public class SystemVariableService {
     private String getValue(final String key) {
         Map<String, String> env = System.getenv();
         if (Objects.isNull(env.get(key))) {
-            throw new DefaultFrameworkException(ENV_VARIABLE_NOT_FOUND, key);
+            throw new DefaultFrameworkException(ExceptionMessage.ENV_VARIABLE_NOT_FOUND, key);
         }
         return env.get(key);
     }

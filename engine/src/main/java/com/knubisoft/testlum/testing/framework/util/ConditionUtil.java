@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
@@ -15,8 +16,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_EXPRESSION;
 
 @Slf4j
 @Component
@@ -58,7 +57,8 @@ public class ConditionUtil {
                     SPEL_EXPRESSION_PARSER.parseExpression(sanitizedExpression).getValue(context, Boolean.class)
             );
         } catch (Exception e) {
-            throw new DefaultFrameworkException(FAILED_CONDITION_EXPRESSION, condition, expression, e.getMessage());
+            throw new DefaultFrameworkException(
+                    ExceptionMessage.FAILED_CONDITION_EXPRESSION, condition, expression, e.getMessage());
         }
     }
 

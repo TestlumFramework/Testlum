@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Component;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Objects;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_MOBILE_PLATFORM_NAME;
 
 @RequiredArgsConstructor
 @Component
@@ -71,7 +70,8 @@ public class MobileBrowserDriverFactory {
             desiredCapabilities.setCapability("browserName", "safari");
             desiredCapabilities.setCapability("platformName", mobileDevice.getPlatformName());
         } else {
-            throw new DefaultFrameworkException(UNKNOWN_MOBILE_PLATFORM_NAME, mobileDevice.getPlatformName().value());
+            throw new DefaultFrameworkException(
+                    ExceptionMessage.UNKNOWN_MOBILE_PLATFORM_NAME, mobileDevice.getPlatformName().value());
         }
     }
 }

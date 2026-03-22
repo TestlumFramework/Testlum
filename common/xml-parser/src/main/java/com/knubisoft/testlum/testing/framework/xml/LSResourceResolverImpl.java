@@ -14,8 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.lang.String.format;
-
 public class LSResourceResolverImpl implements LSResourceResolver {
 
     private final Set<String> schemaNames = new HashSet<>();
@@ -53,6 +51,6 @@ public class LSResourceResolverImpl implements LSResourceResolver {
     }
 
     private String getPathToSchema(final String schemaName) {
-        return format("%s%s%s", schemaBasePath, File.separator, schemaName);
+        return String.format("%s%s%s", schemaBasePath, File.separator, schemaName);
     }
 }

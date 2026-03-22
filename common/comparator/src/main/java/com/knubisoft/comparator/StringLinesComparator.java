@@ -8,7 +8,7 @@ import java.io.StringReader;
 import java.util.List;
 import java.util.Objects;
 
-import static com.knubisoft.comparator.util.LogMessage.CONTENT_DOES_MATCH;
+import com.knubisoft.comparator.util.LogMessage;
 
 public class StringLinesComparator extends AbstractObjectComparator<String> {
 
@@ -22,7 +22,7 @@ public class StringLinesComparator extends AbstractObjectComparator<String> {
         List<String> actualLines = getLines(actual);
 
         if (expectedLines.size() != actualLines.size()) {
-            throw new MatchException(CONTENT_DOES_MATCH);
+            throw new MatchException(LogMessage.CONTENT_DOES_MATCH);
         }
 
         for (int i = 0, size = expectedLines.size(); i < size; i++) {

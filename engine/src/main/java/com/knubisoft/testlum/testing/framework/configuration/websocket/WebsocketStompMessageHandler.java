@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -9,8 +10,6 @@ import org.springframework.util.MimeType;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.Objects;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNEXPECTED_WEBSOCKET_MESSAGE_TYPE;
 
 public class WebsocketStompMessageHandler implements StompFrameHandler {
 
@@ -46,6 +45,6 @@ public class WebsocketStompMessageHandler implements StompFrameHandler {
         } else if (mimeType.isCompatibleWith(MediaType.APPLICATION_JSON)) {
             return false;
         }
-        throw new DefaultFrameworkException(UNEXPECTED_WEBSOCKET_MESSAGE_TYPE, mimeType);
+        throw new DefaultFrameworkException(ExceptionMessage.UNEXPECTED_WEBSOCKET_MESSAGE_TYPE, mimeType);
     }
 }

@@ -1,12 +1,10 @@
 package com.knubisoft.testlum.testing.framework.db.source;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static org.apache.commons.lang3.StringUtils.LF;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ListSource implements Source {
 
@@ -15,8 +13,8 @@ public class ListSource implements Source {
     public ListSource(final List<String> queries) {
         this.queries = queries.stream()
                 .flatMap(s -> Arrays.stream(s.split(QUERY_DELIMITER)))
-                .map(s -> s.replaceAll(LF, DelimiterConstant.SPACE))
-                .filter(s -> isNotBlank(s.trim()))
+                .map(s -> s.replaceAll(StringUtils.LF, DelimiterConstant.SPACE))
+                .filter(s -> StringUtils.isNotBlank(s.trim()))
                 .toList();
     }
 

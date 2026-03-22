@@ -1,10 +1,11 @@
 package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.condition.OnElasticEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
@@ -13,12 +14,11 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 
 @Configuration
 @Conditional({OnElasticEnabledCondition.class})
@@ -34,7 +34,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class ElasticsearchConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-    private final HealthCheckFactory healthCheckFactory;
 
     @Bean(name = "restHighLevelClient")
     public Map<AliasEnv, RestHighLevelClient> restHighLevelClient(
@@ -42,14 +41,23 @@ public class ElasticsearchConfiguration {
         Map<AliasEnv, RestHighLevelClient> restHighLevelClientMap = new HashMap<>();
         restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
                     RestHighLevelClient checkedClient = connectionTemplate.executeWithRetry(
-                            String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch HighLevelClient",
+                            String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "ElasticSearch HighLevelClient",
                                     aliasEnv.getAlias()),
                             () -> new RestHighLevelClient(clientBuilder),
-                            healthCheckFactory.forElasticRestHighLevelClient()
+                            forElasticRestHighLevelClient()
                     );
                     restHighLevelClientMap.put(aliasEnv, checkedClient);
                 });
         return restHighLevelClientMap;
+    }
+
+    private IntegrationHealthCheck<RestHighLevelClient> forElasticRestHighLevelClient() {
+        return restHighLevelClient -> {
+            boolean isAlive = restHighLevelClient.ping(RequestOptions.DEFAULT);
+            if (!isAlive) {
+                throw new DefaultFrameworkException("Connection refused");
+            }
+        };
     }
 
     @Bean(name = "restClient")
@@ -57,13 +65,24 @@ public class ElasticsearchConfiguration {
         Map<AliasEnv, RestClient> restClientMap = new HashMap<>();
         restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
             RestClient resilientClient = connectionTemplate.executeWithRetry(
-                    String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch Rest Client", aliasEnv.getAlias()),
+                    String.format(LogMessage.CONNECTION_INTEGRATION_DATA,
+                            "ElasticSearch Rest Client", aliasEnv.getAlias()),
                     clientBuilder::build,
-                    healthCheckFactory.forElasticRestClient()
+                    forElasticRestClient()
             );
             restClientMap.put(aliasEnv, resilientClient);
         });
         return restClientMap;
+    }
+
+    private IntegrationHealthCheck<RestClient> forElasticRestClient() {
+        return restClient -> {
+            Response response = restClient.performRequest(new Request("GET", "/"));
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.OK.value()) {
+                throw new DefaultFrameworkException("Failed to obtain connection with status code: " + statusCode);
+            }
+        };
     }
 
     @Bean

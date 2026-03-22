@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
@@ -8,8 +9,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
 import java.util.LinkedList;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNEXPECTED_WEBSOCKET_MESSAGE_TYPE;
 
 @Slf4j
 public class ClientWebsocketMessageHandler extends AbstractWebSocketHandler {
@@ -25,7 +24,7 @@ public class ClientWebsocketMessageHandler extends AbstractWebSocketHandler {
         if (message instanceof TextMessage) {
             handleTextMessage(session, (TextMessage) message);
         } else {
-            throw new DefaultFrameworkException(UNEXPECTED_WEBSOCKET_MESSAGE_TYPE, message);
+            throw new DefaultFrameworkException(ExceptionMessage.UNEXPECTED_WEBSOCKET_MESSAGE_TYPE, message);
         }
     }
 

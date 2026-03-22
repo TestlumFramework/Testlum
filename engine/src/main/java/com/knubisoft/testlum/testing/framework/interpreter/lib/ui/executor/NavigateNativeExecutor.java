@@ -1,10 +1,13 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.NavigateNative;
 import com.knubisoft.testlum.testing.model.scenario.NavigateNativeDestination;
 import io.appium.java_client.android.AndroidDriver;
@@ -17,10 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_NAVIGATION_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NATIVE_NAVIGATE_TO;
 
 @ExecutorForClass(NavigateNative.class)
 @Slf4j
@@ -43,8 +42,8 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
     @Override
     public void execute(final NavigateNative navigateNative, final CommandResult result) {
-        result.put(NATIVE_NAVIGATE_TO, navigateNative.getDestination());
-        log.info(NATIVE_NAVIGATION_LOG, navigateNative.getDestination());
+        result.put(ResultUtil.NATIVE_NAVIGATE_TO, navigateNative.getDestination());
+        log.info(LogMessage.NATIVE_NAVIGATION_LOG, navigateNative.getDestination());
         if (dependencies.getDriver() instanceof AndroidDriver) {
             performAndroidNavigation(navigateNative, (AndroidDriver) dependencies.getDriver());
         }
@@ -65,7 +64,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
             case OVERVIEW:
                 throw new DefaultFrameworkException("Overview unfortunately is not supported in IOS");
             default:
-                throw new DefaultFrameworkException(NAVIGATE_NOT_SUPPORTED,
+                throw new DefaultFrameworkException(ExceptionMessage.NAVIGATE_NOT_SUPPORTED,
                         navigateNative.getDestination().value());
         }
     }

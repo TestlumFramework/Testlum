@@ -1,10 +1,13 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,10 +20,6 @@ import org.openqa.selenium.interactions.Actions;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.HOT_KEY_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_LOCATOR;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.HOTKEY_LOCATOR;
 
 @Slf4j
 @ExecutorForClass(HotKey.class)
@@ -75,7 +74,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         hotKeyCmdMethods.entrySet().stream()
                 .filter(commandMethod -> commandMethod.getKey().test(command))
                 .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(HOT_KEY_NOT_SUPPORTED,
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.HOT_KEY_NOT_SUPPORTED,
                         command.getClass().getSimpleName()))
                 .getValue().accept(command, result);
     }
@@ -122,8 +121,8 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     private WebElement getElementForHotKey(final String locatorId,
                                            final CommandResult result,
                                            final LocatorStrategy locatorStrategy) {
-        result.put(HOTKEY_LOCATOR, locatorId);
-        log.info(HOTKEY_COMMAND_LOCATOR, locatorId);
+        result.put(ResultUtil.HOTKEY_LOCATOR, locatorId);
+        log.info(LogMessage.HOTKEY_COMMAND_LOCATOR, locatorId);
         return uiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
     }
 

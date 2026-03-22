@@ -1,4 +1,4 @@
-package com.knubisoft.testlum.testing.framework.schema;
+package com.knubisoft.testlum.testing.framework.xml;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
@@ -9,10 +9,9 @@ import org.w3c.dom.ls.LSResourceResolver;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 public class LSResourceResolverImpl implements LSResourceResolver {
 
@@ -36,7 +35,8 @@ public class LSResourceResolverImpl implements LSResourceResolver {
             }
             byte[] content = readContent(resourceAsStream);
             schemaNames.add(systemId);
-            return new DOMInputImpl(publicId, systemId, baseURI, new ByteArrayInputStream(content), UTF_8);
+            String charset = StandardCharsets.UTF_8.name();
+            return new DOMInputImpl(publicId, systemId, baseURI, new ByteArrayInputStream(content), charset);
         }
         return null;
     }

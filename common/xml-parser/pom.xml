@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>testlum-condition</artifactId>
+    <artifactId>xml-parser</artifactId>
 
     <dependencies>
         <dependency>
@@ -25,18 +25,38 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-models</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-log</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>xml-parser</artifactId>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-shared-util</artifactId>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
 
         <dependency>
@@ -44,7 +64,5 @@
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
         </dependency>
-
     </dependencies>
-
 </project>

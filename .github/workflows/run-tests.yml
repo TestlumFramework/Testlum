@@ -8,7 +8,6 @@ on:
 
   workflow_dispatch:
     inputs:
-
       testlum_core_branch:
         description: "Testlum Core branch"
         required: false

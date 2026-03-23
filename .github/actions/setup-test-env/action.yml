@@ -1,0 +1,68 @@
+name: Setup Test Environment
+description: Creates the Docker network and starts all services required for regression runs.
+
+inputs:
+
+  working_directory:
+    description: Directory that contains the docker compose files.
+    required: false
+    default: testlum-tests
+
+  browserstack_access_key:
+    description: BrowserStack access key for local testing.
+    required: true
+
+  browserstack_local_identifier:
+    description: BrowserStack local identifier.
+    required: false
+    default: random
+
+  enable_browserstack:
+    description: Whether BrowserStackLocal should be started.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Create Docker Network
+      shell: bash
+      run: docker network create e2e_network
+
+    - name: Start BrowserStackLocal
+      if: ${{ inputs.enable_browserstack == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        
+        archive_url="https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip"
+
+        bs_dir="${{ github.workspace }}/.browserstack-local"
+        mkdir -p "${bs_dir}"
+        curl -fsSL "${archive_url}" -o "${bs_dir}/BrowserStackLocal.zip"
+        unzip -qo "${bs_dir}/BrowserStackLocal.zip" -d "${bs_dir}"
+        chmod +x "${bs_dir}/BrowserStackLocal"
+
+        "${bs_dir}/BrowserStackLocal" \
+          --key "${{ inputs.browserstack_access_key }}" \
+          --only-automate \
+          --ci-plugin GitHubAction \
+          --local-identifier "${{ inputs.browserstack_local_identifier }}" \
+          --daemon start
+
+    - name: Run Integrations
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        docker compose -f docker/docker-compose-integrations.yaml --profile ci up -d --force-recreate
+        docker exec -t vault-e2e sh /tmp/init_vault.sh
+
+    - name: Run Selenium Grid Browsers
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: docker compose -f docker/docker-compose-selenium-grid.yaml --profile ci up -d --force-recreate
+
+    - name: Run Mega Test App
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: docker compose -f docker/docker-compose-mega-test-app.yaml --profile ci up -d --build --force-recreate

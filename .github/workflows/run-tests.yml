@@ -1,0 +1,170 @@
+name: Regression Tests
+
+on:
+
+  pull_request:
+    branches: [ 'main' ]
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
+  workflow_dispatch:
+    inputs:
+
+      testlum_core_branch:
+        description: "Testlum Core branch"
+        required: false
+        default: "main"
+        type: string
+
+      demo_branch:
+        description: "Branch of DEMO repository with tests"
+        required: false
+        default: "main"
+        type: string
+
+      run_mobile_native:
+        description: "Do need to run mobile and native tests"
+        required: false
+        default: true
+        type: boolean
+
+      config_file:
+        description: "Global config file name"
+        required: false
+        default: "config-ci-regression.xml"
+        type: string
+
+      mobile_config_file:
+        description: "Global config file name for mobile and native tests run"
+        required: false
+        default: "config-ci-regression-mobile.xml"
+        type: string
+
+jobs:
+  run-tests:
+    name: Launch regression tests
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Resolve run parameters
+        id: params
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            testlum_core_branch="${{ github.head_ref }}"
+          else
+            testlum_core_branch="${{ inputs.testlum_core_branch }}"
+          fi
+
+          if [[ -z "$testlum_core_branch" ]]; then
+            testlum_core_branch="${{ github.ref_name }}"
+          fi
+
+          demo_branch="${{ inputs.demo_branch }}"
+          if [[ -z "$demo_branch" ]]; then
+            demo_branch="main"
+          fi
+
+          run_mobile_native="${{ inputs.run_mobile_native }}"
+          if [[ -z "$run_mobile_native" ]]; then
+            run_mobile_native="true"
+          fi
+          
+          config_file="${{ inputs.config_file }}"
+          if [[ -z "$config_file" ]]; then
+            config_file="config-ci-regression.xml"
+          fi
+          
+          mobile_config_file="${{ inputs.mobile_config_file }}"
+          if [[ -z "$mobile_config_file" ]]; then
+            mobile_config_file="config-ci-regression-mobile.xml"
+          fi
+
+          echo "testlum_core_branch=$testlum_core_branch" >> "$GITHUB_OUTPUT"
+          echo "demo_branch=$demo_branch" >> "$GITHUB_OUTPUT"
+          echo "run_mobile_native=$run_mobile_native" >> "$GITHUB_OUTPUT"
+          echo "config_file=$config_file" >> "$GITHUB_OUTPUT"
+          echo "mobile_config_file=$mobile_config_file" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout Testlum DEMO
+        uses: actions/checkout@v4
+        with:
+          repository: TestlumFramework/Demo
+          ref: ${{ steps.params.outputs.demo_branch }}
+          ssh-key: ${{ secrets.SSH_ACCESS }}
+          path: testlum-tests
+
+      - name: Checkout Testlum Core
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.params.outputs.testlum_core_branch }}
+          path: testlum-core
+
+      - name: Setup Test Environment
+        id: setup_env
+        uses: .github/actions/setup-test-env
+        with:
+          working_directory: testlum-tests
+          browserstack_access_key: ${{ secrets.BROWSERSTACK_KEY }}
+          browserstack_local_identifier: GitHubAction-${{ github.run_id }}
+          enable_browserstack: true
+
+      - name: Install xmlstarlet
+        run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
+      - name: Resolve Testlum version
+        shell: bash
+        working-directory: testlum-core
+        run: |
+          VERSION="$(xmlstarlet sel -N x='http://maven.apache.org/POM/4.0.0' -t -v '/x:project/x:version' pom.xml | xargs)"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Testlum version: ${VERSION}"
+
+      - name: Remove existing local image
+        shell: bash
+        run: docker rmi "testlum:${VERSION}" || true
+
+      - name: Build Testlum Docker image
+        shell: bash
+        working-directory: testlum-core
+        run: docker build --no-cache --build-arg "APP_VERSION=${VERSION}" -t "testlum:${VERSION}" .
+
+      - name: Run Regression
+        id: run-regression-main
+        uses: ./.github/actions/run-testlum
+        with:
+          image: testlum:${{ env.VERSION }}
+          config_file: ${{ steps.params.outputs.config_file }}
+          resources_path: testlum-tests/REGRESSION
+          sendgrid_api_key: ${{ secrets.SENDGRID_API_KEY }}
+          smtp_username: ${{ secrets.SMTP_USERNAME }}
+          smtp_password: ${{ secrets.SMTP_PASSWORD }}
+          twilio_account_sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          twilio_auth_token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          twilio_phone_number: ${{ secrets.TWILIO_PHONE_NUMBER }}
+
+      - name: Run Regression (Mobile and Native)
+        if: ${{ steps.params.outputs.run_mobile_native == 'true' }}
+        id: run-regression-mobile-native
+        uses: .github/actions/run-testlum
+        with:
+          image: testlum:${{ env.VERSION }}
+          config_file: ${{ steps.params.outputs.mobile_config_file }}
+          resources_path: testlum-tests/REGRESSION
+          sendgrid_api_key: ${{ secrets.SENDGRID_API_KEY }}
+          smtp_username: ${{ secrets.SMTP_USERNAME }}
+          smtp_password: ${{ secrets.SMTP_PASSWORD }}
+          twilio_account_sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          twilio_auth_token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          twilio_phone_number: ${{ secrets.TWILIO_PHONE_NUMBER }}
+
+      - name: Cleanup Test Environment
+        if: ${{ always() }}
+        uses: .github/actions/cleanup-test-env
+        with:
+          working_directory: testlum-tests
+          browserstack_access_key: ${{ secrets.BROWSERSTACK_KEY }}
+          browserstack_local_identifier: GitHubAction-${{ github.run_id }}
+          enable_browserstack: true

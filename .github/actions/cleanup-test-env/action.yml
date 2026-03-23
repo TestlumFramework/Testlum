@@ -1,0 +1,55 @@
+name: Cleanup Test Environment
+description: Stops Docker services and prunes leftover resources after regression runs.
+
+inputs:
+  working_directory:
+    description: Directory that contains the docker compose files.
+    required: false
+    default: testlum-tests
+  browserstack_access_key:
+    description: BrowserStack access key for local testing.
+    required: true
+  browserstack_local_identifier:
+    description: BrowserStack local identifier.
+    required: false
+    default: random
+  enable_browserstack:
+    description: Whether BrowserStackLocal should be stopped.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Shutdown Docker Compose Services
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        docker compose -f docker/docker-compose-mega-test-app.yaml --profile ci down -v --timeout 10 || true
+        docker compose -f docker/docker-compose-selenium-grid.yaml --profile ci down -v --timeout 10 || true
+        docker compose -f docker/docker-compose-integrations.yaml --profile ci down -v --timeout 10 || true
+
+    - name: Prune Docker Resources
+      shell: bash
+      run: docker system prune -af --volumes || true
+
+    - name: Stop BrowserStackLocal
+      if: ${{ inputs.enable_browserstack == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        archive_url="https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip"
+
+        bs_dir="${{ github.workspace }}/.browserstack-local"
+        if [ ! -x "${bs_dir}/BrowserStackLocal" ]; then
+          mkdir -p "${bs_dir}"
+          curl -fsSL "${archive_url}" -o "${bs_dir}/BrowserStackLocal.zip"
+          unzip -qo "${bs_dir}/BrowserStackLocal.zip" -d "${bs_dir}"
+          chmod +x "${bs_dir}/BrowserStackLocal"
+        fi
+
+        "${bs_dir}/BrowserStackLocal" \
+          --key "${{ inputs.browserstack_access_key }}" \
+          --local-identifier "${{ inputs.browserstack_local_identifier }}" \
+          --daemon stop || true

@@ -1,0 +1,95 @@
+name: Run Testlum Regression
+description: Runs tests from DEMO repository using Testlum docker image
+
+inputs:
+  image:
+    description: Docker image to run.
+    required: false
+    default: testlum:latest
+
+  config_file:
+    description: Config file passed to Testlum.
+    required: true
+
+  resources_path:
+    description: Path to the mounted regression resources directory.
+    required: false
+    default: testlum-tests/REGRESSION
+
+  sendgrid_api_key:
+    description: SendGrid API key.
+    required: false
+    default: ""
+
+  smtp_username:
+    description: SMTP username.
+    required: false
+    default: ""
+
+  smtp_password:
+    description: SMTP password.
+    required: false
+    default: ""
+
+  twilio_account_sid:
+    description: Twilio account SID.
+    required: false
+    default: ""
+
+  twilio_auth_token:
+    description: Twilio auth token.
+    required: false
+    default: ""
+
+  twilio_phone_number:
+    description: Twilio phone number.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Launch Tests
+      shell: bash
+      run: |
+        RESOURCES_DIR="/REGRESSION/resources"
+        MOUNT_DIR="${{ github.workspace }}/${{ inputs.resources_path }}"
+        IMAGE="${{ inputs.image }}"
+
+        echo "Running Testlum image: ${IMAGE}"
+        echo "Using config: ${{ inputs.config_file }}"
+        echo "Using resources: ${MOUNT_DIR}"
+
+        set +e
+        docker run -t -u "$(id -u):$(id -g)" --rm \
+          --network=e2e_network \
+          -e SENDGRID_API_KEY="${{ inputs.sendgrid_api_key }}" \
+          -e SMTP_USERNAME="${{ inputs.smtp_username }}" \
+          -e SMTP_PASSWORD="${{ inputs.smtp_password }}" \
+          -e TWILIO_ACCOUNT_SID="${{ inputs.twilio_account_sid }}" \
+          -e TWILIO_AUTH_TOKEN="${{ inputs.twilio_auth_token }}" \
+          -e TWILIO_PHONE_NUMBER="${{ inputs.twilio_phone_number }}" \
+          -v "${MOUNT_DIR}:/REGRESSION" \
+          "${IMAGE}" -c="${{ inputs.config_file }}" -p="${RESOURCES_DIR}"
+        EXIT_CODE=$?
+        set -e
+
+        echo "Regression finished with exit code ${EXIT_CODE}"
+
+        case "${EXIT_CODE}" in
+          0)
+            echo "BUILD STATUS [SUCCESS]"
+            ;;
+          1)
+            echo "BUILD STATUS [FAILURE] - Tests failed"
+            exit 1
+            ;;
+          2)
+            echo "BUILD STATUS [FAILURE] - No tests found"
+            exit 1
+            ;;
+          *)
+            echo "BUILD STATUS [FAILURE] - Invalid configuration or crash (Code: ${EXIT_CODE})"
+            exit 1
+            ;;
+        esac

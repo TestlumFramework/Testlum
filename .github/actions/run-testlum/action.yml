@@ -50,6 +50,7 @@ runs:
   using: composite
   steps:
     - name: Launch Tests
+      working-directory: testlum-tests
       shell: bash
       run: |
         RESOURCES_DIR="/REGRESSION/resources"

@@ -104,7 +104,7 @@ jobs:
 
       - name: Setup Test Environment
         id: setup_env
-        uses: .github/actions/setup-test-env
+        uses: ./.github/actions/setup-test-env
         with:
           working_directory: testlum-tests
           browserstack_access_key: ${{ secrets.BROWSERSTACK_KEY }}
@@ -148,7 +148,7 @@ jobs:
       - name: Run Regression (Mobile and Native)
         if: ${{ steps.params.outputs.run_mobile_native == 'true' }}
         id: run-regression-mobile-native
-        uses: .github/actions/run-testlum
+        uses: ./.github/actions/run-testlum
         with:
           image: testlum:${{ env.VERSION }}
           config_file: ${{ steps.params.outputs.mobile_config_file }}
@@ -162,7 +162,7 @@ jobs:
 
       - name: Cleanup Test Environment
         if: ${{ always() }}
-        uses: .github/actions/cleanup-test-env
+        uses: ./.github/actions/cleanup-test-env
         with:
           working_directory: testlum-tests
           browserstack_access_key: ${{ secrets.BROWSERSTACK_KEY }}

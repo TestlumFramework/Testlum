@@ -125,6 +125,10 @@ jobs:
         shell: bash
         run: docker rmi "testlum:${VERSION}" || true
 
+      - name: Clean Up Docker
+        shell: bash
+        run: docker system prune -af
+
       - name: Build Testlum Docker image
         shell: bash
         working-directory: testlum-core

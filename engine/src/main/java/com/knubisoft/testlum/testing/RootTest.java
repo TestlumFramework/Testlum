@@ -26,7 +26,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.MDC;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -66,16 +65,7 @@ public class RootTest {
     void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments) {
         ScenarioArguments data = arguments.getPayload();
         EnvironmentExecutionService executionService = ctx.getBean(EnvironmentExecutionService.class);
-        executionService.runInEnvironment(data.getEnvironment(), () -> {
-            MDC.put("env", "[".concat(data.getEnvironment()).concat(":"));
-            MDC.put("scenario", data.getPath().concat("]"));
-            try {
-                prepareAndRun(data);
-            } finally {
-                MDC.remove("env");
-                MDC.remove("scenario");
-            }
-        });
+        executionService.runInEnvironment(data.getEnvironment(), () -> prepareAndRun(data));
     }
 
     private void prepareAndRun(final ScenarioArguments args) {

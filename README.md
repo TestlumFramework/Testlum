@@ -23,7 +23,7 @@ It includes:
 
 📺 Watch the step-by-step video guide:
 
-[![Watch the video](https://img.youtube.com/vi/WOaw2a2kQt0/0.jpg)](https://www.youtube.com/watch?v=WOaw2a2kQt0)
+[![Watch the video](.github/regression-run.png)](https://www.youtube.com/watch?v=WOaw2a2kQt0)
 
 # Key Features
 

@@ -8,6 +8,23 @@
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![FullRegression](https://github.com/TestlumFramework/Demo/actions/workflows/test.yml/badge.svg)](https://github.com/TestlumFramework/Demo/actions/workflows/test.yml)
 
+# 🎬 Running Regression Tests (Example)
+
+This repository contains the Testlum framework.  
+To see it in action with real test scenarios, use the demo project.
+
+👉 Demo project (recommended starting point):  
+https://github.com/TestlumFramework/Demo
+
+It includes:
+- Ready-to-run regression tests
+- Sample configuration
+- Real usage examples
+
+📺 Watch the step-by-step video guide:
+
+[![Watch the video](https://img.youtube.com/vi/WOaw2a2kQt0/0.jpg)](https://www.youtube.com/watch?v=WOaw2a2kQt0)
+
 # Key Features
 
 - 🌐 **Web UI Testing**  

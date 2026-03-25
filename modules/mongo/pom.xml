@@ -30,6 +30,16 @@
         </dependency>
 
         <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>connection-template</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>compile</scope>

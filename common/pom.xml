@@ -20,6 +20,8 @@
         <module>connection-template</module>
         <module>xml-parser</module>
         <module>condition</module>
+        <module>configuration</module>
+        <module>exception</module>
     </modules>
 
 </project>

@@ -48,7 +48,7 @@ public class ScenarioRunner {
     private final MobileBrowserDriverFactory mobileBrowserDriverFactory;
     private final WebDriverFactory webDriverFactory;
     private final NativeDriverFactory nativeDriverFactory;
-    private final InjectionUtil injectionUtil;
+    private final ScenarioInjectionUtil scenarioInjectionUtil;
     private final LogUtil logUtil;
     private final InterpreterScanner interpreterScanner;
 
@@ -62,7 +62,7 @@ public class ScenarioRunner {
         this.mobileBrowserDriverFactory = ctx.getBean(MobileBrowserDriverFactory.class);
         this.webDriverFactory = ctx.getBean(WebDriverFactory.class);
         this.nativeDriverFactory = ctx.getBean(NativeDriverFactory.class);
-        this.injectionUtil = ctx.getBean(InjectionUtil.class);
+        this.scenarioInjectionUtil = ctx.getBean(ScenarioInjectionUtil.class);
         this.logUtil = ctx.getBean(LogUtil.class);
         this.interpreterScanner = ctx.getBean(InterpreterScanner.class);
         this.stopScenarioOnFailure = ctx.getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
@@ -80,7 +80,9 @@ public class ScenarioRunner {
 
     private void injectOverview() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenario.setOverview(injectionUtil.injectObject(scenario.getOverview(), dependencies.getScenarioContext()));
+        scenario.setOverview(scenarioInjectionUtil.injectObject(
+                scenario.getOverview(),
+                dependencies.getScenarioContext()));
     }
 
     private void prepareScenarioResult() {

@@ -63,7 +63,7 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
         logAllQueries(queries, alias);
         addDatabaseMetaData(alias, queries, result);
         AbstractStorageOperation.StorageOperationResult apply = dynamoDBOperation.apply(new ListSource(queries), alias);
-        return jacksonService.writeAsStringForDynamoDbOnly(apply.getRaw());
+        return jacksonService.writeAsStringFieldVisibility(apply.getRaw());
     }
 
     private void logAllQueries(final List<String> queries, final String alias) {

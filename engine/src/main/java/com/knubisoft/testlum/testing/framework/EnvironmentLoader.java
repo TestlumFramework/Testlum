@@ -16,7 +16,7 @@ import java.util.Optional;
 public class EnvironmentLoader {
 
     @Qualifier("uiConfig")
-    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigMap;
+    private final UIConfiguration uiConfigMap;
 
     public Optional<Web> getCurrentEnvWebSettings() {
         return getWebSettings(EnvManager.currentEnv());

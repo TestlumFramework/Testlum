@@ -84,7 +84,7 @@ public class ScenarioRunner {
         this.interpreterScanner = ctx.getBean(InterpreterScanner.class);
         this.webDownloadUtil = ctx.getBean(WebDownloadUtil.class);
         this.stopScenarioOnFailure = ctx.getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
-
+        this.scenarioDir = webDownloadUtil.resolveScenarioDir(scenarioArguments.getFile());
         this.dependencies = createDependencies();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
@@ -99,7 +99,6 @@ public class ScenarioRunner {
 
     private void takeFileNamesSnapshot() {
         this.executionStartTime = System.currentTimeMillis();
-        this.scenarioDir = webDownloadUtil.resolveScenarioDir(scenarioArguments.getFile());
         if (nonNull(scenarioDir)) {
             try {
                 java.nio.file.Files.createDirectories(scenarioDir);

@@ -21,7 +21,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     protected final ConfigUtil configUtil;
     protected final FileSearcher fileSearcher;
     protected final LogUtil logUtil;
-    protected final InjectionUtil injectionUtil;
+    protected final ScenarioInjectionUtil scenarioInjectionUtil;
     protected final JacksonService jacksonService;
     protected final StringPrettifier stringPrettifier;
 
@@ -35,7 +35,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
         this.configUtil = dependencies.getContext().getBean(ConfigUtil.class);
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
         this.logUtil = dependencies.getContext().getBean(LogUtil.class);
-        this.injectionUtil = dependencies.getContext().getBean(InjectionUtil.class);
+        this.scenarioInjectionUtil = dependencies.getContext().getBean(ScenarioInjectionUtil.class);
         this.jacksonService = dependencies.getContext().getBean(JacksonService.class);
         this.stringPrettifier = dependencies.getContext().getBean(StringPrettifier.class);
     }
@@ -62,7 +62,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
         if (copiedObject instanceof NativeVar nativeVar) {
             processExpression(nativeVar.getExpression());
         }
-        return injectionUtil.injectObject(copiedObject, dependencies.getScenarioContext());
+        return scenarioInjectionUtil.injectObject(copiedObject, dependencies.getScenarioContext());
     }
 
     private void processExpression(final FromExpression fromExpression) {

@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
-import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
+import com.knubisoft.testlum.testing.framework.util.ScenarioInjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
@@ -30,7 +30,7 @@ public class ScenarioCollector {
     private final IntegrationsUtil integrationUtil;
     private final FileSearcher fileSearcher;
     private final GlobalVariationsProvider globalVariationsProvider;
-    private final InjectionUtil injectionUtil;
+    private final ScenarioInjectionUtil scenarioInjectionUtil;
     private final Integrations integrations;
 
     public Result collect() {
@@ -161,7 +161,7 @@ public class ScenarioCollector {
         if (variationFileName != null && variationFileName.isPresent()) {
             List<Map<String, String>> variationList = globalVariationsProvider.getVariations(variationFileName.get());
             include = variationList.stream()
-                    .map(variationMap -> (Include) injectionUtil.injectObjectVariation(command, variationMap))
+                    .map(variationMap -> (Include) scenarioInjectionUtil.injectObjectVariation(command, variationMap))
                     .findFirst().get();
         }
         return include;

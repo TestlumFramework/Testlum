@@ -401,6 +401,16 @@
                 <artifactId>testlum-condition</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>configuration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>exception</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!--
 
@@ -590,10 +600,10 @@
                 <artifactId>spring-jdbc</artifactId>
                 <version>${org.spring.version}</version>
                 <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>spring-tx</artifactId>
-                    </exclusion>
+<!--                    <exclusion>-->
+<!--                        <groupId>org.springframework</groupId>-->
+<!--                        <artifactId>spring-tx</artifactId>-->
+<!--                    </exclusion>-->
                     <exclusion>
                         <groupId>org.springframework</groupId>
                         <artifactId>spring-beans</artifactId>

@@ -48,8 +48,9 @@ public class WebRepeatExecutor extends AbstractUiExecutor<WebRepeat> {
         result.put("Variations", repeat.getVariations());
         List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
         List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
-                .flatMap(variation -> commands.stream().map(command ->
-                        injectionUtil.injectObjectVariation(command, variation, dependencies.getScenarioContext())))
+                .flatMap(variation -> commands.stream()
+                        .map(command -> scenarioInjectionUtil
+                                .injectObjectVariation(command, variation, dependencies.getScenarioContext())))
                 .toList();
         this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
     }

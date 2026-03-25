@@ -40,9 +40,20 @@
         </dependency>
 
         <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>connection-template</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-db-util</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
         </dependency>
+
     </dependencies>
 </project>

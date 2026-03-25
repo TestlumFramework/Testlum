@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
-import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.UIConfiguration;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -69,7 +69,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private final DatasetValidator datasetValidator;
     private final GlobalVariationsProvider globalVariationsProvider;
     private final UiConfig uiConfig;
-    private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
+    private final UIConfiguration uiConfigs;
 
     private Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;

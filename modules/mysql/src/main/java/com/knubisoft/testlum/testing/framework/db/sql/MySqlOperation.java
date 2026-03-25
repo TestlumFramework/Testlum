@@ -4,10 +4,8 @@ import com.knubisoft.testlum.testing.framework.condition.OnMysqlEnabledCondition
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
-import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.MySqlExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.Mysql;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +27,9 @@ public class MySqlOperation extends AbstractStorageOperation {
     private final Map<AliasEnv, AbstractSqlExecutor> mySqlExecutor;
 
     public MySqlOperation(@Autowired(required = false) @Qualifier("mySqlDataSource")
-                          final Map<AliasEnv, DataSource> mySqlDataSource,
-                          final LogUtil logUtil) {
+                          final Map<AliasEnv, DataSource> mySqlDataSource) {
         mySqlExecutor = new HashMap<>();
-        mySqlDataSource.forEach((key, value) -> mySqlExecutor.put(key, new MySqlExecutor(value, logUtil)));
+        mySqlDataSource.forEach((key, value) -> mySqlExecutor.put(key, new MySqlExecutor(value)));
     }
 
     @Override

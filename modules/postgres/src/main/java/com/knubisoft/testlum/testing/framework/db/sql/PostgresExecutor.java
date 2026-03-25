@@ -1,8 +1,6 @@
-package com.knubisoft.testlum.testing.framework.db.sql.executor.impl;
-
+package com.knubisoft.testlum.testing.framework.db.sql;
 
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -22,8 +20,8 @@ public class PostgresExecutor extends AbstractSqlExecutor {
             TRUNCATE_TABLE_AND_RESTART_SEQUENCE,
             ALTER_TABLE_ENABLE_TRIGGER_ALL);
 
-    public PostgresExecutor(final DataSource dataSource, final LogUtil logUtil) {
-        super(dataSource, logUtil);
+    public PostgresExecutor(final DataSource dataSource) {
+        super(dataSource);
     }
 
     @Override

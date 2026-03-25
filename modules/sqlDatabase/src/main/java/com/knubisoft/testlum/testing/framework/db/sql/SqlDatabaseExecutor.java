@@ -1,9 +1,8 @@
-package com.knubisoft.testlum.testing.framework.db.sql.executor.impl;
+package com.knubisoft.testlum.testing.framework.db.sql;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.SqlDatabase;
 import lombok.Getter;
@@ -28,9 +27,8 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
     public SqlDatabaseExecutor(final FileSearcher fileSearcher,
                                final DataSource dataSource,
                                final AliasEnv aliasEnv,
-                               final LogUtil logUtil,
                                final Integrations integrations) {
-        super(dataSource, logUtil);
+        super(dataSource);
         this.aliasEnv = aliasEnv;
         this.fileSearcher = fileSearcher;
         this.integrations = integrations;

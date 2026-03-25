@@ -1,10 +1,11 @@
 package com.knubisoft.testlum.testing.framework.db.sql.executor;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.QueryResult;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,8 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+@Slf4j
 public abstract class AbstractSqlExecutor {
 
     private static final String INSERT = "INSERT";
@@ -30,11 +34,9 @@ public abstract class AbstractSqlExecutor {
     private static final String COUNT = "count";
 
     protected final JdbcTemplate template;
-    protected final LogUtil logUtil;
 
-    public AbstractSqlExecutor(final DataSource dataSource, final LogUtil logUtil) {
+    public AbstractSqlExecutor(final DataSource dataSource) {
         this.template = Objects.isNull(dataSource) ? null : new JdbcTemplate(dataSource);
-        this.logUtil = logUtil;
     }
 
     public abstract void truncate();
@@ -64,10 +66,22 @@ public abstract class AbstractSqlExecutor {
             Object result = executeAppropriateQuery(queryResult.getQuery());
             queryResult.setContent(result);
         } catch (InvalidDataAccessResourceUsageException e) {
-            logUtil.logSqlException(e, queryResult.getQuery());
+            logSqlException(e, queryResult.getQuery());
             throw e;
         }
         return queryResult;
+    }
+
+    public void logSqlException(final Exception ex, final String query) {
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            String sql = new SQLUtil().getBrokenQuery(ex, query);
+            log.error(LogMessage.ERROR_SQL_QUERY,
+                    ex.getMessage().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()),
+                    sql.replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
+        } else {
+            log.error(LogMessage.ERROR_SQL_QUERY,
+                    ex.toString().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
+        }
     }
 
     private Object executeAppropriateQuery(final String query) {
@@ -99,5 +113,28 @@ public abstract class AbstractSqlExecutor {
                 query.toUpperCase().startsWith(s)
                         || query.toUpperCase().startsWith(StringUtils.SPACE + s);
         return Stream.of(operations).anyMatch(validatedQuery);
+    }
+
+    private static class SQLUtil {
+        private static final int CUT_LIMIT = 100;
+        private static final int OFFSET_LIMIT = 2;
+        private static final Pattern BAD_SQL_POSITION_PATTERN = Pattern.compile("Position: ([0-9]+)");
+
+        public String getBrokenQuery(final Exception ex, final String query) {
+            final int position = getSqlPositionFromException(ex) - OFFSET_LIMIT;
+            return StringUtils.abbreviate(query, position, CUT_LIMIT);
+        }
+
+        private int getSqlPositionFromException(final Exception ex) {
+            Matcher m = BAD_SQL_POSITION_PATTERN.matcher(ex.getMessage());
+            try {
+                if (m.find()) {
+                    return Integer.parseInt(m.group(1));
+                }
+            } catch (Exception ignored) {
+                //ignored
+            }
+            return 0;
+        }
     }
 }

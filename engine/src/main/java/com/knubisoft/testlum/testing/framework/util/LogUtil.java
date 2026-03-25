@@ -27,7 +27,6 @@ public class LogUtil {
     private final BrowserUtil browserUtil;
     private final MobileUtil mobileUtil;
     private final StringPrettifier stringPrettifier;
-    private final SqlUtil sqlUtil;
 
     //CHECKSTYLE:OFF
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
@@ -141,17 +140,6 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(LogMessage.DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
-    }
-
-    public void logSqlException(final Exception ex, final String query) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.getMessage().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()),
-                    sqlUtil.getBrokenQuery(ex, query).replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
-        } else {
-            log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.toString().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
-        }
     }
 
     public void logVarInfo(final String name, final String value) {

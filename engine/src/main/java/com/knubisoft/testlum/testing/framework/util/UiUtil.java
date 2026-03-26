@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
@@ -294,6 +295,12 @@ public class UiUtil {
     public void waitForMatSelectToOpen(final ExecutorDependencies dependencies, final WebElement matSelect) {
         getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
+
+    public void waitForElementPresence(final ExecutorDependencies dependencies, final By locator) {
+        WebDriverWait wait = getWebDriverWait(dependencies);
+        wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
 
     public String getBasePageURL(final String currentPageURL) {
         try {

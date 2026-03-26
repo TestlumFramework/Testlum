@@ -94,12 +94,14 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
 
     private void selectSearchableOptionForCustomDropDown(final List<WebElement> dropDownParentElements,
                                                          final String value) {
+        By searchableOptionLocator = By.xpath(format(CONTAINS_TEXT_PATTERN, value));
+        uiUtil.waitForElementPresence(dependencies, searchableOptionLocator);
         Collections.reverse(dropDownParentElements);
 
         for (int i = 0; i < dropDownParentElements.size(); i++) {
             WebElement element = dropDownParentElements.get(i);
             try {
-                WebElement searchableOption = element.findElement(By.xpath(format(CONTAINS_TEXT_PATTERN, value)));
+                WebElement searchableOption = element.findElement(searchableOptionLocator);
                 searchableOption.click();
                 break;
             } catch (NoSuchElementException e) {

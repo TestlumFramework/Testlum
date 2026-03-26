@@ -106,7 +106,7 @@
         <org.spring.version>6.2.8</org.spring.version>
         <io.jsonwebtoken.version>0.12.6</io.jsonwebtoken.version>
         <json-smart.version>2.5.2</json-smart.version>
-        <jackson.version>2.19.0</jackson.version>
+        <jackson.version>2.21.1</jackson.version>
         <javax.xml.jaxp-api.version>1.4.2</javax.xml.jaxp-api.version>
         <javax.xml.version>4.0.5</javax.xml.version>
         <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>

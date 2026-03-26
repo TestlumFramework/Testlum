@@ -291,6 +291,7 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
+        validateDateFormatPattern(dateFormatPattern);
         try {
             return new DateTimeFormatterBuilder().appendPattern(dateFormatPattern)
                     .parseDefaulting(ChronoField.YEAR_OF_ERA, ZonedDateTime.now().getYear())
@@ -338,6 +339,17 @@ public class VariableHelperImpl implements VariableHelper {
         } catch (DateTimeException e) {
             throw new DefaultFrameworkException(
                     String.format(ExceptionMessage.VALUE_DOES_NOT_MATCH_FORMAT, valueToParse, dateFormatPattern));
+        }
+    }
+
+    private void validateDateFormatPattern(final String dateFormatPattern) {
+        if (dateFormatPattern.matches(".*\\p{IsCyrillic}.*")) {
+            throw new DefaultFrameworkException(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN,
+                    dateFormatPattern, "Pattern cannot contain Cyrillic characters");
+        }
+        if (!dateFormatPattern.matches(".*[a-zA-Z].*")) {
+            throw new DefaultFrameworkException(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN,
+                    dateFormatPattern, "Pattern must contain at least one valid letter token");
         }
     }
 

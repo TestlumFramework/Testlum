@@ -21,7 +21,7 @@
         <module>repeat-util</module>
         <module>ui-util</module>
         <module>websocket-util</module>
-        <module>storage-util</module>
+
         <module>db-util</module>
         <module>api-util</module>
         <module>auth-util</module>

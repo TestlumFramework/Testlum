@@ -22,14 +22,6 @@ public class EnvironmentLoader {
         return getWebSettings(EnvManager.currentEnv());
     }
 
-    public Optional<Mobilebrowser> getCurrentEnvMobileBrowserSettings() {
-        return getMobileBrowserSettings(EnvManager.currentEnv());
-    }
-
-    public Optional<Native> getCurrentEnvNativeSettings() {
-        return getNativeSettings(EnvManager.currentEnv());
-    }
-
     public Optional<Web> getWebSettings(final String environment) {
         return Optional.ofNullable(uiConfigMap.get(environment)).map(UiConfig::getWeb);
     }

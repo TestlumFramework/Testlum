@@ -1,27 +1,20 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.wait.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Timeunit;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 
 @Service
 public class WaitUtilImpl implements WaitUtil {
 
     @Override
     public TimeUnit getTimeUnit(final Timeunit unit) {
-        switch (unit) {
-            case MILLIS:
-                return TimeUnit.MILLISECONDS;
-            case SECONDS:
-                return TimeUnit.SECONDS;
-            default:
-                throw new DefaultFrameworkException(ExceptionMessage.TIME_UNIT_UNKNOWN_TYPE, unit.value());
-        }
+        return switch (unit) {
+            case MILLIS -> TimeUnit.MILLISECONDS;
+            case SECONDS -> TimeUnit.SECONDS;
+        };
     }
 
     @Override
@@ -30,24 +23,6 @@ public class WaitUtilImpl implements WaitUtil {
             timeUnit.sleep(timeout);
         } catch (InterruptedException ignored) {
             //ignored
-        }
-    }
-
-    @Override
-    public void waitUntil(final BooleanSupplier condition,
-                          final long timeoutMillis,
-                          final TimeUnit timeUnit,
-                          final long period) {
-        long start = System.currentTimeMillis();
-        while (!condition.getAsBoolean()) {
-            if (System.currentTimeMillis() - start > timeoutMillis) {
-                return;
-            }
-            try {
-                timeUnit.sleep(period);
-            } catch (InterruptedException ignored) {
-                //ignored
-            }
         }
     }
 }

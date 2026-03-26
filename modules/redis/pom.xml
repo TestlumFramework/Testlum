@@ -14,10 +14,6 @@
     <artifactId>testlum-redis</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-storage-util</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>

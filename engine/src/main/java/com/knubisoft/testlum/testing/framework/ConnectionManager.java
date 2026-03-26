@@ -36,8 +36,7 @@ public class ConnectionManager {
 
     private void closeRabbitmqConnections() {
         if (Objects.nonNull(rabbitConnectionFactoryMap)) {
-            rabbitConnectionFactoryMap.values().forEach(connectionFactory ->
-                    ((CachingConnectionFactory) connectionFactory).resetConnection());
+            rabbitConnectionFactoryMap.values().forEach(ConnectionFactory::resetConnection);
         }
     }
 

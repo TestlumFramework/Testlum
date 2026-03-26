@@ -11,5 +11,4 @@ public interface WaitUtil {
 
     void sleep(long timeout, TimeUnit timeUnit);
 
-    void waitUntil(BooleanSupplier condition, long timeoutMillis, TimeUnit timeUnit, long period);
 }

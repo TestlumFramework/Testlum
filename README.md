@@ -7,7 +7,7 @@
 [![Testlum Engine Build](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml/badge.svg)](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![FullRegression](https://github.com/TestlumFramework/Demo/actions/workflows/test.yml/badge.svg)](https://github.com/TestlumFramework/Demo/actions/workflows/test.yml)
-[![Known Vulnerabilities](https://snyk.io/test/github/TestlumFramework/Testlum/badge.svg)](https://snyk.io/test/github/TestlumFramework/Testlum)
+[![Vulnerabilities](https://snyk-badge-iu4f.vercel.app/badge/github/TestlumFramework/Testlum)](https://snyk.io/test/github/TestlumFramework/Testlum)
 
 # 🎬 Running Regression Tests (Example)
 

@@ -13,7 +13,6 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.*;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -49,8 +49,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String HEADER_TEMPLATE = "%s: %s";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     @Autowired
     private ApiClient apiClient;
     private final IntegrationsProvider integrationsProvider;
@@ -65,18 +63,12 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     @Override
     protected void acceptImpl(final Http o, final CommandResult result) {
         Http http = injectCommand(o);
-        checkAlias(http);
+        ensureAlias(http::getAlias, http::setAlias);
         HttpUtil.HttpMethodMetadata metadata = httpUtil.getHttpMethodMetadata(http);
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
         ApiResponse actual = getActual(httpInfo, httpMethod, http.getAlias(), result);
         compareResult(httpInfo.getResponse(), actual, result);
-    }
-
-    private void checkAlias(final Http http) {
-        if (http.getAlias() == null) {
-            http.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void compareResult(final Response expected,
@@ -181,13 +173,16 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         log.info(ENDPOINT_LOG, endpoint);
     }
 
-    @SneakyThrows
     private void logBodyContent(final HttpEntity body) {
         if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
-            String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
-            if (StringUtils.isNotBlank(stringBody)) {
-                log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
-                        .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+            try {
+                String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
+                if (StringUtils.isNotBlank(stringBody)) {
+                    log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                            .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                }
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
             }
         }
     }

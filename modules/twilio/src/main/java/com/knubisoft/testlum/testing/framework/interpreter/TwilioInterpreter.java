@@ -29,8 +29,6 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
     private static final String TO = "To";
     private static final String MESSAGE = "Message";
 
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     @Autowired(required = false)
     private Map<AliasEnv, com.knubisoft.testlum.testing.model.global_config.Twilio> twilioSettings;
 
@@ -41,7 +39,7 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
     @Override
     protected void acceptImpl(final Twilio o, final CommandResult result) {
         Twilio twilio = injectCommand(o);
-        checkAlias(twilio);
+        ensureAlias(twilio::getAlias, twilio::setAlias);
         AliasEnv aliasEnv = new AliasEnv(twilio.getAlias(), dependencies.getEnvironment());
         com.knubisoft.testlum.testing.model.global_config.Twilio twilioSetting = twilioSettings.get(aliasEnv);
         com.twilio.Twilio.init(twilioSetting.getAccountSid(), twilioSetting.getAuthToken());
@@ -49,12 +47,6 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
         logTwilioInfo(twilio, twilioNumber);
         addTwilioMetaData(twilio, twilioNumber, result);
         sendSms(twilio, twilioNumber);
-    }
-
-    private void checkAlias(final Twilio twilio) {
-        if (twilio.getAlias() == null) {
-            twilio.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void sendSms(final Twilio twilio, final String twilioNumber) {

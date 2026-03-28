@@ -1,19 +1,19 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.Kafka;
+import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
+import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -28,18 +28,19 @@ import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @InterpreterForClass(Kafka.class)
-public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
+public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
 
-    private static final String SEND_ACTION = "send";
-    private static final String RECEIVE_ACTION = "receive";
-
-    private static final String ACTION_LOG = LogFormat.table("Action");
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
-    private static final String CONTENT_LOG = LogFormat.table("Content");
     private static final String COMMIT_LOG = LogFormat.table("Commit");
     private static final String TOPIC_LOG = LogFormat.table("Topic");
     private static final String CORRELATION_ID_LOG = LogFormat.table("Correlation Id");
@@ -47,26 +48,11 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private static final String KEY = "Key";
     private static final String TOPIC = "Topic";
-    private static final String ALIAS = "Alias";
-    private static final String RECEIVE = "Receive";
-    private static final String SEND = "Send";
-    private static final String ACTION = "Action";
-    private static final String ENABLE = "Enable";
-    private static final String DISABLE = "Disable";
-    private static final String HEADER_TEMPLATE = "%s: %s";
-    private static final String MESSAGE_TO_SEND = "Message to send";
-    private static final String TIMEOUT_MILLIS = "Timeout millis";
-    private static final String HEADERS_STATUS = "Headers status";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String COMMENT_FOR_KAFKA_SEND_ACTION = "Send message to Kafka";
     private static final String COMMENT_FOR_KAFKA_RECEIVE_ACTION = "Receive message from Kafka";
-    private static final String STEP_FAILED = "Step failed";
-
 
     private static final String CORRELATION_ID = "correlationId";
     private static final int NUM_PARTITIONS = 1;
-
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     private Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer;
@@ -80,43 +66,23 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     @Override
-    protected void acceptImpl(final Kafka o, final CommandResult result) {
-        Kafka kafka = injectCommand(o);
-        checkAlias(kafka);
-        List<CommandResult> subCommandsResult = new LinkedList<>();
-        result.setSubCommandsResult(subCommandsResult);
-        for (Object action : kafka.getSendOrReceive()) {
-            log.info(LogFormat.commandLog(),
-                    dependencies.getPosition().incrementAndGet(),
-                    action.getClass().getSimpleName());
-            CommandResult commandResult = newCommandResultInstance(dependencies.getPosition().get());
-            subCommandsResult.add(commandResult);
-            processEachAction(action, kafka.getAlias(), commandResult);
-        }
-        setExecutionResultIfSubCommandsFailed(result);
+    protected String getAlias(final Kafka command) {
+        return command.getAlias();
     }
 
-    private void checkAlias(final Kafka kafka) {
-        if (kafka.getAlias() == null) {
-            kafka.setAlias(DEFAULT_ALIAS_VALUE);
-        }
+    @Override
+    protected void setAlias(final Kafka command, final String alias) {
+        command.setAlias(alias);
     }
 
-    private void processEachAction(final Object action,
-                                   final String alias,
-                                   final CommandResult result) {
-        StopWatch stopWatch = StopWatch.createStarted();
-        log.info(ALIAS_LOG, alias);
-        try {
-            processKafkaAction(action, alias, result);
-        } catch (Exception e) {
-            logException(e);
-            setExceptionResult(result, e);
-            checkIfStopScenarioOnFailure(e);
-        } finally {
-            result.setExecutionTime(stopWatch.getDuration().toMillis());
-            stopWatch.stop();
-        }
+    @Override
+    protected List<Object> getActions(final Kafka command) {
+        return command.getSendOrReceive();
+    }
+
+    @Override
+    protected void processAction(final Object action, final String alias, final CommandResult result) {
+        processKafkaAction(action, alias, result);
     }
 
     private void processKafkaAction(final Object action,
@@ -139,17 +105,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
         compareMessages(actualMessages, expectedMessages, result);
-    }
-
-    private void compareMessages(final List<KafkaMessage> actualKafkaMessages,
-                                 final String value,
-                                 final CommandResult result) {
-        CompareBuilder comparator = newCompare()
-                .withExpected(value)
-                .withActual(actualKafkaMessages);
-        result.setActual(stringPrettifier.asJsonResult(toString(actualKafkaMessages)));
-        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
-        comparator.exec();
     }
 
     private void sendMessage(final SendKafkaMessage send,
@@ -248,12 +203,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         return getValue(receive.getValue(), receive.getFile());
     }
 
-    private String getValue(final String message, final String file) {
-        return StringUtils.isNotBlank(message)
-                ? message
-                : getContentIfFile(file);
-    }
-
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
         if (checkIsTopicNotExists(topic, aliasEnv)) {
             NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
@@ -266,40 +215,14 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private void logKafkaReceiveInfo(final ReceiveKafkaMessage receive, final String content) {
-        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, receive.getTopic(), content);
+        logMessageBrokerMetaData(RECEIVE_ACTION, TOPIC_LOG, receive.getTopic(), content);
         logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
         logIfNotNull(COMMIT_LOG, receive.isCommit());
     }
 
     private void logKafkaSendInfo(final SendKafkaMessage send, final String content) {
-        logMessageBrokerGeneralMetaData(SEND_ACTION, send.getTopic(), content);
+        logMessageBrokerMetaData(SEND_ACTION, TOPIC_LOG, send.getTopic(), content);
         logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
-    }
-
-    private void logMessageBrokerGeneralMetaData(final String action,
-                                                 final String topicOrRoutingKeyOrQueueValue,
-                                                 final String content) {
-        log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
-        log.info(TOPIC_LOG, topicOrRoutingKeyOrQueueValue);
-        log.info(CONTENT_LOG, stringPrettifier.asJsonResult(
-                content.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE))
-                .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
-    }
-
-    private void logIfNotNull(final String title, final Object data) {
-        if (Objects.nonNull(data)) {
-            log.info(title, data);
-        }
-    }
-
-    private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
-        CommandResult commandResult = new CommandResult();
-        commandResult.setId(number);
-        commandResult.setSuccess(true);
-        if (Objects.nonNull(command) && command.length > 0) {
-            commandResult.setCommandKey(command[0].getClass().getSimpleName());
-        }
-        return commandResult;
     }
 
     private void addKafkaSendInfo(final SendKafkaMessage sendAction,
@@ -307,7 +230,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                   final CommandResult result) {
         result.setCommandKey(SEND);
         result.setComment(COMMENT_FOR_KAFKA_SEND_ACTION);
-        addMessageBrokerGeneralMetaData(alias, SEND, sendAction.getTopic(), result);
+        addMessageBrokerGeneralMetaData(alias, SEND, TOPIC, sendAction.getTopic(), result);
         addKafkaAdditionalMetaDataForSendAction(sendAction, result);
     }
 
@@ -316,7 +239,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                      final CommandResult result) {
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_KAFKA_RECEIVE_ACTION);
-        addMessageBrokerGeneralMetaData(alias, RECEIVE, receiveAction.getTopic(), result);
+        addMessageBrokerGeneralMetaData(alias, RECEIVE, TOPIC, receiveAction.getTopic(), result);
         result.put(HEADERS_STATUS, receiveAction.isHeaders() ? ENABLE : DISABLE);
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
@@ -335,27 +258,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         if (Objects.nonNull(kafkaHeaders)) {
             result.put(ADDITIONAL_HEADERS, kafkaHeaders.getHeader().stream().map(header ->
                     String.format(HEADER_TEMPLATE, header.getName(), header.getValue())).toList());
-        }
-    }
-    private void addMessageBrokerGeneralMetaData(final String alias,
-                                                 final String action,
-                                                 final String destinationValue,
-                                                 final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(ACTION, action);
-        result.put(TOPIC, destinationValue);
-    }
-
-    private void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {
-            Exception exception = subCommandsResult
-                    .stream()
-                    .filter(subCommand -> !subCommand.isSuccess())
-                    .findFirst()
-                    .map(CommandResult::getException)
-                    .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
-            setExceptionResult(result, exception);
         }
     }
 

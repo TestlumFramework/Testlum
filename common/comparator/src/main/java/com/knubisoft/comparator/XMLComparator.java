@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
                                           final Map<String, String> expectedMap,
                                           final Map<String, String> actualMap) {
         if (expected.getLength() != actual.getLength()) {
-            Set<String> props = expectedMap.keySet();
+            Set<String> props = new HashSet<>(expectedMap.keySet());
             props.removeAll(actualMap.keySet());
             ErrorHelper.raise(!props.isEmpty(), "Attributes length not match. Missing property");
             ErrorHelper.raise("Attributes length not match. Found unexpected property " + String.join(", ", props));

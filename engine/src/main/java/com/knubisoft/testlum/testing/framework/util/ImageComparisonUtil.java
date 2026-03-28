@@ -5,8 +5,8 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
@@ -33,7 +33,6 @@ public class ImageComparisonUtil {
     private final JavascriptUtil javascriptUtil;
 
     //CHECKSTYLE:OFF
-    @SneakyThrows
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
                                              final String expectedImageFullName,
                                              final boolean isHighlightDifference,
@@ -41,9 +40,13 @@ public class ImageComparisonUtil {
                                              final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
-            File actualImage =
-                    saveActualImage(comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
-            uiUtil.putScreenshotToResult(result, actualImage);
+            try {
+                File actualImage = saveActualImage(
+                        comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
+                uiUtil.putScreenshotToResult(result, actualImage);
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
+            }
             result.put(ResultUtil.ADDITIONAL_INFO, ResultUtil.IMAGE_ATTACHED_TO_STEP);
             if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
                 processSizeMismatchException(comparisonResult, result);

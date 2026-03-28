@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.xml;
 
-import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.xerces.dom.DOMInputImpl;
 import org.w3c.dom.ls.LSInput;
@@ -22,23 +21,33 @@ public class LSResourceResolverImpl implements LSResourceResolver {
         this.schemaBasePath = basePath;
     }
 
-    @SneakyThrows
     @Override
     public LSInput resolveResource(final String type, final String namespaceURI,
                                    final String publicId, final String systemId, final String baseURI) {
         if (!schemaNames.contains(systemId)) {
-            InputStream resourceAsStream = this.getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(getPathToSchema(systemId));
-            if (resourceAsStream == null) {
-                throw new RuntimeException("Incorrect jar structure. Unable to locate schema for " + systemId);
-            }
-            byte[] content = readContent(resourceAsStream);
-            schemaNames.add(systemId);
-            String charset = StandardCharsets.UTF_8.name();
-            return new DOMInputImpl(publicId, systemId, baseURI, new ByteArrayInputStream(content), charset);
+            return buildInput(publicId, systemId, baseURI);
         }
         return null;
+    }
+
+    private LSInput buildInput(final String publicId, final String systemId, final String baseURI) {
+        InputStream resourceAsStream = loadSchemaStream(systemId);
+        try {
+            byte[] content = readContent(resourceAsStream);
+            schemaNames.add(systemId);
+            return new DOMInputImpl(publicId, systemId, baseURI,
+                    new ByteArrayInputStream(content), StandardCharsets.UTF_8.name());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private InputStream loadSchemaStream(final String systemId) {
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(getPathToSchema(systemId));
+        if (stream == null) {
+            throw new RuntimeException("Incorrect jar structure. Unable to locate schema for " + systemId);
+        }
+        return stream;
     }
 
     private static byte[] readContent(final InputStream resourceAsStream) throws IOException {

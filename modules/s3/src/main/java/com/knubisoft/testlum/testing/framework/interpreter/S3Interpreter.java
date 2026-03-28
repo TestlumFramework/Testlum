@@ -10,7 +10,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.*;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +22,7 @@ import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -59,8 +59,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String FILE_PROCESSING_ERROR = "File with key <%s> in bucket <%s> can not be processed";
     private static final String FILE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected file <%s>";
     private static final String FILE_VALUE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected value <%s>";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     private final Map<AliasEnv, S3Client> s3Client;
 
     public S3Interpreter(final InterpreterDependencies dependencies) {
@@ -71,7 +69,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     @Override
     protected void acceptImpl(final S3 o, final CommandResult result) {
         S3 s3 = injectCommand(o);
-        checkAlias(s3);
+        ensureAlias(s3::getAlias, s3::setAlias);
         log.info(ALIAS_LOG, s3.getAlias());
         result.put(ALIAS, s3.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
@@ -90,12 +88,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         }
     }
 
-    private void checkAlias(final S3 s3) {
-        if (s3.getAlias() == null) {
-            s3.setAlias(DEFAULT_ALIAS_VALUE);
-        }
-    }
-
     private void processEachAction(final AbstractCommand action, final AliasEnv aliasEnv, final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
@@ -110,7 +102,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         }
     }
 
-    @SneakyThrows
     private void processS3Action(final AliasEnv aliasEnv, final AbstractCommand s3, final CommandResult result) {
         if (s3 instanceof S3Bucket) {
             processBucketAction((S3Bucket) s3, aliasEnv, result);
@@ -232,7 +223,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         }
     }
 
-    @SneakyThrows
     private String downloadFile(final String bucketName,
                                 final String key,
                                 final AliasEnv aliasEnv) {
@@ -243,6 +233,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             return IOUtils.toString(s3Object, StandardCharsets.UTF_8);
         } catch (S3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
         }
     }
 

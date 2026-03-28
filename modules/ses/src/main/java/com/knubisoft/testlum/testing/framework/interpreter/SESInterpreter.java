@@ -36,8 +36,6 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     private static final String SOURCE = "Source";
     private static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     @Autowired(required = false)
     private Map<AliasEnv, SesClient> sesClient;
 
@@ -48,18 +46,12 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     @Override
     protected void acceptImpl(final Ses o, final CommandResult result) {
         Ses ses = injectCommand(o);
-        checkAlias(ses);
+        ensureAlias(ses::getAlias, ses::setAlias);
         logSesInfo(ses);
         addSesMetaData(ses, result);
         AliasEnv aliasEnv = new AliasEnv(ses.getAlias(), dependencies.getEnvironment());
         verify(ses, aliasEnv);
         sendEmail(ses, aliasEnv);
-    }
-
-    private void checkAlias(final Ses ses) {
-        if (ses.getAlias() == null) {
-            ses.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void verify(final Ses ses, final AliasEnv aliasEnv) {

@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,9 +11,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.SneakyThrows;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public final class JacksonService {
@@ -21,40 +24,61 @@ public final class JacksonService {
     private final ObjectMapper mapperFieldVisibility = createObjectMapperWithFieldVisibility();
     private final ObjectMapper deepCopy = createObjectMapperForDeepCopy();
 
-    @SneakyThrows
     public <T> T readValue(final String content, final Class<T> valueType) {
-        return mapper.readValue(content, valueType);
+        try {
+            return mapper.readValue(content, valueType);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
-    @SneakyThrows
     public <T> T readValue(final byte[] content, final Class<T> valueType) {
-        return mapper.readValue(content, valueType);
+        try {
+            return mapper.readValue(content, valueType);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
-    @SneakyThrows
     public String writeValueAsString(final Object value) {
-        return mapper.writeValueAsString(value);
+        try {
+            return mapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
-    @SneakyThrows
     public String writeValueAsStringWithDefaultPrettyPrinter(final Object value) {
-        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value);
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
-    @SneakyThrows
     public String writeAsStringFieldVisibility(final Object value) {
-        return mapperFieldVisibility.writeValueAsString(value);
+        try {
+            return mapperFieldVisibility.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
-    @SneakyThrows
     public <T> T readCopiedValue(final String content, final Class<T> valueType) {
-        JavaType javaType = deepCopy.getTypeFactory().constructType(valueType);
-        return deepCopy.readValue(content, javaType);
+        try {
+            JavaType javaType = deepCopy.getTypeFactory().constructType(valueType);
+            return deepCopy.readValue(content, javaType);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
-    @SneakyThrows
     public String writeValueToCopiedString(final Object value) {
-        return deepCopy.writeValueAsString(value);
+        try {
+            return deepCopy.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     public <T> T deepCopy(final Object value, final Class<T> valueType) {

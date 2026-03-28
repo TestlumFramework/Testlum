@@ -18,7 +18,6 @@ import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -26,6 +25,7 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -188,15 +188,19 @@ public class ScenarioRunner {
         return interpreterMap;
     }
 
-    @SneakyThrows
     private AbstractInterpreter<? extends AbstractCommand> createInterpreterInstance(
             final InterpreterDependencies dependencies,
             final Class<AbstractInterpreter<? extends AbstractCommand>> value) {
-        Constructor<AbstractInterpreter<? extends AbstractCommand>> constructor =
-                value.getConstructor(InterpreterDependencies.class);
-        AbstractInterpreter<? extends AbstractCommand> instance = constructor.newInstance(dependencies);
-        ctx.getAutowireCapableBeanFactory().autowireBean(instance);
-        return instance;
+        try {
+            Constructor<AbstractInterpreter<? extends AbstractCommand>> constructor =
+                    value.getConstructor(InterpreterDependencies.class);
+            AbstractInterpreter<? extends AbstractCommand> instance = constructor.newInstance(dependencies);
+            ctx.getAutowireCapableBeanFactory().autowireBean(instance);
+            return instance;
+        } catch (NoSuchMethodException | InvocationTargetException
+                 | InstantiationException | IllegalAccessException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private InterpreterDependencies createDependencies() {

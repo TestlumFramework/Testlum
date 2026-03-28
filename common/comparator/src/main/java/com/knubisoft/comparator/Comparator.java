@@ -21,7 +21,7 @@ import com.knubisoft.comparator.util.LogMessage;
 
 public class Comparator extends AbstractObjectComparator<String> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final List<ComparatorHandler> handlers = new ArrayList<>() {
         {
@@ -61,7 +61,7 @@ public class Comparator extends AbstractObjectComparator<String> {
 
     private JsonNode readJson(final String value) {
         try {
-            return objectMapper.readTree(value);
+            return OBJECT_MAPPER.readTree(value);
         } catch (JsonProcessingException e) {
             return null;
         }

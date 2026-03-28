@@ -24,9 +24,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Slf4j
 public abstract class AbstractInterpreter<T extends AbstractCommand> {
+
+    protected static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     private static final String JSON_EXTENSION = ".json";
     private static final String ACTUAL_FILENAME = "actual.json";
@@ -181,5 +185,11 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected void setExceptionResult(final CommandResult result, final Exception exception) {
         result.setSuccess(false);
         result.setException(exception);
+    }
+
+    protected void ensureAlias(final Supplier<String> getAlias, final Consumer<String> setAlias) {
+        if (getAlias.get() == null) {
+            setAlias.accept(DEFAULT_ALIAS_VALUE);
+        }
     }
 }

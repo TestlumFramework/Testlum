@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.*;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -49,8 +48,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private static final String NUMBER_OF_MESSAGES = "Number of messages";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
     private static final String ACTION = "Action";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     private static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
     private static final String UNKNOWN_WEBSOCKET_COMMAND = "Unknown websocket command: %s";
@@ -65,17 +62,11 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     @Override
     protected void acceptImpl(final Websocket o, final CommandResult result) {
         Websocket websocket = injectCommand(o);
-        checkAlias(websocket);
+        ensureAlias(websocket::getAlias, websocket::setAlias);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         processWebsockets(websocket, subCommandsResult);
         setExecutionResultIfSubCommandsFailed(result);
-    }
-
-    private void checkAlias(final Websocket websocket) {
-        if (websocket.getAlias() == null) {
-            websocket.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void processWebsockets(final Websocket websocket, final List<CommandResult> subCommandsResult) {
@@ -228,11 +219,14 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
                 : getContentIfFile(file);
     }
 
-    @SneakyThrows
     private void disconnectIfEnabled(final boolean isDisconnectEnabled, final AliasEnv aliasEnv) {
         WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
         if (isDisconnectEnabled) {
-            wsConnectionManager.closeConnection();
+            try {
+                wsConnectionManager.closeConnection();
+            } catch (Exception e) {
+                throw new DefaultFrameworkException(e);
+            }
         }
     }
 

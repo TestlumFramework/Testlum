@@ -7,12 +7,12 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Objects;
@@ -32,17 +32,20 @@ public class MobileBrowserDriverFactory {
         return getMobilebrowserWebDriver(desiredCapabilities, uiConfigs);
     }
 
-    @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities,
                                                 final UIConfiguration uiConfigs) {
-        UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
-        String serverUrl = seleniumDriverUtil.getMobileBrowserConnectionUrl(uiConfig);
-        Mobilebrowser settings = uiConfig.getMobilebrowser();
-        int secondsToWait = settings.getElementAutowait().getSeconds();
-        WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
-        driver.get(settings.getBaseUrl());
-        return driver;
+        try {
+            UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
+            String serverUrl = seleniumDriverUtil.getMobileBrowserConnectionUrl(uiConfig);
+            Mobilebrowser settings = uiConfig.getMobilebrowser();
+            int secondsToWait = settings.getElementAutowait().getSeconds();
+            WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
+            driver.get(settings.getBaseUrl());
+            return driver;
+        } catch (MalformedURLException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private void setCommonCapabilities(final MobilebrowserDevice mobileDevice,

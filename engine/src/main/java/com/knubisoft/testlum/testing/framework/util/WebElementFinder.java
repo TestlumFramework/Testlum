@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.model.global_config.Web;
 import com.knubisoft.testlum.testing.model.pages.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -98,12 +97,16 @@ public final class WebElementFinder {
     }
 
     //CHECKSTYLE:OFF
-    @SneakyThrows(InterruptedException.class)
     private void waitForSecondsDefinedInConfig() {
         Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();
         if (settings.isPresent()) {
             int secondsToWait = settings.get().getBrowserSettings().getElementAutowait().getSeconds();
-            Thread.sleep(secondsToWait * 1000L);
+            try {
+                Thread.sleep(secondsToWait * 1000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new DefaultFrameworkException(e);
+            }
         }
     }
 

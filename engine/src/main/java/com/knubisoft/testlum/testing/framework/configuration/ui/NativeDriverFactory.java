@@ -10,12 +10,12 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
@@ -45,11 +45,10 @@ public class NativeDriverFactory {
         return driver;
     }
 
-    @SneakyThrows
     private AppiumDriver newAppiumDriver(final NativeDevice nativeDevice,
                                          final String serverUrl,
                                          final DesiredCapabilities desiredCapabilities) {
-        URL url = new URL(serverUrl);
+        URL url = toURL(serverUrl);
         if (Platform.ANDROID == nativeDevice.getPlatformName()) {
             setAndroidCapabilities(nativeDevice, desiredCapabilities);
             return new AndroidDriver(url, desiredCapabilities);
@@ -59,6 +58,14 @@ public class NativeDriverFactory {
         }
         throw new DefaultFrameworkException(
                 ExceptionMessage.UNKNOWN_MOBILE_PLATFORM_NAME, nativeDevice.getPlatformName().value());
+    }
+
+    private URL toURL(final String serverUrl) {
+        try {
+            return new URL(serverUrl);
+        } catch (MalformedURLException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private void setAndroidCapabilities(final NativeDevice nativeDevice,

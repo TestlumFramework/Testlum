@@ -1,14 +1,9 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
-import com.knubisoft.testlum.log.LogFormat;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
-import com.knubisoft.testlum.testing.framework.db.source.ListSource;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractDatabaseInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.Clickhouse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +13,7 @@ import java.util.List;
 
 @Slf4j
 @InterpreterForClass(Clickhouse.class)
-public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
-
-    private static final String QUERY = LogFormat.table("Query");
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
-
-    private static final String QUERIES = "Queries";
-    private static final String DATABASE_ALIAS = "Database alias";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+public class ClickhouseInterpreter extends AbstractDatabaseInterpreter<Clickhouse> {
 
     @Autowired(required = false)
     @Qualifier("clickhouseOperation")
@@ -36,48 +24,27 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
     }
 
     @Override
-    protected void acceptImpl(final Clickhouse o, final CommandResult result) {
-        Clickhouse clickhouse = injectCommand(o);
-        checkAlias(clickhouse);
-        String actual = getActual(clickhouse, result);
-        CompareBuilder comparator = newCompare()
-                .withActual(actual)
-                .withExpected(getContentIfFile(clickhouse.getFile()));
-
-        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
-        result.setActual(stringPrettifier.asJsonResult(actual));
-
-        comparator.exec();
-        setContextBody(getContextBodyKey(clickhouse.getFile()), actual);
+    protected AbstractStorageOperation getOperation() {
+        return clickhouseOperation;
     }
 
-    private void checkAlias(final Clickhouse clickhouse) {
-        if (clickhouse.getAlias() == null) {
-            clickhouse.setAlias(DEFAULT_ALIAS_VALUE);
-        }
+    @Override
+    protected String getAlias(final Clickhouse command) {
+        return command.getAlias();
     }
 
-
-    protected String getActual(final Clickhouse clickhouse, final CommandResult result) {
-        String alias = clickhouse.getAlias();
-        List<String> queries = clickhouse.getQuery();
-        logAllQueries(queries, alias);
-        addDatabaseMetaData(alias, queries, result);
-        AbstractStorageOperation.StorageOperationResult applyClickhouse =
-                clickhouseOperation.apply(new ListSource(queries), alias);
-        return toString(applyClickhouse.getRaw());
+    @Override
+    protected void setAlias(final Clickhouse command, final String alias) {
+        command.setAlias(alias);
     }
 
-    private void logAllQueries(final List<String> queries, final String alias) {
-        log.info(ALIAS_LOG, alias);
-        queries.forEach(query -> log.info(QUERY,
-                query.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE)));
+    @Override
+    protected List<String> getQueries(final Clickhouse command) {
+        return command.getQuery();
     }
 
-    private void addDatabaseMetaData(final String databaseAlias,
-                                     final List<String> queries,
-                                     final CommandResult result) {
-        result.put(DATABASE_ALIAS, databaseAlias);
-        result.put(QUERIES, queries);
+    @Override
+    protected String getFile(final Clickhouse command) {
+        return command.getFile();
     }
 }

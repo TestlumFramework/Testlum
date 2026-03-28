@@ -8,7 +8,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
-import lombok.SneakyThrows;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
@@ -36,17 +36,20 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         this.imageComparator = dependencies.getContext().getBean(ImageComparator.class);
     }
 
-    @SneakyThrows
     @Override
     protected void execute(final NativeImage image, final CommandResult result) {
-        logUtil.logImageComparisonInfo(image);
-        resultUtil.addImageComparisonMetaData(image, result);
-        File scenarioFile = dependencies.getFile();
-        BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
-        BufferedImage actual = getActualImage(dependencies.getDriver(), image);
-        ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual);
-        imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+        try {
+            logUtil.logImageComparisonInfo(image);
+            resultUtil.addImageComparisonMetaData(image, result);
+            File scenarioFile = dependencies.getFile();
+            BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+            BufferedImage actual = getActualImage(dependencies.getDriver(), image);
+            ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual);
+            imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
+                    image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,

@@ -14,9 +14,9 @@ import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
@@ -45,18 +45,21 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         this.imageComparator = dependencies.getContext().getBean(ImageComparator.class);
     }
 
-    @SneakyThrows
     @Override
     public void execute(final Image image, final CommandResult result) {
-        logUtil.logImageComparisonInfo(image);
-        resultUtil.addImageComparisonMetaData(image, result);
-        File scenarioFile = dependencies.getFile();
-        BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
-        BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
-        List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
-        ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual, excludeList);
-        imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+        try {
+            logUtil.logImageComparisonInfo(image);
+            resultUtil.addImageComparisonMetaData(image, result);
+            File scenarioFile = dependencies.getFile();
+            BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+            BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
+            List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
+            ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual, excludeList);
+            imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
+                    image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     //CHECKSTYLE:OFF

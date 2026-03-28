@@ -7,6 +7,7 @@ import com.knubisoft.comparator.exception.MatchException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,28 +77,19 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
         mode.onStrict(() -> ErrorHelper.raise(expected.size() != actual.size(),
                 "Difference in properties or count Missing"));
 
+        Map<String, JsonNode> actualMap = toMap(actual);
         for (Map.Entry<String, JsonNode> expectedEntry : expected) {
-            JsonNode actualValue = getActualValue(actual, expectedEntry);
-            validateActualValue(expectedEntry, actualValue);
+            JsonNode actualValue = actualMap.get(expectedEntry.getKey());
+            if (actualValue == null) {
+                ErrorHelper.raise("Property with name [" + expectedEntry.getKey() + "] not found");
+            }
             compare(expectedEntry.getValue(), actualValue);
         }
     }
 
-    private void validateActualValue(final Map.Entry<String, JsonNode> expectedEntry, final JsonNode actualValue) {
-        if (actualValue == null) {
-            ErrorHelper.raise("Property with name [" + expectedEntry.getKey() + "] not found");
-        }
-    }
-
-    private JsonNode getActualValue(final List<Map.Entry<String, JsonNode>> actual,
-                                    final Map.Entry<String, JsonNode> expectedEntry) {
-        JsonNode actualValue = null;
-        for (Map.Entry<String, JsonNode> actualEntry : actual) {
-            if (expectedEntry.getKey().equals(actualEntry.getKey())) {
-                actualValue = actualEntry.getValue();
-                break;
-            }
-        }
-        return actualValue;
+    private Map<String, JsonNode> toMap(final List<Map.Entry<String, JsonNode>> entries) {
+        Map<String, JsonNode> map = new LinkedHashMap<>();
+        entries.forEach(e -> map.put(e.getKey(), e.getValue()));
+        return map;
     }
 }

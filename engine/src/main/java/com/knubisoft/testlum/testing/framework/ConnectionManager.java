@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework;
 
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import lombok.SneakyThrows;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -27,10 +27,13 @@ public class ConnectionManager {
     @Qualifier("restHighLevelClient")
     private Map<AliasEnv, RestHighLevelClient> elasticRestHighLevelClientMap;
 
-    @SneakyThrows
     public void closeConnections() {
         closeRabbitmqConnections();
-        closeElasticsearchConnections();
+        try {
+            closeElasticsearchConnections();
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private void closeRabbitmqConnections() {

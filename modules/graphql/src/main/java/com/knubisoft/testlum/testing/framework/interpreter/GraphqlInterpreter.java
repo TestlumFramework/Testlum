@@ -16,7 +16,6 @@ import com.knubisoft.testlum.testing.model.global_config.GraphqlApi;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +26,8 @@ import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,8 +55,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String HEADER_TEMPLATE = "%s: %s";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     private final Map<Function<Graphql, HttpInfo>, HttpMethod> graphqlMethodMap;
 
     @Autowired
@@ -74,18 +73,12 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     @Override
     public void acceptImpl(final Graphql o, final CommandResult result) {
         Graphql graphql = injectCommand(o);
-        checkAlias(graphql);
+        ensureAlias(graphql::getAlias, graphql::setAlias);
         GraphqlMetadata graphqlMetadata = getGraphqlMetaData(graphql);
         HttpInfo httpInfo = graphqlMetadata.httpInfo;
         HttpMethod httpMethod = graphqlMetadata.getHttpMethod();
         ApiResponse response = getActualResponse(httpInfo, httpMethod, graphql.getAlias(), result);
         compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
-    }
-
-    private void checkAlias(final Graphql graphql) {
-        if (graphql.getAlias() == null) {
-            graphql.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private GraphqlMetadata getGraphqlMetaData(final Graphql graphql) {
@@ -156,12 +149,15 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return url;
     }
 
-    @SneakyThrows
     private String urlWithParams(final GraphqlGet graphqlGet, final String url) {
-        URIBuilder uriBuilder = new URIBuilder(url);
-        List<Param> parameters = graphqlGet.getParam();
-        parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
-        return uriBuilder.build().toString();
+        try {
+            URIBuilder uriBuilder = new URIBuilder(url);
+            List<Param> parameters = graphqlGet.getParam();
+            parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
+            return uriBuilder.build().toString();
+        } catch (URISyntaxException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private void compareResult(final Response expected,
@@ -211,13 +207,16 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         log.info(ENDPOINT_LOG, endpoint);
     }
 
-    @SneakyThrows
     private void logBodyContent(final HttpEntity body) {
         if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
-            String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
-            if (StringUtils.isNotBlank(stringBody)) {
-                log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
-                        .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+            try {
+                String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
+                if (StringUtils.isNotBlank(stringBody)) {
+                    log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                            .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                }
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
             }
         }
     }

@@ -13,7 +13,6 @@ import com.knubisoft.testlum.testing.model.pages.*;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import io.appium.java_client.AppiumDriver;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -200,13 +199,16 @@ public class UiUtil {
         return webElement.getScreenshotAs(OutputType.FILE);
     }
 
-    @SneakyThrows
     public void putScreenshotToResult(final CommandResult result, final File screenshot) {
         final MultipartFile image = imageCompressor.compress(screenshot);
         if (Objects.nonNull(image)) {
-            byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
-            String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
-            result.setBase64Screenshot(encodedScreenshot);
+            try {
+                byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
+                String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
+                result.setBase64Screenshot(encodedScreenshot);
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
+            }
         }
     }
 

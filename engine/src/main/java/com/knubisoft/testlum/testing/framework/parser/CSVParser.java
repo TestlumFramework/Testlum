@@ -2,12 +2,15 @@ package com.knubisoft.testlum.testing.framework.parser;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.opencsv.CSVReader;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
+
+import com.opencsv.exceptions.CsvException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -28,17 +31,19 @@ public final class CSVParser {
         return getVariationsMapList(variations);
     }
 
-    @SneakyThrows
     private List<String[]> readVariationsFile(final String variationFileName) {
         File file = fileSearcher.searchFileFromDataFolder(variationFileName);
-        FileInputStream fileInputStream = new FileInputStream(file);
-
-        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
-        List<String[]> variations;
-        try (CSVReader reader = new CSVReader(inputStreamReader)) {
-            variations = reader.readAll();
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            List<String[]> variations;
+            try (CSVReader reader = new CSVReader(inputStreamReader)) {
+                variations = reader.readAll();
+            }
+            return variations;
+        } catch (IOException | CsvException e) {
+            throw new DefaultFrameworkException(e);
         }
-        return variations;
     }
 
     private List<Map<String, String>> getVariationsMapList(final List<String[]> variations) {

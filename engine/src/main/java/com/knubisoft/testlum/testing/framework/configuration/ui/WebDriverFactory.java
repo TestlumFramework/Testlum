@@ -18,7 +18,6 @@ import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
 import io.github.bonigarcia.wdm.managers.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.MutableCapabilities;
@@ -32,6 +31,7 @@ import org.openqa.selenium.remote.http.ClientConfig;
 import org.openqa.selenium.safari.SafariOptions;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
@@ -128,7 +128,6 @@ public class WebDriverFactory {
         };
     }
 
-    @SneakyThrows
     private WebDriver getBrowserStackDriver(final AbstractBrowser browser,
                                             final MutableCapabilities browserOptions) {
         BrowserStackWeb browserStack = browser.getBrowserType().getBrowserStack();
@@ -138,12 +137,10 @@ public class WebDriverFactory {
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
         browserOptions.setCapability("os", browserStack.getOs());
         browserOptions.setCapability("osVersion", browserStack.getOsVersion());
-        String browserStackUrl = seleniumDriverUtil.getBrowserStackUrl(
-                uiConfigs.get(EnvManager.currentEnv()));
-        return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);
+        String url = seleniumDriverUtil.getBrowserStackUrl(uiConfigs.get(EnvManager.currentEnv()));
+        return new RemoteWebDriver(toURL(url), browserOptions);
     }
 
-    @SneakyThrows
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
         String url = remoteBrowserSettings.getRemoteBrowserURL();
@@ -152,11 +149,18 @@ public class WebDriverFactory {
                 .connectionTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS))
                 .readTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
         try {
-            return RemoteWebDriver.builder().address(new URL(url))
-                    .oneOf(browserOptions).config(config)
-                    .build();
+            return RemoteWebDriver.builder().address(toURL(url))
+                    .oneOf(browserOptions).config(config).build();
         } catch (Exception e) {
             throw new DefaultFrameworkException("Unable to connect to remote browser with cause:" + e.getMessage());
+        }
+    }
+
+    private URL toURL(final String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new DefaultFrameworkException(e);
         }
     }
 

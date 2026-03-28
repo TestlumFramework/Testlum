@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.pages.Page;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
-import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +73,6 @@ public class XMLParsers {
         return scenarioXMLParser.get();
     }
 
-    @SneakyThrows
     private Schema initSchema(final String xsd) {
         try {
             URL file = getFileURL(xsd);

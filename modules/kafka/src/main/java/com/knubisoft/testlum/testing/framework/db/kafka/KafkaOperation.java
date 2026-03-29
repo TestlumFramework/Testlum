@@ -6,10 +6,9 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -45,16 +46,27 @@ public class KafkaOperation extends AbstractStorageOperation {
         });
     }
 
-    @SneakyThrows
     private void clearKafka(final KafkaConsumer<String, String> kafkaConsumer, final AliasEnv aliasEnv) {
-        Set<String> userTopics = kafkaConsumer.listTopics().keySet().stream()
+        Set<String> userTopics = getUserTopics(kafkaConsumer);
+        if (!userTopics.isEmpty()) {
+            deleteTopics(aliasEnv, userTopics);
+        }
+    }
+
+    private Set<String> getUserTopics(final KafkaConsumer<String, String> kafkaConsumer) {
+        return kafkaConsumer.listTopics().keySet().stream()
                 .filter(topic -> !topic.startsWith("_"))
                 .collect(Collectors.toSet());
-        if (userTopics.isEmpty()) {
-            return;
-        }
+    }
 
-        DeleteTopicsResult deleteTopicsResult = adminClient.get(aliasEnv).deleteTopics(userTopics);
-        deleteTopicsResult.all().get(TIMEOUT, TimeUnit.SECONDS);
+    private void deleteTopics(final AliasEnv aliasEnv, final Set<String> userTopics) {
+        try {
+            adminClient.get(aliasEnv).deleteTopics(userTopics).all().get(TIMEOUT, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new DefaultFrameworkException(e);
+        } catch (ExecutionException | TimeoutException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 }

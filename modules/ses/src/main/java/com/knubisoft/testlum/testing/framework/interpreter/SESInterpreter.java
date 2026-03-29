@@ -14,7 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import software.amazon.awssdk.services.ses.SesClient;
-import software.amazon.awssdk.services.ses.model.*;
+import software.amazon.awssdk.services.ses.model.Body;
+import software.amazon.awssdk.services.ses.model.Content;
+import software.amazon.awssdk.services.ses.model.Destination;
+import software.amazon.awssdk.services.ses.model.Message;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
+import software.amazon.awssdk.services.ses.model.VerifyEmailAddressRequest;
 
 import java.util.Map;
 import java.util.Objects;
@@ -23,20 +28,16 @@ import java.util.Objects;
 @InterpreterForClass(Ses.class)
 public class SESInterpreter extends AbstractInterpreter<Ses> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String DESTINATION_LOG = LogFormat.table("Destination");
     private static final String SOURCE_LOG = LogFormat.table("Source");
     private static final String BODY_LOG = LogFormat.table("Body");
 
-    private static final String ALIAS = "Alias";
     private static final String DESTINATION = "Destination";
     private static final String SUBJECT = "Subject";
     private static final String HTML = "HTML";
     private static final String TEXT = "Text";
     private static final String SOURCE = "Source";
     private static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
-
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     private Map<AliasEnv, SesClient> sesClient;
@@ -48,18 +49,12 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     @Override
     protected void acceptImpl(final Ses o, final CommandResult result) {
         Ses ses = injectCommand(o);
-        checkAlias(ses);
+        ensureAlias(ses::getAlias, ses::setAlias);
         logSesInfo(ses);
         addSesMetaData(ses, result);
         AliasEnv aliasEnv = new AliasEnv(ses.getAlias(), dependencies.getEnvironment());
         verify(ses, aliasEnv);
         sendEmail(ses, aliasEnv);
-    }
-
-    private void checkAlias(final Ses ses) {
-        if (ses.getAlias() == null) {
-            ses.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void verify(final Ses ses, final AliasEnv aliasEnv) {

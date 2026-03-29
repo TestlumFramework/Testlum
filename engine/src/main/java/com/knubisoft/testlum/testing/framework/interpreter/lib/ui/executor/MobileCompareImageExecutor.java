@@ -13,7 +13,6 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.MobileImage;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
@@ -38,40 +37,49 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
         this.imageComparator = dependencies.getContext().getBean(ImageComparator.class);
     }
 
-    @SneakyThrows
     @Override
     protected void execute(final MobileImage image, final CommandResult result) {
-        logUtil.logImageComparisonInfo(image);
-        resultUtil.addImageComparisonMetaData(image, result);
-        File scenarioFile = dependencies.getFile();
-        BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
-        BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
-        ImageComparisonResult comparisonResult = imageComparator.compare(image, expected,
-                cutStatusBar(image.getFullScreen(), actual, dependencies.getDriver()));
-        imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+        try {
+            logUtil.logImageComparisonInfo(image);
+            resultUtil.addImageComparisonMetaData(image, result);
+            File scenarioFile = dependencies.getFile();
+            BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+            BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
+            ImageComparisonResult comparisonResult = imageComparator.compare(image, expected,
+                    cutStatusBar(image.getFullScreen(), actual, dependencies.getDriver()));
+            imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
+                    image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
-    //CHECKSTYLE:OFF
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final MobileImage image,
                                          final CommandResult result) throws IOException {
         if (Objects.nonNull(image.getPicture())) {
-            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
-                    image.getPicture().getLocatorStrategy());
-            return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
+            return getImageFromPicture(image, result);
         }
         if (Objects.nonNull(image.getPart())) {
-            if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
-                throw new DefaultFrameworkException(ExceptionMessage.IOS_NOT_SUPPORT_PART_COMMAND);
-            }
-            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                    image.getPart().getLocatorStrategy());
-            return ImageIO.read(uiUtil.takeScreenshot(webElement));
+            return getImageFromPart(webDriver, image);
         }
         return ImageIO.read(uiUtil.takeScreenshot(webDriver));
     }
-    //CHECKSTYLE:ON
+
+    private BufferedImage getImageFromPicture(final MobileImage image, final CommandResult result) throws IOException {
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
+                image.getPicture().getLocatorStrategy());
+        return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
+    }
+
+    private BufferedImage getImageFromPart(final WebDriver webDriver, final MobileImage image) throws IOException {
+        if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
+            throw new DefaultFrameworkException(ExceptionMessage.IOS_NOT_SUPPORT_PART_COMMAND);
+        }
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
+                image.getPart().getLocatorStrategy());
+        return ImageIO.read(uiUtil.takeScreenshot(webElement));
+    }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,

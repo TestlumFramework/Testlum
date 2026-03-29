@@ -10,7 +10,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
-import lombok.SneakyThrows;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -28,14 +29,9 @@ import java.util.List;
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
-    private static final String CREDENTIALS_LOG = LogFormat.table("Credentials");
     private static final String INVALID_CREDENTIALS_LOG = LogFormat.table("Invalid credentials");
     private static final String SERVER_BAD_GATEWAY_RESPONSE_LOG = LogFormat.table("Server is shutdown");
     private static final String SERVER_ERROR_RESPONSE_LOG = LogFormat.table("Request failed");
-
-    private static final String AUTHENTICATION_TYPE = "Authentication type";
 
     private final IntegrationsProvider integrationsProvider;
     private final List<Api> apiList;
@@ -100,9 +96,12 @@ public class JwtAuth extends AbstractAuthStrategy {
         return apiIntegration.getUrl() + auth.getLoginEndpoint();
     }
 
-    @SneakyThrows
     private String getCredentialsFromFile(final String fileName) {
-        return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+        try {
+            return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private void logAuthInfo(final Auth auth) {

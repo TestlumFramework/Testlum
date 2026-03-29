@@ -3,13 +3,12 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.report.CommandResultHelper;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -92,16 +91,13 @@ public class ResultUtil {
     private static final String LOCATOR_STRATEGY = "Locator strategy";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TYPE = "Type";
     private static final String DB_TYPE = "DB type";
     private static final String NAME = "Name";
     private static final String VALUE = "Value";
     private static final String TIME = "Time";
     private static final String TIME_UNITE = "Time unit";
-    private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
-    private static final String STEP_FAILED = "Step failed";
 
     private static final String IMAGE_FOR_COMPARISON = "Image for comparison";
     private static final String HIGHLIGHT_DIFFERENCE = "Highlight difference";
@@ -130,21 +126,11 @@ public class ResultUtil {
     }
 
     public void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {
-            Exception exception = subCommandsResult
-                    .stream()
-                    .filter(subCommand -> !subCommand.isSuccess())
-                    .findFirst()
-                    .map(CommandResult::getException)
-                    .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
-            setExceptionResult(result, exception);
-        }
+        CommandResultHelper.setExecutionResultIfSubCommandsFailed(result);
     }
 
     public void setExceptionResult(final CommandResult result, final Exception exception) {
-        result.setSuccess(false);
-        result.setException(exception);
+        CommandResultHelper.setExceptionResult(result, exception);
     }
 
     public void setExpectedActual(final String expected, final String actual, final CommandResult result) {
@@ -166,9 +152,7 @@ public class ResultUtil {
     }
 
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
+        CommandResultHelper.addHeadersMetaData(headers, result);
     }
 
     public void addVariableMetaData(final String type,

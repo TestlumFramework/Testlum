@@ -5,7 +5,6 @@ import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.FileLinkingException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -63,10 +63,13 @@ public final class FileSearcher {
         return find(fromDir.getParentFile(), filter);
     }
 
-    @SneakyThrows
     public String searchFileToString(final String name, final File fromDir) {
         Preconditions.checkNotNull(fromDir);
-        return FileUtils.readFileToString(searchFileFromDir(fromDir, name), StandardCharsets.UTF_8);
+        try {
+            return FileUtils.readFileToString(searchFileFromDir(fromDir, name), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     public File searchFileFromDataFolder(final String fileName) {

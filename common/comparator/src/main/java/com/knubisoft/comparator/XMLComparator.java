@@ -6,25 +6,29 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 public class XMLComparator extends AbstractObjectComparator<Node> {
 
+    private final StringComparator stringComparator;
+
     public XMLComparator(final Mode mode) {
         super(mode);
+        this.stringComparator = new StringComparator(mode);
     }
 
     @Override
     public void compare(final Node expected, final Node actual) throws MatchException {
         ErrorHelper.raise(!Objects.equals(expected.getNodeName(), actual.getNodeName()),
-                "Expected node name [" + expected.getNodeName() + "] but was [" + actual.getNodeName() + "]");
+                String.format("Expected node name [%s] but was [%s]", expected.getNodeName(), actual.getNodeName()));
 
         if (expected.hasAttributes()) {
             compareNodes(expected, actual);
         }
-        new StringComparator(mode).compare(expected.getNodeValue(), actual.getNodeValue());
+        stringComparator.compare(expected.getNodeValue(), actual.getNodeValue());
 
         compareChildNodes(expected, actual);
     }
@@ -48,10 +52,10 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
 
     private void compareNodes(final Node expected, final Node actual) throws MatchException {
         ErrorHelper.raise(!actual.hasAttributes(),
-                "Attributes not found in actual document for node " + actual.getNodeName());
+                String.format("Attributes not found in actual document for node %s", actual.getNodeName()));
         compareAttributes(expected.getAttributes(), actual.getAttributes());
         mode.onStrict(() -> ErrorHelper.raise(actual.hasAttributes(),
-                "Additional attributes found in actual document for node " + actual.getNodeName()));
+                String.format("Additional attributes found in actual document for node %s", actual.getNodeName())));
     }
 
     private void compareAttributes(final NamedNodeMap expected, final NamedNodeMap actual) throws MatchException {
@@ -62,8 +66,9 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
 
         for (Map.Entry<String, String> expectedEntry : expectedMap.entrySet()) {
             String actualValue = actualMap.get(expectedEntry.getKey());
-            ErrorHelper.raise(actualValue == null, "Attribute with name " + expectedMap.keySet());
-            new StringComparator(mode).compare(expectedEntry.getValue(), actualValue);
+            ErrorHelper.raise(actualValue == null,
+                    String.format("Attribute with name [%s] not found", expectedEntry.getKey()));
+            stringComparator.compare(expectedEntry.getValue(), actualValue);
         }
     }
 
@@ -72,10 +77,15 @@ public class XMLComparator extends AbstractObjectComparator<Node> {
                                           final Map<String, String> expectedMap,
                                           final Map<String, String> actualMap) {
         if (expected.getLength() != actual.getLength()) {
-            Set<String> props = expectedMap.keySet();
-            props.removeAll(actualMap.keySet());
-            ErrorHelper.raise(!props.isEmpty(), "Attributes length not match. Missing property");
-            ErrorHelper.raise("Attributes length not match. Found unexpected property " + String.join(", ", props));
+            Set<String> missing = new HashSet<>(expectedMap.keySet());
+            missing.removeAll(actualMap.keySet());
+            ErrorHelper.raise(!missing.isEmpty(),
+                    String.format("Attributes length not match. Missing property: %s", String.join(", ", missing)));
+            Set<String> unexpected = new HashSet<>(actualMap.keySet());
+            unexpected.removeAll(expectedMap.keySet());
+            ErrorHelper.raise(!unexpected.isEmpty(),
+                    String.format("Attributes length not match. Found unexpected property: %s",
+                            String.join(", ", unexpected)));
         }
     }
 

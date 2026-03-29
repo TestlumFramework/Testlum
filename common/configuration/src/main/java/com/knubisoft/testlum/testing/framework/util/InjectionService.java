@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.vault.VaultService;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
@@ -14,7 +13,6 @@ public class InjectionService {
     private final JacksonService jacksonService;
     private final SystemVariableService systemVariableService;
 
-    @SneakyThrows
     public <T> T injectFromVault(final VaultService vaultService, final T t) {
         return inject(t, vaultService::inject);
     }

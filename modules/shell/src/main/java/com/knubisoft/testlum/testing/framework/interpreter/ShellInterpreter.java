@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.Shell;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 
@@ -36,7 +35,6 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     }
 
     @Override
-    @SneakyThrows
     protected void acceptImpl(final Shell o, final CommandResult result) {
         Shell shell = injectCommand(o);
         List<String> shellCommands = shell.getShellCommand();

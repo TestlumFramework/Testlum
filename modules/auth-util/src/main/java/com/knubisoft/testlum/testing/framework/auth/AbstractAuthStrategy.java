@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.auth;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import lombok.RequiredArgsConstructor;
 
@@ -9,6 +10,11 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public abstract class AbstractAuthStrategy implements AuthStrategy {
+
+    protected static final String ALIAS_LOG = LogFormat.table("Alias");
+    protected static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
+    protected static final String CREDENTIALS_LOG = LogFormat.table("Credentials");
+    protected static final String AUTHENTICATION_TYPE = "Authentication type";
 
     protected final InterpreterDependencies dependencies;
 

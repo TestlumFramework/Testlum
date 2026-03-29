@@ -14,32 +14,16 @@ public class DatasetValidator {
 
     private final FileSearcher fileSearcher;
 
-    //CHECKSTYLE:OFF
     public void validateDatasetByExtension(final String datasetFileName, final StorageName name) {
         fileSearcher.searchFileFromDataFolder(datasetFileName);
         switch (name) {
-            case CLICKHOUSE:
-            case POSTGRES:
-            case ORACLE:
-            case SQLDATABASE:
-            case MYSQL:
-                checkRelationDbDatasetExtension(datasetFileName);
-                break;
-            case REDIS:
-                checkRedisDatasetExtension(datasetFileName);
-                break;
-            case MONGODB:
-                checkMongodbDatasetExtension(datasetFileName);
-                break;
-            case DYNAMO:
-                checkDynamoDbDatasetExtension(datasetFileName);
-                break;
-            default:
-                throw new DefaultFrameworkException(ExceptionMessage.DB_NOT_SUPPORTED, name);
+            case CLICKHOUSE, POSTGRES, ORACLE, SQLDATABASE, MYSQL -> checkRelationDbDatasetExtension(datasetFileName);
+            case REDIS -> checkRedisDatasetExtension(datasetFileName);
+            case MONGODB -> checkMongodbDatasetExtension(datasetFileName);
+            case DYNAMO -> checkDynamoDbDatasetExtension(datasetFileName);
+            default -> throw new DefaultFrameworkException(ExceptionMessage.DB_NOT_SUPPORTED, name);
         }
     }
-
-    //CHECKSTYLE:ON
 
     private boolean checkIfNotExcelOrCsvFIle(final String datasetFileName) {
         return !(datasetFileName.endsWith(MigrationConstant.XLSX_EXTENSION)
@@ -67,14 +51,14 @@ public class DatasetValidator {
     private void checkRedisDatasetExtension(final String datasetFileName) {
         if (!datasetFileName.endsWith(MigrationConstant.TXT_EXTENSION)) {
             throw new DefaultFrameworkException(ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT,
-                    "Redis", MigrationConstant.TXT_EXTENSION);
+                    "Redis", MigrationConstant.TXT_EXTENSION, MigrationConstant.TXT_EXTENSION);
         }
     }
 
     private void checkDynamoDbDatasetExtension(final String datasetFileName) {
         if (!datasetFileName.endsWith(MigrationConstant.PARTIQL_EXTENSION)) {
             throw new DefaultFrameworkException(ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT,
-                    "DynamoDB", MigrationConstant.PARTIQL_EXTENSION);
+                    "DynamoDB", MigrationConstant.PARTIQL_EXTENSION, MigrationConstant.PARTIQL_EXTENSION);
         }
     }
 }

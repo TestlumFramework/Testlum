@@ -21,8 +21,8 @@ public class ClientWebsocketMessageHandler extends AbstractWebSocketHandler {
 
     @Override
     public void handleMessage(final WebSocketSession session, final WebSocketMessage<?> message) {
-        if (message instanceof TextMessage) {
-            handleTextMessage(session, (TextMessage) message);
+        if (message instanceof TextMessage textMessage) {
+            handleTextMessage(session, textMessage);
         } else {
             throw new DefaultFrameworkException(ExceptionMessage.UNEXPECTED_WEBSOCKET_MESSAGE_TYPE, message);
         }

@@ -21,12 +21,9 @@ import java.util.List;
 public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
 
     private static final String QUERY = LogFormat.table("Query");
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
 
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     @Autowired(required = false)
     @Qualifier("dynamoOperation")
     private AbstractStorageOperation dynamoDBOperation;
@@ -38,7 +35,7 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
     @Override
     protected void acceptImpl(final Dynamo o, final CommandResult result) {
         Dynamo ddb = injectCommand(o);
-        checkAlias(ddb);
+        ensureAlias(ddb::getAlias, ddb::setAlias);
         String actual = getActual(ddb, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
@@ -49,12 +46,6 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
 
         comparator.exec();
         setContextBody(getContextBodyKey(ddb.getFile()), actual);
-    }
-
-    private void checkAlias(final Dynamo dynamoDb) {
-        if (dynamoDb.getAlias() == null) {
-            dynamoDb.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     protected String getActual(final Dynamo ddb, final CommandResult result) {

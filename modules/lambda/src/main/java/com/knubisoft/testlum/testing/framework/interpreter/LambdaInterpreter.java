@@ -30,15 +30,11 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Lambda.class)
 public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String LAMBDA_FUNCTION_LOG = LogFormat.table("Function name");
     private static final String LAMBDA_PAYLOAD_LOG = LogFormat.table("Payload");
 
-    private static final String ALIAS = "Alias";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
     private static final String LAMBDA_PAYLOAD = "Payload";
-
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     private Map<AliasEnv, LambdaClient> awsLambdaClients;
@@ -50,7 +46,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     @Override
     protected void acceptImpl(final Lambda o, final CommandResult result) {
         Lambda lambda = injectCommand(o);
-        checkAlias(lambda);
+        ensureAlias(lambda::getAlias, lambda::setAlias);
         String payload = getPayload(lambda.getBody());
         addLambdaGeneralMetaData(lambda.getAlias(), lambda.getFunctionName(), payload, result);
         logLambdaInfo(lambda.getAlias(), lambda.getFunctionName(), payload);
@@ -58,12 +54,6 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         InvokeResponse response = getLambdaFunctionResponse(lambda, payload);
         compareResult(lambda.getResponse(), response, result);
         setContextBody(getContextBodyKey(lambda.getResponse().getFile()), response.payload().asUtf8String());
-    }
-
-    private void checkAlias(final Lambda lambda) {
-        if (lambda.getAlias() == null) {
-            lambda.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private String getPayload(final LambdaBody body) {

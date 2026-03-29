@@ -9,15 +9,24 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorCollector;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.pages.*;
+import com.knubisoft.testlum.testing.model.pages.ClassName;
+import com.knubisoft.testlum.testing.model.pages.CssSelector;
+import com.knubisoft.testlum.testing.model.pages.Id;
+import com.knubisoft.testlum.testing.model.pages.Locator;
+import com.knubisoft.testlum.testing.model.pages.Text;
+import com.knubisoft.testlum.testing.model.pages.Xpath;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import io.appium.java_client.AppiumDriver;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -56,6 +65,7 @@ public class UiUtil {
     private final FileSearcher fileSearcher;
     private final EnvironmentLoader environmentLoader;
     private final ImageCompressor imageCompressor;
+    private final ConfigProvider configProvider;
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
@@ -73,44 +83,58 @@ public class UiUtil {
         return webElementFinder.find(locator, dependencies);
     }
 
-    //CHECKSTYLE:OFF
     public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
+        if (locatorStrategy == LocatorStrategy.LOCATOR_ID) {
+            return locatorCollector.getLocator(locatorId);
+        }
         Locator locator = new Locator();
         locator.setLocatorId(locatorId);
-        switch (locatorStrategy) {
-            case LOCATOR_ID:
-                locator = locatorCollector.getLocator(locatorId);
-                break;
-            case XPATH:
-                Xpath xpath = new Xpath();
-                xpath.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(xpath);
-                break;
-            case ID:
-                Id id = new Id();
-                id.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(id);
-                break;
-            case TEXT:
-                Text text = new Text();
-                text.setPlaceholder(false);
-                text.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(text);
-                break;
-            case CLASS:
-                ClassName className = new ClassName();
-                className.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(className);
-                break;
-            case CSS_SELECTOR:
-                CssSelector cssSelector = new CssSelector();
-                cssSelector.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(cssSelector);
-                break;
-        }
+        addLocatorElement(locator, locatorId, locatorStrategy);
         return locator;
     }
-    //CHECKSTYLE:ON
+
+    private void addLocatorElement(final Locator locator, final String locatorId,
+                                   final LocatorStrategy strategy) {
+        switch (strategy) {
+            case XPATH -> locator.getXpathOrIdOrClassName().add(createXpath(locatorId));
+            case ID -> locator.getXpathOrIdOrClassName().add(createId(locatorId));
+            case TEXT -> locator.getXpathOrIdOrClassName().add(createText(locatorId));
+            case CLASS -> locator.getXpathOrIdOrClassName().add(createClassName(locatorId));
+            case CSS_SELECTOR -> locator.getXpathOrIdOrClassName().add(createCssSelector(locatorId));
+            default -> { }
+        }
+    }
+
+    private Xpath createXpath(final String value) {
+        Xpath xpath = new Xpath();
+        xpath.setValue(value);
+        return xpath;
+    }
+
+    private Id createId(final String value) {
+        Id id = new Id();
+        id.setValue(value);
+        return id;
+    }
+
+    private Text createText(final String value) {
+        Text text = new Text();
+        text.setPlaceholder(false);
+        text.setValue(value);
+        return text;
+    }
+
+    private ClassName createClassName(final String value) {
+        ClassName className = new ClassName();
+        className.setValue(value);
+        return className;
+    }
+
+    private CssSelector createCssSelector(final String value) {
+        CssSelector cssSelector = new CssSelector();
+        cssSelector.setValue(value);
+        return cssSelector;
+    }
 
 
     public void highlightElementIfRequired(final boolean isHighlight,
@@ -151,14 +175,12 @@ public class UiUtil {
     }
 
     private WebDriverWait getWebDriverWait(final ExecutorDependencies dependencies) {
-        ConfigProvider configProvider = dependencies.getContext().getBean(ConfigProvider.class);
         int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
                 .getElementAutowait().getSeconds();
         return new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(secondsToWait));
     }
 
     public void takeScreenshotAndSaveIfRequired(final CommandResult result, final ExecutorDependencies dependencies) {
-        ConfigProvider configProvider = dependencies.getContext().getBean(ConfigProvider.class);
         boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
                 .getTakeScreenshots().isEnabled();
         if (isTakeScreenshots) {
@@ -200,13 +222,16 @@ public class UiUtil {
         return webElement.getScreenshotAs(OutputType.FILE);
     }
 
-    @SneakyThrows
     public void putScreenshotToResult(final CommandResult result, final File screenshot) {
         final MultipartFile image = imageCompressor.compress(screenshot);
         if (Objects.nonNull(image)) {
-            byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
-            String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
-            result.setBase64Screenshot(encodedScreenshot);
+            try {
+                byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
+                String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
+                result.setBase64Screenshot(encodedScreenshot);
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
+            }
         }
     }
 
@@ -264,9 +289,10 @@ public class UiUtil {
             String protocol = url.getProtocol();
             String host = url.getHost();
 
-            return protocol + "://" + host;
+            return String.format("%s://%s", protocol, host);
         } catch (Exception e) {
-            throw new DefaultFrameworkException("Unable to extract base URL from page: " + currentPageURL);
+            throw new DefaultFrameworkException(
+                    String.format("Unable to extract base URL from page: %s", currentPageURL));
         }
     }
 }

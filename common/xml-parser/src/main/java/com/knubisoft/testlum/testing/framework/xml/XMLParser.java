@@ -5,7 +5,6 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.transform.stream.StreamSource;
@@ -30,17 +29,23 @@ public final class XMLParser<E> {
         return element.getValue();
     }
 
-    @SneakyThrows
     public E process(final File file, final XMLValidator<E> validator) {
         XSDValidator.validateBySchema(file, this.schema);
-        E obj = deserializeXmlTo(file, this.cls, this.objectFactory);
-        validator.validate(obj, file);
-        return obj;
+        try {
+            E obj = deserializeXmlTo(file, this.cls, this.objectFactory);
+            validator.validate(obj, file);
+            return obj;
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SneakyThrows
     public E process(final File file) {
         XSDValidator.validateBySchema(file, this.schema);
-        return deserializeXmlTo(file, this.cls, this.objectFactory);
+        try {
+            return deserializeXmlTo(file, this.cls, this.objectFactory);
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

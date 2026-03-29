@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.report.CommandResultHelper;
 import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
 import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -21,13 +22,22 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Slf4j
 public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
+    protected static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+    protected static final String ALIAS = "Alias";
+    protected static final String ALIAS_LOG = LogFormat.table("Alias");
+    protected static final String HEADER_TEMPLATE = CommandResultHelper.HEADER_TEMPLATE;
+    protected static final String ADDITIONAL_HEADERS = CommandResultHelper.ADDITIONAL_HEADERS;
+    protected static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String JSON_EXTENSION = ".json";
     private static final String ACTUAL_FILENAME = "actual.json";
     private static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
@@ -179,7 +189,20 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     protected void setExceptionResult(final CommandResult result, final Exception exception) {
-        result.setSuccess(false);
-        result.setException(exception);
+        CommandResultHelper.setExceptionResult(result, exception);
+    }
+
+    protected void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
+        CommandResultHelper.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    protected void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
+        CommandResultHelper.addHeadersMetaData(headers, result);
+    }
+
+    protected void ensureAlias(final Supplier<String> getAlias, final Consumer<String> setAlias) {
+        if (getAlias.get() == null) {
+            setAlias.accept(DEFAULT_ALIAS_VALUE);
+        }
     }
 }

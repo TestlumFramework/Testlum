@@ -19,8 +19,8 @@ import com.knubisoft.testlum.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -258,9 +258,9 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private String getValueAsStringFromMetaData(final Object value) {
-        if (value instanceof List) {
+        if (value instanceof List<?> list) {
             StringBuilder valueAsTable = new StringBuilder();
-            ((List<?>) value).forEach(v -> valueAsTable.append(String.format(UNSORTED_LIST_ITEM_TEMPLATE, v)));
+            list.forEach(v -> valueAsTable.append(String.format(UNSORTED_LIST_ITEM_TEMPLATE, v)));
             return String.format(UNSORTED_LIST_TEMPLATE, valueAsTable);
         }
         return String.format(PREFORMATTED_TEXT_TEMPLATE, value);
@@ -288,15 +288,18 @@ public class ExtentReportsGenerator implements ReportGenerator {
         extentTest.info(String.format(STEP_EXECUTION_TIME_TEMPLATE, stepExecutionInfo.getExecutionTime()));
     }
 
-    @SneakyThrows
     private void checkIfTestSkipped(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (extentTest.getStatus().equals(Status.SKIP)
                 && !scenarioResult.getCommands().stream().allMatch(CommandResult::isSkipped)) {
-            Class<Status> statusClass = Status.class;
-            Field level = statusClass.getDeclaredField("level");
-            level.setAccessible(true);
-            level.set(extentTest.getStatus(), SKIP_LEVEL);
-            level.setAccessible(false);
+            try {
+                Class<Status> statusClass = Status.class;
+                Field level = statusClass.getDeclaredField("level");
+                level.setAccessible(true);
+                level.set(extentTest.getStatus(), SKIP_LEVEL);
+                level.setAccessible(false);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new DefaultFrameworkException(e);
+            }
         }
     }
 

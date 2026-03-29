@@ -7,51 +7,73 @@ import com.knubisoft.comparator.exception.MatchException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class JsonComparator extends AbstractObjectComparator<JsonNode> {
 
+    private final StringComparator stringComparator;
+
     public JsonComparator(final Mode mode) {
         super(mode);
+        this.stringComparator = new StringComparator(mode);
     }
 
-    //CHECKSTYLE:OFF
     @Override
     public void compare(final JsonNode expected, final JsonNode actual) throws MatchException {
         JsonNodeType expectedType = expected.getNodeType();
         JsonNodeType actualType = actual.getNodeType();
+        compareByType(expected, actual, expectedType, actualType);
+    }
 
-        if (expectedType == JsonNodeType.BOOLEAN && actualType == JsonNodeType.BOOLEAN) {
-            ErrorHelper.raise(expected.asBoolean() != actual.asBoolean(),
-                    "Property [" + expected.asText() + "] is not equal to [" + actual.asText() + "]");
-
-        } else if (expectedType == JsonNodeType.NUMBER && actualType == JsonNodeType.NUMBER) {
-
-            ErrorHelper.raise(!new BigDecimal(expected.asText()).equals(new BigDecimal(actual.asText())),
-                    "Property [" + expected.asText() + "] is not equal to [" + actual.asText() + "]");
-
-        } else if (expectedType == JsonNodeType.STRING && actualType == JsonNodeType.STRING
-                || expectedType == JsonNodeType.STRING && actualType == JsonNodeType.NUMBER
-                || expectedType == JsonNodeType.STRING && actualType == JsonNodeType.BOOLEAN) {
-            new StringComparator(mode).compare(expected.asText(), actual.asText());
-
-        } else if (expectedType == JsonNodeType.ARRAY && actualType == JsonNodeType.ARRAY) {
-            compareElements(
-                    iteratorToList(expected.elements()),
-                    iteratorToList(actual.elements()));
-
-        } else if (expectedType == JsonNodeType.OBJECT && actualType == JsonNodeType.OBJECT) {
-            compareFields(
-                    iteratorToList(expected.properties().iterator()),
-                    iteratorToList(actual.properties().iterator()));
-
+    private void compareByType(final JsonNode expected, final JsonNode actual,
+                               final JsonNodeType expType, final JsonNodeType actType) throws MatchException {
+        if (expType == JsonNodeType.BOOLEAN && actType == JsonNodeType.BOOLEAN) {
+            compareBoolean(expected, actual);
+        } else if (expType == JsonNodeType.NUMBER && actType == JsonNodeType.NUMBER) {
+            compareNumber(expected, actual);
+        } else if (isStringToComparableType(expType, actType)) {
+            stringComparator.compare(expected.asText(), actual.asText());
+        } else if (expType == JsonNodeType.ARRAY && actType == JsonNodeType.ARRAY) {
+            compareArray(expected, actual);
+        } else if (expType == JsonNodeType.OBJECT && actType == JsonNodeType.OBJECT) {
+            compareObject(expected, actual);
         } else {
-            ErrorHelper.raise(expected.getNodeType() != actual.getNodeType(),
-                    "Expected [" + expected.getNodeType() + "] but was [" + actual.getNodeType() + "]");
+            raiseTypeMismatch(expType, actType);
         }
     }
-    //CHECKSTYLE:ON
+
+    private void raiseTypeMismatch(final JsonNodeType expectedType, final JsonNodeType actualType) {
+        ErrorHelper.raise(String.format("Expected [%s] but was [%s]", expectedType, actualType));
+    }
+
+    private boolean isStringToComparableType(final JsonNodeType expectedType, final JsonNodeType actualType) {
+        return expectedType == JsonNodeType.STRING
+                && (actualType == JsonNodeType.STRING
+                    || actualType == JsonNodeType.NUMBER
+                    || actualType == JsonNodeType.BOOLEAN);
+    }
+
+    private void compareArray(final JsonNode expected, final JsonNode actual) throws MatchException {
+        compareElements(iteratorToList(expected.elements()), iteratorToList(actual.elements()));
+    }
+
+    private void compareObject(final JsonNode expected, final JsonNode actual) throws MatchException {
+        compareFields(
+                iteratorToList(expected.properties().iterator()),
+                iteratorToList(actual.properties().iterator()));
+    }
+
+    private void compareBoolean(final JsonNode expected, final JsonNode actual) {
+        ErrorHelper.raise(expected.asBoolean() != actual.asBoolean(),
+                String.format("Property [%s] is not equal to [%s]", expected.asText(), actual.asText()));
+    }
+
+    private void compareNumber(final JsonNode expected, final JsonNode actual) {
+        ErrorHelper.raise(!new BigDecimal(expected.asText()).equals(new BigDecimal(actual.asText())),
+                String.format("Property [%s] is not equal to [%s]", expected.asText(), actual.asText()));
+    }
 
     private <T> List<T> iteratorToList(final Iterator<T> iterator) {
         List<T> list = new ArrayList<>();
@@ -61,7 +83,7 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
 
     private void compareElements(final List<JsonNode> expected, final List<JsonNode> actual) throws MatchException {
         ErrorHelper.raise(expected.size() != actual.size(),
-                "Expected array length is [" + expected.size() + "] actual [" + actual.size() + "]");
+                String.format("Expected array length is [%d] actual [%d]", expected.size(), actual.size()));
 
         for (int i = 0, size = expected.size(); i < size; i++) {
             JsonNode expectedItem = expected.get(i);
@@ -76,28 +98,19 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
         mode.onStrict(() -> ErrorHelper.raise(expected.size() != actual.size(),
                 "Difference in properties or count Missing"));
 
+        Map<String, JsonNode> actualMap = toMap(actual);
         for (Map.Entry<String, JsonNode> expectedEntry : expected) {
-            JsonNode actualValue = getActualValue(actual, expectedEntry);
-            validateActualValue(expectedEntry, actualValue);
+            JsonNode actualValue = actualMap.get(expectedEntry.getKey());
+            if (actualValue == null) {
+                ErrorHelper.raise(String.format("Property with name [%s] not found", expectedEntry.getKey()));
+            }
             compare(expectedEntry.getValue(), actualValue);
         }
     }
 
-    private void validateActualValue(final Map.Entry<String, JsonNode> expectedEntry, final JsonNode actualValue) {
-        if (actualValue == null) {
-            ErrorHelper.raise("Property with name [" + expectedEntry.getKey() + "] not found");
-        }
-    }
-
-    private JsonNode getActualValue(final List<Map.Entry<String, JsonNode>> actual,
-                                    final Map.Entry<String, JsonNode> expectedEntry) {
-        JsonNode actualValue = null;
-        for (Map.Entry<String, JsonNode> actualEntry : actual) {
-            if (expectedEntry.getKey().equals(actualEntry.getKey())) {
-                actualValue = actualEntry.getValue();
-                break;
-            }
-        }
-        return actualValue;
+    private Map<String, JsonNode> toMap(final List<Map.Entry<String, JsonNode>> entries) {
+        Map<String, JsonNode> map = new LinkedHashMap<>();
+        entries.forEach(e -> map.put(e.getKey(), e.getValue()));
+        return map;
     }
 }

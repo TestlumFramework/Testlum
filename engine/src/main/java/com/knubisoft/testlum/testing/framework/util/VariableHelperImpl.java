@@ -13,7 +13,6 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.model.scenario.*;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.cornutum.regexpgen.RandomGen;
@@ -136,7 +135,6 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     @Override
-    @SneakyThrows
     public String getPathResult(final FromPath fromPath,
                                 final String varName,
                                 final ScenarioContext scenarioContext,
@@ -148,7 +146,11 @@ public class VariableHelperImpl implements VariableHelper {
             return evaluateJPath(path, varName, body, result);
         }
         if (path.startsWith(DelimiterConstant.SLASH_SEPARATOR)) {
-            return evaluateXPath(path, varName, body, result);
+            try {
+                return evaluateXPath(path, varName, body, result);
+            } catch (Exception e) {
+                throw new DefaultFrameworkException(e);
+            }
         }
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }

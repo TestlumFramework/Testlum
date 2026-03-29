@@ -20,7 +20,6 @@
         <module>shared-util</module>
         <module>repeat-util</module>
         <module>ui-util</module>
-        <module>websocket-util</module>
 
         <module>db-util</module>
         <module>api-util</module>

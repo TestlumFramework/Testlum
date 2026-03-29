@@ -24,15 +24,12 @@ import java.util.List;
 @InterpreterForClass(Migrate.class)
 public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
     private static final String DATASET_PATH_LOG = LogFormat.table("Migration dataset");
 
     private static final String DATABASE = "Database";
     private static final String PATCHES = "Patches";
     private static final String DATABASE_ALIAS = "Database alias";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     @Autowired
     private AliasToStorageOperation aliasToStorageOperation;
 
@@ -43,7 +40,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     @Override
     protected void acceptImpl(final Migrate o, final CommandResult result) {
         Migrate migrate = injectCommand(o);
-        checkAlias(migrate);
+        ensureAlias(migrate::getAlias, migrate::setAlias);
         String storageName = migrate.getName().name();
         String databaseAlias = migrate.getAlias();
         List<String> datasets = migrate.getDataset();
@@ -53,12 +50,6 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         addMigrateMetaData(storageName, databaseAlias, datasets, result);
         logAlias(databaseAlias);
         migrate(datasets, storageName, databaseAlias);
-    }
-
-    private void checkAlias(final Migrate migrate) {
-        if (migrate.getAlias() == null) {
-            migrate.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void migrate(final List<String> datasets,

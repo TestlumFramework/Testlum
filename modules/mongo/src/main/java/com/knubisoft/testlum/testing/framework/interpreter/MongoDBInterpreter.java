@@ -21,12 +21,9 @@ import java.util.List;
 public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
 
     private static final String QUERY = LogFormat.table("Query");
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
 
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     @Autowired(required = false)
     @Qualifier("mongoOperation")
     private AbstractStorageOperation mongoOperation;
@@ -38,7 +35,7 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
     @Override
     protected void acceptImpl(final Mongo o, final CommandResult result) {
         Mongo mongo = injectCommand(o);
-        checkAlias(mongo);
+        ensureAlias(mongo::getAlias, mongo::setAlias);
         String actual = getActual(mongo, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
@@ -49,12 +46,6 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
 
         comparator.exec();
         setContextBody(getContextBodyKey(mongo.getFile()), actual);
-    }
-
-    private void checkAlias(final Mongo mongo) {
-        if (mongo.getAlias() == null) {
-            mongo.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private String getActual(final Mongo mongo, final CommandResult result) {

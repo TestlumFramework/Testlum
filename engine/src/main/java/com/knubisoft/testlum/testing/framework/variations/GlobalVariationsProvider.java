@@ -10,10 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,29 +25,21 @@ public class GlobalVariationsProvider {
     private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
-    private static final VariationsMap VARIATIONS = new VariationsMap();
+    private static final Map<String, List<Map<String, String>>> VARIATIONS = new ConcurrentHashMap<>();
 
     private final VariationsValidator variationsValidator;
     private final CSVParser csvParser;
 
     public void process(final Scenario scenario, final File filePath) {
         String fileName = scenario.getSettings().getVariations();
-        List<Map<String, String>> variationList = VARIATIONS.get(fileName);
-
-        if (Objects.isNull(variationList)) {
-            variationList = csvParser.parseVariations(fileName);
-            VARIATIONS.putIfAbsent(fileName, variationList);
-        }
+        List<Map<String, String>> variationList =
+                VARIATIONS.computeIfAbsent(fileName, k -> csvParser.parseVariations(k));
         variationsValidator.validateByScenario(variationList, scenario, filePath);
     }
 
     public void process(final String variationsFileName) {
         if (StringUtils.isNotBlank(variationsFileName)) {
-            List<Map<String, String>> variationList = VARIATIONS.get(variationsFileName);
-            if (Objects.isNull(variationList)) {
-                variationList = csvParser.parseVariations(variationsFileName);
-                VARIATIONS.putIfAbsent(variationsFileName, variationList);
-            }
+            VARIATIONS.computeIfAbsent(variationsFileName, k -> csvParser.parseVariations(k));
         }
     }
 
@@ -57,10 +49,6 @@ public class GlobalVariationsProvider {
             throw new DefaultFrameworkException(ExceptionMessage.VARIATIONS_NOT_FOUND, fileName);
         }
         return variationList;
-    }
-
-    private static class VariationsMap extends LinkedHashMap<String, List<Map<String, String>>> {
-        private static final long serialVersionUID = 1;
     }
 
     public String getValue(final String variation, final Map<String, String> variationMap) {
@@ -114,7 +102,7 @@ public class GlobalVariationsProvider {
     private boolean isContextValue(final String variationKey, final ScenarioContext scenarioContext) {
         if (Objects.nonNull(scenarioContext)) {
             try {
-                scenarioContext.inject(variationKey);
+                scenarioContext.get(variationKey);
                 return true;
             } catch (Exception e) {
                 return false;

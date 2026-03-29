@@ -2,14 +2,20 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.*;
-import lombok.SneakyThrows;
+import com.knubisoft.testlum.testing.model.scenario.Body;
+import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequest;
+import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequestWithBody;
+import com.knubisoft.testlum.testing.model.scenario.ElasticSearchResponse;
+import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
+import com.knubisoft.testlum.testing.model.scenario.Header;
+import com.knubisoft.testlum.testing.model.scenario.Param;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,11 +24,15 @@ import org.apache.http.NameValuePair;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -35,20 +45,13 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Elasticsearch.class)
 public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
-    private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String HEADER_TEMPLATE = "%s: %s";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     @Autowired(required = false)
     @Qualifier("restClient")
     private Map<AliasEnv, RestClient> restClient;
@@ -63,19 +66,13 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     @Override
     protected void acceptImpl(final Elasticsearch o, final CommandResult result) {
         Elasticsearch elasticsearch = injectCommand(o);
-        checkAlias(elasticsearch);
+        ensureAlias(elasticsearch::getAlias, elasticsearch::setAlias);
         HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = httpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
         Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), result);
         ElasticSearchResponse expected = elasticSearchRequest.getResponse();
         compare(expected, actual, result);
-    }
-
-    private void checkAlias(final Elasticsearch elasticsearch) {
-        if (elasticsearch.getAlias() == null) {
-            elasticsearch.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
@@ -86,18 +83,22 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         httpValidator.rethrowOnErrors();
     }
 
-    @SneakyThrows
     private void validateBodyIfFile(final ElasticSearchResponse expectedResponse,
                                     final Response actual,
                                     final HttpValidator httpValidator,
                                     final CommandResult result) {
         String expectedBody = getContentIfFile(expectedResponse.getFile());
         if (StringUtils.isNotBlank(expectedBody)) {
-            String actualBody = Objects.nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
-            setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
-            result.setActual(stringPrettifier.asJsonResult(actualBody));
-            result.setExpected(stringPrettifier.asJsonResult(expectedBody));
-            httpValidator.validateBody(expectedBody, actualBody);
+            try {
+                String actualBody = Objects.nonNull(actual.getEntity())
+                        ? EntityUtils.toString(actual.getEntity()) : null;
+                setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
+                result.setActual(stringPrettifier.asJsonResult(actualBody));
+                result.setExpected(stringPrettifier.asJsonResult(expectedBody));
+                httpValidator.validateBody(expectedBody, actualBody);
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
+            }
         }
     }
 
@@ -115,7 +116,6 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    @SneakyThrows
     private Response getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias,
@@ -130,6 +130,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         } catch (ResponseException responseException) {
             logException(responseException);
             return responseException.getResponse();
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
         }
     }
 
@@ -172,10 +174,9 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     }
 
     private HttpEntity getBody(final ElasticSearchRequest request, final ContentType contentType) {
-        if (!(request instanceof ElasticSearchRequestWithBody)) {
+        if (!(request instanceof ElasticSearchRequestWithBody requestWithBody)) {
             return null;
         }
-        ElasticSearchRequestWithBody requestWithBody = (ElasticSearchRequestWithBody) request;
         Body body = requestWithBody.getBody();
         return httpUtil.extractBody(body, contentType, this, dependencies);
     }
@@ -186,13 +187,16 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         log.info(ENDPOINT_LOG, endpoint);
     }
 
-    @SneakyThrows
     private void logBodyContent(final HttpEntity body) {
         if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
-            String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
-            if (StringUtils.isNotBlank(stringBody)) {
-                log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
-                        .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+            try {
+                String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
+                if (StringUtils.isNotBlank(stringBody)) {
+                    log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                            .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                }
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
             }
         }
     }
@@ -210,9 +214,4 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
-    }
 }

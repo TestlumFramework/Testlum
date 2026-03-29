@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
@@ -34,7 +33,6 @@ public class BrowserUtil {
                 : Collections.emptyList();
     }
 
-    @SneakyThrows
     public Optional<AbstractBrowser> getBrowserBy(final String env, final String browserAlias) {
         return StringUtils.isBlank(browserAlias)
                 ? Optional.empty()

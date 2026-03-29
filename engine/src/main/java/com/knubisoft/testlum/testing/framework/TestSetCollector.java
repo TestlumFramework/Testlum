@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,46 +67,19 @@ public class TestSetCollector {
                 .flatMap(arguments -> expandByEnvironment(arguments, executionEnvironments));
     }
 
-    //CHECKSTYLE:OFF
     private Stream<Arguments> createArguments(final MappingResult entry) {
         final ScenarioStepReader s = new ScenarioStepReader(entry.scenario);
-
-        if (s.isWeb()) {
-            if (s.isMobileBrowser()) {
-                if (s.isNatives()) {
-                    return nativeDevices.stream().flatMap(nativeDevice ->
-                            mobileBrowsers.stream().flatMap(mobileBrowser ->
-                                    browsers.stream().flatMap(browser ->
-                                            getArgumentsWithUiSteps(entry, browser, mobileBrowser, nativeDevice))));
-                }
-                return browsers.stream().flatMap(browser ->
-                        mobileBrowsers.stream().flatMap(mobileBrowser ->
-                                getArgumentsWithUiSteps(entry, browser, mobileBrowser, null)));
-            }
-            if (s.isNatives()) {
-                return nativeDevices.stream().flatMap(nativeDevice ->
-                        browsers.stream().flatMap(browser ->
-                                getArgumentsWithUiSteps(entry, browser, null, nativeDevice)));
-            }
-            return browsers.stream().flatMap(browser ->
-                    getArgumentsWithUiSteps(entry, browser, null, null));
+        List<String> effectiveBrowsers = s.isWeb() ? browsers : Collections.singletonList(null);
+        List<String> effectiveMobile = s.isMobileBrowser() ? mobileBrowsers : Collections.singletonList(null);
+        List<String> effectiveNative = s.isNatives() ? nativeDevices : Collections.singletonList(null);
+        if (!s.isWeb() && !s.isMobileBrowser() && !s.isNatives()) {
+            return getArgumentsWithoutUiSteps(entry);
         }
-        if (s.isMobileBrowser()) {
-            if (s.isNatives()) {
-                return nativeDevices.stream().flatMap(nativeDevice ->
-                        mobileBrowsers.stream().flatMap(mobileBrowser ->
-                                getArgumentsWithUiSteps(entry, null, mobileBrowser, nativeDevice)));
-            }
-            return mobileBrowsers.stream().flatMap(mobileBrowser ->
-                    getArgumentsWithUiSteps(entry, null, mobileBrowser, null));
-        }
-        if (s.isNatives()) {
-            return nativeDevices.stream().flatMap(nativeDevice ->
-                    getArgumentsWithUiSteps(entry, null, null, nativeDevice));
-        }
-        return getArgumentsWithoutUiSteps(entry);
+        return effectiveNative.stream().flatMap(nd ->
+                effectiveMobile.stream().flatMap(mb ->
+                        effectiveBrowsers.stream().flatMap(br ->
+                                getArgumentsWithUiSteps(entry, br, mb, nd))));
     }
-    //CHECKSTYLE:ON
 
     private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry) {
         if (variationsExist(entry)) {
@@ -187,7 +161,7 @@ public class TestSetCollector {
         return executionEnvironments.stream()
                 .map(environment -> cloneForEnvironment(base, environment))
                 .map(scenarioArguments -> Arguments.arguments(Named.of(
-                        scenarioArguments.getPath() + " [" + scenarioArguments.getEnvironment() + "]",
+                        String.format("%s [%s]", scenarioArguments.getPath(), scenarioArguments.getEnvironment()),
                         scenarioArguments)));
     }
 

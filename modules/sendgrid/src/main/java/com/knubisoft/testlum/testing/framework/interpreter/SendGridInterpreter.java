@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -18,10 +19,10 @@ import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,22 +33,15 @@ import java.util.Objects;
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
     private static final String CONTENT_TO_SEND = "Content to send";
     private static final String EXPECTED_CODE = "Expected code";
     private static final String ACTUAL_CODE = "Actual code";
 
-    private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String HEADER_TEMPLATE = "%s: %s";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     private final Map<AliasEnv, SendGrid> sendGrid;
     private final HttpUtil httpUtil;
     private final SendGridUtil sendGridUtil;
@@ -62,7 +56,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     @Override
     protected void acceptImpl(final Sendgrid o, final CommandResult result) {
         Sendgrid sendgrid = injectCommand(o);
-        checkAlias(sendgrid);
+        ensureAlias(sendgrid::getAlias, sendgrid::setAlias);
         SendGridUtil.SendGridMethodMetadata metadata = sendGridUtil.getSendgridMethodMetadata(sendgrid);
         String endpoint = metadata.getHttpInfo().getEndpoint();
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
@@ -75,12 +69,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         setContextBody(getContextBodyKey(sendgridInfo.getResponse().getFile()), actual.getBody());
     }
 
-    private void checkAlias(final Sendgrid sendgrid) {
-        if (sendgrid.getAlias() == null) {
-            sendgrid.setAlias(DEFAULT_ALIAS_VALUE);
-        }
-    }
-
     private ApiResponse getExpected(final SendgridInfo sendgridInfo, final Map<String, String> headers) {
         com.knubisoft.testlum.testing.model.scenario.Response response = sendgridInfo.getResponse();
         String body = StringUtils.isBlank(response.getFile())
@@ -89,7 +77,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         return new ApiResponse(response.getCode(), headers, stringPrettifier.asJsonResult(body));
     }
 
-    @SneakyThrows
     private Response getActual(final SendgridInfo sendgridInfo,
                                final Method method,
                                final String alias,
@@ -100,7 +87,11 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         result.put(CONTENT_TO_SEND, stringPrettifier.asJsonResult(body));
         logHttpInfo(alias, method.name(), endpoint);
         logBody(request.getBody());
-        return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
+        try {
+            return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {
@@ -175,9 +166,4 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         }
     }
 
-    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
-    }
 }

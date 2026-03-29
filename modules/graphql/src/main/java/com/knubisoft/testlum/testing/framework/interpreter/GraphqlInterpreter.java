@@ -13,10 +13,16 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.GraphqlApi;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.Graphql;
+import com.knubisoft.testlum.testing.model.scenario.GraphqlBody;
+import com.knubisoft.testlum.testing.model.scenario.GraphqlGet;
+import com.knubisoft.testlum.testing.model.scenario.GraphqlPost;
+import com.knubisoft.testlum.testing.model.scenario.Header;
+import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.Param;
+import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +33,8 @@ import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,22 +48,15 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
     private static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
 
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
-    private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String HEADER_TEMPLATE = "%s: %s";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
-
     private final Map<Function<Graphql, HttpInfo>, HttpMethod> graphqlMethodMap;
 
     @Autowired
@@ -74,18 +75,12 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     @Override
     public void acceptImpl(final Graphql o, final CommandResult result) {
         Graphql graphql = injectCommand(o);
-        checkAlias(graphql);
+        ensureAlias(graphql::getAlias, graphql::setAlias);
         GraphqlMetadata graphqlMetadata = getGraphqlMetaData(graphql);
         HttpInfo httpInfo = graphqlMetadata.httpInfo;
         HttpMethod httpMethod = graphqlMetadata.getHttpMethod();
         ApiResponse response = getActualResponse(httpInfo, httpMethod, graphql.getAlias(), result);
         compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
-    }
-
-    private void checkAlias(final Graphql graphql) {
-        if (graphql.getAlias() == null) {
-            graphql.setAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private GraphqlMetadata getGraphqlMetaData(final Graphql graphql) {
@@ -131,10 +126,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private HttpEntity getBody(final HttpInfo httpInfo, final ContentType contentType) {
-        if (!(httpInfo instanceof GraphqlPost)) {
+        if (!(httpInfo instanceof GraphqlPost graphqlPost)) {
             return null;
         }
-        GraphqlPost graphqlPost = (GraphqlPost) httpInfo;
         String rawBody = getRawBody(graphqlPost.getBody());
         return new StringEntity(rawBody, contentType);
     }
@@ -150,18 +144,21 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         List<GraphqlApi> apiList = integrationsProvider.findListByEnv(GraphqlApi.class, dependencies.getEnvironment());
         GraphqlApi graphqlApi = integrationsProvider.findApiForAlias(apiList, alias);
         String url = graphqlApi.getUrl() + endpoint;
-        if (httpInfo instanceof GraphqlGet) {
-            return urlWithParams((GraphqlGet) httpInfo, url);
+        if (httpInfo instanceof GraphqlGet get) {
+            return urlWithParams(get, url);
         }
         return url;
     }
 
-    @SneakyThrows
     private String urlWithParams(final GraphqlGet graphqlGet, final String url) {
-        URIBuilder uriBuilder = new URIBuilder(url);
-        List<Param> parameters = graphqlGet.getParam();
-        parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
-        return uriBuilder.build().toString();
+        try {
+            URIBuilder uriBuilder = new URIBuilder(url);
+            List<Param> parameters = graphqlGet.getParam();
+            parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
+            return uriBuilder.build().toString();
+        } catch (URISyntaxException e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private void compareResult(final Response expected,
@@ -211,13 +208,16 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         log.info(ENDPOINT_LOG, endpoint);
     }
 
-    @SneakyThrows
     private void logBodyContent(final HttpEntity body) {
         if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
-            String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
-            if (StringUtils.isNotBlank(stringBody)) {
-                log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
-                        .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+            try {
+                String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
+                if (StringUtils.isNotBlank(stringBody)) {
+                    log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                            .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                }
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
             }
         }
     }
@@ -235,11 +235,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         }
     }
 
-    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
-    }
 
     @RequiredArgsConstructor
     @Getter

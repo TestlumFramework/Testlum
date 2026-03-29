@@ -4,7 +4,19 @@ import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.model.global_config.*;
+import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.testlum.testing.model.global_config.AbstractDevice;
+import com.knubisoft.testlum.testing.model.global_config.AppiumCapabilities;
+import com.knubisoft.testlum.testing.model.global_config.AppiumNativeCapabilities;
+import com.knubisoft.testlum.testing.model.global_config.BrowserStackCapabilities;
+import com.knubisoft.testlum.testing.model.global_config.BrowserStackLogin;
+import com.knubisoft.testlum.testing.model.global_config.ConnectionType;
+import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
+import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
+import com.knubisoft.testlum.testing.model.global_config.Native;
+import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
+import com.knubisoft.testlum.testing.model.global_config.UiConfig;
+import com.knubisoft.testlum.testing.model.global_config.Web;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -205,27 +217,30 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 .toList();
     }
 
-    //CHECKSTYLE:OFF
     private void checkBrowserAliasesDifferAndMatch(final String configName,
                                                    final List<String> envList,
                                                    final Map<String, String> defaultBrowserMap,
                                                    final List<List<? extends AbstractBrowser>> browserLists) {
-        IntStream.range(0, envList.size()).forEach(envNum -> {
-            Set<String> aliasSet = new HashSet<>();
-            browserLists.get(envNum).forEach(browser -> {
-                if (!aliasSet.add(browser.getAlias())) {
-                    throw new DefaultFrameworkException(ExceptionMessage.UI_ALIASES_NOT_DIFFER, BROWSER,
-                            configName, browser.getAlias(), getConfigPath(envList.get(envNum)));
-                } else if (!defaultBrowserMap.containsKey(browser.getAlias())
-                        || !defaultBrowserMap.get(browser.getAlias()).equals(browser.getClass().getSimpleName())) {
-                    throw new DefaultFrameworkException(
-                            ExceptionMessage.UI_ALIASES_NOT_MATCH, browser.getClass().getSimpleName(),
-                            BROWSER, configName, browser.getAlias());
-                }
-            });
+        IntStream.range(0, envList.size()).forEach(envNum ->
+                validateBrowserAliases(configName, envList.get(envNum),
+                        defaultBrowserMap, browserLists.get(envNum)));
+    }
+
+    private void validateBrowserAliases(final String configName, final String env,
+                                        final Map<String, String> defaultBrowserMap,
+                                        final List<? extends AbstractBrowser> browsers) {
+        Set<String> aliasSet = new HashSet<>();
+        browsers.forEach(browser -> {
+            if (!aliasSet.add(browser.getAlias())) {
+                throw new DefaultFrameworkException(ExceptionMessage.UI_ALIASES_NOT_DIFFER, BROWSER,
+                        configName, browser.getAlias(), getConfigPath(env));
+            } else if (!defaultBrowserMap.containsKey(browser.getAlias())
+                    || !defaultBrowserMap.get(browser.getAlias()).equals(browser.getClass().getSimpleName())) {
+                throw new DefaultFrameworkException(ExceptionMessage.UI_ALIASES_NOT_MATCH,
+                        browser.getClass().getSimpleName(), BROWSER, configName, browser.getAlias());
+            }
         });
     }
-    //CHECKSTYLE:ON
 
     private void validateDevices(final String configName,
                                  final List<String> envList,

@@ -11,7 +11,19 @@ import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
-import com.knubisoft.testlum.testing.model.global_config.*;
+import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.testlum.testing.model.global_config.BrowserInDocker;
+import com.knubisoft.testlum.testing.model.global_config.BrowserOptionsArguments;
+import com.knubisoft.testlum.testing.model.global_config.BrowserStackWeb;
+import com.knubisoft.testlum.testing.model.global_config.Capabilities;
+import com.knubisoft.testlum.testing.model.global_config.Chrome;
+import com.knubisoft.testlum.testing.model.global_config.Edge;
+import com.knubisoft.testlum.testing.model.global_config.Firefox;
+import com.knubisoft.testlum.testing.model.global_config.LocalBrowser;
+import com.knubisoft.testlum.testing.model.global_config.RemoteBrowser;
+import com.knubisoft.testlum.testing.model.global_config.Safari;
+import com.knubisoft.testlum.testing.model.global_config.ScreenRecording;
+import com.knubisoft.testlum.testing.model.global_config.Web;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
@@ -31,7 +43,6 @@ import org.openqa.selenium.remote.http.ClientConfig;
 import org.openqa.selenium.safari.SafariOptions;
 import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Map;
@@ -61,31 +72,33 @@ public class WebDriverFactory {
             browser -> browser instanceof Safari, b -> new SafariDriverInitializer().init((Safari) b),
             browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
 
-    //CHECKSTYLE:OFF
     public WebDriver createDriver(final AbstractBrowser browser) {
         ConnectionTemplate connectionTemplate = new ConnectionTemplateImpl();
+        String connectionInfo = String.format(LogMessage.CONNECTION_INTEGRATION_DATA,
+                browser.getClass().getSimpleName(), browser.getAlias());
         return connectionTemplate.executeWithRetry(
-                String.format(LogMessage.CONNECTION_INTEGRATION_DATA,
-                        browser.getClass().getSimpleName(),
-                        browser.getAlias()),
+                connectionInfo,
                 ConnectionTemplate.DEFAULT_ATTEMPTS,
-                () -> driverInitializerMap.entrySet().stream()
-                        .filter(function -> function.getKey().test(browser))
-                        .findFirst()
-                        .map(function -> function.getValue().apply(browser))
-                        .orElseThrow(() ->
-                                new DefaultFrameworkException(ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND)),
+                () -> initializeDriver(browser),
                 forWebDriver(browser),
-                integration -> {
-                    try {
-                        integration.quit();
-                    } catch (final Exception e) {
-                        throw new DefaultFrameworkException("Failed to quit WebDriver: ".concat(e.getMessage()));
-                    }
-                }
-        );
+                this::safeQuitDriver);
     }
-    //CHECKSTYLE:ON
+
+    private WebDriver initializeDriver(final AbstractBrowser browser) {
+        return driverInitializerMap.entrySet().stream()
+                .filter(function -> function.getKey().test(browser))
+                .findFirst()
+                .map(function -> function.getValue().apply(browser))
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND));
+    }
+
+    private void safeQuitDriver(final WebDriver driver) {
+        try {
+            driver.quit();
+        } catch (final Exception e) {
+            throw new DefaultFrameworkException("Failed to quit WebDriver: ".concat(e.getMessage()));
+        }
+    }
     private IntegrationHealthCheck<WebDriver> forWebDriver(final AbstractBrowser browser) {
         return webDriver -> {
             try {
@@ -157,11 +170,7 @@ public class WebDriverFactory {
     }
 
     private URL toURL(final String url) {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException e) {
-            throw new DefaultFrameworkException(e);
-        }
+        return seleniumDriverUtil.toURL(url);
     }
 
     private WebDriverManager setScreenResolution(final AbstractBrowser browser,

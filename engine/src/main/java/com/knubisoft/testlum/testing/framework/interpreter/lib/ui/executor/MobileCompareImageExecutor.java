@@ -54,26 +54,32 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
         }
     }
 
-    //CHECKSTYLE:OFF
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final MobileImage image,
                                          final CommandResult result) throws IOException {
         if (Objects.nonNull(image.getPicture())) {
-            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
-                    image.getPicture().getLocatorStrategy());
-            return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
+            return getImageFromPicture(image, result);
         }
         if (Objects.nonNull(image.getPart())) {
-            if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
-                throw new DefaultFrameworkException(ExceptionMessage.IOS_NOT_SUPPORT_PART_COMMAND);
-            }
-            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                    image.getPart().getLocatorStrategy());
-            return ImageIO.read(uiUtil.takeScreenshot(webElement));
+            return getImageFromPart(webDriver, image);
         }
         return ImageIO.read(uiUtil.takeScreenshot(webDriver));
     }
-    //CHECKSTYLE:ON
+
+    private BufferedImage getImageFromPicture(final MobileImage image, final CommandResult result) throws IOException {
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
+                image.getPicture().getLocatorStrategy());
+        return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
+    }
+
+    private BufferedImage getImageFromPart(final WebDriver webDriver, final MobileImage image) throws IOException {
+        if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
+            throw new DefaultFrameworkException(ExceptionMessage.IOS_NOT_SUPPORT_PART_COMMAND);
+        }
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
+                image.getPart().getLocatorStrategy());
+        return ImageIO.read(uiUtil.takeScreenshot(webElement));
+    }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,

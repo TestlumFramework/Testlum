@@ -16,11 +16,6 @@
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-websocket-util</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-log</artifactId>
         </dependency>
 

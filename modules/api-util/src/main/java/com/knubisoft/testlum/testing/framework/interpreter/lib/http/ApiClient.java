@@ -6,39 +6,58 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
+import org.springframework.beans.factory.DisposableBean;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
 @Component
-public class ApiClient {
-
-    public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
+public class ApiClient implements DisposableBean {
 
     private static final String HTTP_STATUS_CODE = LogFormat.table("Status code", "{} {}");
+    private static final int MAX_TOTAL_CONNECTIONS = 50;
+    private static final int MAX_CONNECTIONS_PER_ROUTE = 10;
+
+    private final CloseableHttpClient httpClient;
+
+    public ApiClient() {
+        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
+        connectionManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+        connectionManager.setDefaultMaxPerRoute(MAX_CONNECTIONS_PER_ROUTE);
+        this.httpClient = HttpClients.custom()
+                .setConnectionManager(connectionManager)
+                .build();
+    }
+
+    @Override
+    public void destroy() throws IOException {
+        httpClient.close();
+    }
 
     public ApiResponse call(final HttpMethod httpMethod,
                             final String url,
                             final Map<String, String> headers,
                             final HttpEntity body) throws Exception {
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            return executeHttpRequest(httpMethod, url, headers, body, httpClient);
-        }
-    }
-
-    private ApiResponse executeHttpRequest(final HttpMethod httpMethod,
-                                           final String url,
-                                           final Map<String, String> headers,
-                                           final HttpEntity body,
-                                           final CloseableHttpClient httpClient) throws Exception {
         HttpUriRequest request = buildRequest(httpMethod, url, headers, body);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             return readAPIResponse(response);
@@ -87,7 +106,7 @@ public class ApiClient {
         } else if (httpMethod.equals(HttpMethod.PATCH)) {
             return setRequestBody(new HttpPatch(url), body);
         }
-        throw new DefaultFrameworkException(UNKNOWN_HTTP_METHOD, httpMethod);
+        throw new DefaultFrameworkException("Unknown http method: %s", httpMethod);
     }
     // CHECKSTYLE:ON
 

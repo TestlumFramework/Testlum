@@ -24,7 +24,6 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
     private static final String MESSAGE_LOG = LogFormat.table("Message");
     private static final String MESSAGE_STATUS = LogFormat.table("Message status");
 
-    private static final String ALIAS = "Alias";
     private static final String FROM = "From";
     private static final String TO = "To";
     private static final String MESSAGE = "Message";

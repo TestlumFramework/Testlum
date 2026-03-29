@@ -8,7 +8,18 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.BackSpace;
+import com.knubisoft.testlum.testing.model.scenario.Copy;
+import com.knubisoft.testlum.testing.model.scenario.Cut;
+import com.knubisoft.testlum.testing.model.scenario.Enter;
+import com.knubisoft.testlum.testing.model.scenario.Escape;
+import com.knubisoft.testlum.testing.model.scenario.Highlight;
+import com.knubisoft.testlum.testing.model.scenario.HotKey;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
+import com.knubisoft.testlum.testing.model.scenario.Paste;
+import com.knubisoft.testlum.testing.model.scenario.Space;
+import com.knubisoft.testlum.testing.model.scenario.Tab;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -17,7 +28,11 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -36,13 +51,21 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         this.ctrlKey = chooseKeyForOperatingSystem();
     }
 
-    //CHECKSTYLE:OFF
     private @NotNull Map<HotKeyCommandPredicate, HotKeyCommandMethod> getHotKeyCmdMethods() {
         Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands = new HashMap<>();
+        registerClipboardCommands(commands);
+        registerKeyPressCommands(commands);
+        return Collections.unmodifiableMap(commands);
+    }
+
+    private void registerClipboardCommands(final Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands) {
         commands.put(key -> key instanceof Cut, (key, result) -> cutCommand());
         commands.put(key -> key instanceof Copy, (key, result) -> copyCommand());
         commands.put(key -> key instanceof Paste, (key, result) -> pasteCommand((Paste) key, result));
         commands.put(key -> key instanceof Highlight, (key, result) -> highlightCommand((Highlight) key, result));
+    }
+
+    private void registerKeyPressCommands(final Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands) {
         commands.put(key -> key instanceof Tab,
                 (key, result) -> singleKeyCommand(Keys.TAB, ((Tab) key).getTimes(), result));
         commands.put(key -> key instanceof Enter,
@@ -53,9 +76,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 (key, result) -> singleKeyCommand(Keys.ESCAPE, ((Escape) key).getTimes(), result));
         commands.put(key -> key instanceof Space,
                 (key, result) -> singleKeyCommand(Keys.SPACE, ((Space) key).getTimes(), result));
-        return Collections.unmodifiableMap(commands);
     }
-    //CHECKSTYLE:ON
 
     @Override
     public void execute(final HotKey hotKey, final CommandResult result) {

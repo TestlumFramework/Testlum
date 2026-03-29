@@ -89,8 +89,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private void executeEqualityCommand(final AssertEquality action, final CommandResult result) {
         log.info(LogMessage.CONTENT_LOG, String.join(DelimiterConstant.COMMA, action.getContent()));
         result.put(ResultUtil.CONTENT, String.join(DelimiterConstant.COMMA, action.getContent()));
-        if (action instanceof AssertEqual) {
-            checkContentIsEqual((AssertEqual) action);
+        if (action instanceof AssertEqual assertEqual) {
+            checkContentIsEqual(assertEqual);
         } else {
             checkContentNotEqual((AssertNotEqual) action);
         }

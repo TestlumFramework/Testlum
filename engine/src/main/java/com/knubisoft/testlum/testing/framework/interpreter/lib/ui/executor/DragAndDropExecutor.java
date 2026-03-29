@@ -51,22 +51,28 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
                 .perform();
     }
 
-    //CHECKSTYLE:OFF
     public void dropFile(final WebElement target, final File source) {
         if (!source.exists() || !source.isFile()) {
             throw new DefaultFrameworkException(ExceptionMessage.DRAG_AND_DROP_FILE_NOT_FOUND, source.getName());
         }
-        WebElement input = target;
-        if (!target.getTagName().equalsIgnoreCase("input")) {
-            input = (WebElement) javascriptUtil.executeJsScript(
-                    JavascriptConstant.QUERY_FOR_DRAG_AND_DROP, driver, target);
+        WebElement input = resolveInputElement(target);
+        sendFileToInput(input, source.getAbsolutePath());
+    }
+
+    private WebElement resolveInputElement(final WebElement target) {
+        if (target.getTagName().equalsIgnoreCase("input")) {
+            return target;
         }
+        return (WebElement) javascriptUtil.executeJsScript(
+                JavascriptConstant.QUERY_FOR_DRAG_AND_DROP, driver, target);
+    }
+
+    private void sendFileToInput(final WebElement input, final String filePath) {
         try {
-            input.sendKeys(source.getAbsolutePath());
+            input.sendKeys(filePath);
         } catch (InvalidArgumentException e) {
             ((RemoteWebElement) input).setFileDetector(new LocalFileDetector());
-            input.sendKeys(source.getAbsolutePath());
+            input.sendKeys(filePath);
         }
     }
-    //CHECKSTYLE:ON
 }

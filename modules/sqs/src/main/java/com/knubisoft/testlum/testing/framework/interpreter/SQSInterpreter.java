@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterpreter;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
@@ -23,15 +22,11 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
 public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
-
-    private static final String SEND_ACTION = "send";
-    private static final String RECEIVE_ACTION = "receive";
 
     private static final String QUEUE_LOG = LogFormat.table("Queue");
     private static final String MESSAGE_DEDUPLICATION_ID_LOG = LogFormat.table("Deduplication Id");
@@ -42,12 +37,7 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
     private static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = LogFormat.table("Attempt Id");
     private static final String VISIBILITY_TIMEOUT_LOG = LogFormat.table("Visibility Timeout");
 
-    private static final String MESSAGE_TO_SEND = "Message to send";
-    private static final String ALIAS = "Alias";
     private static final String QUEUE = "Queue";
-    private static final String RECEIVE = "Receive";
-    private static final String SEND = "Send";
-    private static final String ACTION = "Action";
     private static final String COMMENT_FOR_SQS_SEND_ACTION = "Send message to SQS";
     private static final String COMMENT_FOR_SQS_RECEIVE_ACTION = "Receive message from SQS";
     private static final String SQS_DELAY_SECONDS = "Delay";
@@ -58,6 +48,7 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
     private static final String SQS_WAIT_TIME_SECONDS = "Wait time";
     private static final String SQS_RECEIVE_REQUEST_ATTEMPT_ID = "Receive request attempt id";
 
+    private static final String SQS_NOT_CONFIGURED = "SQS integration is not configured for this environment";
     private static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
 
     @Autowired(required = false)
@@ -65,6 +56,13 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
 
     public SQSInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+    }
+
+    @Override
+    protected void validate() {
+        if (sqsClient == null) {
+            throw new DefaultFrameworkException(SQS_NOT_CONFIGURED);
+        }
     }
 
     @Override
@@ -89,10 +87,10 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
 
     private void processSqsAction(final Object action, final String alias, final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        if (action instanceof SendSqsMessage) {
-            sendMessage((SendSqsMessage) action, aliasEnv, result);
-        } else if (action instanceof ReceiveSqsMessage) {
-            receiveMessages((ReceiveSqsMessage) action, aliasEnv, result);
+        if (action instanceof SendSqsMessage send) {
+            sendMessage(send, aliasEnv, result);
+        } else if (action instanceof ReceiveSqsMessage receive) {
+            receiveMessages(receive, aliasEnv, result);
         } else {
             throw new DefaultFrameworkException(INCORRECT_SQS_PROCESSING);
         }
@@ -104,14 +102,14 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
         logSQSSendInfo(send, message);
         addSqsSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, stringPrettifier.asJsonResult(message));
-        this.sqsClient.get(aliasEnv).sendMessage(sendRequest);
+        sqsClient.get(aliasEnv).sendMessage(sendRequest);
     }
 
     private SendMessageRequest createSendRequest(final SendSqsMessage send, final AliasEnv aliasEnv) {
         String queue = createQueueIfNotExists(send.getQueue(), aliasEnv);
         return SendMessageRequest.builder()
                 .queueUrl(queue)
-                .messageBody(getMessageToSend(send))
+                .messageBody(getValue(send.getValue(), send.getFile()))
                 .delaySeconds(send.getDelaySeconds())
                 .messageDeduplicationId(send.getMessageDeduplicationId())
                 .messageGroupId(send.getMessageGroupId())
@@ -121,17 +119,16 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
     private void receiveMessages(final ReceiveSqsMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        final String expectedMessages = getMessageToReceive(receive);
+        final String expectedMessages = getValue(receive.getValue(), receive.getFile());
         logSQSReceiveInfo(receive, expectedMessages);
         addSqsReceiveInfo(receive, aliasEnv.getAlias(), result);
         final List<Object> actualMessages = receiveMessages(receive, aliasEnv);
-        compareMessage(expectedMessages, actualMessages, result);
+        compareMessages(actualMessages, expectedMessages, result);
     }
 
     private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
-        ReceiveMessageResponse receiveMessageResult =
-                this.sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
+        ReceiveMessageResponse receiveMessageResult = sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
         return receiveMessageResult.messages()
                 .stream()
                 .map(message -> message.body().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, StringUtils.EMPTY))
@@ -150,33 +147,16 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
                 .build();
     }
 
-    private void compareMessage(final String expectedContent, final List<Object> messages, final CommandResult result) {
-        final CompareBuilder comparator = newCompare()
-                .withExpected(expectedContent)
-                .withActual(messages);
-        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
-        result.setActual(stringPrettifier.asJsonResult(toString(messages)));
-        comparator.exec();
-    }
-
     private String createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
         try {
             return sqsClient.get(aliasEnv)
                     .getQueueUrl(getQueueUrlRequest -> getQueueUrlRequest.queueName(queue))
                     .queueUrl();
         } catch (final QueueDoesNotExistException e) {
-            return this.sqsClient.get(aliasEnv)
+            return sqsClient.get(aliasEnv)
                     .createQueue(createQueueRequest -> createQueueRequest.queueName(queue))
                     .queueUrl();
         }
-    }
-
-    private String getMessageToSend(final SendSqsMessage send) {
-        return getValue(send.getValue(), send.getFile());
-    }
-
-    private String getMessageToReceive(final ReceiveSqsMessage receive) {
-        return getValue(receive.getValue(), receive.getFile());
     }
 
     private void logSQSSendInfo(final SendSqsMessage send, final String content) {
@@ -199,7 +179,7 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
                                 final CommandResult result) {
         result.setCommandKey(SEND);
         result.setComment(COMMENT_FOR_SQS_SEND_ACTION);
-        addMessageBrokerGeneralMetaData(alias, SEND, sendAction.getQueue(), result);
+        addMessageBrokerGeneralMetaData(alias, SEND, QUEUE, sendAction.getQueue(), result);
         addSqsAdditionalMetaDataForSendAction(sendAction, result);
     }
 
@@ -208,44 +188,21 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
                                    final CommandResult result) {
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_SQS_RECEIVE_ACTION);
-        addMessageBrokerGeneralMetaData(alias, RECEIVE, receiveAction.getQueue(), result);
+        addMessageBrokerGeneralMetaData(alias, RECEIVE, QUEUE, receiveAction.getQueue(), result);
         addSqsAdditionalMetaDataForReceiveAction(receiveAction, result);
     }
 
-    private void addMessageBrokerGeneralMetaData(final String alias,
-                                                 final String action,
-                                                 final String destinationValue,
-                                                 final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(ACTION, action);
-        result.put(QUEUE, destinationValue);
-    }
-
     private void addSqsAdditionalMetaDataForSendAction(final SendSqsMessage sendAction, final CommandResult result) {
-        if (Objects.nonNull(sendAction.getDelaySeconds())) {
-            result.put(SQS_DELAY_SECONDS, sendAction.getDelaySeconds());
-        }
-        if (StringUtils.isNotBlank(sendAction.getMessageDeduplicationId())) {
-            result.put(SQS_MESSAGE_DUPLICATION_ID, sendAction.getMessageDeduplicationId());
-        }
-        if (StringUtils.isNotBlank(sendAction.getMessageGroupId())) {
-            result.put(SQS_MESSAGE_GROUP_ID, sendAction.getMessageGroupId());
-        }
+        putIfNotNull(result, SQS_DELAY_SECONDS, sendAction.getDelaySeconds());
+        putIfNotBlank(result, SQS_MESSAGE_DUPLICATION_ID, sendAction.getMessageDeduplicationId());
+        putIfNotBlank(result, SQS_MESSAGE_GROUP_ID, sendAction.getMessageGroupId());
     }
 
     private void addSqsAdditionalMetaDataForReceiveAction(final ReceiveSqsMessage receiveAction,
                                                           final CommandResult result) {
-        if (Objects.nonNull(receiveAction.getMaxNumberOfMessages())) {
-            result.put(SQS_MAX_NUMBER_OF_MESSAGES, receiveAction.getMaxNumberOfMessages());
-        }
-        if (Objects.nonNull(receiveAction.getVisibilityTimeout())) {
-            result.put(SQS_VISIBILITY_TIMEOUT, receiveAction.getVisibilityTimeout());
-        }
-        if (Objects.nonNull(receiveAction.getWaitTimeSeconds())) {
-            result.put(SQS_WAIT_TIME_SECONDS, receiveAction.getWaitTimeSeconds());
-        }
-        if (StringUtils.isNotBlank(receiveAction.getReceiveRequestAttemptId())) {
-            result.put(SQS_RECEIVE_REQUEST_ATTEMPT_ID, receiveAction.getReceiveRequestAttemptId());
-        }
+        putIfNotNull(result, SQS_MAX_NUMBER_OF_MESSAGES, receiveAction.getMaxNumberOfMessages());
+        putIfNotNull(result, SQS_VISIBILITY_TIMEOUT, receiveAction.getVisibilityTimeout());
+        putIfNotNull(result, SQS_WAIT_TIME_SECONDS, receiveAction.getWaitTimeSeconds());
+        putIfNotBlank(result, SQS_RECEIVE_REQUEST_ATTEMPT_ID, receiveAction.getReceiveRequestAttemptId());
     }
 }

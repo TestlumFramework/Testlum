@@ -3,19 +3,24 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.Websocket;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Deque;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
@@ -23,7 +28,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @InterpreterForClass(Websocket.class)
-public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
+public class WebsocketInterpreter extends AbstractMessageBrokerInterpreter<Websocket> {
 
     private static final int ALL_AVAILABLE_MESSAGES = 0;
     private static final int CHECK_PERIOD_MS = 100;
@@ -32,25 +37,14 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             LogFormat.table("Comment") + LogFormat.newLogLine() + LogFormat.table("Action");
     private static final String DESTINATION_LOG = LogFormat.table("Destination");
     private static final String CONTENT_LOG = LogFormat.table("Content");
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
-
     private static final String SUBSCRIBE = "subscribe";
-    private static final String SEND_ACTION = "send";
-    private static final String RECEIVE_ACTION = "receive";
-
-    private static final String ALIAS = "Alias";
-    private static final String MESSAGE_TO_SEND = "Message to send";
-    private static final String STEP_FAILED = "Step failed";
-    private static final String SEND = "Send";
     private static final String ENDPOINT = "Endpoint";
-    private static final String RECEIVE = "Receive";
     private static final String TOPIC = "Topic";
     private static final String NUMBER_OF_MESSAGES = "Number of messages";
-    private static final String TIMEOUT_MILLIS = "Timeout millis";
-    private static final String ACTION = "Action";
     private static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
     private static final String UNKNOWN_WEBSOCKET_COMMAND = "Unknown websocket command: %s";
+    private static final String WS_NOT_CONFIGURED = "WebSocket integration is not configured for this environment";
 
     @Autowired(required = false)
     private Map<AliasEnv, WebsocketConnectionManager> wsConnectionSupplier;
@@ -60,21 +54,51 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     @Override
-    protected void acceptImpl(final Websocket o, final CommandResult result) {
-        Websocket websocket = injectCommand(o);
-        ensureAlias(websocket::getAlias, websocket::setAlias);
-        List<CommandResult> subCommandsResult = new LinkedList<>();
-        result.setSubCommandsResult(subCommandsResult);
-        processWebsockets(websocket, subCommandsResult);
-        setExecutionResultIfSubCommandsFailed(result);
+    protected String getAlias(final Websocket command) {
+        return command.getAlias();
     }
 
-    private void processWebsockets(final Websocket websocket, final List<CommandResult> subCommandsResult) {
-        AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), dependencies.getEnvironment());
-        logAlias(websocket.getAlias());
-        openConnection(aliasEnv);
-        runActions(websocket, subCommandsResult);
-        disconnectIfEnabled(websocket.isDisconnect(), aliasEnv);
+    @Override
+    protected void setAlias(final Websocket command, final String alias) {
+        command.setAlias(alias);
+    }
+
+    @Override
+    protected List<Object> getActions(final Websocket command) {
+        return Objects.isNull(command.getStomp())
+                ? command.getSendOrReceive()
+                : command.getStomp().getSubscribeOrSendOrReceive();
+    }
+
+    @Override
+    protected void processAction(final Object action, final String alias, final CommandResult result) {
+        try {
+            executeAction(action, alias, result);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    @Override
+    protected void validate() {
+        if (wsConnectionSupplier == null) {
+            throw new DefaultFrameworkException(WS_NOT_CONFIGURED);
+        }
+    }
+
+    @Override
+    protected void beforeActions(final Websocket command, final CommandResult result) {
+        logAlias(command.getAlias());
+        openConnection(toAliasEnv(command));
+    }
+
+    @Override
+    protected void afterActions(final Websocket command, final CommandResult result) {
+        disconnectIfEnabled(command.isDisconnect(), toAliasEnv(command));
+    }
+
+    private AliasEnv toAliasEnv(final Websocket command) {
+        return new AliasEnv(command.getAlias(), dependencies.getEnvironment());
     }
 
     private void openConnection(final AliasEnv aliasEnv) {
@@ -89,44 +113,16 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         }
     }
 
-    private void runActions(final Websocket websocket, final List<CommandResult> subCommandsResult) {
-        List<Object> websocketActions = Objects.isNull(websocket.getStomp())
-                ? websocket.getSendOrReceive()
-                : websocket.getStomp().getSubscribeOrSendOrReceive();
-        websocketActions.forEach(action -> {
-            logSubCommand(dependencies.getPosition().incrementAndGet(), action);
-            CommandResult commandResult = newCommandResultInstance(dependencies.getPosition().get());
-            subCommandsResult.add(commandResult);
-            processEachAction(action, websocket.getAlias(), commandResult);
-        });
-    }
-
-    private void processEachAction(final Object action,
-                                   final String alias,
-                                   final CommandResult result) {
-        StopWatch stopWatch = StopWatch.createStarted();
-        try {
-            executeAction(action, alias, result);
-        } catch (Exception e) {
-            setExceptionResult(result, e);
-            logException(e);
-            checkIfStopScenarioOnFailure(e);
-        } finally {
-            result.setExecutionTime(stopWatch.getDuration().toMillis());
-            stopWatch.stop();
-        }
-    }
-
     private void executeAction(final Object action,
                                final String alias,
                                final CommandResult result) throws IOException {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        if (action instanceof WebsocketSend) {
-            sendMessage((WebsocketSend) action, aliasEnv, result);
-        } else if (action instanceof WebsocketReceive) {
-            receiveMessages((WebsocketReceive) action, aliasEnv, result);
-        } else if (action instanceof WebsocketSubscribe) {
-            subscribeToTopic((WebsocketSubscribe) action, aliasEnv, result);
+        if (action instanceof WebsocketSend wsSend) {
+            sendMessage(wsSend, aliasEnv, result);
+        } else if (action instanceof WebsocketReceive wsReceive) {
+            receiveMessages(wsReceive, aliasEnv, result);
+        } else if (action instanceof WebsocketSubscribe wsSubscribe) {
+            subscribeToTopic(wsSubscribe, aliasEnv, result);
         } else {
             throw new DefaultFrameworkException(UNKNOWN_WEBSOCKET_COMMAND, action.getClass().getSimpleName());
         }
@@ -135,7 +131,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private void sendMessage(final WebsocketSend wsSend,
                              final AliasEnv aliasEnv,
                              final CommandResult result) throws IOException {
-        final String message = getMessageToSend(wsSend);
+        final String message = getValue(wsSend.getMessage(), wsSend.getFile());
         addWebsocketInfoForSendAction(wsSend, aliasEnv.getAlias(), message, result);
         logWebsocketActionInfo(SEND_ACTION, wsSend.getComment(), wsSend.getEndpoint(), message);
 
@@ -146,7 +142,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private void receiveMessages(final WebsocketReceive wsReceive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        final String expectedContent = getExpectedContent(wsReceive);
+        final String expectedContent = getValue(wsReceive.getMessage(), wsReceive.getFile());
         addWebsocketInfoForReceiveAction(wsReceive, aliasEnv.getAlias(), result);
         logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getComment(), wsReceive.getTopic(), expectedContent);
 
@@ -159,12 +155,12 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final AliasEnv aliasEnv) {
         WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
-        LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive);
+        Deque<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive);
         return achieveRequiredMessageCount(wsReceive, receivedMessages);
     }
 
     private List<Object> achieveRequiredMessageCount(final WebsocketReceive wsReceive,
-                                                     final LinkedList<String> receivedMessages) {
+                                                     final Deque<String> receivedMessages) {
         int requiredMessageCount = Objects.nonNull(wsReceive.getLimit())
                 ? wsReceive.getLimit().intValue() : ALL_AVAILABLE_MESSAGES;
 
@@ -180,21 +176,20 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private void checkMessagesAreReceived(final int requiredMessageCount,
                                           final long timeoutMillis,
-                                          final LinkedList<String> receivedMessages) {
+                                          final Deque<String> receivedMessages) {
         if (requiredMessageCount <= ALL_AVAILABLE_MESSAGES && timeoutMillis > 0) {
             sleep(timeoutMillis);
         }
         if (requiredMessageCount > receivedMessages.size() && timeoutMillis > 0) {
-            waitUntil(() -> receivedMessages.size() >= requiredMessageCount,
-                    timeoutMillis);
+            waitUntil(() -> receivedMessages.size() >= requiredMessageCount, timeoutMillis);
         }
     }
 
     private void executeComparison(final List<Object> actualContent, final String expectedContent) {
-        CompareBuilder comparator = newCompare()
+        newCompare()
                 .withExpected(expectedContent)
-                .withActual(actualContent);
-        comparator.exec();
+                .withActual(actualContent)
+                .exec();
     }
 
     private void subscribeToTopic(final WebsocketSubscribe wsSubscribe,
@@ -203,20 +198,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         addWebsocketInfoForSubscribeAction(wsSubscribe, aliasEnv.getAlias(), result);
         logWebsocketActionInfo(SUBSCRIBE, wsSubscribe.getComment(), wsSubscribe.getTopic(), StringUtils.EMPTY);
         wsConnectionSupplier.get(aliasEnv).subscribeTo(wsSubscribe.getTopic());
-    }
-
-    private String getMessageToSend(final WebsocketSend wsSend) {
-        return getValue(wsSend.getMessage(), wsSend.getFile());
-    }
-
-    private String getExpectedContent(final WebsocketReceive wsReceive) {
-        return getValue(wsReceive.getMessage(), wsReceive.getFile());
-    }
-
-    private String getValue(final String message, final String file) {
-        return StringUtils.isNotBlank(message)
-                ? message
-                : getContentIfFile(file);
     }
 
     private void disconnectIfEnabled(final boolean isDisconnectEnabled, final AliasEnv aliasEnv) {
@@ -233,8 +214,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private void sleep(final long timeout) {
         try {
             TimeUnit.MILLISECONDS.sleep(timeout);
-        } catch (InterruptedException ignored) {
-            //ignored
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -246,18 +227,15 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(CHECK_PERIOD_MS);
-            } catch (InterruptedException ignored) {
-                //ignored
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
             }
         }
     }
 
     private void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
-    }
-
-    private void logSubCommand(final int position, final Object action) {
-        log.info(LogFormat.commandLog(), position, action.getClass().getSimpleName());
     }
 
     private void logWebsocketActionInfo(final String action,
@@ -271,19 +249,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         if (StringUtils.isNotBlank(content)) {
             log.info(CONTENT_LOG, stringPrettifier.asJsonResult(content).
                     replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
-        }
-    }
-
-    private void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {
-            Exception exception = subCommandsResult
-                    .stream()
-                    .filter(subCommand -> !subCommand.isSuccess())
-                    .findFirst()
-                    .map(CommandResult::getException)
-                    .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
-            setExceptionResult(result, exception);
         }
     }
 
@@ -323,15 +288,5 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         if (StringUtils.isNotBlank(destinationValue)) {
             result.put(destination, destinationValue);
         }
-    }
-
-    private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
-        CommandResult commandResult = new CommandResult();
-        commandResult.setId(number);
-        commandResult.setSuccess(true);
-        if (Objects.nonNull(command) && command.length > 0) {
-            commandResult.setCommandKey(command[0].getClass().getSimpleName());
-        }
-        return commandResult;
     }
 }

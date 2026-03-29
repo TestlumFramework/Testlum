@@ -33,20 +33,15 @@ import java.util.Objects;
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
     private static final String CONTENT_TO_SEND = "Content to send";
     private static final String EXPECTED_CODE = "Expected code";
     private static final String ACTUAL_CODE = "Actual code";
 
-    private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String HEADER_TEMPLATE = "%s: %s";
     private final Map<AliasEnv, SendGrid> sendGrid;
     private final HttpUtil httpUtil;
     private final SendGridUtil sendGridUtil;
@@ -171,9 +166,4 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         }
     }
 
-    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
-    }
 }

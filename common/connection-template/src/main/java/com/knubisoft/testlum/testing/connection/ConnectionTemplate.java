@@ -14,9 +14,9 @@ public interface ConnectionTemplate {
                 DEFAULT_ATTEMPTS,
                 connector,
                 healthCheck, integration -> {
-                    if (integration instanceof AutoCloseable) {
+                    if (integration instanceof AutoCloseable closeable) {
                         try {
-                            ((AutoCloseable) integration).close();
+                            closeable.close();
                         } catch (final Exception ignored) {
                             // ignore
                         }

@@ -24,7 +24,6 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String REDIS_QUERY = LogFormat.table("Query", "{} {}");
     @Autowired(required = false)
     @Qualifier("redisOperation")

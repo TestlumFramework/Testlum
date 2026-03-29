@@ -8,7 +8,12 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AllValues;
+import com.knubisoft.testlum.testing.model.scenario.DropDown;
+import com.knubisoft.testlum.testing.model.scenario.OneValue;
+import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
+import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
+import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -80,25 +85,28 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         selectSearchableOptionForCustomDropDown(dropDownParentElements, value);
     }
 
-    //CHECKSTYLE:OFF
     private void selectSearchableOptionForCustomDropDown(final List<WebElement> dropDownParentElements,
                                                          final String value) {
         Collections.reverse(dropDownParentElements);
         for (int i = 0; i < dropDownParentElements.size(); i++) {
-            WebElement element = dropDownParentElements.get(i);
-            try {
-                WebElement searchableOption =
-                        element.findElement(By.xpath(String.format(CONTAINS_TEXT_PATTERN, value)));
-                searchableOption.click();
+            if (tryClickOption(dropDownParentElements.get(i), value,
+                    i == dropDownParentElements.size() - 1)) {
                 break;
-            } catch (NoSuchElementException e) {
-                if (i == dropDownParentElements.size() - 1) {
-                    throw e;
-                }
             }
         }
     }
-    //CHECKSTYLE:ON
+
+    private boolean tryClickOption(final WebElement element, final String value, final boolean isLast) {
+        try {
+            element.findElement(By.xpath(String.format(CONTAINS_TEXT_PATTERN, value))).click();
+            return true;
+        } catch (NoSuchElementException e) {
+            if (isLast) {
+                throw e;
+            }
+            return false;
+        }
+    }
 
     private void processOneValueFromSelectDropDown(final OneValue oneValue, final Select select,
                                                    final CommandResult result) {

@@ -44,28 +44,22 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
     public void execute(final NavigateNative navigateNative, final CommandResult result) {
         result.put(ResultUtil.NATIVE_NAVIGATE_TO, navigateNative.getDestination());
         log.info(LogMessage.NATIVE_NAVIGATION_LOG, navigateNative.getDestination());
-        if (dependencies.getDriver() instanceof AndroidDriver) {
-            performAndroidNavigation(navigateNative, (AndroidDriver) dependencies.getDriver());
+        if (dependencies.getDriver() instanceof AndroidDriver androidDriver) {
+            performAndroidNavigation(navigateNative, androidDriver);
         }
-        if (dependencies.getDriver() instanceof IOSDriver) {
-            performIOSNavigation(navigateNative, (IOSDriver) dependencies.getDriver());
+        if (dependencies.getDriver() instanceof IOSDriver iosDriver) {
+            performIOSNavigation(navigateNative, iosDriver);
         }
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void performIOSNavigation(final NavigateNative navigateNative, final IOSDriver driver) {
         switch (navigateNative.getDestination()) {
-            case HOME:
-                driver.executeScript("mobile: pressButton", Collections.singletonMap("name", "home"));
-                break;
-            case BACK:
-                driver.navigate().back();
-                break;
-            case OVERVIEW:
-                throw new DefaultFrameworkException("Overview unfortunately is not supported in IOS");
-            default:
-                throw new DefaultFrameworkException(ExceptionMessage.NAVIGATE_NOT_SUPPORTED,
-                        navigateNative.getDestination().value());
+            case HOME -> driver.executeScript("mobile: pressButton", Collections.singletonMap("name", "home"));
+            case BACK -> driver.navigate().back();
+            case OVERVIEW -> throw new DefaultFrameworkException("Overview unfortunately is not supported in IOS");
+            default -> throw new DefaultFrameworkException(ExceptionMessage.NAVIGATE_NOT_SUPPORTED,
+                    navigateNative.getDestination().value());
         }
     }
 

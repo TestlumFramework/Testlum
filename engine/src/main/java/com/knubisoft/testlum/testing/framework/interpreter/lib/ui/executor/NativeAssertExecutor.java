@@ -9,7 +9,12 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
+import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
+import com.knubisoft.testlum.testing.model.scenario.NativeAssert;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 
@@ -44,10 +49,10 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     }
 
     private void processEachCommand(final AbstractCommand command, final CommandResult result) {
-        if (command instanceof AssertAttribute) {
-            executeAttributeCommand((AssertAttribute) command, result);
-        } else if (command instanceof AssertEquality) {
-            executeEqualityCommand((AssertEquality) command, result);
+        if (command instanceof AssertAttribute aa) {
+            executeAttributeCommand(aa, result);
+        } else if (command instanceof AssertEquality ae) {
+            executeEqualityCommand(ae, result);
         }
     }
 
@@ -83,8 +88,8 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     private void executeEqualityCommand(final AssertEquality action, final CommandResult result) {
         log.info(LogMessage.CONTENT_LOG, String.join(DelimiterConstant.COMMA, action.getContent()));
         result.put(ResultUtil.CONTENT, String.join(DelimiterConstant.COMMA, action.getContent()));
-        if (action instanceof AssertEqual) {
-            checkContentIsEqual((AssertEqual) action);
+        if (action instanceof AssertEqual equal) {
+            checkContentIsEqual(equal);
         } else {
             checkContentNotEqual((AssertNotEqual) action);
         }

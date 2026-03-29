@@ -4,16 +4,19 @@ import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.S3;
+import com.knubisoft.testlum.testing.model.scenario.S3Bucket;
+import com.knubisoft.testlum.testing.model.scenario.S3File;
+import com.knubisoft.testlum.testing.model.scenario.S3FileDownload;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
@@ -24,18 +27,19 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 
 @Slf4j
 @InterpreterForClass(S3.class)
-public class S3Interpreter extends AbstractInterpreter<S3> {
-
-    public static final String ALIAS_LOG = LogFormat.table("Alias");
+public class S3Interpreter extends AbstractMessageBrokerInterpreter<S3> {
 
     private static final String KEY = "Key";
-    private static final String ALIAS = "Alias";
-    private static final String ACTION = "Action";
     private static final String BUCKET = "Bucket";
     private static final String CREATE_BUCKET = "create bucket";
     private static final String REMOVE_BUCKET = "remove bucket";
@@ -43,7 +47,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String DOWNLOAD_FILE = "download file";
     private static final String REMOVE_FILE = "remove file";
     private static final String FILE_NAME = "File name";
-    private static final String STEP_FAILED = "Step failed";
     private static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
 
     private static final String S3_BUCKET_ACTION_INFO_LOG =
@@ -67,46 +70,40 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     @Override
-    protected void acceptImpl(final S3 o, final CommandResult result) {
-        S3 s3 = injectCommand(o);
-        ensureAlias(s3::getAlias, s3::setAlias);
-        log.info(ALIAS_LOG, s3.getAlias());
-        result.put(ALIAS, s3.getAlias());
-        List<CommandResult> subCommandsResult = new LinkedList<>();
-        result.setSubCommandsResult(subCommandsResult);
-        performCommands(s3, subCommandsResult);
-        setExecutionResultIfSubCommandsFailed(result);
+    protected void beforeActions(final S3 command, final CommandResult result) {
+        result.put(ALIAS, command.getAlias());
     }
 
-    private void performCommands(final S3 s3, final List<CommandResult> subCommandsResult) {
-        for (AbstractCommand action : s3.getFileOrBucket()) {
-            int commandId = dependencies.getPosition().incrementAndGet();
-            log.info(LogFormat.commandLog(), commandId, action.getClass().getSimpleName());
-            CommandResult commandResult = newCommandResultInstance(commandId, action);
-            subCommandsResult.add(commandResult);
-            processEachAction(action, new AliasEnv(s3.getAlias(), dependencies.getEnvironment()), commandResult);
-        }
+    @Override
+    protected void configureCommandResult(final CommandResult commandResult, final Object action) {
+        commandResult.setCommandKey(action.getClass().getSimpleName());
     }
 
-    private void processEachAction(final AbstractCommand action, final AliasEnv aliasEnv, final CommandResult result) {
-        StopWatch stopWatch = StopWatch.createStarted();
-        try {
-            processS3Action(aliasEnv, action, result);
-        } catch (Exception e) {
-            logException(e);
-            setExceptionResult(result, e);
-            checkIfStopScenarioOnFailure(e);
-        } finally {
-            result.setExecutionTime(stopWatch.getTime());
-            stopWatch.stop();
-        }
+    @Override
+    protected String getAlias(final S3 command) {
+        return command.getAlias();
+    }
+
+    @Override
+    protected void setAlias(final S3 command, final String alias) {
+        command.setAlias(alias);
+    }
+
+    @Override
+    protected List<Object> getActions(final S3 command) {
+        return new ArrayList<>(command.getFileOrBucket());
+    }
+
+    @Override
+    protected void processAction(final Object action, final String alias, final CommandResult result) {
+        processS3Action(new AliasEnv(alias, dependencies.getEnvironment()), (AbstractCommand) action, result);
     }
 
     private void processS3Action(final AliasEnv aliasEnv, final AbstractCommand s3, final CommandResult result) {
-        if (s3 instanceof S3Bucket) {
-            processBucketAction((S3Bucket) s3, aliasEnv, result);
-        } else if (s3 instanceof S3File) {
-            processFileAction((S3File) s3, aliasEnv, result);
+        if (s3 instanceof S3Bucket bucket) {
+            processBucketAction(bucket, aliasEnv, result);
+        } else if (s3 instanceof S3File file) {
+            processFileAction(file, aliasEnv, result);
         } else {
             throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
         }
@@ -228,9 +225,10 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                 final AliasEnv aliasEnv) {
         try {
             checkBucketFileExists(bucketName, key, aliasEnv);
-            ResponseInputStream<GetObjectResponse> s3Object = s3Client.get(aliasEnv)
-                    .getObject(builder -> builder.bucket(bucketName).key(key));
-            return IOUtils.toString(s3Object, StandardCharsets.UTF_8);
+            try (ResponseInputStream<GetObjectResponse> s3Object = s3Client.get(aliasEnv)
+                    .getObject(builder -> builder.bucket(bucketName).key(key))) {
+                return IOUtils.toString(s3Object, StandardCharsets.UTF_8);
+            }
         } catch (S3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
         } catch (IOException e) {
@@ -268,29 +266,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                         .key(key)
                         .build()
         );
-    }
-
-    private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
-        CommandResult commandResult = new CommandResult();
-        commandResult.setId(number);
-        commandResult.setSuccess(true);
-        if (Objects.nonNull(command) && command.length > 0) {
-            commandResult.setCommandKey(command[0].getClass().getSimpleName());
-        }
-        return commandResult;
-    }
-
-    private void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {
-            Exception exception = subCommandsResult
-                    .stream()
-                    .filter(subCommand -> !subCommand.isSuccess())
-                    .findFirst()
-                    .map(CommandResult::getException)
-                    .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
-            setExceptionResult(result, exception);
-        }
     }
 
     private void logS3BucketActionInfo(final String action, final String bucket) {

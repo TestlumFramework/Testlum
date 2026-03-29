@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     private static final String API_ALIAS = "API alias";
-    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
     private static final String CREDENTIALS_FILE = "Credentials file";
     private static final String ENDPOINT = "Endpoint";
 
@@ -28,16 +27,10 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
     @Override
     protected void acceptImpl(final Auth o, final CommandResult result) {
         Auth auth = injectCommand(o);
-        checkAlias(auth);
+        ensureAlias(auth::getApiAlias, auth::setApiAlias);
         AuthStrategy authStrategy = authFactory.create(dependencies, auth.getApiAlias());
         addAuthMetaData(auth, result);
         authStrategy.authenticate(auth, result);
-    }
-
-    private void checkAlias(final Auth auth) {
-        if (auth.getApiAlias() == null) {
-            auth.setApiAlias(DEFAULT_ALIAS_VALUE);
-        }
     }
 
     private void addAuthMetaData(final Auth auth, final CommandResult result) {

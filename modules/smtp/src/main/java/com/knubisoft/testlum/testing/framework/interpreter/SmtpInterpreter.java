@@ -19,7 +19,6 @@ import java.util.Map;
 @InterpreterForClass(Smtp.class)
 public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String SMTP_HOST_LOG = LogFormat.table("SMTP Host");
     private static final String SMTP_PORT_LOG = LogFormat.table("SMTP Port");
     private static final String SUBJECT_LOG = LogFormat.table("Subject");
@@ -27,7 +26,6 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
     private static final String SOURCE_LOG = LogFormat.table("Source");
     private static final String CONTENT_LOG = LogFormat.table("Content");
 
-    private static final String ALIAS = "Alias";
     private static final String SMTP_HOST = "SMTP Host";
     private static final String SMTP_PORT = "SMTP Port";
     private static final String DESTINATION = "Destination";

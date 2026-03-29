@@ -6,7 +6,31 @@ import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.AssertAlert;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
+import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
+import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
+import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
+import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
+import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
+import com.knubisoft.testlum.testing.model.scenario.FullScreen;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
+import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.MobileImage;
+import com.knubisoft.testlum.testing.model.scenario.NativeImage;
+import com.knubisoft.testlum.testing.model.scenario.Overview;
+import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.Part;
+import com.knubisoft.testlum.testing.model.scenario.Picture;
+import com.knubisoft.testlum.testing.model.scenario.Scroll;
+import com.knubisoft.testlum.testing.model.scenario.ScrollType;
+import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
+import com.knubisoft.testlum.testing.model.scenario.Ui;
+import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +52,6 @@ public class LogUtil {
     private final MobileUtil mobileUtil;
     private final StringPrettifier stringPrettifier;
 
-    //CHECKSTYLE:OFF
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    @Nullable final Exception exception,
                                    final Color color) {
@@ -36,29 +59,35 @@ public class LogUtil {
         text.add(DelimiterConstant.EMPTY);
         text.add(String.format(LogMessage.SCENARIO_NUMBER_AND_PATH_LOG,
                 scenarioArguments.getFile().getAbsolutePath()));
+        addOverviewInfo(text, scenarioArguments.getScenario().getOverview());
+        addUiInfoIfPresent(text, scenarioArguments);
+        addExceptionIfPresent(text, exception);
+        text.info();
+    }
 
-        Overview overview = scenarioArguments.getScenario().getOverview();
+    private void addOverviewInfo(final ColoredText text, final Overview overview) {
         text.add(formatOverview(OverviewPart.NAME, overview.getName()));
         text.add(formatOverview(OverviewPart.DESCRIPTION, overview.getDescription()));
         text.add(formatOverview(OverviewPart.JIRA, overview.getJira()));
         text.add(formatOverview(OverviewPart.DEVELOPER, overview.getDeveloper()));
         text.add(formatOverview(OverviewPart.LINK, overview.getLink()));
+    }
 
-        if (scenarioArguments.isContainsUiSteps()) {
-            text.addAll(getUIInfo(scenarioArguments.getScenario().getSettings().getVariations(),
-                    scenarioArguments.getEnvironment(),
-                    scenarioArguments.getBrowser(),
-                    scenarioArguments.getMobileBrowserDevice(),
-                    scenarioArguments.getNativeDevice()));
+    private void addUiInfoIfPresent(final ColoredText text, final ScenarioArguments args) {
+        if (args.isContainsUiSteps()) {
+            text.addAll(getUIInfo(args.getScenario().getSettings().getVariations(),
+                    args.getEnvironment(), args.getBrowser(),
+                    args.getMobileBrowserDevice(), args.getNativeDevice()));
         }
+    }
+
+    private void addExceptionIfPresent(final ColoredText text, @Nullable final Exception exception) {
         Optional.ofNullable(exception).ifPresent(e -> {
             text.add(DelimiterConstant.EMPTY);
             text.add(e.getMessage());
             text.add(DelimiterConstant.EMPTY);
         });
-        text.info();
     }
-    //CHECKSTYLE:ON
 
     private String formatOverview(final OverviewPart overviewPart, final String data) {
         if (StringUtils.isNotBlank(data)) {
@@ -68,7 +97,6 @@ public class LogUtil {
         }
     }
 
-    //CHECKSTYLE:OFF
     private List<String> getUIInfo(final String variation,
                                    final String environment,
                                    final String browserAlias,
@@ -78,21 +106,27 @@ public class LogUtil {
         if (StringUtils.isNotBlank(variation)) {
             messages.add(String.format(LogMessage.VARIATION_LOG, variation));
         }
-        browserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
-                messages.add(String.format(LogMessage.BROWSER_NAME_LOG,
-                        browserUtil.getBrowserInfo(abstractBrowser))));
-
-        mobileUtil.getMobileBrowserDeviceBy(environment, mobileBrowserAlias).ifPresent(mobilebrowserDevice ->
-                messages.add(String.format(LogMessage.MOBILE_BROWSER_LOG,
-                        mobileUtil.getMobileBrowserDeviceInfo(mobilebrowserDevice))));
-
-        mobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
-                messages.add(String.format(LogMessage.NATIVE_LOG,
-                        mobileUtil.getNativeDeviceInfo(nativeDevice))));
-
+        addBrowserInfo(messages, environment, browserAlias);
+        addMobileInfo(messages, environment, mobileBrowserAlias);
+        addNativeInfo(messages, environment, nativeDeviceAlias);
         return messages;
     }
-    //CHECKSTYLE:ON
+
+    private void addBrowserInfo(final List<String> messages, final String env, final String alias) {
+        browserUtil.getBrowserBy(env, alias).ifPresent(browser ->
+                messages.add(String.format(LogMessage.BROWSER_NAME_LOG, browserUtil.getBrowserInfo(browser))));
+    }
+
+    private void addMobileInfo(final List<String> messages, final String env, final String alias) {
+        mobileUtil.getMobileBrowserDeviceBy(env, alias).ifPresent(device ->
+                messages.add(String.format(LogMessage.MOBILE_BROWSER_LOG,
+                        mobileUtil.getMobileBrowserDeviceInfo(device))));
+    }
+
+    private void addNativeInfo(final List<String> messages, final String env, final String alias) {
+        mobileUtil.getNativeDeviceBy(env, alias).ifPresent(device ->
+                messages.add(String.format(LogMessage.NATIVE_LOG, mobileUtil.getNativeDeviceInfo(device))));
+    }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(LogMessage.INVALID_SCENARIO_LOG, path, exception);
@@ -157,8 +191,8 @@ public class LogUtil {
         if (StringUtils.isNotBlank(action.getComment())) {
             log.info(LogMessage.COMMENT_LOG, action.getComment());
         }
-        if (action instanceof CommandWithLocator) {
-            log.info(LogMessage.LOCATOR_LOG, ((CommandWithLocator) action).getLocator());
+        if (action instanceof CommandWithLocator commandWithLocator) {
+            log.info(LogMessage.LOCATOR_LOG, commandWithLocator.getLocator());
         }
     }
 
@@ -212,8 +246,8 @@ public class LogUtil {
         if (Objects.nonNull(picture)) {
             logCompareWithElementInfo(picture);
         } else if (Objects.nonNull(fullScreen)) {
-            if (fullScreen instanceof WebFullScreen) {
-                logCompareWithFullscreen((WebFullScreen) fullScreen);
+            if (fullScreen instanceof WebFullScreen webFullScreen) {
+                logCompareWithFullscreen(webFullScreen);
             } else {
                 logCompareWithFullscreen(fullScreen);
             }

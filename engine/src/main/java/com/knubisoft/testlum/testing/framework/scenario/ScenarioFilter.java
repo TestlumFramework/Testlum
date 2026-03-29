@@ -25,25 +25,26 @@ public class ScenarioFilter {
     private final GlobalTestConfiguration globalTestConfiguration;
     private final LogUtil logUtil;
 
-    //CHECKSTYLE:OFF
     public List<MappingResult> filterScenarios(final List<MappingResult> original) {
         List<MappingResult> nonParsedScenarios =
                 original.stream().filter(e -> e.scenario == null).toList();
-        if (!nonParsedScenarios.isEmpty()) {
-            for (MappingResult entry : nonParsedScenarios) {
-                logUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
-            }
-            if (globalTestConfiguration.isStopIfInvalidScenario()) {
-                throw new DefaultFrameworkException(ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO);
-            }
-        } else if (original.isEmpty()) {
-            throw new DefaultFrameworkException(ExceptionMessage.VALID_SCENARIOS_NOT_FOUND);
-        }
+        handleNonParsedScenarios(nonParsedScenarios, original.isEmpty());
         List<MappingResult> originalWithoutNonParsed = new ArrayList<>(original);
         originalWithoutNonParsed.removeAll(nonParsedScenarios);
         return filterValidScenarios(originalWithoutNonParsed);
     }
-    //CHECKSTYLE:ON
+
+    private void handleNonParsedScenarios(final List<MappingResult> nonParsed, final boolean originalEmpty) {
+        if (!nonParsed.isEmpty()) {
+            nonParsed.forEach(entry ->
+                    logUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage()));
+            if (globalTestConfiguration.isStopIfInvalidScenario()) {
+                throw new DefaultFrameworkException(ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO);
+            }
+        } else if (originalEmpty) {
+            throw new DefaultFrameworkException(ExceptionMessage.VALID_SCENARIOS_NOT_FOUND);
+        }
+    }
 
     private List<MappingResult> filterValidScenarios(final List<MappingResult> validScenarios) {
         List<MappingResult> activeScenarios = filterIsActive(validScenarios);

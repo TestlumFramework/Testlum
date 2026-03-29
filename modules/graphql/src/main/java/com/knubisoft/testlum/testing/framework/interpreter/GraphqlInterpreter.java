@@ -13,7 +13,14 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.GraphqlApi;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.Graphql;
+import com.knubisoft.testlum.testing.model.scenario.GraphqlBody;
+import com.knubisoft.testlum.testing.model.scenario.GraphqlGet;
+import com.knubisoft.testlum.testing.model.scenario.GraphqlPost;
+import com.knubisoft.testlum.testing.model.scenario.Header;
+import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.Param;
+import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,20 +48,15 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
     private static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
 
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
-    private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String HEADER_TEMPLATE = "%s: %s";
     private final Map<Function<Graphql, HttpInfo>, HttpMethod> graphqlMethodMap;
 
     @Autowired
@@ -124,10 +126,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private HttpEntity getBody(final HttpInfo httpInfo, final ContentType contentType) {
-        if (!(httpInfo instanceof GraphqlPost)) {
+        if (!(httpInfo instanceof GraphqlPost graphqlPost)) {
             return null;
         }
-        GraphqlPost graphqlPost = (GraphqlPost) httpInfo;
         String rawBody = getRawBody(graphqlPost.getBody());
         return new StringEntity(rawBody, contentType);
     }
@@ -143,8 +144,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         List<GraphqlApi> apiList = integrationsProvider.findListByEnv(GraphqlApi.class, dependencies.getEnvironment());
         GraphqlApi graphqlApi = integrationsProvider.findApiForAlias(apiList, alias);
         String url = graphqlApi.getUrl() + endpoint;
-        if (httpInfo instanceof GraphqlGet) {
-            return urlWithParams((GraphqlGet) httpInfo, url);
+        if (httpInfo instanceof GraphqlGet get) {
+            return urlWithParams(get, url);
         }
         return url;
     }
@@ -234,11 +235,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         }
     }
 
-    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
-    }
 
     @RequiredArgsConstructor
     @Getter

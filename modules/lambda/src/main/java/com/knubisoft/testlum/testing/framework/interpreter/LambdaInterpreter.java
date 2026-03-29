@@ -30,11 +30,9 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Lambda.class)
 public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String LAMBDA_FUNCTION_LOG = LogFormat.table("Function name");
     private static final String LAMBDA_PAYLOAD_LOG = LogFormat.table("Payload");
 
-    private static final String ALIAS = "Alias";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
     private static final String LAMBDA_PAYLOAD = "Payload";
 

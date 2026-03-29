@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -13,7 +14,6 @@ import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -52,6 +52,8 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
     private static final String COMMENT_FOR_KAFKA_RECEIVE_ACTION = "Receive message from Kafka";
 
     private static final String CORRELATION_ID = "correlationId";
+    private static final String KAFKA_NOT_CONFIGURED = "Kafka integration is not configured for this environment";
+    private static final String UNKNOWN_KAFKA_ACTION = "Unknown Kafka action: %s";
     private static final int NUM_PARTITIONS = 1;
 
     @Autowired(required = false)
@@ -63,6 +65,13 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
 
     public KafkaInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+    }
+
+    @Override
+    protected void validate() {
+        if (kafkaProducer == null) {
+            throw new DefaultFrameworkException(KAFKA_NOT_CONFIGURED);
+        }
     }
 
     @Override
@@ -89,17 +98,19 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
                                     final String alias,
                                     final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        if (action instanceof SendKafkaMessage) {
-            sendMessage((SendKafkaMessage) action, aliasEnv, result);
+        if (action instanceof SendKafkaMessage send) {
+            sendMessage(send, aliasEnv, result);
+        } else if (action instanceof ReceiveKafkaMessage receive) {
+            receiveMessages(receive, aliasEnv, result);
         } else {
-            receiveMessages((ReceiveKafkaMessage) action, aliasEnv, result);
+            throw new DefaultFrameworkException(UNKNOWN_KAFKA_ACTION, action.getClass().getSimpleName());
         }
     }
 
     private void receiveMessages(final ReceiveKafkaMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        String expectedMessages = getMessageToReceive(receive);
+        String expectedMessages = getValue(receive.getValue(), receive.getFile());
         logKafkaReceiveInfo(receive, expectedMessages);
         addKafkaReceiveInfo(receive, aliasEnv.getAlias(), result);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
@@ -110,7 +121,7 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
     private void sendMessage(final SendKafkaMessage send,
                              final AliasEnv aliasEnv,
                              final CommandResult result) {
-        String message = getMessageToSend(send);
+        String message = getValue(send.getValue(), send.getFile());
         logKafkaSendInfo(send, message);
         addKafkaSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
@@ -154,7 +165,11 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
 
     private KafkaMessage createKafkaMessage(final ConsumerRecord<String, String> consumerRecord,
                                             final boolean isHeaders) {
-        KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
+        String key = consumerRecord.key();
+        Object value = jacksonService.readValue(consumerRecord.value(), Object.class);
+        String correlationId = Optional.ofNullable(consumerRecord.headers().lastHeader(CORRELATION_ID))
+                .map(h -> new String(h.value(), StandardCharsets.UTF_8)).orElse(null);
+        KafkaMessage kafkaMessage = new KafkaMessage(key, value, correlationId);
         if (isHeaders) {
             Map<String, String> headers = new HashMap<>();
             consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
@@ -193,14 +208,6 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
         String headerName = kafkaHeader.getName();
         byte[] headerValue = kafkaHeader.getValue().getBytes(StandardCharsets.UTF_8);
         return new RecordHeader(headerName, headerValue);
-    }
-
-    private String getMessageToSend(final SendKafkaMessage send) {
-        return getValue(send.getValue(), send.getFile());
-    }
-
-    private String getMessageToReceive(final ReceiveKafkaMessage receive) {
-        return getValue(receive.getValue(), receive.getFile());
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
@@ -246,15 +253,9 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
 
     private void addKafkaAdditionalMetaDataForSendAction(final SendKafkaMessage sendAction,
                                                          final CommandResult result) {
-        String key = sendAction.getKey();
-        String correlationId = sendAction.getCorrelationId();
+        putIfNotBlank(result, KEY, sendAction.getKey());
+        putIfNotBlank(result, CORRELATION_ID, sendAction.getCorrelationId());
         KafkaHeaders kafkaHeaders = sendAction.getHeaders();
-        if (StringUtils.isNotBlank(key)) {
-            result.put(KEY, key);
-        }
-        if (StringUtils.isNotBlank(correlationId)) {
-            result.put(CORRELATION_ID, correlationId);
-        }
         if (Objects.nonNull(kafkaHeaders)) {
             result.put(ADDITIONAL_HEADERS, kafkaHeaders.getHeader().stream().map(header ->
                     String.format(HEADER_TEMPLATE, header.getName(), header.getValue())).toList());
@@ -262,17 +263,10 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
     }
 
     @Data
-    private class KafkaMessage {
+    private static class KafkaMessage {
         private final String key;
         private final Object value;
         private final String correlationId;
         private Map<String, String> headers;
-
-        KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
-            this.key = consumerRecord.key();
-            this.value = jacksonService.readValue(consumerRecord.value(), Object.class);
-            this.correlationId = Optional.ofNullable(consumerRecord.headers().lastHeader(CORRELATION_ID))
-                    .map(h -> new String(h.value(), StandardCharsets.UTF_8)).orElse(null);
-        }
     }
 }

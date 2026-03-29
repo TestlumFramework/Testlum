@@ -14,7 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import software.amazon.awssdk.services.ses.SesClient;
-import software.amazon.awssdk.services.ses.model.*;
+import software.amazon.awssdk.services.ses.model.Body;
+import software.amazon.awssdk.services.ses.model.Content;
+import software.amazon.awssdk.services.ses.model.Destination;
+import software.amazon.awssdk.services.ses.model.Message;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
+import software.amazon.awssdk.services.ses.model.VerifyEmailAddressRequest;
 
 import java.util.Map;
 import java.util.Objects;
@@ -23,12 +28,10 @@ import java.util.Objects;
 @InterpreterForClass(Ses.class)
 public class SESInterpreter extends AbstractInterpreter<Ses> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String DESTINATION_LOG = LogFormat.table("Destination");
     private static final String SOURCE_LOG = LogFormat.table("Source");
     private static final String BODY_LOG = LogFormat.table("Body");
 
-    private static final String ALIAS = "Alias";
     private static final String DESTINATION = "Destination";
     private static final String SUBJECT = "Subject";
     private static final String HTML = "HTML";

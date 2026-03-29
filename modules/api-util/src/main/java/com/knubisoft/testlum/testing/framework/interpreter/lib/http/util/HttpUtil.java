@@ -129,10 +129,10 @@ public final class HttpUtil {
             builder.setContentType(contentType);
         }
         for (Object part : body.getMultipart().getParamOrFile()) {
-            if (part instanceof PartParam) {
-                addTextBody(builder, (PartParam) part);
-            } else if (part instanceof PartFile) {
-                addFileBody(builder, (PartFile) part, dependencies.getFile());
+            if (part instanceof PartParam partParam) {
+                addTextBody(builder, partParam);
+            } else if (part instanceof PartFile partFile) {
+                addFileBody(builder, partFile, dependencies.getFile());
             }
         }
         return builder.build();

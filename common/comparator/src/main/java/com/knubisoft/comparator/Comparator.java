@@ -13,7 +13,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -22,14 +21,13 @@ import com.knubisoft.comparator.util.LogMessage;
 public class Comparator extends AbstractObjectComparator<String> {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final DocumentBuilderFactory XML_FACTORY = createSecureDocumentBuilderFactory();
 
-    private final List<ComparatorHandler> handlers = new ArrayList<>() {
-        {
-            add(new JsonComparatorHandler());
-            add(new XmlComparatorHandler());
-            add(new StringLinesComparatorHandler());
-        }
-    };
+    private final List<ComparatorHandler> handlers = List.of(
+            new JsonComparatorHandler(),
+            new XmlComparatorHandler(),
+            new StringLinesComparatorHandler()
+    );
 
     public Comparator(final Mode mode) {
         super(mode);
@@ -67,9 +65,25 @@ public class Comparator extends AbstractObjectComparator<String> {
         }
     }
 
+    private static DocumentBuilderFactory createSecureDocumentBuilderFactory() {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setExpandEntityReferences(false);
+            return factory;
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException("Failed to configure secure XML parser", e);
+        }
+    }
+
     private Node readXml(final String value) {
         try {
-            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilder documentBuilder;
+            synchronized (XML_FACTORY) {
+                documentBuilder = XML_FACTORY.newDocumentBuilder();
+            }
             documentBuilder.setErrorHandler(new XmlErrorHandler());
             return documentBuilder.parse(new InputSource(new StringReader(value)));
         } catch (ParserConfigurationException | IOException | SAXException e) {

@@ -29,14 +29,9 @@ import java.util.List;
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
-    private static final String CREDENTIALS_LOG = LogFormat.table("Credentials");
     private static final String INVALID_CREDENTIALS_LOG = LogFormat.table("Invalid credentials");
     private static final String SERVER_BAD_GATEWAY_RESPONSE_LOG = LogFormat.table("Server is shutdown");
     private static final String SERVER_ERROR_RESPONSE_LOG = LogFormat.table("Request failed");
-
-    private static final String AUTHENTICATION_TYPE = "Authentication type";
 
     private final IntegrationsProvider integrationsProvider;
     private final List<Api> apiList;

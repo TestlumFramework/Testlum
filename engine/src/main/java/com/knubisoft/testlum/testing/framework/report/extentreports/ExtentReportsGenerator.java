@@ -258,9 +258,9 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private String getValueAsStringFromMetaData(final Object value) {
-        if (value instanceof List) {
+        if (value instanceof List<?> list) {
             StringBuilder valueAsTable = new StringBuilder();
-            ((List<?>) value).forEach(v -> valueAsTable.append(String.format(UNSORTED_LIST_ITEM_TEMPLATE, v)));
+            list.forEach(v -> valueAsTable.append(String.format(UNSORTED_LIST_ITEM_TEMPLATE, v)));
             return String.format(UNSORTED_LIST_TEMPLATE, valueAsTable);
         }
         return String.format(PREFORMATTED_TEXT_TEMPLATE, value);

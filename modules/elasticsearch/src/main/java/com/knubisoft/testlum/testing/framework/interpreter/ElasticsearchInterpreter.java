@@ -9,7 +9,13 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.Body;
+import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequest;
+import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequestWithBody;
+import com.knubisoft.testlum.testing.model.scenario.ElasticSearchResponse;
+import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
+import com.knubisoft.testlum.testing.model.scenario.Header;
+import com.knubisoft.testlum.testing.model.scenario.Param;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +24,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
@@ -36,18 +45,13 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Elasticsearch.class)
 public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
-    private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String HEADER_TEMPLATE = "%s: %s";
     @Autowired(required = false)
     @Qualifier("restClient")
     private Map<AliasEnv, RestClient> restClient;
@@ -170,10 +174,9 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     }
 
     private HttpEntity getBody(final ElasticSearchRequest request, final ContentType contentType) {
-        if (!(request instanceof ElasticSearchRequestWithBody)) {
+        if (!(request instanceof ElasticSearchRequestWithBody requestWithBody)) {
             return null;
         }
-        ElasticSearchRequestWithBody requestWithBody = (ElasticSearchRequestWithBody) request;
         Body body = requestWithBody.getBody();
         return httpUtil.extractBody(body, contentType, this, dependencies);
     }
@@ -211,9 +214,4 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
-    }
 }

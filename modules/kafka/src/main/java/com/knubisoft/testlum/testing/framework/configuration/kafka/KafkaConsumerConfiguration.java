@@ -65,8 +65,12 @@ public class KafkaConsumerConfiguration {
         return kafkaConsumer -> kafkaConsumer.listTopics(Duration.ofSeconds(TIME));
     }
 
-    // CHECKSTYLE:OFF
     private void configureProperties(final Properties props, final Kafka kafka) {
+        configureBaseProperties(props, kafka);
+        configureAutoCommit(props, kafka);
+    }
+
+    private void configureBaseProperties(final Properties props, final Kafka kafka) {
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafka.getGroupId());
         props.put(ConsumerConfig.CLIENT_ID_CONFIG, kafka.getClientId());
@@ -77,10 +81,12 @@ public class KafkaConsumerConfiguration {
         props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, kafka.getMaxPollIntervalMs());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+    }
+
+    private void configureAutoCommit(final Properties props, final Kafka kafka) {
         if (Objects.nonNull(kafka.getAutoCommitTimeout()) && kafka.getAutoCommitTimeout() > 0) {
             props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, true);
             props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, kafka.getAutoCommitTimeout());
         }
     }
-    // CHECKSTYLE:ON
 }

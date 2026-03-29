@@ -15,7 +15,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.stereotype.Component;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.HashMap;
@@ -61,11 +60,7 @@ public class NativeDriverFactory {
     }
 
     private URL toURL(final String serverUrl) {
-        try {
-            return new URL(serverUrl);
-        } catch (MalformedURLException e) {
-            throw new DefaultFrameworkException(e);
-        }
+        return seleniumDriverUtil.toURL(serverUrl);
     }
 
     private void setAndroidCapabilities(final NativeDevice nativeDevice,

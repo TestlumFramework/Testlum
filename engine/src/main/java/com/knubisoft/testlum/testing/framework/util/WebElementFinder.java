@@ -5,8 +5,12 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
-import com.knubisoft.testlum.testing.model.global_config.Web;
-import com.knubisoft.testlum.testing.model.pages.*;
+import com.knubisoft.testlum.testing.model.pages.ClassName;
+import com.knubisoft.testlum.testing.model.pages.CssSelector;
+import com.knubisoft.testlum.testing.model.pages.Id;
+import com.knubisoft.testlum.testing.model.pages.Locator;
+import com.knubisoft.testlum.testing.model.pages.Text;
+import com.knubisoft.testlum.testing.model.pages.Xpath;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +23,13 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +39,11 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public final class WebElementFinder {
+
+    private static final long POLLING_INTERVAL_MS = 500L;
+    private static final int LOCATOR_PREFIX_LENGTH = 3;
+    private static final Pattern LOCATOR_VALUE_PATTERN = Pattern.compile(":\\s*(.*)");
+    private static final String DOM_COMPLETE = "complete";
 
     private final EnvironmentLoader environmentLoader;
     private final ByService byService;
@@ -86,28 +101,27 @@ public final class WebElementFinder {
     private WebElement tryToFindElementIfNotFoundBeforeAfterAutoWait(final Set<org.openqa.selenium.By> bySet,
                                                                      final WebDriver driver,
                                                                      final String locatorId) {
-        waitForSecondsDefinedInConfig();
-
-        Optional<WebElement> optionalElement = findElement(bySet, driver);
-
-        if (optionalElement.isEmpty()) {
+        int seconds = getAutowaitSeconds(locatorId);
+        FluentWait<WebDriver> wait = buildFluentWait(driver, seconds)
+                .ignoring(NoSuchElementException.class);
+        try {
+            return wait.until(d -> findElement(bySet, d).orElse(null));
+        } catch (Exception e) {
             throw new DefaultFrameworkException(String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
         }
-        return optionalElement.get();
     }
 
-    //CHECKSTYLE:OFF
-    private void waitForSecondsDefinedInConfig() {
-        Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();
-        if (settings.isPresent()) {
-            int secondsToWait = settings.get().getBrowserSettings().getElementAutowait().getSeconds();
-            try {
-                Thread.sleep(secondsToWait * 1000L);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new DefaultFrameworkException(e);
-            }
-        }
+    private int getAutowaitSeconds(final String locatorId) {
+        return environmentLoader.getCurrentEnvWebSettings()
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId)))
+                .getBrowserSettings().getElementAutowait().getSeconds();
+    }
+
+    private FluentWait<WebDriver> buildFluentWait(final WebDriver driver, final int seconds) {
+        return new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(seconds))
+                .pollingEvery(Duration.ofMillis(POLLING_INTERVAL_MS));
     }
 
     @SuppressWarnings("unchecked")
@@ -140,18 +154,18 @@ public final class WebElementFinder {
         if (dependencies.getUiType().equals(UiType.NATIVE)) {
             return;
         }
-        Optional<Web> settings = environmentLoader.getCurrentEnvWebSettings();
-        int secondsToWait = settings.get().getBrowserSettings().getElementAutowait().getSeconds();
-        FluentWait<WebDriver> wait = new FluentWait<>(dependencies.getDriver())
-                .withTimeout(Duration.ofSeconds(secondsToWait))
-                .pollingEvery(Duration.ofMillis(500L))
-                .withMessage("Time out is reached. Page is not loaded!");
+        int seconds = environmentLoader.getCurrentEnvWebSettings()
+                .orElseThrow(() -> new DefaultFrameworkException("Web settings are not configured"))
+                .getBrowserSettings().getElementAutowait().getSeconds();
+        buildFluentWait(dependencies.getDriver(), seconds)
+                .withMessage("Time out is reached. Page is not loaded!")
+                .until((ExpectedCondition<Boolean>) this::isDomComplete);
+    }
 
-        wait.until((ExpectedCondition<Boolean>) driver -> {
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            String domStatus = (String) Objects.requireNonNull(js).executeScript("return document.readyState");
-            return domStatus.equals("complete");
-        });
+    private boolean isDomComplete(final WebDriver driver) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        String domStatus = (String) Objects.requireNonNull(js).executeScript("return document.readyState");
+        return DOM_COMPLETE.equals(domStatus);
     }
 
     private void printLogsAboutUndiscoveredElements(final List<String> logMessages) {
@@ -161,18 +175,15 @@ public final class WebElementFinder {
     }
 
     public String extractLocatorValue(final org.openqa.selenium.By by) {
-        String locator = by.toString().substring(3);
-        Pattern pattern = Pattern.compile(":\\s*(.*)");
-        Matcher matcher = pattern.matcher(locator);
+        String locator = by.toString().substring(LOCATOR_PREFIX_LENGTH);
+        Matcher matcher = LOCATOR_VALUE_PATTERN.matcher(locator);
 
         if (matcher.find()) {
             return matcher.group(1);
         }
 
-        return "No match found";
+        throw new DefaultFrameworkException("Unable to extract locator value from: " + by);
     }
-
-    //CHECKSTYLE:ON
 
     private interface ByType extends Function<Locator, List<org.openqa.selenium.By>> {
     }

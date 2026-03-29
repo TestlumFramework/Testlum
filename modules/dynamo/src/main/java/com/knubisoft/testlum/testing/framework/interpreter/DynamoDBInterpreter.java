@@ -21,7 +21,6 @@ import java.util.List;
 public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
 
     private static final String QUERY = LogFormat.table("Query");
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
 
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";

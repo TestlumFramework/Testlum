@@ -24,7 +24,6 @@ import java.util.List;
 @InterpreterForClass(Migrate.class)
 public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
     private static final String DATASET_PATH_LOG = LogFormat.table("Migration dataset");
 

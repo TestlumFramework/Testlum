@@ -9,17 +9,17 @@ import org.w3c.dom.Node;
 @Getter
 public class ComparisonRequest {
 
-    private Mode mode;
-    private ComparisonValue expected;
-    private ComparisonValue actual;
+    private final Mode mode;
+    private final ComparisonValue expected;
+    private final ComparisonValue actual;
 
     @AllArgsConstructor
     @Getter
     public static final class ComparisonValue {
 
-        private String value;
-        private JsonNode json;
-        private Node xml;
+        private final String value;
+        private final JsonNode json;
+        private final Node xml;
 
         public boolean isJson() {
             return json != null;

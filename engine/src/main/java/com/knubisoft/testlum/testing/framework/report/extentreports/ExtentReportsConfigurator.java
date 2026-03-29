@@ -46,24 +46,25 @@ public class ExtentReportsConfigurator {
         }
     }
 
-    //CHECKSTYLE:OFF
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
+        String reportPath = buildReportPath(projectName);
+        try {
+            extentReports.attachReporter(new ExtentSparkReporter(reportPath));
+        } catch (Exception e) {
+            log.error("Unable to create report file by path: {}", reportPath);
+        }
+    }
+
+    private String buildReportPath(final String projectName) {
         LocalDateTime dateTime = LocalDateTime.now();
         String pathForReportFolder = String.format(PATH_FOR_REPORT_FOLDER,
                 testResourceSettings.getTestResourcesFolder().getAbsolutePath(),
                 File.separator, TestResourceSettings.REPORT_FOLDER);
         String reportName = String.format(REPORT_NAME_TEMPLATE, File.separator,
                 projectName, dateTime.format(DATE_TIME_FORMATTER));
-        String formattedPathForReportSaving = String.format(TEMPLATE_FOR_REPORT_SAVING_PATH,
+        return String.format(TEMPLATE_FOR_REPORT_SAVING_PATH,
                 pathForReportFolder, File.separator, dateTime.format(DATE_FORMATTER), reportName);
-        try {
-            ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
-            extentReports.attachReporter(extentSparkReporter);
-        } catch (Exception e) {
-            log.error("Unable to create report file by path: {}", formattedPathForReportSaving);
-        }
     }
-    //CHECKSTYLE:ON
 
     private void attachKlovServerReporter(final ExtentReports extentReports,
                                           final KlovServerReportGenerator klovServerGeneratorSettings,

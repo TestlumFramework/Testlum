@@ -12,7 +12,13 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.Body;
+import com.knubisoft.testlum.testing.model.scenario.Header;
+import com.knubisoft.testlum.testing.model.scenario.Http;
+import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.HttpInfoWithBody;
+import com.knubisoft.testlum.testing.model.scenario.Mode;
+import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,9 +40,7 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Http.class)
 public class HttpInterpreter extends AbstractInterpreter<Http> {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
     private static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
@@ -47,8 +51,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private static final String API_ALIAS = "API alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String HEADER_TEMPLATE = "%s: %s";
     @Autowired
     private ApiClient apiClient;
     private final IntegrationsProvider integrationsProvider;
@@ -153,10 +155,9 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
 
     private HttpEntity getBody(final HttpInfo httpInfo, final ContentType contentType) {
-        if (!(httpInfo instanceof HttpInfoWithBody)) {
+        if (!(httpInfo instanceof HttpInfoWithBody commandWithBody)) {
             return null;
         }
-        HttpInfoWithBody commandWithBody = (HttpInfoWithBody) httpInfo;
         Body body = commandWithBody.getBody();
         return httpUtil.extractBody(body, contentType, this, dependencies);
     }
@@ -204,9 +205,4 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         }
     }
 
-    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
-        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .toList());
-    }
 }

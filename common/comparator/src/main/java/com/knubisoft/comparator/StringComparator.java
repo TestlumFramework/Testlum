@@ -1,7 +1,13 @@
 package com.knubisoft.comparator;
 
 import com.knubisoft.comparator.alias.Alias;
-import com.knubisoft.comparator.condition.*;
+import com.knubisoft.comparator.condition.BigDecimalComparator;
+import com.knubisoft.comparator.condition.BigIntegerComparator;
+import com.knubisoft.comparator.condition.ConditionComparator;
+import com.knubisoft.comparator.condition.ConditionType;
+import com.knubisoft.comparator.condition.DateComparator;
+import com.knubisoft.comparator.condition.NowComparator;
+import com.knubisoft.comparator.condition.Operator;
 import com.knubisoft.comparator.constant.CommonConstant;
 import com.knubisoft.comparator.util.LogMessage;
 import com.knubisoft.comparator.util.Parser;
@@ -19,23 +25,21 @@ public class StringComparator extends AbstractObjectComparator<String> {
         super(mode);
     }
 
-    //CHECKSTYLE:OFF
     @Override
     public void compare(final String expected, final String actual) {
         if (!Objects.equals(expected, actual)) {
             ComparisonResult result = extractAction(expected);
-            if (result instanceof PatternComparison) {
-                patternComparison(actual, (PatternComparison) result);
-            } else if (result instanceof TreeComparison) {
-                treeComparison(actual, (TreeComparison) result);
-            } else if (result instanceof ConditionComparison) {
-                conditionComparison(actual, (ConditionComparison) result);
+            if (result instanceof PatternComparison pc) {
+                patternComparison(actual, pc);
+            } else if (result instanceof TreeComparison tc) {
+                treeComparison(actual, tc);
+            } else if (result instanceof ConditionComparison cc) {
+                conditionComparison(actual, cc);
             } else {
                 ErrorHelper.raise(String.format(LogMessage.PROPERTY_NOT_EQUAL, expected, actual));
             }
         }
     }
-    //CHECKSTYLE:ON
 
     private void patternComparison(final String actual, final PatternComparison result) {
         String aliasOrRawPattern = result.getPattern();

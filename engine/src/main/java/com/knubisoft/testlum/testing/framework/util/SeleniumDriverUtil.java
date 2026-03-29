@@ -6,6 +6,8 @@ import com.knubisoft.testlum.testing.model.global_config.*;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +50,14 @@ public class SeleniumDriverUtil {
         if (Objects.nonNull(capabilities)) {
             capabilities.getCapability()
                     .forEach(cap -> desiredCapabilities.setCapability(cap.getName(), cap.getValue()));
+        }
+    }
+
+    public URL toURL(final String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new DefaultFrameworkException(e);
         }
     }
 

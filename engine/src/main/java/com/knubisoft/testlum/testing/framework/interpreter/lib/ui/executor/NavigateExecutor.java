@@ -20,28 +20,20 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
         super(dependencies);
     }
 
-    //CHECKSTYLE:OFF
     @Override
     public void execute(final Navigate navigate, final CommandResult result) {
         NavigateCommand navigateCommand = navigate.getCommand();
         log.info(LogMessage.COMMAND_TYPE_LOG, navigateCommand.name());
         result.put(ResultUtil.NAVIGATE_TYPE, navigateCommand.value());
         switch (navigateCommand) {
-            case BACK:
-                dependencies.getDriver().navigate().back();
-                break;
-            case RELOAD:
-                dependencies.getDriver().navigate().refresh();
-                break;
-            case TO:
-                navigateTo(navigate.getPath(), result);
-                break;
-            default:
-                throw new DefaultFrameworkException(ExceptionMessage.NAVIGATE_NOT_SUPPORTED, navigateCommand.value());
+            case BACK -> dependencies.getDriver().navigate().back();
+            case RELOAD -> dependencies.getDriver().navigate().refresh();
+            case TO -> navigateTo(navigate.getPath(), result);
+            default -> throw new DefaultFrameworkException(
+                    ExceptionMessage.NAVIGATE_NOT_SUPPORTED, navigateCommand.value());
         }
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
-    //CHECKSTYLE:ON
 
     private void navigateTo(final String path, final CommandResult result) {
         String url = uiUtil.getUrl(path, dependencies.getEnvironment(), dependencies.getUiType());

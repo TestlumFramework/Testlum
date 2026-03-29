@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class AssertInterpreter extends AbstractInterpreter<Assert> {
 
     private static final String CONTENT = "Content";
-    private static final String STEP_FAILED = "Step failed";
 
     private static final String COMMENT_LOG = LogFormat.table("Comment");
     private static final String CONTENT_LOG = LogFormat.table("Content");
@@ -70,8 +69,8 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
     }
 
     private void executeEqualityAction(final AssertEquality action) {
-        if (action instanceof AssertEqual) {
-            checkContentIsEqual((AssertEqual) action);
+        if (action instanceof AssertEqual assertEqual) {
+            checkContentIsEqual(assertEqual);
         } else {
             checkContentNotEqual((AssertNotEqual) action);
         }
@@ -113,19 +112,6 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
     private void addAssertEqualityMetaData(final AssertEquality action, final CommandResult result) {
         result.setComment(action.getComment());
         result.put(CONTENT, String.join(DelimiterConstant.COMMA, action.getContent()));
-    }
-
-    private void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {
-            Exception exception = subCommandsResult
-                    .stream()
-                    .filter(subCommand -> !subCommand.isSuccess())
-                    .findFirst()
-                    .map(CommandResult::getException)
-                    .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
-            setExceptionResult(result, exception);
-        }
     }
 
     private void logAssertEqualityCommand(final AssertEquality command, final int position) {

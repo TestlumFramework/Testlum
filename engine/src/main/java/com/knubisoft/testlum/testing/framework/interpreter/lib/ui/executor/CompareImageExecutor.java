@@ -62,23 +62,29 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         }
     }
 
-    //CHECKSTYLE:OFF
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final Image image,
                                          final CommandResult result) throws IOException {
         if (Objects.nonNull(image.getPicture())) {
-            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
-                    image.getPicture().getLocatorStrategy());
-            return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
+            return getImageFromPicture(image, result);
         }
         if (Objects.nonNull(image.getPart())) {
-            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                    image.getPart().getLocatorStrategy());
-            return ImageIO.read(uiUtil.takeScreenshot(webElement));
+            return getImageFromPart(image);
         }
         return ImageIO.read(uiUtil.takeScreenshot(webDriver));
     }
-    //CHECKSTYLE:ON
+
+    private BufferedImage getImageFromPicture(final Image image, final CommandResult result) throws IOException {
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
+                image.getPicture().getLocatorStrategy());
+        return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
+    }
+
+    private BufferedImage getImageFromPart(final Image image) throws IOException {
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
+                image.getPart().getLocatorStrategy());
+        return ImageIO.read(uiUtil.takeScreenshot(webElement));
+    }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,

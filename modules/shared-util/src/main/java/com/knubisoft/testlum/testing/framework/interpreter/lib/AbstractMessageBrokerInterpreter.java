@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ public abstract class AbstractMessageBrokerInterpreter<T extends AbstractCommand
     protected static final String SEND_ACTION = "send";
     protected static final String RECEIVE_ACTION = "receive";
 
-    protected static final String ALIAS = "Alias";
     protected static final String ACTION = "Action";
     protected static final String SEND = "Send";
     protected static final String RECEIVE = "Receive";
@@ -28,14 +26,9 @@ public abstract class AbstractMessageBrokerInterpreter<T extends AbstractCommand
     protected static final String DISABLE = "Disable";
     protected static final String MESSAGE_TO_SEND = "Message to send";
     protected static final String HEADERS_STATUS = "Headers status";
-    protected static final String ADDITIONAL_HEADERS = "Additional headers";
     protected static final String TIMEOUT_MILLIS = "Timeout millis";
-    protected static final String HEADER_TEMPLATE = "%s: %s";
-
     private static final String ACTION_LOG = LogFormat.table("Action");
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String CONTENT_LOG = LogFormat.table("Content");
-    private static final String STEP_FAILED = "Step failed";
 
     protected AbstractMessageBrokerInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -49,21 +42,44 @@ public abstract class AbstractMessageBrokerInterpreter<T extends AbstractCommand
 
     protected abstract void processAction(Object action, String alias, CommandResult result);
 
+    protected void validate() {
+    }
+
+    protected void beforeActions(final T command, final CommandResult result) {
+    }
+
+    protected void afterActions(final T command, final CommandResult result) {
+    }
+
+    protected void configureCommandResult(final CommandResult commandResult, final Object action) {
+    }
+
     @Override
     protected void acceptImpl(final T o, final CommandResult result) {
+        validate();
         T command = injectCommand(o);
         ensureAlias(() -> getAlias(command), alias -> setAlias(command, alias));
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
+        beforeActions(command, result);
+        try {
+            executeActions(command, subCommandsResult);
+        } finally {
+            afterActions(command, result);
+        }
+        setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void executeActions(final T command, final List<CommandResult> subCommandsResult) {
         for (Object action : getActions(command)) {
             log.info(LogFormat.commandLog(),
                     dependencies.getPosition().incrementAndGet(),
                     action.getClass().getSimpleName());
             CommandResult commandResult = newCommandResultInstance(dependencies.getPosition().get());
+            configureCommandResult(commandResult, action);
             subCommandsResult.add(commandResult);
             processEachAction(action, getAlias(command), commandResult);
         }
-        setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processEachAction(final Object action, final String alias, final CommandResult result) {
@@ -88,21 +104,21 @@ public abstract class AbstractMessageBrokerInterpreter<T extends AbstractCommand
         return commandResult;
     }
 
-    protected void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {
-            Exception exception = subCommandsResult.stream()
-                    .filter(subCommand -> !subCommand.isSuccess())
-                    .findFirst()
-                    .map(CommandResult::getException)
-                    .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
-            setExceptionResult(result, exception);
-        }
-    }
-
     protected void logIfNotNull(final String title, final Object data) {
         if (Objects.nonNull(data)) {
             log.info(title, data);
+        }
+    }
+
+    protected void putIfNotBlank(final CommandResult result, final String key, final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            result.put(key, value);
+        }
+    }
+
+    protected void putIfNotNull(final CommandResult result, final String key, final Object value) {
+        if (Objects.nonNull(value)) {
+            result.put(key, value);
         }
     }
 

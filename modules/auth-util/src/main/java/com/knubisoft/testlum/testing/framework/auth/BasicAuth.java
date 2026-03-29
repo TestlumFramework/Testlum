@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.auth;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -19,11 +18,6 @@ import java.util.Base64;
 @Slf4j
 public class BasicAuth extends AbstractAuthStrategy {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
-    private static final String CREDENTIALS_LOG = LogFormat.table("Credentials");
-
-    private static final String AUTHENTICATION_TYPE = "Authentication type";
     private final FileSearcher fileSearcher;
 
     public BasicAuth(final InterpreterDependencies dependencies) {

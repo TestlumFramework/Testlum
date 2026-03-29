@@ -102,7 +102,7 @@ public class GlobalVariationsProvider {
     private boolean isContextValue(final String variationKey, final ScenarioContext scenarioContext) {
         if (Objects.nonNull(scenarioContext)) {
             try {
-                scenarioContext.inject(variationKey);
+                scenarioContext.get(variationKey);
                 return true;
             } catch (Exception e) {
                 return false;

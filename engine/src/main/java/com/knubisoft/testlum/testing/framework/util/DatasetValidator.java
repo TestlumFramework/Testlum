@@ -51,14 +51,14 @@ public class DatasetValidator {
     private void checkRedisDatasetExtension(final String datasetFileName) {
         if (!datasetFileName.endsWith(MigrationConstant.TXT_EXTENSION)) {
             throw new DefaultFrameworkException(ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT,
-                    "Redis", MigrationConstant.TXT_EXTENSION);
+                    "Redis", MigrationConstant.TXT_EXTENSION, MigrationConstant.TXT_EXTENSION);
         }
     }
 
     private void checkDynamoDbDatasetExtension(final String datasetFileName) {
         if (!datasetFileName.endsWith(MigrationConstant.PARTIQL_EXTENSION)) {
             throw new DefaultFrameworkException(ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT,
-                    "DynamoDB", MigrationConstant.PARTIQL_EXTENSION);
+                    "DynamoDB", MigrationConstant.PARTIQL_EXTENSION, MigrationConstant.PARTIQL_EXTENSION);
         }
     }
 }

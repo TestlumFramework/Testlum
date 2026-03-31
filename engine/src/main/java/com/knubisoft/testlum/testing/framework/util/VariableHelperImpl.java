@@ -260,6 +260,9 @@ public class VariableHelperImpl implements VariableHelper {
         List<AbstractStorageOperation.QueryResult<?>> rawList =
                 (List<AbstractStorageOperation.QueryResult<?>>) applyRelationalDb.getRaw();
         String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
+        if (queryParts.length < 2) {
+            throw new DefaultFrameworkException("Unable to extract key from query: expected at least two parts");
+        }
         return queryParts[1];
     }
 }

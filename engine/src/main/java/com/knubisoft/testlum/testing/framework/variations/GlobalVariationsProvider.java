@@ -100,14 +100,6 @@ public class GlobalVariationsProvider {
     }
 
     private boolean isContextValue(final String variationKey, final ScenarioContext scenarioContext) {
-        if (Objects.nonNull(scenarioContext)) {
-            try {
-                scenarioContext.get(variationKey);
-                return true;
-            } catch (Exception e) {
-                return false;
-            }
-        }
-        return false;
+        return Objects.nonNull(scenarioContext) && scenarioContext.containsKey(variationKey);
     }
 }

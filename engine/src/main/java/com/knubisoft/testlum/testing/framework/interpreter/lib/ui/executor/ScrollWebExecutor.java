@@ -9,10 +9,12 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.InnerScrollScript;
 import com.knubisoft.testlum.testing.framework.util.PageScrollScript;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 
 import java.util.List;
 
+@Slf4j
 @ExecutorForClass(Scroll.class)
 public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
 
@@ -51,8 +53,8 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
             try {
                 javascriptUtil.executeJsScript(script, driver);
                 anyLocatorSucceeded = true;
-            } catch (DefaultFrameworkException ignored) {
-                //ignored
+            } catch (DefaultFrameworkException e) {
+                log.debug("Scroll script failed for locator, trying next: {}", e.getMessage());
             }
         }
         if (!anyLocatorSucceeded) {

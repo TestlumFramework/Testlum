@@ -33,14 +33,10 @@ public final class CSVParser {
 
     private List<String[]> readVariationsFile(final String variationFileName) {
         File file = fileSearcher.searchFileFromDataFolder(variationFileName);
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
-            List<String[]> variations;
-            try (CSVReader reader = new CSVReader(inputStreamReader)) {
-                variations = reader.readAll();
-            }
-            return variations;
+        try (FileInputStream fileInputStream = new FileInputStream(file);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+             CSVReader reader = new CSVReader(inputStreamReader)) {
+            return reader.readAll();
         } catch (IOException | CsvException e) {
             throw new DefaultFrameworkException(e);
         }

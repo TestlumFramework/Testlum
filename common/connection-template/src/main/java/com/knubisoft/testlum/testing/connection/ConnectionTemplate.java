@@ -1,9 +1,14 @@
 package com.knubisoft.testlum.testing.connection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.function.Supplier;
 
 @FunctionalInterface
 public interface ConnectionTemplate {
+
+    Logger LOG = LoggerFactory.getLogger(ConnectionTemplate.class);
 
     int DEFAULT_ATTEMPTS = 3;
 
@@ -17,8 +22,8 @@ public interface ConnectionTemplate {
                     if (integration instanceof AutoCloseable closeable) {
                         try {
                             closeable.close();
-                        } catch (final Exception ignored) {
-                            // ignore
+                        } catch (final Exception e) {
+                            LOG.warn("Failed to close integration resource: {}", integrationName, e);
                         }
                     }
                 });

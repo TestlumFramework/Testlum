@@ -24,7 +24,7 @@ public class AuthFactory {
         return switch (auth.getAuthStrategy()) {
             case BASIC -> new BasicAuth(dependencies);
             case JWT -> new JwtAuth(dependencies);
-            case CUSTOM -> createCustomStrategy(auth.getAuthCustomClassName());
+            case CUSTOM -> createCustomStrategy(auth.getAuthCustomClassName(), dependencies);
             default -> new DefaultStrategy(dependencies);
         };
     }
@@ -40,13 +40,16 @@ public class AuthFactory {
         throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
     }
 
-    private AuthStrategy createCustomStrategy(final String className) {
+    private AuthStrategy createCustomStrategy(final String className,
+                                              final InterpreterDependencies dependencies) {
         try {
-            return (AuthStrategy) Class.forName(className).getConstructor().newInstance();
+            return (AuthStrategy) Class.forName(className)
+                    .getConstructor(InterpreterDependencies.class)
+                    .newInstance(dependencies);
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Cannot instantiate custom auth class: " + className);
         } catch (InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Invalid custom auth constructor for class: " + className, e);
         }
     }
 }

@@ -46,6 +46,10 @@ public class ScenarioContext {
         contextMap.put(key, value);
     }
 
+    public boolean containsKey(final String key) {
+        return contextMap.containsKey(key) || conditionMap.containsKey(key);
+    }
+
     public String get(final String key) {
         String result = contextMap.get(key);
         if (result == null) {

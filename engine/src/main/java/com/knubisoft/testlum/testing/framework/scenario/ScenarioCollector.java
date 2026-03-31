@@ -87,7 +87,8 @@ public class ScenarioCollector {
     }
 
     private Optional<String> getScenarioVariations(final File xmlFile, final Scenario scenario) {
-        if (Objects.nonNull(scenario.getSettings().getVariations())) {
+        if (Objects.nonNull(scenario.getSettings())
+                && Objects.nonNull(scenario.getSettings().getVariations())) {
             globalVariationsProvider.process(scenario, xmlFile);
             return Optional.of(scenario.getSettings().getVariations());
         } else {

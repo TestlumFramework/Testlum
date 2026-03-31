@@ -131,8 +131,8 @@ public abstract class AbstractSqlExecutor {
                 if (m.find()) {
                     return Integer.parseInt(m.group(1));
                 }
-            } catch (Exception ignored) {
-                //ignored
+            } catch (Exception e) {
+                log.debug("Failed to extract SQL error position: {}", e.getMessage());
             }
             return 0;
         }

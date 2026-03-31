@@ -2,9 +2,11 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class StringPrettifier {
@@ -23,7 +25,8 @@ public class StringPrettifier {
     public String prettifyToSave(final String actual) {
         try {
             return tryToPrettify(actual);
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            log.debug("Failed to prettify string, returning original value: {}", e.getMessage());
             return actual;
         }
     }

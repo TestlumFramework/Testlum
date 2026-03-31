@@ -1,68 +1,31 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.log.LogFormat;
-import com.knubisoft.testlum.testing.framework.constant.LogMessage;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
-import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.WebRepeat;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.LinkedList;
 import java.util.List;
 
-@Slf4j
 @ExecutorForClass(WebRepeat.class)
-public class WebRepeatExecutor extends AbstractUiExecutor<WebRepeat> {
-
-    private final SubCommandRunner repeatCommandsRunner;
-    private final GlobalVariations globalVariations;
+public class WebRepeatExecutor extends AbstractRepeatExecutor<WebRepeat> {
 
     public WebRepeatExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        this.repeatCommandsRunner = dependencies.getContext().getBean(SubCommandRunner.class);
-        this.globalVariations = dependencies.getContext().getBean(GlobalVariations.class);
     }
 
     @Override
-    public void execute(final WebRepeat repeat, final CommandResult result) {
-        List<CommandResult> subCommandsResult = new LinkedList<>();
-        result.setSubCommandsResult(subCommandsResult);
-        if (StringUtils.isNotBlank(repeat.getVariations())) {
-            runRepeatWithVariations(repeat, result, subCommandsResult);
-        } else {
-            runSimpleRepeat(repeat, result, subCommandsResult);
-        }
-        log.info(LogMessage.REPEAT_FINISHED_LOG);
+    protected List<AbstractUiCommand> getCommands(final WebRepeat repeat) {
+        return repeat.getClickOrInputOrAssert();
     }
 
-    private void runRepeatWithVariations(final WebRepeat repeat,
-                                         final CommandResult result,
-                                         final List<CommandResult> subCommandsResult) {
-        log.info(LogFormat.table("Variations", repeat.getVariations()));
-        result.put("Variations", repeat.getVariations());
-        List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
-        List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
-                .flatMap(variation -> commands.stream()
-                        .map(command -> scenarioInjectionUtil
-                                .injectObjectVariation(command, variation, dependencies.getScenarioContext())))
-                .toList();
-        this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+    @Override
+    protected Integer getTimes(final WebRepeat repeat) {
+        return repeat.getTimes();
     }
 
-    private void runSimpleRepeat(final WebRepeat repeat,
-                                 final CommandResult result,
-                                 final List<CommandResult> subCommandsResult) {
-        log.info(LogFormat.table("Times", String.valueOf(repeat.getTimes())));
-        result.put("Times", repeat.getTimes());
-        for (int i = 0; i < repeat.getTimes(); i++) {
-            this.repeatCommandsRunner.runCommands(repeat.getClickOrInputOrAssert(), dependencies, result,
-                    subCommandsResult);
-        }
+    @Override
+    protected String getVariations(final WebRepeat repeat) {
+        return repeat.getVariations();
     }
 }

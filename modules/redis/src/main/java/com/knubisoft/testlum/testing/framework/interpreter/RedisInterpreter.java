@@ -3,12 +3,9 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
-import com.knubisoft.testlum.testing.framework.db.source.ListSource;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractDatabaseInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +16,10 @@ import java.util.List;
 
 @Slf4j
 @InterpreterForClass(Redis.class)
-public class RedisInterpreter extends AbstractInterpreter<Redis> {
-
-    private static final String QUERIES = "Queries";
-    private static final String DATABASE_ALIAS = "Database alias";
+public class RedisInterpreter extends AbstractDatabaseInterpreter<Redis> {
 
     private static final String REDIS_QUERY = LogFormat.table("Query", "{} {}");
+
     @Autowired(required = false)
     @Qualifier("redisOperation")
     private AbstractStorageOperation redisOperation;
@@ -34,48 +29,38 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     }
 
     @Override
-    protected void acceptImpl(final Redis o, final CommandResult result) {
-        Redis redis = injectCommand(o);
-        ensureAlias(redis::getAlias, redis::setAlias);
-        String actual = getActual(redis, result);
-        CompareBuilder comparator = newCompare()
-                .withActual(actual)
-                .withExpected(getContentIfFile(redis.getFile()));
-
-        result.setActual(stringPrettifier.asJsonResult(actual));
-        result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
-
-        comparator.exec();
-        setContextBody(getContextBodyKey(redis.getFile()), actual);
+    protected AbstractStorageOperation getOperation() {
+        return redisOperation;
     }
 
-    protected String getActual(final Redis redis, final CommandResult result) {
-        String alias = redis.getAlias();
-        List<RedisQuery> redisQueries = redis.getQuery();
-        List<String> queries = convertToStringQueries(redisQueries);
-        logAllRedisQueries(redisQueries, alias);
-        addDatabaseMetaData(alias, queries, result);
-        AbstractStorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
-        return toString(apply.getRaw());
+    @Override
+    protected String getAlias(final Redis command) {
+        return command.getAlias();
     }
 
-    private List<String> convertToStringQueries(final List<RedisQuery> redisQueries) {
-        return redisQueries.stream()
+    @Override
+    protected void setAlias(final Redis command, final String alias) {
+        command.setAlias(alias);
+    }
+
+    @Override
+    protected List<String> getQueries(final Redis command) {
+        return command.getQuery().stream()
                 .map(this::toString)
                 .toList();
     }
 
-    private void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
-        log.info(ALIAS_LOG, alias);
-        redisQueries.forEach(query ->
-                log.info(REDIS_QUERY, query.getCommand(), String.join(DelimiterConstant.SPACE, query.getArg())));
+    @Override
+    protected String getFile(final Redis command) {
+        return command.getFile();
     }
 
-    private void addDatabaseMetaData(final String databaseAlias,
-                                    final List<String> queries,
-                                    final CommandResult result) {
-        result.put(DATABASE_ALIAS, databaseAlias);
-        result.put(QUERIES, queries);
+    @Override
+    protected void logAllQueries(final List<String> queries, final String alias) {
+        log.info(ALIAS_LOG, alias);
+        queries.stream()
+                .map(q -> jacksonService.readValue(q, RedisQuery.class))
+                .forEach(query -> log.info(REDIS_QUERY, query.getCommand(),
+                        String.join(DelimiterConstant.SPACE, query.getArg())));
     }
 }
-

@@ -19,14 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Slf4j
 @ExecutorForClass(WebAssert.class)
 public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
-    private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
-    private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
     private static final String ASSERT_NOT_PRESENT = "Element with locator <%s> should not be present.";
     private static final String ASSERT_CHECKED = "Element with locator <%s> failed check assertion.";
     private static final String ASSERT_FAILED_EQUAL = "Property [%s] is equal to [%s]";
@@ -97,26 +94,11 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     }
 
     private void checkContentIsEqual(final AssertEqual equal) {
-        if (equal.getContent().stream()
-                    .map(this::normalizeLineEndings)
-                    .distinct()
-                    .count() != 1) {
-            throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_NOT_EQUAL, formatContent(equal)));
-        }
+        AssertEqualityHelper.checkContentIsEqual(equal);
     }
 
     private void checkContentNotEqual(final AssertNotEqual notEqual) {
-        List<String> content = notEqual.getContent();
-        if (content.stream()
-                    .map(this::normalizeLineEndings)
-                    .distinct()
-                    .count() == 1) {
-            throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_IS_EQUAL, formatContent(notEqual)));
-        }
-    }
-
-    private String formatContent(final AssertEquality action) {
-        return String.join(DelimiterConstant.COMMA, action.getContent());
+        AssertEqualityHelper.checkContentNotEqual(notEqual);
     }
 
     private void executeTitleCommand(final AssertTitle title, final CommandResult result) {
@@ -191,14 +173,6 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         if (!exceptions.isEmpty()) {
             throw new DefaultFrameworkException(exceptions);
         }
-    }
-
-    private String normalizeLineEndings(final String content) {
-        if (content == null) {
-            return null;
-        }
-        return content.lines()
-                .collect(Collectors.joining("\n"));
     }
 
     private interface AssertCmdPredicate extends Predicate<AbstractCommand> {

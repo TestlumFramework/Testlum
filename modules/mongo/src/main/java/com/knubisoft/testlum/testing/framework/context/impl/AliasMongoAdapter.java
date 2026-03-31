@@ -1,33 +1,32 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
 import com.knubisoft.testlum.testing.framework.condition.OnMongoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
+import com.knubisoft.testlum.testing.framework.context.AbstractAliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.mongodb.MongoOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
-import com.knubisoft.testlum.testing.model.global_config.Mongo;
 import com.knubisoft.testlum.testing.model.scenario.StorageName;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Conditional({OnMongoEnabledCondition.class})
 @Component
-@RequiredArgsConstructor
-public class AliasMongoAdapter implements AliasAdapter {
+public class AliasMongoAdapter extends AbstractAliasAdapter {
 
-    private final MongoOperation mongoOperation;
-    private final Integrations integrations;
+    public AliasMongoAdapter(final MongoOperation mongoOperation,
+                             final Integrations integrations) {
+        super(mongoOperation, integrations);
+    }
 
     @Override
-    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Mongo mongo : integrations.getMongoIntegration().getMongo()) {
-            if (mongo.isEnabled()) {
-                aliasMap.put(StorageName.MONGODB + DelimiterConstant.UNDERSCORE + mongo.getAlias(), mongoOperation);
-            }
-        }
+    protected List<? extends Integration> getIntegrationList(final Integrations integrations) {
+        return integrations.getMongoIntegration().getMongo();
+    }
+
+    @Override
+    protected String getStorageName() {
+        return StorageName.MONGODB.value();
     }
 }

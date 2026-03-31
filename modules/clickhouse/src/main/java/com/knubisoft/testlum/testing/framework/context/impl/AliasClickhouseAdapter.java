@@ -1,34 +1,32 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
 import com.knubisoft.testlum.testing.framework.condition.OnClickhouseEnabledCondition;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
+import com.knubisoft.testlum.testing.framework.context.AbstractAliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.sql.ClickhouseOperation;
-import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.scenario.StorageName;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Conditional({OnClickhouseEnabledCondition.class})
 @Component
-@RequiredArgsConstructor
-public class AliasClickhouseAdapter implements AliasAdapter {
+public class AliasClickhouseAdapter extends AbstractAliasAdapter {
 
-    private final ClickhouseOperation clickhouseOperation;
-    private final Integrations integrations;
+    public AliasClickhouseAdapter(final ClickhouseOperation clickhouseOperation,
+                                  final Integrations integrations) {
+        super(clickhouseOperation, integrations);
+    }
 
     @Override
-    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Clickhouse clickhouse : integrations.getClickhouseIntegration().getClickhouse()) {
-            if (clickhouse.isEnabled()) {
-                aliasMap.put(StorageName.CLICKHOUSE
-                        + DelimiterConstant.UNDERSCORE + clickhouse.getAlias(), clickhouseOperation);
-            }
-        }
+    protected List<? extends Integration> getIntegrationList(final Integrations integrations) {
+        return integrations.getClickhouseIntegration().getClickhouse();
+    }
+
+    @Override
+    protected String getStorageName() {
+        return StorageName.CLICKHOUSE.value();
     }
 }

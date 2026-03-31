@@ -1,32 +1,31 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
 import com.knubisoft.testlum.testing.framework.condition.OnKafkaEnabledCondition;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
+import com.knubisoft.testlum.testing.framework.context.AbstractAliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.kafka.KafkaOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
-import com.knubisoft.testlum.testing.model.global_config.Kafka;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Conditional({OnKafkaEnabledCondition.class})
 @Component
-@RequiredArgsConstructor
-public class AliasKafkaAdapter implements AliasAdapter {
+public class AliasKafkaAdapter extends AbstractAliasAdapter {
 
-    private final KafkaOperation kafkaOperation;
-    private final Integrations integrations;
+    public AliasKafkaAdapter(final KafkaOperation kafkaOperation,
+                             final Integrations integrations) {
+        super(kafkaOperation, integrations);
+    }
 
     @Override
-    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Kafka kafka : integrations.getKafkaIntegration().getKafka()) {
-            if (kafka.isEnabled()) {
-                aliasMap.put("Kafka" + DelimiterConstant.UNDERSCORE + kafka.getAlias(), kafkaOperation);
-            }
-        }
+    protected List<? extends Integration> getIntegrationList(final Integrations integrations) {
+        return integrations.getKafkaIntegration().getKafka();
+    }
+
+    @Override
+    protected String getStorageName() {
+        return "Kafka";
     }
 }

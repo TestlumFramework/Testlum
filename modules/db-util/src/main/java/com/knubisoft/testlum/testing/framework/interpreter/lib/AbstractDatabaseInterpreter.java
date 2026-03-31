@@ -52,16 +52,21 @@ public abstract class AbstractDatabaseInterpreter<T extends AbstractCommand> ext
         addDatabaseMetaData(alias, queries, result);
         AbstractStorageOperation.StorageOperationResult operationResult =
                 getOperation().apply(new ListSource(queries), alias);
-        return toString(operationResult.getRaw());
+        return serializeResult(operationResult.getRaw());
     }
 
-    private void logAllQueries(final List<String> queries, final String alias) {
+    protected String serializeResult(final Object raw) {
+        return toString(raw);
+    }
+
+    protected void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(QUERY,
                 query.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE)));
     }
 
-    private void addDatabaseMetaData(final String alias, final List<String> queries, final CommandResult result) {
+    protected void addDatabaseMetaData(final String alias, final List<String> queries,
+                                        final CommandResult result) {
         result.put(DATABASE_ALIAS, alias);
         result.put(QUERIES, queries);
     }

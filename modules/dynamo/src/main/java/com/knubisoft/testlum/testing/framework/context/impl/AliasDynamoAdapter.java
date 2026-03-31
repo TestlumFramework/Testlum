@@ -1,33 +1,32 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
 import com.knubisoft.testlum.testing.framework.condition.OnDynamoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
+import com.knubisoft.testlum.testing.framework.context.AbstractAliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.dynamodb.DynamoDBOperation;
-import com.knubisoft.testlum.testing.model.global_config.Dynamo;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.scenario.StorageName;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Conditional({OnDynamoEnabledCondition.class})
 @Component
-@RequiredArgsConstructor
-public class AliasDynamoAdapter implements AliasAdapter {
+public class AliasDynamoAdapter extends AbstractAliasAdapter {
 
-    private final DynamoDBOperation dynamoDBOperation;
-    private final Integrations integrations;
+    public AliasDynamoAdapter(final DynamoDBOperation dynamoDBOperation,
+                              final Integrations integrations) {
+        super(dynamoDBOperation, integrations);
+    }
 
     @Override
-    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Dynamo dynamo : integrations.getDynamoIntegration().getDynamo()) {
-            if (dynamo.isEnabled()) {
-                aliasMap.put(StorageName.DYNAMO + DelimiterConstant.UNDERSCORE + dynamo.getAlias(), dynamoDBOperation);
-            }
-        }
+    protected List<? extends Integration> getIntegrationList(final Integrations integrations) {
+        return integrations.getDynamoIntegration().getDynamo();
+    }
+
+    @Override
+    protected String getStorageName() {
+        return StorageName.DYNAMO.value();
     }
 }

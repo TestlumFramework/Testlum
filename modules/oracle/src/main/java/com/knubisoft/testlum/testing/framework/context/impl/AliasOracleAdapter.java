@@ -1,33 +1,32 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
 import com.knubisoft.testlum.testing.framework.condition.OnOracleEnabledCondition;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
+import com.knubisoft.testlum.testing.framework.context.AbstractAliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.sql.OracleOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
-import com.knubisoft.testlum.testing.model.global_config.Oracle;
 import com.knubisoft.testlum.testing.model.scenario.StorageName;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Conditional({OnOracleEnabledCondition.class})
 @Component
-@RequiredArgsConstructor
-public class AliasOracleAdapter implements AliasAdapter {
+public class AliasOracleAdapter extends AbstractAliasAdapter {
 
-    private final OracleOperation oracleOperation;
-    private final Integrations integrations;
+    public AliasOracleAdapter(final OracleOperation oracleOperation,
+                              final Integrations integrations) {
+        super(oracleOperation, integrations);
+    }
 
     @Override
-    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Oracle oracle : integrations.getOracleIntegration().getOracle()) {
-            if (oracle.isEnabled()) {
-                aliasMap.put(StorageName.ORACLE + DelimiterConstant.UNDERSCORE + oracle.getAlias(), oracleOperation);
-            }
-        }
+    protected List<? extends Integration> getIntegrationList(final Integrations integrations) {
+        return integrations.getOracleIntegration().getOracle();
+    }
+
+    @Override
+    protected String getStorageName() {
+        return StorageName.ORACLE.value();
     }
 }

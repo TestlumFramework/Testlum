@@ -1,32 +1,31 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
 import com.knubisoft.testlum.testing.framework.condition.OnSESEnabledCondition;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
+import com.knubisoft.testlum.testing.framework.context.AbstractAliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.ses.SESOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
-import com.knubisoft.testlum.testing.model.global_config.Ses;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Conditional({OnSESEnabledCondition.class})
 @Component
-@RequiredArgsConstructor
-public class AliasSESAdapter implements AliasAdapter {
+public class AliasSESAdapter extends AbstractAliasAdapter {
 
-    private final SESOperation sesOperation;
-    private final Integrations integrations;
+    public AliasSESAdapter(final SESOperation sesOperation,
+                           final Integrations integrations) {
+        super(sesOperation, integrations);
+    }
 
     @Override
-    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Ses ses : integrations.getSesIntegration().getSes()) {
-            if (ses.isEnabled()) {
-                aliasMap.put("SES" + DelimiterConstant.UNDERSCORE + ses.getAlias(), sesOperation);
-            }
-        }
+    protected List<? extends Integration> getIntegrationList(final Integrations integrations) {
+        return integrations.getSesIntegration().getSes();
+    }
+
+    @Override
+    protected String getStorageName() {
+        return "SES";
     }
 }

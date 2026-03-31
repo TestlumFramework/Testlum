@@ -1,52 +1,28 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
 import com.knubisoft.testlum.testing.framework.condition.OnOracleEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
-import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Oracle;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-@Slf4j
 @Conditional({OnOracleEnabledCondition.class})
 @Component("oracleOperation")
-public class OracleOperation extends AbstractStorageOperation {
-
-    private final Map<AliasEnv, AbstractSqlExecutor> oracleExecutor;
+public class OracleOperation extends AbstractSqlOperation {
 
     public OracleOperation(@Autowired(required = false) @Qualifier("oracleDataSource")
                            final Map<AliasEnv, DataSource> oracleDataSource) {
-        oracleExecutor = new HashMap<>();
-        oracleDataSource.forEach((key, value) -> oracleExecutor.put(key, new OracleExecutor(value)));
+        super(oracleDataSource, Oracle.class);
     }
 
     @Override
-    public StorageOperationResult apply(final Source source, final String databaseAlias) {
-        List<String> queriesOracle = source.getQueries();
-        List<QueryResult<Object>> oracleAppliedRecords =
-                oracleExecutor.get(new AliasEnv(databaseAlias, EnvManager.currentEnv())).executeQueries(queriesOracle);
-        return new StorageOperationResult(oracleAppliedRecords);
-    }
-
-    @Override
-    public void clearSystem() {
-        oracleExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Oracle.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
-                sqlExecutor.truncate();
-            }
-        });
+    protected AbstractSqlExecutor createExecutor(final DataSource dataSource) {
+        return new OracleExecutor(dataSource);
     }
 }

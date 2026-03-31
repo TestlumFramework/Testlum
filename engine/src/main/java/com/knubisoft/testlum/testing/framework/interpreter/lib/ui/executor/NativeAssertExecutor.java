@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -20,14 +19,10 @@ import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @ExecutorForClass(NativeAssert.class)
 public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
-
-    private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
-    private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
 
     public NativeAssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -96,34 +91,11 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     }
 
     private void checkContentIsEqual(final AssertEqual equal) {
-        if (equal.getContent().stream()
-                    .map(this::normalizeLineEndings)
-                    .distinct()
-                    .count() != 1) {
-            throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_NOT_EQUAL, formatContent(equal)));
-        }
+        AssertEqualityHelper.checkContentIsEqual(equal);
     }
 
     private void checkContentNotEqual(final AssertNotEqual notEqual) {
-        List<String> content = notEqual.getContent();
-        if (content.stream()
-                    .map(this::normalizeLineEndings)
-                    .distinct()
-                    .count() == 1) {
-            throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_IS_EQUAL, formatContent(notEqual)));
-        }
-    }
-
-    private String normalizeLineEndings(final String content) {
-        if (content == null) {
-            return null;
-        }
-        return content.lines()
-                .collect(Collectors.joining("\n"));
-    }
-
-    private String formatContent(final AssertEquality action) {
-        return String.join(DelimiterConstant.COMMA, action.getContent());
+        AssertEqualityHelper.checkContentNotEqual(notEqual);
     }
 
 }

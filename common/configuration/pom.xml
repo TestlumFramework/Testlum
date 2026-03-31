@@ -79,6 +79,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>connection-template</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>

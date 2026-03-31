@@ -29,18 +29,25 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
 
     private void compareByType(final JsonNode expected, final JsonNode actual,
                                final JsonNodeType expType, final JsonNodeType actType) throws MatchException {
-        if (expType == JsonNodeType.BOOLEAN && actType == JsonNodeType.BOOLEAN) {
-            compareBoolean(expected, actual);
-        } else if (expType == JsonNodeType.NUMBER && actType == JsonNodeType.NUMBER) {
-            compareNumber(expected, actual);
+        if (expType == actType) {
+            compareSameType(expected, actual, expType);
         } else if (isStringToComparableType(expType, actType)) {
             stringComparator.compare(expected.asText(), actual.asText());
-        } else if (expType == JsonNodeType.ARRAY && actType == JsonNodeType.ARRAY) {
-            compareArray(expected, actual);
-        } else if (expType == JsonNodeType.OBJECT && actType == JsonNodeType.OBJECT) {
-            compareObject(expected, actual);
         } else {
             raiseTypeMismatch(expType, actType);
+        }
+    }
+
+    private void compareSameType(final JsonNode expected, final JsonNode actual,
+                                 final JsonNodeType type) throws MatchException {
+        switch (type) {
+            case NULL, MISSING -> { }
+            case BOOLEAN -> compareBoolean(expected, actual);
+            case NUMBER -> compareNumber(expected, actual);
+            case STRING -> stringComparator.compare(expected.asText(), actual.asText());
+            case ARRAY -> compareArray(expected, actual);
+            case OBJECT -> compareObject(expected, actual);
+            default -> raiseTypeMismatch(type, type);
         }
     }
 

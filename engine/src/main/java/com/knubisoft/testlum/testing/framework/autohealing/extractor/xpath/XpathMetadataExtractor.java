@@ -38,7 +38,7 @@ public class XpathMetadataExtractor implements SpecificMetadataExtractor<Xpath>,
 
     @Override
     public void extractId(final String xpath, final HealingElementMetadata healingElementMetadata) {
-        String regex = "@id='([^']+)'](?![^/]*?/)";
+        String regex = "@id=['\"]([^'\"]+)['\"]\\](?![^/]*?/)";
 
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(xpath);
@@ -79,7 +79,7 @@ public class XpathMetadataExtractor implements SpecificMetadataExtractor<Xpath>,
 
     @Override
     public void extractAncestorId(final String xpath, final HealingElementMetadata healingElementMetadata) {
-        Pattern idPattern = Pattern.compile("@id='([^']+)'");
+        Pattern idPattern = Pattern.compile("@id=['\"]([^'\"]+)['\"]");
         Matcher idMatcher = idPattern.matcher(xpath);
         while (idMatcher.find()) {
             healingElementMetadata.addAncestorId(idMatcher.group(1));

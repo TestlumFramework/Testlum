@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,7 +33,7 @@ class LocatorCollectorTest {
     private LocatorCollector collector;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         collector = createCollectorWithLocators(buildTestLocatorMap());
     }
 
@@ -53,23 +52,41 @@ class LocatorCollectorTest {
         return locator;
     }
 
-    private LocatorCollector createCollectorWithLocators(
-            final Map<String, Locator> locators) throws Exception {
-        final Object unsafe = getUnsafe();
-        final LocatorCollector instance = (LocatorCollector) unsafe.getClass()
-                .getMethod("allocateInstance", Class.class)
-                .invoke(unsafe, LocatorCollector.class);
+    @SuppressWarnings("unchecked")
+    private LocatorCollector createCollectorWithLocators(final Map<String, Locator> locators) {
+        final XMLParsers xmlParsers = mock(XMLParsers.class);
+        final PageValidator pageValidator = mock(PageValidator.class);
+        final TestResourceSettings testResourceSettings = mock(TestResourceSettings.class);
+        final FileSearcher fileSearcher = mock(FileSearcher.class);
 
-        final Field locatorMapField = LocatorCollector.class.getDeclaredField("locatorMap");
-        locatorMapField.setAccessible(true);
-        locatorMapField.set(instance, locators);
-        return instance;
-    }
+        when(testResourceSettings.getPagesFolder()).thenReturn(new File("/pages"));
+        when(testResourceSettings.getComponentsFolder()).thenReturn(new File("/components"));
 
-    private Object getUnsafe() throws Exception {
-        final Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-        theUnsafe.setAccessible(true);
-        return theUnsafe.get(null);
+        final Map<String, File> pageFileMap = new LinkedHashMap<>();
+        final Map<File, Page> fileToPage = new LinkedHashMap<>();
+
+        for (Map.Entry<String, Locator> entry : locators.entrySet()) {
+            String pageName = entry.getKey().split("\\.")[0];
+            File pageFile = new File(pageName + ".xml");
+            pageFileMap.putIfAbsent(pageName, pageFile);
+            fileToPage.computeIfAbsent(pageFile, f -> {
+                Page page = new Page();
+                page.setLocators(new Locators());
+                return page;
+            });
+            fileToPage.get(pageFile).getLocators().getLocator().add(entry.getValue());
+        }
+
+        when(fileSearcher.collectFilesFromFolder(new File("/pages"))).thenReturn(pageFileMap);
+        when(fileSearcher.collectFilesFromFolder(new File("/components"))).thenReturn(new LinkedHashMap<>());
+
+        final XMLParser<Page> pageParser = mock(XMLParser.class);
+        when(xmlParsers.forPageLocator()).thenReturn(pageParser);
+        for (Map.Entry<File, Page> entry : fileToPage.entrySet()) {
+            when(pageParser.process(entry.getKey())).thenReturn(entry.getValue());
+        }
+
+        return new LocatorCollector(xmlParsers, pageValidator, testResourceSettings, fileSearcher);
     }
 
     @Nested

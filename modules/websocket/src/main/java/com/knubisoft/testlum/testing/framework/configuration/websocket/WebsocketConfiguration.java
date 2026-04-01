@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.CompositeMessageConverter;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -103,7 +103,7 @@ public class WebsocketConfiguration {
     private WebSocketStompClient getWebsocketStompClient() {
         WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         List<MessageConverter> messageConverters = Arrays.asList(
-                new MappingJackson2MessageConverter(),
+                new JacksonJsonMessageConverter(),
                 new StringMessageConverter());
         stompClient.setMessageConverter(new CompositeMessageConverter(messageConverters));
         return stompClient;

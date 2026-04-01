@@ -13,7 +13,6 @@
 
     <artifactId>engine</artifactId>
     <name>TESTLUM</name>
-    <packaging>pom</packaging>
 
     <properties>
         <models.dir>../modules/models/src/main/java</models.dir>

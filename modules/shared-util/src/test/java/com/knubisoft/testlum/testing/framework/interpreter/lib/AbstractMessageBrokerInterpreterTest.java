@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
@@ -282,11 +283,77 @@ abstract class AbstractMessageBrokerInterpreterTest {
     }
 
     @Nested
-    class Constants {
+    class CompareMessages {
+
+        private void setupPrettifierMocks() {
+            when(stringPrettifier.prettify(anyString())).thenAnswer(inv -> inv.getArgument(0));
+            when(stringPrettifier.prettifyToSave(anyString())).thenAnswer(inv -> inv.getArgument(0));
+            when(stringPrettifier.asJsonResult(anyString())).thenAnswer(inv -> inv.getArgument(0));
+        }
+
         @Test
-        void verifyProtectedConstants() {
+        void matchingMessagesDoNotThrow() {
+            setupPrettifierMocks();
+            List<String> actual = List.of("msg1", "msg2");
+            when(jacksonService.writeValueAsString(actual)).thenReturn("[\"msg1\",\"msg2\"]");
+            CommandResult result = new CommandResult();
+
+            assertDoesNotThrow(() -> interpreter.callCompareMessages(
+                    actual, "[\"msg1\",\"msg2\"]", result));
+        }
+
+        @Test
+        void mismatchThrowsComparisonException() {
+            setupPrettifierMocks();
+            List<String> actual = List.of("msg1");
+            when(jacksonService.writeValueAsString(actual)).thenReturn("[\"msg1\"]");
+            CommandResult result = new CommandResult();
+
+            assertThrows(ComparisonException.class, () -> interpreter.callCompareMessages(
+                    actual, "[\"msg1\",\"msg2\"]", result));
+        }
+
+        @Test
+        void setsActualAndExpectedOnResult() {
+            setupPrettifierMocks();
+            List<String> actual = List.of("msg1");
+            when(jacksonService.writeValueAsString(actual)).thenReturn("[\"msg1\"]");
+            CommandResult result = new CommandResult();
+
+            interpreter.callCompareMessages(actual, "[\"msg1\"]", result);
+            assertNotNull(result.getActual());
+            assertNotNull(result.getExpected());
+        }
+    }
+
+    @Nested
+    class LogMessageBrokerMetaData {
+        @Test
+        void doesNotThrow() {
+            when(stringPrettifier.asJsonResult(anyString())).thenReturn("content");
+            assertDoesNotThrow(() -> interpreter.callLogMessageBrokerMetaData(
+                    "send", "Topic: {}", "myTopic", "message content"));
+        }
+    }
+
+    @Nested
+    class ProtectedConstants {
+        @Test
+        void verifySendAndReceiveActions() {
             assertEquals("send", TestBrokerInterpreter.SEND_ACTION_VAL);
             assertEquals("receive", TestBrokerInterpreter.RECEIVE_ACTION_VAL);
+        }
+
+        @Test
+        void verifyAdditionalConstants() {
+            assertEquals("Action", TestBrokerInterpreter.ACTION_VAL);
+            assertEquals("Send", TestBrokerInterpreter.SEND_VAL);
+            assertEquals("Receive", TestBrokerInterpreter.RECEIVE_VAL);
+            assertEquals("Enable", TestBrokerInterpreter.ENABLE_VAL);
+            assertEquals("Disable", TestBrokerInterpreter.DISABLE_VAL);
+            assertEquals("Message to send", TestBrokerInterpreter.MESSAGE_TO_SEND_VAL);
+            assertEquals("Headers status", TestBrokerInterpreter.HEADERS_STATUS_VAL);
+            assertEquals("Timeout millis", TestBrokerInterpreter.TIMEOUT_MILLIS_VAL);
         }
     }
 
@@ -316,6 +383,14 @@ abstract class AbstractMessageBrokerInterpreterTest {
     static class TestBrokerInterpreter extends AbstractMessageBrokerInterpreter<TestBrokerCommand> {
         static final String SEND_ACTION_VAL = SEND_ACTION;
         static final String RECEIVE_ACTION_VAL = RECEIVE_ACTION;
+        static final String ACTION_VAL = ACTION;
+        static final String SEND_VAL = SEND;
+        static final String RECEIVE_VAL = RECEIVE;
+        static final String ENABLE_VAL = ENABLE;
+        static final String DISABLE_VAL = DISABLE;
+        static final String MESSAGE_TO_SEND_VAL = MESSAGE_TO_SEND;
+        static final String HEADERS_STATUS_VAL = HEADERS_STATUS;
+        static final String TIMEOUT_MILLIS_VAL = TIMEOUT_MILLIS;
 
         boolean processActionCalled;
         boolean failOnAction;
@@ -383,6 +458,19 @@ abstract class AbstractMessageBrokerInterpreterTest {
                                                   final String destKey, final String destValue,
                                                   final CommandResult result) {
             addMessageBrokerGeneralMetaData(alias, action, destKey, destValue, result);
+        }
+
+        <M> void callCompareMessages(final List<M> actualMessages,
+                                      final String expectedValue,
+                                      final CommandResult result) {
+            compareMessages(actualMessages, expectedValue, result);
+        }
+
+        void callLogMessageBrokerMetaData(final String action,
+                                           final String destinationLogKey,
+                                           final String destination,
+                                           final String content) {
+            logMessageBrokerMetaData(action, destinationLogKey, destination, content);
         }
     }
 }

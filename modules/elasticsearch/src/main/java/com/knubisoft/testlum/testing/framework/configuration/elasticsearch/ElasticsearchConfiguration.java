@@ -15,7 +15,10 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -27,37 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Spring configuration that creates and registers Elasticsearch REST client beans for each configured environment.
+ */
 @Configuration
 @Conditional({OnElasticEnabledCondition.class})
 @RequiredArgsConstructor
 public class ElasticsearchConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
-
-    @Bean(name = "restHighLevelClient")
-    public Map<AliasEnv, RestHighLevelClient> restHighLevelClient(
-            final Map<AliasEnv, RestClientBuilder> restClientBuilder) {
-        Map<AliasEnv, RestHighLevelClient> restHighLevelClientMap = new HashMap<>();
-        restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
-            RestHighLevelClient checkedClient = connectionTemplate.executeWithRetry(
-                    String.format(LogMessage.CONNECTION_INTEGRATION_DATA, "ElasticSearch HighLevelClient",
-                            aliasEnv.getAlias()),
-                    () -> new RestHighLevelClient(clientBuilder),
-                    forElasticRestHighLevelClient()
-            );
-            restHighLevelClientMap.put(aliasEnv, checkedClient);
-        });
-        return restHighLevelClientMap;
-    }
-
-    private IntegrationHealthCheck<RestHighLevelClient> forElasticRestHighLevelClient() {
-        return restHighLevelClient -> {
-            boolean isAlive = restHighLevelClient.ping(RequestOptions.DEFAULT);
-            if (!isAlive) {
-                throw new DefaultFrameworkException("Connection refused");
-            }
-        };
-    }
 
     @Bean(name = "restClient")
     public Map<AliasEnv, RestClient> restClient(final Map<AliasEnv, RestClientBuilder> restClientBuilder) {

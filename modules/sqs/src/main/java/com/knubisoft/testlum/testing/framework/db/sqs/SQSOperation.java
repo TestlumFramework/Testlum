@@ -35,8 +35,8 @@ public class SQSOperation extends AbstractStorageOperation {
     @Override
     public void clearSystem() {
         this.sqsClient.forEach((aliasEnv, amazonSQS) -> {
-            if (isTruncate(Sqs.class, aliasEnv)
-                && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())
+                && isTruncate(Sqs.class, aliasEnv)) {
                 ListQueuesResponse listQueuesResponse = amazonSQS.listQueues();
                 List<String> queueUrls = listQueuesResponse.queueUrls();
                 queueUrls.forEach(queueUrl -> amazonSQS.purgeQueue(

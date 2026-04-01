@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework;
 
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -58,39 +57,21 @@ class ConnectionManagerTest {
     }
 
     @Test
-    void closeConnectionsCallsCloseOnElasticRestHighLevelClients() throws IOException {
-        AliasEnv alias = mock(AliasEnv.class);
-        RestHighLevelClient highLevelClient = mock(RestHighLevelClient.class);
-
-        Map<AliasEnv, RestHighLevelClient> highLevelClientMap = Map.of(alias, highLevelClient);
-        ReflectionTestUtils.setField(connectionManager, "elasticRestHighLevelClientMap", highLevelClientMap);
-
-        connectionManager.closeConnections();
-
-        verify(highLevelClient).close();
-    }
-
-    @Test
     void closeConnectionsClosesAllConnectionTypes() throws IOException {
         AliasEnv rabbitAlias = mock(AliasEnv.class);
         AliasEnv restAlias = mock(AliasEnv.class);
-        AliasEnv highLevelAlias = mock(AliasEnv.class);
 
         ConnectionFactory factory = mock(ConnectionFactory.class);
         RestClient restClient = mock(RestClient.class);
-        RestHighLevelClient highLevelClient = mock(RestHighLevelClient.class);
 
         ReflectionTestUtils.setField(connectionManager, "rabbitConnectionFactoryMap",
                 Map.of(rabbitAlias, factory));
         ReflectionTestUtils.setField(connectionManager, "elasticRestClientMap",
                 Map.of(restAlias, restClient));
-        ReflectionTestUtils.setField(connectionManager, "elasticRestHighLevelClientMap",
-                Map.of(highLevelAlias, highLevelClient));
 
         connectionManager.closeConnections();
 
         verify(factory).resetConnection();
         verify(restClient).close();
-        verify(highLevelClient).close();
     }
 }

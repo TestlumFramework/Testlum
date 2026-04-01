@@ -206,4 +206,40 @@ class ScenarioContextTest {
                     context.getCondition("someExpression"));
         }
     }
+
+    @Nested
+    class ContainsKey {
+        @Test
+        void returnsTrueForContextMapKey() {
+            context.set("myKey", "val");
+            assertTrue(context.containsKey("myKey"));
+        }
+
+        @Test
+        void returnsTrueForConditionMapKey() {
+            context.setCondition("condKey", true);
+            assertTrue(context.containsKey("condKey"));
+        }
+
+        @Test
+        void returnsFalseForMissingKey() {
+            assertFalse(context.containsKey("absent"));
+        }
+    }
+
+    @Nested
+    class GetFromConditionMap {
+        @Test
+        void returnsFalseConditionAsString() {
+            context.setCondition("flag", false);
+            assertEquals("false", context.get("flag"));
+        }
+
+        @Test
+        void throwsWhenKeyInNeitherMap() {
+            context.setCondition("other", true);
+            assertThrows(IllegalArgumentException.class,
+                    () -> context.get("missing"));
+        }
+    }
 }

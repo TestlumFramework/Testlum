@@ -23,7 +23,7 @@
     </dependencySets>
     <files>
         <file>
-            <source>${project.basedir}/src/main/resources/META-INF/spring/org.springframework.context.ApplicationContextInitializer.imports</source>
+            <source>${project.basedir}/src/main/resources/META-INF/spring/initializers.imports</source>
             <outputDirectory>META-INF/spring</outputDirectory>
         </file>
     </files>

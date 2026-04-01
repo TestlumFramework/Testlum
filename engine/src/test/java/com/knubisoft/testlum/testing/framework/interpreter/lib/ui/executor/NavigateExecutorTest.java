@@ -80,6 +80,17 @@ class NavigateExecutorTest {
 
             verify(navigation).refresh();
         }
+
+        @Test
+        void putsReloadTypeInResult() {
+            Navigate navigate = new Navigate();
+            navigate.setCommand(NavigateCommand.RELOAD);
+            CommandResult result = new CommandResult();
+
+            executor.execute(navigate, result);
+
+            assertEquals(NavigateCommand.RELOAD.value(), result.getMetadata().get(ResultUtil.NAVIGATE_TYPE));
+        }
     }
 
     @Nested
@@ -97,6 +108,33 @@ class NavigateExecutorTest {
 
             verify(navigation).to("http://localhost/home");
             assertEquals("/home", result.getMetadata().get(ResultUtil.NAVIGATE_URL));
+        }
+
+        @Test
+        void putsToTypeInResult() {
+            Navigate navigate = new Navigate();
+            navigate.setCommand(NavigateCommand.TO);
+            navigate.setPath("/dashboard");
+            CommandResult result = new CommandResult();
+            when(uiUtil.getUrl(eq("/dashboard"), eq("dev"), eq(UiType.WEB))).thenReturn("http://localhost/dashboard");
+
+            executor.execute(navigate, result);
+
+            assertEquals(NavigateCommand.TO.value(), result.getMetadata().get(ResultUtil.NAVIGATE_TYPE));
+            assertEquals("/dashboard", result.getMetadata().get(ResultUtil.NAVIGATE_URL));
+        }
+
+        @Test
+        void takesScreenshotAfterNavigation() {
+            Navigate navigate = new Navigate();
+            navigate.setCommand(NavigateCommand.TO);
+            navigate.setPath("/page");
+            CommandResult result = new CommandResult();
+            when(uiUtil.getUrl(any(), any(), any())).thenReturn("http://localhost/page");
+
+            executor.execute(navigate, result);
+
+            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 }

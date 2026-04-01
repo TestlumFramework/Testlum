@@ -7,4 +7,5 @@
     <suppress files="ExceptionMessage.java" checks="LineLength"/>
     <suppress files=".*Test\.java" checks="MagicNumber"/>
     <suppress files=".*Test\.java" checks="MethodLength"/>
+    <suppress files=".*Test\.java" checks="RedundantModifier"/>
 </suppressions>

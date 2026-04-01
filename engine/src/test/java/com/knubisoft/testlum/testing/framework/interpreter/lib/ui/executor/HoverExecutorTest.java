@@ -104,4 +104,58 @@ class HoverExecutorTest {
             verify(uiUtil, never()).findWebElement(any(), any(), any());
         }
     }
+
+    @Nested
+    class MoveToEmptySpace {
+
+        @Test
+        void movesToEmptySpaceWhenFlagIsTrue() {
+            Hover hover = new Hover();
+            hover.setLocator("tooltip-trigger");
+            hover.setMoveToEmptySpace(true);
+            CommandResult result = new CommandResult();
+            WebElement element = mock(WebElement.class);
+            when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
+            when(uiUtil.findWebElement(any(), eq("tooltip-trigger"), any())).thenReturn(element);
+
+            WebElement htmlElement = mock(WebElement.class);
+            when(driver.findElement(any())).thenReturn(htmlElement);
+
+            executor.execute(hover, result);
+
+            verify(driver).findElement(any());
+        }
+
+        @Test
+        void doesNotMoveToEmptySpaceWhenFlagIsFalse() {
+            Hover hover = new Hover();
+            hover.setLocator("simple-hover");
+            hover.setMoveToEmptySpace(false);
+            CommandResult result = new CommandResult();
+            WebElement element = mock(WebElement.class);
+            when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
+            when(uiUtil.findWebElement(any(), eq("simple-hover"), any())).thenReturn(element);
+
+            executor.execute(hover, result);
+
+            verify(driver, never()).findElement(any());
+        }
+
+        @Test
+        void movesToEmptySpaceEvenWhenConditionIsFalse() {
+            Hover hover = new Hover();
+            hover.setLocator("hover-target");
+            hover.setMoveToEmptySpace(true);
+            CommandResult result = new CommandResult();
+            when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(false);
+
+            WebElement htmlElement = mock(WebElement.class);
+            when(driver.findElement(any())).thenReturn(htmlElement);
+
+            executor.execute(hover, result);
+
+            verify(driver).findElement(any());
+            verify(uiUtil, never()).findWebElement(any(), any(), any());
+        }
+    }
 }

@@ -14,7 +14,12 @@ class ConnectionTemplateImplTest {
 
     @BeforeEach
     void setUp() {
-        template = new ConnectionTemplateImpl();
+        template = new ConnectionTemplateImpl() {
+            @Override
+            void sleep() {
+                // no-op to avoid delays in tests
+            }
+        };
     }
 
     @Nested

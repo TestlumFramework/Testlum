@@ -24,7 +24,9 @@ public final class DataSourceUtil {
 
     private void setDefaultHikariSettings(final HikariDataSource hikariDataSourceOriginal,
                                           final DatabaseConfig dataSource) {
-        hikariDataSourceOriginal.setDriverClassName(dataSource.getJdbcDriver());
+        if (StringUtils.isNotBlank(dataSource.getJdbcDriver())) {
+            hikariDataSourceOriginal.setDriverClassName(dataSource.getJdbcDriver());
+        }
         hikariDataSourceOriginal.setJdbcUrl(dataSource.getConnectionUrl());
         hikariDataSourceOriginal.setUsername(dataSource.getUsername());
         hikariDataSourceOriginal.setPassword(dataSource.getPassword());

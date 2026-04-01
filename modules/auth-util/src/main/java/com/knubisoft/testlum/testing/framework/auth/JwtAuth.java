@@ -19,7 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -82,9 +82,14 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private String doRequest(final Auth auth, final HttpEntity<String> request) {
-        RestTemplate restTemplate = new RestTemplate();
+        RestClient restClient = RestClient.create();
         try {
-            return restTemplate.postForObject(getFullApiUrl(auth), request, String.class);
+            return restClient.post()
+                    .uri(getFullApiUrl(auth))
+                    .headers(h -> h.addAll(request.getHeaders()))
+                    .body(request.getBody())
+                    .retrieve()
+                    .body(String.class);
         } catch (HttpClientErrorException exception) {
             logResponseStatusError(exception);
         }

@@ -3,7 +3,11 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.*;
+import com.knubisoft.testlum.testing.framework.util.InnerScrollScript;
+import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,6 +78,18 @@ class ScrollWebExecutorTest {
             verify(logUtil).logScrollInfo(eq(scroll));
             verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
+
+        @Test
+        void takesScreenshotAfterPageScroll() {
+            Scroll scroll = new Scroll();
+            scroll.setType(ScrollType.PAGE);
+            scroll.setValue(500);
+            CommandResult result = new CommandResult();
+
+            executor.execute(scroll, result);
+
+            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+        }
     }
 
     @Nested
@@ -105,6 +121,39 @@ class ScrollWebExecutorTest {
                     .thenThrow(new DefaultFrameworkException("error"));
 
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(scroll, result));
+        }
+
+        @Test
+        void succeedsIfAtLeastOneScriptWorks() {
+            Scroll scroll = new Scroll();
+            scroll.setType(ScrollType.INNER);
+            scroll.setValue(100);
+            when(innerScrollScript.getInnerScrollScript(eq(scroll), eq(uiUtil)))
+                    .thenReturn(List.of("failing-script", "working-script"));
+            when(javascriptUtil.executeJsScript(eq("failing-script"), eq(driver)))
+                    .thenThrow(new DefaultFrameworkException("error"));
+            when(javascriptUtil.executeJsScript(eq("working-script"), eq(driver)))
+                    .thenReturn(null);
+
+            CommandResult result = new CommandResult();
+            executor.execute(scroll, result);
+
+            verify(javascriptUtil, times(2)).executeJsScript(anyString(), eq(driver));
+        }
+
+        @Test
+        void addsMetadataForInnerScroll() {
+            Scroll scroll = new Scroll();
+            scroll.setType(ScrollType.INNER);
+            scroll.setValue(150);
+            CommandResult result = new CommandResult();
+            when(innerScrollScript.getInnerScrollScript(eq(scroll), eq(uiUtil)))
+                    .thenReturn(List.of("script1"));
+
+            executor.execute(scroll, result);
+
+            verify(resultUtil).addScrollMetaData(eq(scroll), eq(result));
+            verify(logUtil).logScrollInfo(eq(scroll));
         }
     }
 }

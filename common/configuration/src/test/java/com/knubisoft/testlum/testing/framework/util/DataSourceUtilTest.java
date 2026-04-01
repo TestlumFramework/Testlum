@@ -98,7 +98,7 @@ class DataSourceUtilTest {
         hikari.setMaxLifetime(60000);
 
         DatabaseConfig config = mock(DatabaseConfig.class);
-        when(config.getJdbcDriver()).thenReturn("com.zaxxer.hikari.HikariDataSource");
+        when(config.getJdbcDriver()).thenReturn(null);
         when(config.getConnectionUrl()).thenReturn("jdbc:h2:mem:test");
         when(config.getUsername()).thenReturn("user");
         when(config.getPassword()).thenReturn("pass");

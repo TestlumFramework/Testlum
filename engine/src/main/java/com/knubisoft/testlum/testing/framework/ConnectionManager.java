@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.framework;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,10 +22,6 @@ public class ConnectionManager {
     @Qualifier("restClient")
     private Map<AliasEnv, RestClient> elasticRestClientMap;
 
-    @Autowired(required = false)
-    @Qualifier("restHighLevelClient")
-    private Map<AliasEnv, RestHighLevelClient> elasticRestHighLevelClientMap;
-
     public void closeConnections() {
         closeRabbitmqConnections();
         try {
@@ -45,11 +40,6 @@ public class ConnectionManager {
     private void closeElasticsearchConnections() throws IOException {
         if (Objects.nonNull(elasticRestClientMap)) {
             for (RestClient restClient : elasticRestClientMap.values()) {
-                restClient.close();
-            }
-        }
-        if (Objects.nonNull(elasticRestHighLevelClientMap)) {
-            for (RestHighLevelClient restClient : elasticRestHighLevelClientMap.values()) {
                 restClient.close();
             }
         }

@@ -7,10 +7,10 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -18,15 +18,18 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Storage operation implementation for Elasticsearch that handles index cleanup and query execution.
+ */
 @Conditional({OnElasticEnabledCondition.class})
 @Component
 public class ElasticsearchOperation extends AbstractStorageOperation {
 
-    private final Map<AliasEnv, RestHighLevelClient> restHighLevelClient;
+    private final Map<AliasEnv, RestClient> restClient;
 
-    public ElasticsearchOperation(@Autowired(required = false)
-                                  final Map<AliasEnv, RestHighLevelClient> restHighLevelClient) {
-        this.restHighLevelClient = restHighLevelClient;
+    public ElasticsearchOperation(@Autowired(required = false) @Qualifier("restClient")
+                                  final Map<AliasEnv, RestClient> restClient) {
+        this.restClient = restClient;
     }
 
     @Override
@@ -36,13 +39,13 @@ public class ElasticsearchOperation extends AbstractStorageOperation {
 
     @Override
     public void clearSystem() {
-        DeleteIndexRequest request = new DeleteIndexRequest("*");
-        for (Map.Entry<AliasEnv, RestHighLevelClient> entry : restHighLevelClient.entrySet()) {
+        Request request = new Request("DELETE", "/_all");
+        for (Map.Entry<AliasEnv, RestClient> entry : restClient.entrySet()) {
             AliasEnv aliasEnv = entry.getKey();
             if (isTruncate(Elasticsearch.class, aliasEnv)
                     && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 try {
-                    entry.getValue().indices().delete(request, RequestOptions.DEFAULT);
+                    entry.getValue().performRequest(request);
                 } catch (IOException e) {
                     throw new DefaultFrameworkException(e);
                 }

@@ -79,7 +79,7 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
         return new IntegrationFailureException(error);
     }
 
-    private void sleep() {
+    void sleep() {
         try {
             TimeUnit.MILLISECONDS.sleep(INITIAL_BACKOFF_MS);
         } catch (InterruptedException e) {

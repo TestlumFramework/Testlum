@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.wait.util.WaitUtil;
+import com.knubisoft.testlum.testing.model.scenario.Clickable;
 import com.knubisoft.testlum.testing.model.scenario.Timeunit;
 import com.knubisoft.testlum.testing.model.scenario.UiWait;
 import com.knubisoft.testlum.testing.model.scenario.Visible;
@@ -23,6 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -78,6 +80,19 @@ class WaitExecutorTest {
             verify(waitUtil).sleep(5L, TimeUnit.SECONDS);
             verify(resultUtil).addWaitMetaData(eq("5"), eq(TimeUnit.SECONDS), eq(result));
         }
+
+        @Test
+        void sleepsWithMilliseconds() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("500");
+            uiWait.setUnit(Timeunit.MILLIS);
+            CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.MILLISECONDS);
+
+            executor.execute(uiWait, result);
+
+            verify(waitUtil).sleep(500L, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Nested
@@ -100,6 +115,64 @@ class WaitExecutorTest {
 
             verify(uiUtil).findWebElement(any(), eq("loading-spinner"), any());
         }
+
+        @Test
+        void putsLocatorInResultForVisible() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("5");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Visible visible = new Visible();
+            visible.setLocator("my-element");
+            uiWait.setVisible(visible);
+            CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            WebElement element = mock(WebElement.class);
+            when(uiUtil.findWebElement(any(), eq("my-element"), any())).thenReturn(element);
+
+            executor.execute(uiWait, result);
+
+            assertEquals("my-element", result.getMetadata().get(ResultUtil.LOCATOR_ID));
+        }
+    }
+
+    @Nested
+    class WaitForClickable {
+
+        @Test
+        void waitsForElementClickableWhenClickableIsSet() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("8");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Clickable clickable = new Clickable();
+            clickable.setLocator("submit-btn");
+            uiWait.setClickable(clickable);
+            CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            WebElement element = mock(WebElement.class);
+            when(uiUtil.findWebElement(any(), eq("submit-btn"), any())).thenReturn(element);
+
+            executor.execute(uiWait, result);
+
+            verify(uiUtil).findWebElement(any(), eq("submit-btn"), any());
+        }
+
+        @Test
+        void putsLocatorInResultForClickable() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("5");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Clickable clickable = new Clickable();
+            clickable.setLocator("btn-id");
+            uiWait.setClickable(clickable);
+            CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            WebElement element = mock(WebElement.class);
+            when(uiUtil.findWebElement(any(), eq("btn-id"), any())).thenReturn(element);
+
+            executor.execute(uiWait, result);
+
+            assertEquals("btn-id", result.getMetadata().get(ResultUtil.LOCATOR_ID));
+        }
     }
 
     @Nested
@@ -117,5 +190,37 @@ class WaitExecutorTest {
             verify(logUtil).logException(any(Exception.class));
             verify(resultUtil).setExceptionResult(eq(result), any(Exception.class));
         }
+
+        @Test
+        void checksStopScenarioOnFailure() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("not-a-number");
+            CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+
+            executor.execute(uiWait, result);
+
+            verify(configUtil).checkIfStopScenarioOnFailure(any(Exception.class));
+        }
+
+        @Test
+        void handlesVisibleWaitExceptionGracefully() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("5");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Visible visible = new Visible();
+            visible.setLocator("nonexistent");
+            uiWait.setVisible(visible);
+            CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            when(uiUtil.findWebElement(any(), eq("nonexistent"), any()))
+                    .thenThrow(new RuntimeException("Element not found"));
+
+            executor.execute(uiWait, result);
+
+            verify(logUtil).logException(any(Exception.class));
+            verify(resultUtil).setExceptionResult(eq(result), any(Exception.class));
+        }
     }
+
 }

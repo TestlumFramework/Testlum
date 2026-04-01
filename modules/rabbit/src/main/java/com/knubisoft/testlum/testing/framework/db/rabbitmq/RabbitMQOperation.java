@@ -36,8 +36,8 @@ public class RabbitMQOperation extends AbstractStorageOperation {
     @Override
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
-            if (isTruncate(Rabbitmq.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())
+                    && isTruncate(Rabbitmq.class, aliasEnv)) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
             }

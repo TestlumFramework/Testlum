@@ -1,7 +1,7 @@
 package com.knubisoft.comparator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -16,7 +16,7 @@ class ComparisonRequestTest {
 
     @Test
     void isJsonReturnsTrueWhenJsonNodePresent() throws Exception {
-        JsonNode json = new ObjectMapper().readTree("{\"a\":1}");
+        JsonNode json = new JsonMapper().readTree("{\"a\":1}");
         ComparisonRequest.ComparisonValue value = new ComparisonRequest.ComparisonValue("{\"a\":1}", json, null);
         assertTrue(value.isJson());
         assertFalse(value.isXml());
@@ -47,7 +47,7 @@ class ComparisonRequestTest {
 
     @Test
     void comparisonRequestHoldsAllFields() throws Exception {
-        JsonNode json = new ObjectMapper().readTree("{}");
+        JsonNode json = new JsonMapper().readTree("{}");
         ComparisonRequest.ComparisonValue expected = new ComparisonRequest.ComparisonValue("{}", json, null);
         ComparisonRequest.ComparisonValue actual = new ComparisonRequest.ComparisonValue("{}", json, null);
         ComparisonRequest request = new ComparisonRequest(Mode.STRICT, expected, actual);

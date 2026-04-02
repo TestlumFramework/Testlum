@@ -1,7 +1,7 @@
 package com.knubisoft.comparator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import com.knubisoft.comparator.exception.MatchException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /** Unit tests for {@link JsonComparator} verifying boolean, number, string, array, and object comparison. */
 class JsonComparatorTest {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final JsonMapper MAPPER = new JsonMapper();
 
     private final JsonComparator strict = new JsonComparator(Mode.STRICT);
     private final JsonComparator lenient = new JsonComparator(Mode.LENIENT);

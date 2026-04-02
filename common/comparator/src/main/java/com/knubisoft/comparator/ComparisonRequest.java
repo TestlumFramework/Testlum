@@ -1,6 +1,6 @@
 package com.knubisoft.comparator;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.w3c.dom.Node;

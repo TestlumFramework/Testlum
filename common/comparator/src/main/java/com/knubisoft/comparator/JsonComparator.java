@@ -1,7 +1,7 @@
 package com.knubisoft.comparator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeType;
 import com.knubisoft.comparator.exception.MatchException;
 
 import java.math.BigDecimal;
@@ -32,7 +32,7 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
         if (expType == actType) {
             compareSameType(expected, actual, expType);
         } else if (isStringToComparableType(expType, actType)) {
-            stringComparator.compare(expected.asText(), actual.asText());
+            stringComparator.compare(expected.asString(), actual.asString());
         } else {
             raiseTypeMismatch(expType, actType);
         }
@@ -44,7 +44,7 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
             case NULL, MISSING -> { }
             case BOOLEAN -> compareBoolean(expected, actual);
             case NUMBER -> compareNumber(expected, actual);
-            case STRING -> stringComparator.compare(expected.asText(), actual.asText());
+            case STRING -> stringComparator.compare(expected.asString(), actual.asString());
             case ARRAY -> compareArray(expected, actual);
             case OBJECT -> compareObject(expected, actual);
             default -> raiseTypeMismatch(type, type);
@@ -63,7 +63,7 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
     }
 
     private void compareArray(final JsonNode expected, final JsonNode actual) throws MatchException {
-        compareElements(iteratorToList(expected.elements()), iteratorToList(actual.elements()));
+        compareElements(iteratorToList(expected.iterator()), iteratorToList(actual.iterator()));
     }
 
     private void compareObject(final JsonNode expected, final JsonNode actual) throws MatchException {
@@ -74,12 +74,12 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
 
     private void compareBoolean(final JsonNode expected, final JsonNode actual) {
         ErrorHelper.raise(expected.asBoolean() != actual.asBoolean(),
-                String.format("Property [%s] is not equal to [%s]", expected.asText(), actual.asText()));
+                String.format("Property [%s] is not equal to [%s]", expected.asString(), actual.asString()));
     }
 
     private void compareNumber(final JsonNode expected, final JsonNode actual) {
-        ErrorHelper.raise(!new BigDecimal(expected.asText()).equals(new BigDecimal(actual.asText())),
-                String.format("Property [%s] is not equal to [%s]", expected.asText(), actual.asText()));
+        ErrorHelper.raise(!new BigDecimal(expected.asString()).equals(new BigDecimal(actual.asString())),
+                String.format("Property [%s] is not equal to [%s]", expected.asString(), actual.asString()));
     }
 
     private <T> List<T> iteratorToList(final Iterator<T> iterator) {

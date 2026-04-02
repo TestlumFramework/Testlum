@@ -1,8 +1,7 @@
 package com.knubisoft.comparator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 import com.knubisoft.comparator.exception.MatchException;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -20,7 +19,7 @@ import com.knubisoft.comparator.util.LogMessage;
 
 public class Comparator extends AbstractObjectComparator<String> {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final JsonMapper OBJECT_MAPPER = new JsonMapper();
     private static final DocumentBuilderFactory XML_FACTORY = createSecureDocumentBuilderFactory();
 
     private final List<ComparatorHandler> handlers = List.of(
@@ -60,7 +59,7 @@ public class Comparator extends AbstractObjectComparator<String> {
     private JsonNode readJson(final String value) {
         try {
             return OBJECT_MAPPER.readTree(value);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             return null;
         }
     }

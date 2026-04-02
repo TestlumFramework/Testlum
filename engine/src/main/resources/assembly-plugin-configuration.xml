@@ -15,7 +15,7 @@
             <unpack>true</unpack>
             <unpackOptions>
                 <excludes>
-                    <exclude>META-INF/spring/**</exclude>
+                    <exclude>META-INF/spring.factories</exclude>
                 </excludes>
             </unpackOptions>
             <scope>test</scope>
@@ -23,8 +23,8 @@
     </dependencySets>
     <files>
         <file>
-            <source>${project.basedir}/src/main/resources/META-INF/spring/initializers.imports</source>
-            <outputDirectory>META-INF/spring</outputDirectory>
+            <source>${project.basedir}/src/main/resources/META-INF/spring.factories</source>
+            <outputDirectory>META-INF</outputDirectory>
         </file>
     </files>
     <fileSets>

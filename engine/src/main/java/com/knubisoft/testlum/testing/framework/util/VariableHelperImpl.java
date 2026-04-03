@@ -51,6 +51,7 @@ import java.io.StringReader;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
@@ -74,6 +75,7 @@ public class VariableHelperImpl implements VariableHelper {
     private static final String VAR_CONTEXT_LOG = LogFormat.table("Created from");
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
     private static final String JAVA_COMPATIBLE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final String ALLOWED_DATE_LETTERS = "yMdHmsSnuEaZzXx";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
 
@@ -294,6 +296,7 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
+        validateDateFormatPattern(dateFormatPattern);
         try {
             return new DateTimeFormatterBuilder().appendPattern(dateFormatPattern)
                     .parseDefaulting(ChronoField.YEAR_OF_ERA, ZonedDateTime.now().getYear())
@@ -342,6 +345,39 @@ public class VariableHelperImpl implements VariableHelper {
             throw new DefaultFrameworkException(
                     String.format(ExceptionMessage.VALUE_DOES_NOT_MATCH_FORMAT, valueToParse, dateFormatPattern));
         }
+    }
+
+    private void validateDateFormatPattern(final String dateFormatPattern) {
+        if (hasUnquotedInvalidChars(dateFormatPattern)) {
+            throw new DefaultFrameworkException(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN,
+                    dateFormatPattern, "Pattern contains unsupported letters or unquoted digits");
+        }
+        verifyPatternFunctionality(dateFormatPattern);
+    }
+
+    private void verifyPatternFunctionality(final String dateFormatPattern) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormatPattern)
+                    .withResolverStyle(ResolverStyle.STRICT);
+            ZonedDateTime now = ZonedDateTime.now();
+            String formatted = formatter.format(now);
+            formatter.parse(formatted);
+        } catch (RuntimeException e) {
+            throw new DefaultFrameworkException(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN,
+                    dateFormatPattern, "Invalid pattern syntax: " + e.getMessage());
+        }
+    }
+
+    private boolean hasUnquotedInvalidChars(String pattern) {
+        String cleaned = pattern.replaceAll("'[^']*'", "");
+        return cleaned.chars().anyMatch(this::isInvalidChar);
+    }
+
+    private boolean isInvalidChar(int c) {
+        if (Character.isLetter(c)) {
+            return ALLOWED_DATE_LETTERS.indexOf(c) == -1;
+        }
+        return Character.isDigit(c);
     }
 
     private ZonedDateTime convertToZonedDateTime(final TemporalAccessor temporalAccessor, final ZoneId zoneId,

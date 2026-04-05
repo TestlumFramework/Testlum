@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
@@ -46,6 +47,8 @@ class TestSetCollectorTest {
     private TestResourceSettings testResourceSettings;
     @Mock
     private GlobalVariationsProvider globalVariationsProvider;
+    @Mock
+    private JacksonService jacksonService;
 
     private TestSetCollector testSetCollector;
 
@@ -61,7 +64,7 @@ class TestSetCollectorTest {
 
         testSetCollector = new TestSetCollector(
                 scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                testResourceSettings, globalVariationsProvider, environments);
+                testResourceSettings, globalVariationsProvider, environments, jacksonService);
     }
 
     @Nested

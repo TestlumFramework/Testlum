@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.locator.LocatorCollector;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.model.pages.*;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import org.junit.jupiter.api.Nested;
@@ -70,45 +71,46 @@ class UiUtilTest {
     class GetLocatorByStrategy {
         @Test
         void locatorIdDelegatesToCollector() {
-            Locator expected = new Locator();
+            Locator locator = new Locator();
+            LocatorData expected = new LocatorData(null, locator);
             when(locatorCollector.getLocator("myLocator")).thenReturn(expected);
-            Locator result = uiUtil.getLocatorByStrategy("myLocator", LocatorStrategy.LOCATOR_ID);
+            LocatorData result = uiUtil.getLocatorByStrategy("myLocator", LocatorStrategy.LOCATOR_ID);
             assertEquals(expected, result);
         }
 
         @Test
         void xpathCreatesXpathLocator() {
-            Locator result = uiUtil.getLocatorByStrategy("//div", LocatorStrategy.XPATH);
-            assertEquals(1, result.getXpathOrIdOrClassName().size());
-            assertInstanceOf(Xpath.class, result.getXpathOrIdOrClassName().get(0));
+            LocatorData result = uiUtil.getLocatorByStrategy("//div", LocatorStrategy.XPATH);
+            assertEquals(1, result.getLocator().getXpathOrIdOrClassName().size());
+            assertInstanceOf(Xpath.class, result.getLocator().getXpathOrIdOrClassName().get(0));
         }
 
         @Test
         void idCreatesIdLocator() {
-            Locator result = uiUtil.getLocatorByStrategy("myId", LocatorStrategy.ID);
-            assertEquals(1, result.getXpathOrIdOrClassName().size());
-            assertInstanceOf(Id.class, result.getXpathOrIdOrClassName().get(0));
+            LocatorData result = uiUtil.getLocatorByStrategy("myId", LocatorStrategy.ID);
+            assertEquals(1, result.getLocator().getXpathOrIdOrClassName().size());
+            assertInstanceOf(Id.class, result.getLocator().getXpathOrIdOrClassName().get(0));
         }
 
         @Test
         void textCreatesTextLocator() {
-            Locator result = uiUtil.getLocatorByStrategy("some text", LocatorStrategy.TEXT);
-            assertEquals(1, result.getXpathOrIdOrClassName().size());
-            assertInstanceOf(Text.class, result.getXpathOrIdOrClassName().get(0));
+            LocatorData result = uiUtil.getLocatorByStrategy("some text", LocatorStrategy.TEXT);
+            assertEquals(1, result.getLocator().getXpathOrIdOrClassName().size());
+            assertInstanceOf(Text.class, result.getLocator().getXpathOrIdOrClassName().get(0));
         }
 
         @Test
         void classCreatesClassNameLocator() {
-            Locator result = uiUtil.getLocatorByStrategy("myClass", LocatorStrategy.CLASS);
-            assertEquals(1, result.getXpathOrIdOrClassName().size());
-            assertInstanceOf(ClassName.class, result.getXpathOrIdOrClassName().get(0));
+            LocatorData result = uiUtil.getLocatorByStrategy("myClass", LocatorStrategy.CLASS);
+            assertEquals(1, result.getLocator().getXpathOrIdOrClassName().size());
+            assertInstanceOf(ClassName.class, result.getLocator().getXpathOrIdOrClassName().get(0));
         }
 
         @Test
         void cssSelectorCreatesCssSelectorLocator() {
-            Locator result = uiUtil.getLocatorByStrategy("div.cls", LocatorStrategy.CSS_SELECTOR);
-            assertEquals(1, result.getXpathOrIdOrClassName().size());
-            assertInstanceOf(CssSelector.class, result.getXpathOrIdOrClassName().get(0));
+            LocatorData result = uiUtil.getLocatorByStrategy("div.cls", LocatorStrategy.CSS_SELECTOR);
+            assertEquals(1, result.getLocator().getXpathOrIdOrClassName().size());
+            assertInstanceOf(CssSelector.class, result.getLocator().getXpathOrIdOrClassName().get(0));
         }
     }
 

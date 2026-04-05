@@ -28,22 +28,22 @@ class LocatorCollectorTest {
         collector = createCollectorWithLocators(buildTestLocatorMap());
     }
 
-    private Map<String, Locator> buildTestLocatorMap() {
-        final Map<String, Locator> map = new LinkedHashMap<>();
-        map.put("login.username", createLocator("username"));
-        map.put("login.password", createLocator("password"));
-        map.put("home.title", createLocator("title"));
+    private Map<String, LocatorData> buildTestLocatorMap() {
+        final Map<String, LocatorData> map = new LinkedHashMap<>();
+        map.put("login.username", createLocatorData("username"));
+        map.put("login.password", createLocatorData("password"));
+        map.put("home.title", createLocatorData("title"));
         return map;
     }
 
-    private Locator createLocator(final String id) {
+    private LocatorData createLocatorData(final String id) {
         final Locator locator = new Locator();
         locator.setLocatorId(id);
-        return locator;
+        return new LocatorData(null, locator);
     }
 
     private LocatorCollector createCollectorWithLocators(
-            final Map<String, Locator> locators) throws Exception {
+            final Map<String, LocatorData> locators) throws Exception {
         final java.lang.reflect.Constructor<LocatorCollector> ctor =
                 LocatorCollector.class.getDeclaredConstructor(
                         XMLParsers.class, PageValidator.class,
@@ -73,16 +73,16 @@ class LocatorCollectorTest {
     class GetLocator {
         @Test
         void returnsLocatorByFullName() {
-            final Locator result = collector.getLocator("login.username");
+            final LocatorData result = collector.getLocator("login.username");
             assertNotNull(result);
-            assertEquals("username", result.getLocatorId());
+            assertEquals("username", result.getLocator().getLocatorId());
         }
 
         @Test
         void returnsLocatorFromDifferentPage() {
-            final Locator result = collector.getLocator("home.title");
+            final LocatorData result = collector.getLocator("home.title");
             assertNotNull(result);
-            assertEquals("title", result.getLocatorId());
+            assertEquals("title", result.getLocator().getLocatorId());
         }
 
         @Test

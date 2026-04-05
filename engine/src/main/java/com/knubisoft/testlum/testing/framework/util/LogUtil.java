@@ -16,7 +16,6 @@ import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
@@ -51,7 +50,6 @@ public class LogUtil {
     private final BrowserUtil browserUtil;
     private final MobileUtil mobileUtil;
     private final StringPrettifier stringPrettifier;
-    private final SqlUtil sqlUtil;
 
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    @Nullable final Exception exception,

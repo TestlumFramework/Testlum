@@ -37,23 +37,23 @@ class LocatorCollectorTest {
         collector = createCollectorWithLocators(buildTestLocatorMap());
     }
 
-    private Map<String, Locator> buildTestLocatorMap() {
-        final Map<String, Locator> map = new LinkedHashMap<>();
-        map.put("login.username", createLocator("username"));
-        map.put("login.password", createLocator("password"));
-        map.put("home.title", createLocator("title"));
-        map.put("dashboard.widget", createLocator("widget"));
+    private Map<String, LocatorData> buildTestLocatorMap() {
+        final Map<String, LocatorData> map = new LinkedHashMap<>();
+        map.put("login.username", createLocatorData("username"));
+        map.put("login.password", createLocatorData("password"));
+        map.put("home.title", createLocatorData("title"));
+        map.put("dashboard.widget", createLocatorData("widget"));
         return map;
     }
 
-    private Locator createLocator(final String id) {
+    private LocatorData createLocatorData(final String id) {
         final Locator locator = new Locator();
         locator.setLocatorId(id);
-        return locator;
+        return new LocatorData(null, locator);
     }
 
     @SuppressWarnings("unchecked")
-    private LocatorCollector createCollectorWithLocators(final Map<String, Locator> locators) {
+    private LocatorCollector createCollectorWithLocators(final Map<String, LocatorData> locators) {
         final XMLParsers xmlParsers = mock(XMLParsers.class);
         final PageValidator pageValidator = mock(PageValidator.class);
         final TestResourceSettings testResourceSettings = mock(TestResourceSettings.class);
@@ -65,7 +65,7 @@ class LocatorCollectorTest {
         final Map<String, File> pageFileMap = new LinkedHashMap<>();
         final Map<File, Page> fileToPage = new LinkedHashMap<>();
 
-        for (Map.Entry<String, Locator> entry : locators.entrySet()) {
+        for (Map.Entry<String, LocatorData> entry : locators.entrySet()) {
             String pageName = entry.getKey().split("\\.")[0];
             File pageFile = new File(pageName + ".xml");
             pageFileMap.putIfAbsent(pageName, pageFile);
@@ -74,7 +74,7 @@ class LocatorCollectorTest {
                 page.setLocators(new Locators());
                 return page;
             });
-            fileToPage.get(pageFile).getLocators().getLocator().add(entry.getValue());
+            fileToPage.get(pageFile).getLocators().getLocator().add(entry.getValue().getLocator());
         }
 
         when(fileSearcher.collectFilesFromFolder(new File("/pages"))).thenReturn(pageFileMap);
@@ -93,30 +93,30 @@ class LocatorCollectorTest {
     class GetLocator {
         @Test
         void returnsLocatorByFullName() {
-            final Locator result = collector.getLocator("login.username");
+            final LocatorData result = collector.getLocator("login.username");
             assertNotNull(result);
-            assertEquals("username", result.getLocatorId());
+            assertEquals("username", result.getLocator().getLocatorId());
         }
 
         @Test
         void returnsLocatorFromDifferentPage() {
-            final Locator result = collector.getLocator("home.title");
+            final LocatorData result = collector.getLocator("home.title");
             assertNotNull(result);
-            assertEquals("title", result.getLocatorId());
+            assertEquals("title", result.getLocator().getLocatorId());
         }
 
         @Test
         void returnsPasswordLocator() {
-            final Locator result = collector.getLocator("login.password");
+            final LocatorData result = collector.getLocator("login.password");
             assertNotNull(result);
-            assertEquals("password", result.getLocatorId());
+            assertEquals("password", result.getLocator().getLocatorId());
         }
 
         @Test
         void returnsDashboardWidgetLocator() {
-            final Locator result = collector.getLocator("dashboard.widget");
+            final LocatorData result = collector.getLocator("dashboard.widget");
             assertNotNull(result);
-            assertEquals("widget", result.getLocatorId());
+            assertEquals("widget", result.getLocator().getLocatorId());
         }
 
         @Test
@@ -225,9 +225,9 @@ class LocatorCollectorTest {
 
             LocatorCollector lc = new LocatorCollector(xmlParsers, pageValidator, testResourceSettings, fileSearcher);
 
-            Locator result = lc.getLocator("myPage.field1");
+            LocatorData result = lc.getLocator("myPage.field1");
             assertNotNull(result);
-            assertEquals("field1", result.getLocatorId());
+            assertEquals("field1", result.getLocator().getLocatorId());
         }
 
         @SuppressWarnings("unchecked")

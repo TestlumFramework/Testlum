@@ -3,8 +3,6 @@ package com.knubisoft.testlum.testing.framework.scenario;
 import com.knubisoft.testlum.testing.framework.configuration.ui.MobileBrowserDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.NativeDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.WebDriverFactory;
-import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
-import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.StopSignalException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;

@@ -284,28 +284,28 @@ public class VariableHelperImpl implements VariableHelper {
                                            final CommandResult commandResult) {
         try {
             String formattedResult = dateTime.format(dateTimeFormatter);
-            resultUtil.addVariableMetaData(ResultUtil.GENERATED_STRING, variableName, pattern, formattedResult, commandResult);
+            resultUtil.addVariableMetaData(ResultUtil.GENERATED_STRING, variableName,
+                    pattern, formattedResult, commandResult);
             return formattedResult;
         } catch (DateTimeException e) {
-            throw new DefaultFrameworkException(String.format(ExceptionMessage.DATE_FORMATTING_FAILED,
-                                                pattern, e.getMessage()));
+            throw new DefaultFrameworkException(String.format(
+                    ExceptionMessage.DATE_FORMATTING_FAILED, pattern, e.getMessage()));
         }
     }
 
     private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
         validateDateFormatPattern(dateFormatPattern);
+        ZonedDateTime now = ZonedDateTime.now();
         try {
             return new DateTimeFormatterBuilder().appendPattern(dateFormatPattern)
-                    .parseDefaulting(ChronoField.YEAR_OF_ERA, ZonedDateTime.now().getYear())
-                    .parseDefaulting(ChronoField.MONTH_OF_YEAR, ZonedDateTime.now().getMonthValue())
-                    .parseDefaulting(ChronoField.DAY_OF_MONTH, ZonedDateTime.now().getDayOfMonth())
-                    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-                    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-                    .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-                    .toFormatter();
+                    .parseDefaulting(ChronoField.YEAR_OF_ERA, now.getYear())
+                    .parseDefaulting(ChronoField.MONTH_OF_YEAR, now.getMonthValue())
+                    .parseDefaulting(ChronoField.DAY_OF_MONTH, now.getDayOfMonth())
+                    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                    .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0).toFormatter();
         } catch (IllegalArgumentException e) {
-            throw new DefaultFrameworkException(
-                    String.format(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN, dateFormatPattern, e.getMessage()));
+            throw new DefaultFrameworkException(String.format(
+                    ExceptionMessage.INVALID_DATE_FORMAT_PATTERN, dateFormatPattern, e.getMessage()));
         }
     }
 
@@ -365,12 +365,12 @@ public class VariableHelperImpl implements VariableHelper {
         }
     }
 
-    private boolean hasUnquotedInvalidChars(String pattern) {
+    private boolean hasUnquotedInvalidChars(final String pattern) {
         String cleaned = pattern.replaceAll("'[^']*'", "");
         return cleaned.chars().anyMatch(this::isInvalidChar);
     }
 
-    private boolean isInvalidChar(int c) {
+    private boolean isInvalidChar(final int c) {
         if (Character.isLetter(c)) {
             return ALLOWED_DATE_LETTERS.indexOf(c) == -1;
         }

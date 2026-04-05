@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.util.Map.entry;
+
 @Slf4j
 @ExecutorForClass(NativeVar.class)
 public class NativeVariableExecutor extends AbstractVariableExecutor<NativeVar> {
@@ -24,21 +26,16 @@ public class NativeVariableExecutor extends AbstractVariableExecutor<NativeVar> 
 
     @Override
     protected Map<VarPredicate<NativeVar>, VarMethod<NativeVar>> buildVarToMethodMap() {
-        return Map.of(
-                var -> Objects.nonNull(var.getElement()), this::getElementResult,
-                var -> Objects.nonNull(var.getPath()), (var, result) -> getPathResult(var, result, var.getPath()),
-                var -> Objects.nonNull(var.getConstant()),
-                        (var, result) -> getConstantResult(var, result, var.getConstant()),
-                var -> Objects.nonNull(var.getExpression()),
-                        (var, result) -> getExpressionResult(var, result, var.getExpression()),
-                var -> Objects.nonNull(var.getFile()),
-                        (var, result) -> getFileResult(var, result, var.getFile()),
-                var -> Objects.nonNull(var.getSql()),
-                        (var, result) -> getSQLResult(var, result, var.getSql()),
-                var -> Objects.nonNull(var.getGenerate()),
-                        (var, result) -> getRandomGenerateResult(var, result, var.getGenerate()),
-                var -> Objects.nonNull(var.getDate()),
-                        (var, result) -> getDateResult(var, result, var.getDate()));
+        return Map.ofEntries(
+                entry(v -> Objects.nonNull(v.getElement()), this::getElementResult),
+                entry(v -> Objects.nonNull(v.getPath()), (v, r) -> getPathResult(v, r, v.getPath())),
+                entry(v -> Objects.nonNull(v.getConstant()), (v, r) -> getConstantResult(v, r, v.getConstant())),
+                entry(v -> Objects.nonNull(v.getExpression()), (v, r) -> getExpressionResult(v, r, v.getExpression())),
+                entry(v -> Objects.nonNull(v.getFile()), (v, r) -> getFileResult(v, r, v.getFile())),
+                entry(v -> Objects.nonNull(v.getSql()), (v, r) -> getSQLResult(v, r, v.getSql())),
+                entry(v -> Objects.nonNull(v.getGenerate()), (v, r) -> getRandomGenerateResult(v, r, v.getGenerate())),
+                entry(v -> Objects.nonNull(v.getDate()), (v, r) -> getDateResult(v, r, v.getDate()))
+        );
     }
 
     @Override

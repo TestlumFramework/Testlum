@@ -219,7 +219,7 @@ public class WebDriverFactory {
         }
     }
 
-    private interface WebDriverInitializer {}
+    private interface WebDriverInitializer { }
 
     private class ChromeDriverInitializer implements WebDriverInitializer {
         private final Path downloadPath;

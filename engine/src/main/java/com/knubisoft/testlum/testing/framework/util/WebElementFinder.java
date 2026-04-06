@@ -54,7 +54,6 @@ public final class WebElementFinder {
 
     private final EnvironmentLoader environmentLoader;
     private final ByService byService;
-    private final JacksonService jacksonService;
 
     private Map<Class<?>, ByType> searchByTypes;
 
@@ -177,7 +176,7 @@ public final class WebElementFinder {
     private WebElement tryToHealElement(final ExecutorDependencies dependencies, final LocatorData locatorData,
                                         final AutoHealing autoHealing) {
         log.warn(LogMessage.START_HEAL_LOG);
-        LocatorAutohealer locatorAutohealer = new LocatorAutohealer(dependencies, jacksonService);
+        LocatorAutohealer locatorAutohealer = new LocatorAutohealer(dependencies);
         Locator locator = locatorData.getLocator();
         Optional<WebElement> healedWebElement = locatorAutohealer.heal(locator);
         if (healedWebElement.isEmpty()) {

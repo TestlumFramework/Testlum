@@ -185,7 +185,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                 : getContentIfFile(expected.getFile());
         result.setActual(stringPrettifier.asJsonResult(actualBody));
         result.setExpected(stringPrettifier.asJsonResult(body));
-        httpValidator.validateBody(body, actualBody);
+        httpValidator.validateBody(body, actualBody, Mode.STRICT.equals(expected.getMode()));
     }
 
     private void validateHeaders(final Response expected,

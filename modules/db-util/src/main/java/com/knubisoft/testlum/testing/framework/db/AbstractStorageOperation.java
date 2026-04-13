@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
@@ -47,6 +48,7 @@ public abstract class AbstractStorageOperation {
     @Setter
     @RequiredArgsConstructor
     @AllArgsConstructor
+    @JsonPropertyOrder({ "query", "content" })
     public static class QueryResult<T> {
         private final String query;
         private T content;

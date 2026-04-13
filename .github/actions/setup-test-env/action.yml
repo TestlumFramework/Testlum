@@ -47,7 +47,6 @@ runs:
           --key "${{ inputs.browserstack_access_key }}" \
           --only-automate \
           --ci-plugin GitHubAction \
-          --local-identifier "${{ inputs.browserstack_local_identifier }}" \
           --daemon start
 
     - name: Run Integrations

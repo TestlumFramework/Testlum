@@ -142,7 +142,7 @@
         <org.jetbrains.annotations.version>26.1.0</org.jetbrains.annotations.version>
         <org.reflections.version>0.10.2</org.reflections.version>
         <log4j-api.version>2.25.3</log4j-api.version>
-        <log4j-core.version>2.25.3</log4j-core.version>
+        <log4j-core.version>2.25.4</log4j-core.version>
         <log4j-iostreams.version>2.25.3</log4j-iostreams.version>
 
         <junit-platform-launcher.version>6.0.3</junit-platform-launcher.version>

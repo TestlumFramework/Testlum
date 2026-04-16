@@ -15,6 +15,11 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>ui-configuration</module>
+        <module>ui-image</module>
+        <module>ui-util</module>
+        <module>ui-executor</module>
+        <module>browser-shared</module>
         <module>web</module>
         <module>native</module>
         <module>mobilebrowser</module>

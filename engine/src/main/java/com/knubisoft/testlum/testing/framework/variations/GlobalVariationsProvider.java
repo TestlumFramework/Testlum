@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Component
-public class GlobalVariationsProvider {
+public class GlobalVariationsProvider implements VariationsProvider {
 
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
     private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";

@@ -18,7 +18,7 @@ import java.util.Map;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 
 @org.springframework.stereotype.Component
-public class LocatorCollector {
+public class LocatorCollector implements LocatorProvider {
 
     private final PageValidator pageValidator;
 

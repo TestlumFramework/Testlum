@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.model.global_config.BrowserSettings;
 import com.knubisoft.testlum.testing.model.global_config.ElementAutowait;
 import com.knubisoft.testlum.testing.model.global_config.Web;
@@ -319,7 +320,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(locator, deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
             assertNotNull(result);
             assertEquals(mockElement, result);
         }
@@ -353,7 +354,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(locator, deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
             assertEquals(mockElement, result);
         }
 
@@ -378,7 +379,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(locator, deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
             assertEquals(mockElement, result);
         }
 
@@ -401,7 +402,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            WebElement result = webElementFinder.find(locator, deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
             assertEquals(mockElement, result);
             verifyNoInteractions(environmentLoader);
         }
@@ -435,7 +436,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(locator, deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
             assertEquals(mockElement, result);
             verify(mockDriver, times(1)).findElement(expectedBy);
         }
@@ -466,7 +467,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(locator, deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
             assertEquals(mockElement, result);
         }
     }
@@ -496,7 +497,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            webElementFinder.find(locator, deps);
+            webElementFinder.find(new LocatorData(null, locator), deps);
             verifyNoInteractions(environmentLoader);
         }
 
@@ -520,7 +521,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            webElementFinder.find(locator, deps);
+            webElementFinder.find(new LocatorData(null, locator), deps);
             verify(environmentLoader).getCurrentEnvWebSettings();
         }
     }
@@ -554,7 +555,7 @@ class WebElementFinderTest {
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(locator, deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
             assertTrue(ex.getMessage().contains("testLocator"));
         }
 
@@ -579,7 +580,7 @@ class WebElementFinderTest {
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
             assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(locator, deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
         }
     }
 
@@ -610,7 +611,7 @@ class WebElementFinderTest {
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
             assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(locator, deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
         }
     }
 }

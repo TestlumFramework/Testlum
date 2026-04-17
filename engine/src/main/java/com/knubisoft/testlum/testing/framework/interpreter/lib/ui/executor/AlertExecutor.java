@@ -29,9 +29,9 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
     @Override
     public void execute(final Alert alert, final CommandResult result) {
         result.put(ALERT_TYPE, alert.getType().value());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         waitForAlertVisibleIfRequired(alert, result);
         handleAlertInteraction(alert, result);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void waitForAlertVisibleIfRequired(final Alert alert, final CommandResult result) {

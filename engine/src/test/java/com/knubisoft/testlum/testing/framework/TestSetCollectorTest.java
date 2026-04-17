@@ -160,7 +160,7 @@ class TestSetCollectorTest {
 
             testSetCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, List.of(env));
+                    testResourceSettings, globalVariationsProvider, List.of(env), jacksonService);
 
             // Scenario with web command
             Scenario scenario = createScenarioWithSettings();
@@ -198,7 +198,7 @@ class TestSetCollectorTest {
 
             testSetCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, List.of(dev, staging));
+                    testResourceSettings, globalVariationsProvider, List.of(dev, staging), jacksonService);
 
             ScenarioCollector.Result collectorResult = new ScenarioCollector.Result();
             MappingResult mr = new MappingResult(
@@ -255,7 +255,7 @@ class TestSetCollectorTest {
 
             TestSetCollector emptyEnvCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, Collections.emptyList());
+                    testResourceSettings, globalVariationsProvider, Collections.emptyList(), jacksonService);
 
             assertThrows(DefaultFrameworkException.class, emptyEnvCollector::collect);
         }
@@ -268,7 +268,7 @@ class TestSetCollectorTest {
 
             TestSetCollector nullEnvCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, null);
+                    testResourceSettings, globalVariationsProvider, null, jacksonService);
 
             assertThrows(DefaultFrameworkException.class, nullEnvCollector::collect);
         }

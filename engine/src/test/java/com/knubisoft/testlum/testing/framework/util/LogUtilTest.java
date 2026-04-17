@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
 import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
+import com.knubisoft.testlum.testing.model.scenario.ByLocator;
 import com.knubisoft.testlum.testing.model.scenario.Click;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
@@ -347,7 +348,10 @@ class LogUtilTest {
             fullScreen.setPercentage(95.0);
 
             Exclude exclude = new Exclude();
-            exclude.setLocator("excludedEl");
+
+            ByLocator byLocatorExclude = new ByLocator();
+            byLocatorExclude.setLocator("excludedEl");
+            exclude.setByLocator(byLocatorExclude);
             fullScreen.getExclude().add(exclude);
 
             Image image = new Image();

@@ -14,10 +14,8 @@ public class ScenarioContext {
             "Unable to find value for key <%s>. Available keys: %s";
     private static final String NO_VALUES_FOUND_IN_CONTEXT =
             "Unable to find any value in scenario context. Available keys: %s";
-    private static final Pattern ROUTE_PATTERN =
-            Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
-    private static final Pattern RAW_PATTERN = Pattern.compile(RAW_REGEXP);
 
+    @Getter
     private final Map<String, String> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
 
@@ -81,57 +79,21 @@ public class ScenarioContext {
         return inject(original, false);
     }
 
-    private String inject(final String original, final boolean escapeSpelQuotes) {
-        if (StringUtils.isBlank(original)) {
-            return original;
-        }
-        Matcher m = ROUTE_PATTERN.matcher(original);
-        return getFormattedInject(original, m, escapeSpelQuotes);
-    }
-
-    public String inject(final String scenarioStepAsString) {
+    public String inject(final String scenarioStepAsString, final boolean escapeSpelQuotes) {
         if (StringUtils.isBlank(scenarioStepAsString)) {
             return scenarioStepAsString;
         }
         String injectedScenarioStep = scenarioStepAsString;
         for (ScenarioContextVariationInjectionStrategy variationInjectionStrategy : variationInjectionStrategies) {
             if (variationInjectionStrategy.isApplicable(injectedScenarioStep)) {
-                injectedScenarioStep = variationInjectionStrategy.inject(injectedScenarioStep, this);
+                injectedScenarioStep = variationInjectionStrategy.injectVariationsValues(injectedScenarioStep, this, escapeSpelQuotes);
             }
         }
         return injectedScenarioStep;
     }
 
-    private boolean hasJsonVariationsInBody(String scenarioStepAsString) {
-        return scenarioStepAsString.contains("{{j(");
-    }
-
-    private String replaceEntireJsonBodyWithJsonVariation(String jsonFromJsonVariations, String scenarioStepAsString) {
-        Matcher matcher = RAW_PATTERN.matcher(scenarioStepAsString);
-        return matcher.replaceFirst("$1" + Matcher.quoteReplacement(jsonFromJsonVariations) + "$2");
-    }
-
     public String injectSpel(final String original) {
-        return inject(original, true);
+        return new DefaultVariationInjectionStrategy().injectVariationsValues(original, this, true);
     }
 
-    private String getFormattedInject(final String original, final Matcher m, final boolean escapeSpelQuotes) {
-        String formatted = original;
-        while (m.find()) {
-            String firstSubsequence = m.group(1);
-            String zeroSubsequence = m.group(0);
-            String value = get(firstSubsequence);
-            value = escapeSpelQuotes ? escapeSpelQuotes(value) : StringEscapeUtils.escapeJson(value);
-            formatted = formatted.replace(zeroSubsequence, value);
-            String csvColumnName = m.group(1);
-            String scenarioPlaceholder= m.group(0);
-            String valueToReplacePlaceholder = get(csvColumnName);
-            formatted = formatted.replace(scenarioPlaceholder, StringEscapeUtils.escapeJson(valueToReplacePlaceholder));
-        }
-        return formatted;
-    }
-
-    private String escapeSpelQuotes(final String value) {
-        return value.replaceAll("'", "''");
-    }
 }

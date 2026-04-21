@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.Strings;
 
 import java.util.ArrayList;
@@ -20,24 +19,24 @@ public final class HttpValidator {
 
     private final List<String> result = new ArrayList<>();
     private final AbstractInterpreter<?> interpreter;
-    private final StringPrettifier prettifier;
+    private StringPrettifier prettifier;
     private String expectedFileName;
 
-    public HttpValidator(AbstractInterpreter<?> interpreter) {
+    public HttpValidator(AbstractInterpreter<?> interpreter, StringPrettifier stringPrettifier, String expectedFileName) {
         this.interpreter = interpreter;
+        this.prettifier = stringPrettifier;
+        this.expectedFileName = expectedFileName;
     }
 
-    public HttpValidator(AbstractInterpreter<?> interpreter, String expectedFileName) {
+    public HttpValidator(AbstractInterpreter<?> interpreter, StringPrettifier stringPrettifier) {
         this.interpreter = interpreter;
-        this.expectedFileName = expectedFileName;
+        this.prettifier = stringPrettifier;
     }
 
     public void validateCode(final int expectedCode, final int actualCode) {
         if (expectedCode != actualCode) {
-            result.add(format(HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
-            interpreter.save(valueOf(actualCode), expectedFileName);
             result.add(String.format(HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
-            interpreter.save(String.valueOf(actualCode));
+            interpreter.save(String.valueOf(actualCode), expectedFileName);
         }
     }
 
@@ -63,9 +62,8 @@ public final class HttpValidator {
                                            final Map<String, String> actualHeaderMap) {
         String expected = interpreter.toString(expectedHeaders);
         String actual = interpreter.toString(actualHeaderMap);
-        result.add(String.format(HTTP_HEADERS_EXPECTED_BUT_WAS,
-                prettifier.cut(expected), prettifier.cut(actual)));
-        interpreter.save(actual);
+        result.add(String.format(HTTP_HEADERS_EXPECTED_BUT_WAS, prettifier.cut(expected), prettifier.cut(actual)));
+        interpreter.save(actual, this.expectedFileName);
     }
 
     public void validateBody(final String expectedBody, final String actualBody) {

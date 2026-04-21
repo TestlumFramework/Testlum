@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -52,6 +54,6 @@ public class StringPrettifier {
     }
 
     public String asJsonResult(final Map<String, String> pairs) {
-        return JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(pairs);
+        return jacksonService.writeValueAsStringWithDefaultPrettyPrinter(pairs);
     }
 }

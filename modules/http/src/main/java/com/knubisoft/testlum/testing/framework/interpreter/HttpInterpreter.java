@@ -19,6 +19,7 @@ import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfoWithBody;
 import com.knubisoft.testlum.testing.model.scenario.Mode;
 import com.knubisoft.testlum.testing.model.scenario.Response;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -78,9 +79,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private void compareResult(final Response expected,
                                final ApiResponse actual,
                                final CommandResult result) {
-        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         String expectedFileName = expected.getFile();
-        HttpValidator httpValidator = new HttpValidator(this, expectedFileName);
+        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier, expectedFileName);
         String actualBody = actual.getBody();
         setContextBody(getContextBodyKey(expectedFileName), actualBody);
         httpValidator.validateCode(expected.getCode(), actual.getCode());
@@ -122,10 +122,10 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         String endpoint = httpInfo.getEndpoint();
         Map<String, String> headers = getHeaders(httpInfo);
         logHeaders(headers);
-        endpoint = HttpUtil.sanitizeEndpointForAbsentKeywordsIfPresent(endpoint);
+        endpoint = this.httpUtil.sanitizeEndpointForAbsentKeywordsIfPresent(endpoint);
         logHttpInfo(alias, httpMethod.name(), endpoint);
         addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
-        ContentType contentType = httpUtil.computeContentType(headers);
+        ContentType contentType = this.httpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
         mergeContentTypeFromBody(headers, body);
         logBodyContent(body);
@@ -157,7 +157,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
         httpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
-        List<Header> headersWithoutAbsentMarkedHeaders = HttpUtil.sanitizeHeadersForAbsentKeyword(httpInfo);
+        List<Header> headersWithoutAbsentMarkedHeaders = this.httpUtil.sanitizeHeadersForAbsentKeyword(httpInfo);
         httpUtil.fillHeadersMap(headersWithoutAbsentMarkedHeaders, headers, authorization);
         return headers;
     }
@@ -200,7 +200,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private void logHeaders(final Map<String, String> headers) {
         if (!headers.isEmpty()) {
             log.info(HEADERS_LOG,
-                    StringPrettifier.asJsonResult(headers)
+                    this.stringPrettifier.asJsonResult(headers)
                             .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
     }

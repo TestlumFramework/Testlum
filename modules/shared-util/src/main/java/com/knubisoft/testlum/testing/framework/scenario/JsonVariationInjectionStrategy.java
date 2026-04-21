@@ -145,12 +145,13 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
      * </ol>
      *
      * @param scenarioStepAsString the original scenario step JSON string
-     * @param scenarioContext the context containing variation values from CSV
+     * @param scenarioContext      the context containing variation values from CSV
+     * @param escapeSpelQuotes
      * @return the scenario step with all placeholders replaced by actual values
      */
     @SneakyThrows
     @Override
-    public String inject(String scenarioStepAsString, ScenarioContext scenarioContext) {
+    public String injectVariationsValues(String scenarioStepAsString, ScenarioContext scenarioContext, boolean escapeSpelQuotes) {
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
         Map<String, String> parentMarkers = collectMarkedJsonPairs(scenarioContext.getContextMap());
         String currentRawJsonText = currentRawJson.asText();

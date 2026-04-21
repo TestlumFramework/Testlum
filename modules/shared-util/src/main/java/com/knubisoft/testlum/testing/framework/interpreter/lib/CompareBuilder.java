@@ -6,8 +6,6 @@ import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.ExpectedFileUtils;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -114,12 +112,10 @@ public class CompareBuilder {
 
     private void save(final String actual) {
         try {
-            File target = new File(scenarioFile.getParent(), String.format(FILENAME_FORMAT_TO_SAVE, position));
-            FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
             String actualFileNameWithExecutionStep =
                     ExpectedFileUtils.resolveActualNameBasedOnExpectedFileName(this.expectedFileName, position);
             File target = new File(this.scenarioFile.getParent(), actualFileNameWithExecutionStep);
-            FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new DefaultFrameworkException(e);

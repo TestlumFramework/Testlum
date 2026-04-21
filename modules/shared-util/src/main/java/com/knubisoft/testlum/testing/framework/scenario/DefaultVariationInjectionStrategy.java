@@ -12,17 +12,8 @@ public class DefaultVariationInjectionStrategy implements ScenarioContextVariati
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
     @Override
-    public boolean isApplicable(String scenarioStepAsString) {
-        Matcher m = ROUTE_PATTERN.matcher(scenarioStepAsString);
-        boolean foundRegularVariation = false;
-        while (m.find()) {
-            String scenarioPlaceholder = m.group(0);
-            if (!scenarioPlaceholder.contains("j(")) {
-                foundRegularVariation = true;
-                break;
-            }
-        }
-        return foundRegularVariation;
+    public boolean isApplicable(final String scenarioStepAsString) {
+        return ROUTE_PATTERN.matcher(scenarioStepAsString).find();
     }
 
     @Override
@@ -32,11 +23,11 @@ public class DefaultVariationInjectionStrategy implements ScenarioContextVariati
         Matcher m = ROUTE_PATTERN.matcher(scenarioStepAsString);
         String formatted = scenarioStepAsString;
         while (m.find()) {
-            String firstSubsequence = m.group(1);
-            String zeroSubsequence = m.group(0);
-            String value = scenarioContext.get(firstSubsequence);
+            String csvColumnName = m.group(1);
+            String scenarioPlaceholder = m.group(0);
+            String value = scenarioContext.get(csvColumnName);
             value = escapeSpelQuotes ? escapeSpelQuotes(value) : StringEscapeUtils.escapeJson(value);
-            formatted = formatted.replace(zeroSubsequence, value);
+            formatted = formatted.replace(scenarioPlaceholder, value);
         }
         return formatted;
     }

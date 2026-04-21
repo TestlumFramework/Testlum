@@ -42,6 +42,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
 
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
     private static final String BODY_LOG = LogFormat.table("Body");
+    private static final String HEADERS_LOG = LogFormat.table("Headers");
+
 
     private static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
             + "because of no expected file";
@@ -77,8 +79,10 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                final ApiResponse actual,
                                final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
+        String expectedFileName = expected.getFile();
+        HttpValidator httpValidator = new HttpValidator(this, expectedFileName);
         String actualBody = actual.getBody();
-        setContextBody(getContextBodyKey(expected.getFile()), actualBody);
+        setContextBody(getContextBodyKey(expectedFileName), actualBody);
         httpValidator.validateCode(expected.getCode(), actual.getCode());
         validateHeaders(expected, actual, httpValidator);
         validateBody(expected, actualBody, httpValidator, result);
@@ -117,6 +121,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                     final CommandResult result) {
         String endpoint = httpInfo.getEndpoint();
         Map<String, String> headers = getHeaders(httpInfo);
+        logHeaders(headers);
+        endpoint = HttpUtil.sanitizeEndpointForAbsentKeywordsIfPresent(endpoint);
         logHttpInfo(alias, httpMethod.name(), endpoint);
         addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
         ContentType contentType = httpUtil.computeContentType(headers);
@@ -151,6 +157,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
         httpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
+        List<Header> headersWithoutAbsentMarkedHeaders = HttpUtil.sanitizeHeadersForAbsentKeyword(httpInfo);
+        httpUtil.fillHeadersMap(headersWithoutAbsentMarkedHeaders, headers, authorization);
         return headers;
     }
 
@@ -187,6 +195,16 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
             }
         }
     }
+
+    @SneakyThrows
+    private void logHeaders(final Map<String, String> headers) {
+        if (!headers.isEmpty()) {
+            log.info(HEADERS_LOG,
+                    StringPrettifier.asJsonResult(headers)
+                            .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+        }
+    }
+
 
     private void logBodyValidationSkipped() {
         log.info(SKIPPED_BODY_VALIDATION);

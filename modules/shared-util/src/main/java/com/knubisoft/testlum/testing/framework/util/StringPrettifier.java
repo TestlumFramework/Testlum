@@ -50,4 +50,8 @@ public class StringPrettifier {
     public String asJsonResult(final String json) {
         return StringUtils.isBlank(json) ? DelimiterConstant.EMPTY : prettifyToSave(json);
     }
+
+    public String asJsonResult(final Map<String, String> pairs) {
+        return JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(pairs);
+    }
 }

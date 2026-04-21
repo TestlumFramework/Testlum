@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.http.util;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.google.common.base.Ascii;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -23,6 +24,11 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,6 +40,7 @@ public final class HttpUtil {
 
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
+    private static final String ABSENT_PARAMETER_VARIATION_KEYWORD = "$absent";
 
     private static final Map<Function<Http, HttpInfo>, HttpMethod> HTTP_METHOD_MAP = new HashMap<>(8, 1F);
     private static final Map<Function<Elasticsearch, ElasticSearchRequest>, HttpMethod> ES_HTTP_METHOD_MAP =
@@ -179,6 +186,29 @@ public final class HttpUtil {
     public ContentType computeContentType(final Map<String, String> headers) {
         String typeValue = headers.computeIfAbsent(HttpHeaders.CONTENT_TYPE, type -> MediaType.APPLICATION_JSON_VALUE);
         return ContentType.parse(typeValue);
+    }
+
+    public String sanitizeEndpointForAbsentKeywordsIfPresent(final String endpoint) {
+        if (!endpoint.contains("?")) {
+            return endpoint;
+        }
+        String[] endpointUrlDividedByQuotationMark = endpoint.split("\\?");
+        String urlPartBeforeQuotationMark = endpointUrlDividedByQuotationMark[0];
+        String urlPartAfterQuotationMark = endpointUrlDividedByQuotationMark[1];
+        String[] queryParametersPairs = urlPartAfterQuotationMark.split("&");
+        String sanitizedQueryParamsString = Arrays.stream(queryParametersPairs)
+                .filter(s -> !s.contains(ABSENT_PARAMETER_VARIATION_KEYWORD))
+                .collect(Collectors.joining("&"));
+        if (sanitizedQueryParamsString.isEmpty()) {
+            return endpoint.substring(0, endpoint.indexOf("?"));
+        }
+        return urlPartBeforeQuotationMark.concat("?").concat(sanitizedQueryParamsString);
+    }
+
+    public List<com.knubisoft.testlum.testing.model.scenario.Header> sanitizeHeadersForAbsentKeyword(final HttpInfo httpInfo) {
+        return httpInfo.getHeader().stream()
+                .filter(header -> !header.getData().trim().equals(ABSENT_PARAMETER_VARIATION_KEYWORD))
+                .toList();
     }
 
     @RequiredArgsConstructor

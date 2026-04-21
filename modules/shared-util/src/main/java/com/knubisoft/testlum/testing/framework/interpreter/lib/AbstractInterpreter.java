@@ -8,6 +8,9 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.CommandResultHelper;
 import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
 import com.knubisoft.testlum.testing.framework.util.JacksonService;
+import com.knubisoft.testlum.testing.framework.util.ExpectedFileUtils;
+import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
@@ -99,11 +102,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
                 jacksonService, stringPrettifier);
     }
 
-    public void save(final String actual) {
+    public void save(final String actual, final String expectedFileName) {
         try {
             File target = new File(dependencies.getFile().getParent(),
                     String.format(FILENAME_TO_SAVE, dependencies.getPosition().get()));
             FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
+            int scenarioStep = dependencies.getPosition().get();
+            String actualFileNameWithExecutionStep =
+                    ExpectedFileUtils.resolveActualNameBasedOnExpectedFileName(expectedFileName, scenarioStep);
+            File target = new File(dependencies.getFile().getParent(), actualFileNameWithExecutionStep);
+            FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new DefaultFrameworkException(e);

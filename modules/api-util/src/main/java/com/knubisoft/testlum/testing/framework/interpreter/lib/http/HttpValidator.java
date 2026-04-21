@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@RequiredArgsConstructor
 public final class HttpValidator {
 
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
@@ -20,12 +19,23 @@ public final class HttpValidator {
     public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s]%n but was [%s]";
 
     private final List<String> result = new ArrayList<>();
-
     private final AbstractInterpreter<?> interpreter;
     private final StringPrettifier prettifier;
+    private String expectedFileName;
+
+    public HttpValidator(AbstractInterpreter<?> interpreter) {
+        this.interpreter = interpreter;
+    }
+
+    public HttpValidator(AbstractInterpreter<?> interpreter, String expectedFileName) {
+        this.interpreter = interpreter;
+        this.expectedFileName = expectedFileName;
+    }
 
     public void validateCode(final int expectedCode, final int actualCode) {
         if (expectedCode != actualCode) {
+            result.add(format(HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
+            interpreter.save(valueOf(actualCode), expectedFileName);
             result.add(String.format(HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
             interpreter.save(String.valueOf(actualCode));
         }
@@ -68,6 +78,7 @@ public final class HttpValidator {
                     .withExpected(expectedBody)
                     .withActual(actualBody)
                     .withMode(isStrict)
+                    .withExpectedFileName(expectedFileName)
                     .exec();
         } catch (ComparisonException e) {
             result.add(String.format(HTTP_BODY_EXPECTED_BUT_WAS,

@@ -122,7 +122,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         String endpoint = httpInfo.getEndpoint();
         Map<String, String> headers = getHeaders(httpInfo);
         logHeaders(headers);
-        endpoint = this.httpUtil.sanitizeEndpointForAbsentKeywordsIfPresent(endpoint);
+        endpoint = this.httpUtil.processQueryParameters(endpoint);
         logHttpInfo(alias, httpMethod.name(), endpoint);
         addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
         ContentType contentType = this.httpUtil.computeContentType(headers);

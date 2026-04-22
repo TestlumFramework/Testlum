@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.http.util;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
-import com.google.common.base.Ascii;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -188,21 +187,43 @@ public final class HttpUtil {
         return ContentType.parse(typeValue);
     }
 
-    public String sanitizeEndpointForAbsentKeywordsIfPresent(final String endpoint) {
+    public String processQueryParameters(final String endpoint) {
         if (!endpoint.contains("?")) {
             return endpoint;
         }
-        String[] endpointUrlDividedByQuotationMark = endpoint.split("\\?");
-        String urlPartBeforeQuotationMark = endpointUrlDividedByQuotationMark[0];
-        String urlPartAfterQuotationMark = endpointUrlDividedByQuotationMark[1];
-        String[] queryParametersPairs = urlPartAfterQuotationMark.split("&");
-        String sanitizedQueryParamsString = Arrays.stream(queryParametersPairs)
-                .filter(s -> !s.contains(ABSENT_PARAMETER_VARIATION_KEYWORD))
-                .collect(Collectors.joining("&"));
-        if (sanitizedQueryParamsString.isEmpty()) {
+        String[] endpointParts = endpoint.split("\\?", 2);
+        String urlPartBeforeQuotationMark = endpointParts[0];
+        String[] queryParamPairs = endpointParts[1].split("&");
+
+        String postProcessedQueryParams = Arrays.stream(queryParamPairs)
+                .filter(pair -> !isAbsentParam(pair))
+                .map(this::expandCsvArrayParam)
+                .collect(Collectors.joining("$"));
+        if (postProcessedQueryParams.isEmpty()) {
             return endpoint.substring(0, endpoint.indexOf("?"));
         }
-        return urlPartBeforeQuotationMark.concat("?").concat(sanitizedQueryParamsString);
+        String sanitizedUrlWithoutQuotesAndSpaces = sanitizeQueryParams(postProcessedQueryParams);
+        return urlPartBeforeQuotationMark.concat("?").concat(sanitizedUrlWithoutQuotesAndSpaces);
+    }
+
+    private String expandCsvArrayParam(String queryParamPair) {
+        if (!queryParamPair.contains(",")) {
+            return queryParamPair;
+        }
+        String[] keyValuesQueryPair = queryParamPair.split("=", 2);
+        String queryParamKey = keyValuesQueryPair[0];
+        return Arrays.stream(keyValuesQueryPair[1].split(","))
+                .map(value -> queryParamKey.concat("=").concat(value))
+                .collect(Collectors.joining("&"));
+    }
+
+    private boolean isAbsentParam(String pair) {
+        return pair.contains(ABSENT_PARAMETER_VARIATION_KEYWORD);
+    }
+
+    private String sanitizeQueryParams(String postProcessedQueryParams) {
+        return postProcessedQueryParams.replaceAll("\"", "")
+                .replaceAll("\\s", "");
     }
 
     public List<com.knubisoft.testlum.testing.model.scenario.Header> sanitizeHeadersForAbsentKeyword(final HttpInfo httpInfo) {

@@ -30,7 +30,6 @@ class ScenarioFilterTest {
     void setUp() {
         config = mock(GlobalTestConfiguration.class);
         logUtil = mock(LogUtil.class);
-        doNothing().when(logUtil).logNonParsedScenarioInfo(anyString(), anyString());
         doNothing().when(logUtil).logScenarioWithoutTags(anyString());
         filter = new ScenarioFilter(config, logUtil);
 

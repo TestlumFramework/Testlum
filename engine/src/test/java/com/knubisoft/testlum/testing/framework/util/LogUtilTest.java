@@ -42,6 +42,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -128,11 +129,33 @@ class LogUtilTest {
     }
 
     @Nested
-    class LogNonParsedScenarioInfo {
+    class LogInvalidScenariosSummary {
         @Test
-        void logsNonParsedScenario() {
+        void logsEmptyMaps() {
             assertDoesNotThrow(
-                    () -> logUtil.logNonParsedScenarioInfo("/path/to/file.xml", "parse error"));
+                    () -> logUtil.logInvalidScenariosSummary(Map.of(), Map.of()));
+        }
+
+        @Test
+        void logsWarningsOnly() {
+            assertDoesNotThrow(
+                    () -> logUtil.logInvalidScenariosSummary(
+                            Map.of("/path/to/warn.xml", "parse error"), Map.of()));
+        }
+
+        @Test
+        void logsErrorsOnly() {
+            assertDoesNotThrow(
+                    () -> logUtil.logInvalidScenariosSummary(
+                            Map.of(), Map.of("/path/to/err.xml", "integration disabled")));
+        }
+
+        @Test
+        void logsBothWarningsAndErrors() {
+            assertDoesNotThrow(
+                    () -> logUtil.logInvalidScenariosSummary(
+                            Map.of("/path/to/warn.xml", "parse error"),
+                            Map.of("/path/to/err.xml", "integration disabled")));
         }
     }
 

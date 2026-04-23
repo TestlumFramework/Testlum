@@ -3,9 +3,14 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.log.ColoredText;
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.log.table.DynamicTableBuilder;
+import com.knubisoft.testlum.log.table.Align;
+import com.knubisoft.testlum.log.table.TableBuilder;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAlert;
@@ -39,6 +44,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -126,10 +132,6 @@ public class LogUtil {
     private void addNativeInfo(final List<String> messages, final String env, final String alias) {
         mobileUtil.getNativeDeviceBy(env, alias).ifPresent(device ->
                 messages.add(String.format(LogMessage.NATIVE_LOG, mobileUtil.getNativeDeviceInfo(device))));
-    }
-
-    public void logNonParsedScenarioInfo(final String path, final String exception) {
-        log.error(LogMessage.INVALID_SCENARIO_LOG, path, exception);
     }
 
     public void logCondition(final String name, final boolean condition) {
@@ -390,5 +392,26 @@ public class LogUtil {
 
     public void logScenarioWithoutTags(final String scenarioPath) {
         log.warn(LogMessage.SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
+    }
+
+    public void logInvalidScenariosSummary(final Map<String, String> warnings, final Map<String, String> errors) {
+        if (!errors.isEmpty()) {
+            log.error(constructInvalidScenarioTable(LogMessage.FAILED_SCENARIOS_TITLE, Color.RED, errors));
+        }
+        if (!warnings.isEmpty()) {
+            log.warn(constructInvalidScenarioTable(LogMessage.SKIPPED_SCENARIOS_TITLE, Color.YELLOW, warnings));
+        }
+    }
+
+    private String constructInvalidScenarioTable(final String title,
+                                                 final Color color,
+                                                 final Map<String, String> entries) {
+        DynamicTableBuilder tableBuilder = TableBuilder.grid(title)
+                .columns("Scenario", "Reason");
+        entries.forEach(tableBuilder::row);
+        return tableBuilder
+                .color(color)
+                .align(Align.CENTER)
+                .build();
     }
 }

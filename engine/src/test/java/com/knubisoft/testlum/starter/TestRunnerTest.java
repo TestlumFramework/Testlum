@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.starter;
 
+import com.knubisoft.testlum.starter.summary.TestExecutionPostProcessor;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
@@ -24,12 +25,14 @@ class TestRunnerTest {
     private XMLParsers xmlParsers;
     @Mock
     private TestResourceSettings testResourceSettings;
+    @Mock
+    private TestExecutionPostProcessor testExecutionPostProcessor;
 
     private TestRunner testRunner;
 
     @BeforeEach
     void setUp() {
-        testRunner = new TestRunner(xmlParsers, testResourceSettings);
+        testRunner = new TestRunner(xmlParsers, testResourceSettings, testExecutionPostProcessor);
     }
 
     @Nested

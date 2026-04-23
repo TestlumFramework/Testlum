@@ -36,10 +36,13 @@ public final class LogMessage {
     public static final String END_UI_COMMANDS_IN_WEBVIEW =
             LogFormat.withCyan("------- End ui commands in web view -------");
 
-    public static final String INVALID_SCENARIO_LOG = LogFormat.withRed(LINE
-            + LogFormat.newLogLine() + LogFormat.table("Invalid scenario")
-            + LogFormat.newLogLine() + LogFormat.table("Exception") + LogFormat.newLogLine()
-            + LINE) + "\n";
+    public static final String SKIPPED_SCENARIOS_TITLE = "Skipped scenarios (not configured to run)";
+
+    public static final String FAILED_SCENARIOS_TITLE = "Failed scenarios (expected to run but could not)";
+
+    public static final String INVALID_SCENARIOS_SUMMARY = LogFormat.withRed(
+            "{} scenario(s) were expected to run but failed to load. See the error table above for details."
+    );
 
     public static final String SCENARIO_WITH_EMPTY_TAG_LOG = LogFormat.withYellow(LINE
             + LogFormat.newLogLine()

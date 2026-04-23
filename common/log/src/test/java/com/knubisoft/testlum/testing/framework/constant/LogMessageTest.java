@@ -64,8 +64,13 @@ class LogMessageTest {
         }
 
         @Test
-        void invalidScenarioLogContainsRed() {
-            assertTrue(LogMessage.INVALID_SCENARIO_LOG.contains(Color.RED.getCode()));
+        void nonParsedScenariosTitleIsNotEmpty() {
+            assertFalse(LogMessage.SKIPPED_SCENARIOS_TITLE.isEmpty());
+        }
+
+        @Test
+        void invalidScenariosTitleIsNotEmpty() {
+            assertFalse(LogMessage.FAILED_SCENARIOS_TITLE.isEmpty());
         }
 
         @Test

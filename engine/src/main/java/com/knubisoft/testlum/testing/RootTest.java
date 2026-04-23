@@ -2,12 +2,14 @@ package com.knubisoft.testlum.testing;
 
 import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.testing.framework.*;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.env.service.EnvironmentExecutionService;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
+import com.knubisoft.testlum.testing.framework.scenario.InvalidScenarioCondition;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
@@ -33,6 +35,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -43,7 +46,7 @@ import java.util.stream.Stream;
 @Execution(ExecutionMode.CONCURRENT)
 @ContextConfiguration(classes = {RootTest.class})
 @TestPropertySource(properties = {"spring.main.banner-mode=off"})
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, InvalidScenarioCondition.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RootTest {
 
@@ -104,7 +107,7 @@ public class RootTest {
         if (StringUtils.isNotBlank(result.getCause())) {
             String[] lines = result.getCause().split(System.lineSeparator());
             String message = result.getPath() + " - " + lines[0];
-            throw new AssertionError(message, new RuntimeException(result.getCause()));
+            throw new AssertionError(result.getCause());
         }
     }
 
@@ -122,8 +125,22 @@ public class RootTest {
         ConnectionManager connectionManager = ctx.getBean(ConnectionManager.class);
         connectionManager.closeConnections();
 
+        Map<String, String> warnings = InvalidScenarioCondition.getRegisteredWarning();
+        Map<String, String> errors = InvalidScenarioCondition.getRegisteredError();
+
+        LogUtil logUtil = ctx.getBean(LogUtil.class);
+        logUtil.logInvalidScenariosSummary(warnings, errors);
+
         GlobalScenarioStatCollector globalScenarioStatCollector = ctx.getBean(GlobalScenarioStatCollector.class);
         ReportGenerator reportGenerator = ctx.getBean(ReportGenerator.class);
         reportGenerator.generateReport(globalScenarioStatCollector);
+
+        logInvalidScenariosSummary(errors);
+    }
+
+    private void logInvalidScenariosSummary(final Map<String, String> errors) {
+        if (!errors.isEmpty()) {
+            log.error(LogMessage.INVALID_SCENARIOS_SUMMARY, errors.size());
+        }
     }
 }

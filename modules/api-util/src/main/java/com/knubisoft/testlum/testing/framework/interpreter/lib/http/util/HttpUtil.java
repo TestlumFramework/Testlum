@@ -198,7 +198,7 @@ public final class HttpUtil {
         String postProcessedQueryParams = Arrays.stream(queryParamPairs)
                 .filter(pair -> !isAbsentParam(pair))
                 .map(this::expandCsvArrayParam)
-                .collect(Collectors.joining("$"));
+                .collect(Collectors.joining("&"));
         if (postProcessedQueryParams.isEmpty()) {
             return endpoint.substring(0, endpoint.indexOf("?"));
         }

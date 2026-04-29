@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
@@ -38,6 +39,8 @@ class HoverExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private InteractiveWebDriver driver;
     @Mock
     private ScenarioContext scenarioContext;
@@ -59,6 +62,7 @@ class HoverExecutorTest {
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "conditionUtil", conditionUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
     }
 
     @Nested
@@ -74,7 +78,7 @@ class HoverExecutorTest {
             executor.execute(hover, result);
 
             verify(resultUtil).addHoverMetaData(eq(hover), eq(result));
-            verify(logUtil).logHover(eq(hover));
+            verify(uiLogUtil).logHover(eq(hover));
             verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
 

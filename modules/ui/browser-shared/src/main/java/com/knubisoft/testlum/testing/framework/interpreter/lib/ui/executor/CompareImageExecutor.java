@@ -1,0 +1,180 @@
+package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
+
+import com.github.romankh3.image.comparison.model.ImageComparisonResult;
+import com.github.romankh3.image.comparison.model.Rectangle;
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ImageComparator;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.model.scenario.ByArea;
+import com.knubisoft.testlum.testing.model.scenario.ByLocator;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
+import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
+import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+import javax.imageio.IIOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Slf4j
+@ExecutorForClass(Image.class)
+public class CompareImageExecutor extends AbstractUiExecutor<Image> {
+
+    private final EnvironmentLoader currentEnvironmentLoader;
+    private final ImageComparator imageComparator;
+
+    public CompareImageExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
+        this.currentEnvironmentLoader = dependencies.getContext().getBean(EnvironmentLoader.class);
+        this.imageComparator = dependencies.getContext().getBean(ImageComparator.class);
+    }
+
+    @Override
+    public void execute(final Image image, final CommandResult result) {
+        try {
+            uiLogUtil.logImageComparisonInfo(image);
+            resultUtil.addImageComparisonMetaData(image, result);
+            File scenarioFile = dependencies.getFile();
+            BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+            BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
+            List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
+            ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual, excludeList);
+            imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
+                    image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    private BufferedImage getActualImage(final WebDriver webDriver,
+                                         final Image image,
+                                         final CommandResult result) throws IOException {
+        if (Objects.nonNull(image.getPicture())) {
+            return getImageFromPicture(image, result);
+        }
+        if (Objects.nonNull(image.getPart())) {
+            return getImageFromPart(image);
+        }
+        return ImageIO.read(uiUtil.takeScreenshot(webDriver));
+    }
+
+    private BufferedImage getImageFromPicture(final Image image, final CommandResult result) throws IOException {
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
+                image.getPicture().getLocatorStrategy());
+        return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
+    }
+
+    private BufferedImage getImageFromPart(final Image image) throws IOException {
+        WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
+                image.getPart().getLocatorStrategy());
+        return ImageIO.read(uiUtil.takeScreenshot(webElement));
+    }
+
+    private BufferedImage extractImageFromElement(final WebElement webElement,
+                                                  final String imageSourceAttribute,
+                                                  final CommandResult result) throws IOException {
+        String urlToImage = uiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
+        if (urlToImage.startsWith(DelimiterConstant.SLASH_SEPARATOR)) {
+            try {
+                urlToImage = getImageURLStartsWithCurrentPageURL(result, urlToImage);
+                return ImageIO.read(new URL(urlToImage));
+            } catch (final IIOException e) {
+                urlToImage = getImageURLStartsWithBaseURL(result, urlToImage);
+                return ImageIO.read(new URL(urlToImage));
+            }
+        }
+        return ImageIO.read(new URL(urlToImage));
+    }
+
+    private List<Rectangle> getExcludeList(final WebFullScreen fullScreen,
+                                           final BufferedImage expected,
+                                           final WebDriver driver) {
+        if (Objects.nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
+            Scale scale = getScaling(expected, driver);
+            return fullScreen.getExclude().stream()
+                    .map(element -> getExcludeArea(element, scale))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    private Rectangle getExcludeArea(final Exclude exclude, final Scale scale) {
+        if (exclude.getByLocator() != null) {
+            ByLocator byLocator = exclude.getByLocator();
+            return getElementArea(byLocator.getLocator(), scale, byLocator.getLocatorStrategy());
+        } else {
+            return getAreaByCoordinates(exclude);
+        }
+    }
+
+    private Scale getScaling(final BufferedImage screen, final WebDriver driver) {
+        Dimension windowSize = driver.manage().window().getSize();
+        if (screen.getWidth() / windowSize.getWidth() > 1 || screen.getHeight() / windowSize.getHeight() > 1) {
+            return new Scale(Math.ceil((double) screen.getWidth() / windowSize.getWidth()),
+                    Math.ceil((double) screen.getHeight() / (windowSize.getHeight())));
+        }
+        return new Scale(1, 1);
+    }
+
+    private Rectangle getElementArea(final String locatorId, final Scale scale, final LocatorStrategy locatorStrategy) {
+        org.openqa.selenium.Rectangle seleniumRectangle =
+                uiUtil.findWebElement(dependencies, locatorId, locatorStrategy).getRect();
+        double x = seleniumRectangle.getX() * scale.getScaleX();
+        double y = seleniumRectangle.getY() * scale.getScaleY();
+        double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
+        double height = (seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scale.getScaleY();
+        return new Rectangle((int) x, (int) y, (int) width, (int) height);
+    }
+
+    private Rectangle getAreaByCoordinates(final Exclude exclude) {
+        ByArea byArea = exclude.getByArea();
+        int minX = byArea.getX().intValue();
+        int minY = byArea.getY().intValue();
+        int maxX = minX + byArea.getWidth().intValue();
+        int maxY = minY + byArea.getHeight().intValue();
+        return new Rectangle(minX, minY, maxX, maxY);
+    }
+
+    private String getImageURLStartsWithBaseURL(final CommandResult result, final String urlToImage) {
+        String baseUrl = currentEnvironmentLoader.getCurrentEnvWebSettings().get().getBaseUrl();
+        String imageURL = baseUrl + urlToImage;
+        log.info(LogMessage.URL_TO_IMAGE_LOG, imageURL);
+        result.put(ResultUtil.URL_TO_ACTUAL_IMAGE, imageURL);
+        return imageURL;
+    }
+
+    private String getImageURLStartsWithCurrentPageURL(final CommandResult result, final String urlToImage) {
+        String basePageUrl = uiUtil.getBasePageURL(dependencies.getDriver().getCurrentUrl());
+        String imageURL = basePageUrl + urlToImage;
+        log.info(LogMessage.URL_TO_IMAGE_LOG, imageURL);
+        result.put(ResultUtil.URL_TO_ACTUAL_IMAGE, imageURL);
+        return imageURL;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class Scale {
+        private final double scaleX;
+        private final double scaleY;
+    }
+}

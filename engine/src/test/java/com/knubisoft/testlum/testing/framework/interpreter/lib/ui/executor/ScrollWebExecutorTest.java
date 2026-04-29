@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.InnerScrollScript;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
@@ -36,6 +37,8 @@ class ScrollWebExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private JavascriptUtil javascriptUtil;
     @Mock
     private InnerScrollScript innerScrollScript;
@@ -57,6 +60,7 @@ class ScrollWebExecutorTest {
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "javascriptUtil", javascriptUtil);
         ReflectionTestUtils.setField(executor, "innerScrollScript", innerScrollScript);
     }
@@ -75,7 +79,7 @@ class ScrollWebExecutorTest {
 
             verify(javascriptUtil).executeJsScript(anyString(), eq(driver));
             verify(resultUtil).addScrollMetaData(eq(scroll), eq(result));
-            verify(logUtil).logScrollInfo(eq(scroll));
+            verify(uiLogUtil).logScrollInfo(eq(scroll));
             verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
 
@@ -153,7 +157,7 @@ class ScrollWebExecutorTest {
             executor.execute(scroll, result);
 
             verify(resultUtil).addScrollMetaData(eq(scroll), eq(result));
-            verify(logUtil).logScrollInfo(eq(scroll));
+            verify(uiLogUtil).logScrollInfo(eq(scroll));
         }
     }
 }

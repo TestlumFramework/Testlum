@@ -457,6 +457,21 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ui-configuration</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ui-executor</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-browser-shared</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-web</artifactId>
         </dependency>
 

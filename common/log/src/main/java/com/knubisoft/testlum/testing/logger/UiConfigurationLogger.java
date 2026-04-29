@@ -45,17 +45,48 @@ public class UiConfigurationLogger {
         }
         String aliases = joinValues(web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari(),
                 AbstractBrowser::getAlias);
-
         String browserTypes = joinValues(web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari(),
                 browser -> browser.getClass().getSimpleName());
-
         addSectionTitle(table, LogMessage.UI_CONFIG_TABLE_WEB_ROW);
+        addWebHeaders(table);
+        addWebDataRow(table, web, aliases, browserTypes);
+    }
+
+    private void addMobileBrowserConfiguration(final DynamicTableBuilder table, final Mobilebrowser mobilebrowser) {
+        if (mobilebrowser == null) {
+            return;
+        }
+        String aliases = joinValues(mobilebrowser.getDevices().getDevice(), AbstractDevice::getAlias);
+        addSectionTitle(table, LogMessage.UI_CONFIG_TABLE_MOBILE_BROWSER_ROW);
+        addMobileHeaders(table);
+        addMobileDataRow(table, mobilebrowser, aliases);
+    }
+
+    private void addNativeConfiguration(final DynamicTableBuilder table, final Native nativeConfiguration) {
+        if (nativeConfiguration == null) {
+            return;
+        }
+        String aliases = joinValues(nativeConfiguration.getDevices().getDevice(), AbstractDevice::getAlias);
+        String platforms = joinValues(nativeConfiguration.getDevices().getDevice(),
+                abstractDevice -> abstractDevice.getPlatformName().value());
+        addSectionTitle(table, LogMessage.UI_CONFIG_TABLE_NATIVE_ROW);
+        addNativeHeaders(table);
+        addNativeDataRow(table, nativeConfiguration, platforms, aliases);
+    }
+
+    private void addWebHeaders(final DynamicTableBuilder table) {
         table.row(
                 LogMessage.UI_CONFIG_TABLE_BASE_URL_HEADER,
                 LogMessage.UI_CONFIG_TABLE_BROWSER_ALIAS_HEADER,
                 LogMessage.UI_CONFIG_TABLE_BROWSER_TYPE_HEADER,
                 LogMessage.UI_CONFIG_TABLE_ENABLED_HEADER
         );
+    }
+
+    private void addWebDataRow(final DynamicTableBuilder table,
+                               final Web web,
+                               final String aliases,
+                               final String browserTypes) {
         table.row(
                 computeRowColor(web.isEnabled()),
                 web.getBaseUrl(),
@@ -65,18 +96,18 @@ public class UiConfigurationLogger {
         );
     }
 
-    private void addMobileBrowserConfiguration(final DynamicTableBuilder table, final Mobilebrowser mobilebrowser) {
-        if (mobilebrowser == null) {
-            return;
-        }
-        String aliases = joinValues(mobilebrowser.getDevices().getDevice(), AbstractDevice::getAlias);
-        addSectionTitle(table, LogMessage.UI_CONFIG_TABLE_MOBILE_BROWSER_ROW);
+    private void addMobileHeaders(final DynamicTableBuilder table) {
         table.row(
                 LogMessage.UI_CONFIG_TABLE_BASE_URL_HEADER,
                 LogMessage.UI_CONFIG_TABLE_DEVICE_ALIAS_HEADER,
                 LogMessage.UI_CONFIG_TABLE_CONNECTION_TYPE_HEADER,
                 LogMessage.UI_CONFIG_TABLE_ENABLED_HEADER
         );
+    }
+
+    private void addMobileDataRow(final DynamicTableBuilder table,
+                                  final Mobilebrowser mobilebrowser,
+                                  final String aliases) {
         table.row(
                 computeRowColor(mobilebrowser.isEnabled()),
                 mobilebrowser.getBaseUrl(),
@@ -86,22 +117,19 @@ public class UiConfigurationLogger {
         );
     }
 
-    private void addNativeConfiguration(final DynamicTableBuilder table, final Native nativeConfiguration) {
-        if (nativeConfiguration == null) {
-            return;
-        }
-        String aliases = joinValues(nativeConfiguration.getDevices().getDevice(), AbstractDevice::getAlias);
-
-        String platforms = joinValues(nativeConfiguration.getDevices().getDevice(),
-                abstractDevice -> abstractDevice.getPlatformName().value());
-
-        addSectionTitle(table, LogMessage.UI_CONFIG_TABLE_NATIVE_ROW);
+    private void addNativeHeaders(final DynamicTableBuilder table) {
         table.row(
                 LogMessage.UI_CONFIG_TABLE_NATIVE_PLATFORM_HEADER,
                 LogMessage.UI_CONFIG_TABLE_DEVICE_ALIAS_HEADER,
                 LogMessage.UI_CONFIG_TABLE_CONNECTION_TYPE_HEADER,
                 LogMessage.UI_CONFIG_TABLE_ENABLED_HEADER
         );
+    }
+
+    private void addNativeDataRow(final DynamicTableBuilder table,
+                                  final Native nativeConfiguration,
+                                  final String platforms,
+                                  final String aliases) {
         table.row(
                 computeRowColor(nativeConfiguration.isEnabled()),
                 platforms,

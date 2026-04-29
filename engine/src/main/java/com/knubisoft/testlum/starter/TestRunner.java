@@ -19,11 +19,6 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 @Slf4j
 @RequiredArgsConstructor
 @Component

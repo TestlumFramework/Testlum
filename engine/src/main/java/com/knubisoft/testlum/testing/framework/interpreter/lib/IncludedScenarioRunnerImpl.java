@@ -42,23 +42,38 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
                     final InterpreterDependencies dependencies,
                     final CommandResult result) {
         File includedFile = resolveIncludedFile(include);
+        Deque<File> stack = pushToStackOrThrow(includedFile);
+        try {
+            runIncludedScenario(includedFile, dependencies, result);
+        } finally {
+            popStack(stack);
+        }
+    }
+
+    private Deque<File> pushToStackOrThrow(final File includedFile) {
         Deque<File> stack = includeStack.get();
         if (stack.contains(includedFile)) {
             throw new DefaultFrameworkException(INCLUDE_CYCLE_DETECTED, includedFile.getPath());
         }
         stack.push(includedFile);
-        try {
-            Scenario includedScenario = xmlParsers.forScenario().process(includedFile);
-            List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-            for (AbstractCommand command : includedScenario.getCommands()) {
-                processEachCommand(command, dependencies, subCommandsResult);
-            }
-            resultUtil.setExecutionResultIfSubCommandsFailed(result);
-        } finally {
-            stack.pop();
-            if (stack.isEmpty()) {
-                includeStack.remove();
-            }
+        return stack;
+    }
+
+    private void runIncludedScenario(final File includedFile,
+                                     final InterpreterDependencies dependencies,
+                                     final CommandResult result) {
+        Scenario includedScenario = xmlParsers.forScenario().process(includedFile);
+        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
+        for (AbstractCommand command : includedScenario.getCommands()) {
+            processEachCommand(command, dependencies, subCommandsResult);
+        }
+        resultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void popStack(final Deque<File> stack) {
+        stack.pop();
+        if (stack.isEmpty()) {
+            includeStack.remove();
         }
     }
 

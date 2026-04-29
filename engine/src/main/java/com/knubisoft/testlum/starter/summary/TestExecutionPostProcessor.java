@@ -37,13 +37,11 @@ public class TestExecutionPostProcessor {
         log.info(tableBuilder.build());
     }
 
-    // TODO: improve by adding additional info to exception itself
     private void logFailures(final TestExecutionSummary summary) {
         if (summary.getTestsFailedCount() == 0 || summary.getFailures().isEmpty()) {
             return;
         }
         for (TestExecutionSummary.Failure failure : summary.getFailures()) {
-            log.error(LogFormat.withRed(LogMessage.LINE));
             log.error(LogFormat.withRed(failure.getTestIdentifier().getDisplayName()));
             log.error(LogFormat.withRed(failure.getException().getMessage()));
             log.error(LogFormat.withRed(Arrays.toString(failure.getException().getStackTrace())));

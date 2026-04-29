@@ -333,6 +333,36 @@
             </dependency>
             <dependency>
                 <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ui-configuration</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ui-image</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ui-locator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ui-autohealing</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ui-executor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-browser-shared</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
                 <artifactId>testlum-variable</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -1026,6 +1056,12 @@
             </dependency>
 
             <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
                 <version>${javax.xml.version}</version>
@@ -1268,6 +1304,18 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${com.faster.xml.jackson.core}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.21.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>2.21.2</version>
             </dependency>
 
             <dependency>

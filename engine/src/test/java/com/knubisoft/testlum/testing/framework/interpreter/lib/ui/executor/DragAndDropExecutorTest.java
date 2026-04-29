@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
@@ -42,6 +43,8 @@ class DragAndDropExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private FileSearcher fileSearcher;
     @Mock
     private JavascriptUtil javascriptUtil;
@@ -68,6 +71,7 @@ class DragAndDropExecutorTest {
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "fileSearcher", fileSearcher);
         ReflectionTestUtils.setField(executor, "javascriptUtil", javascriptUtil);
     }
@@ -88,7 +92,7 @@ class DragAndDropExecutorTest {
 
             executor.execute(dragAndDrop, result);
 
-            verify(logUtil).logDragAndDropInfo(eq(dragAndDrop));
+            verify(uiLogUtil).logDragAndDropInfo(eq(dragAndDrop));
             verify(resultUtil).addDragAndDropMetaDada(eq(dragAndDrop), eq(result));
             verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }

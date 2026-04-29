@@ -43,6 +43,8 @@ class CompareImageExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private FileSearcher fileSearcher;
     @Mock
     private ImageComparisonUtil imageComparisonUtil;
@@ -71,6 +73,7 @@ class CompareImageExecutorTest {
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "fileSearcher", fileSearcher);
         ReflectionTestUtils.setField(executor, "imageComparisonUtil", imageComparisonUtil);
         ReflectionTestUtils.setField(executor, "imageComparator", imageComparator);
@@ -115,7 +118,7 @@ class CompareImageExecutorTest {
                 // Expected since we cannot provide real image files in unit tests
             }
 
-            verify(logUtil).logImageComparisonInfo(image);
+            verify(uiLogUtil).logImageComparisonInfo(image);
             verify(resultUtil).addImageComparisonMetaData(image, result);
         }
 

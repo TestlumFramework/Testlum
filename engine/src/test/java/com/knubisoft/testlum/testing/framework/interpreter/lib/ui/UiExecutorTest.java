@@ -49,6 +49,8 @@ class UiExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private ScenarioInjectionUtil scenarioInjectionUtil;
     @Mock
     private JacksonService jacksonService;
@@ -77,6 +79,7 @@ class UiExecutorTest {
         ReflectionTestUtils.setField(executor, "configUtil", configUtil);
         ReflectionTestUtils.setField(executor, "fileSearcher", fileSearcher);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "scenarioInjectionUtil", scenarioInjectionUtil);
         ReflectionTestUtils.setField(executor, "jacksonService", jacksonService);
         ReflectionTestUtils.setField(executor, "stringPrettifier", stringPrettifier);
@@ -97,7 +100,7 @@ class UiExecutorTest {
             executor.apply(click, result);
 
             assertEquals("test comment", result.getComment());
-            verify(logUtil).logUICommand(eq(result.getId()), eq(click));
+            verify(uiLogUtil).logUICommand(eq(result.getId()), eq(click));
         }
 
         @Test

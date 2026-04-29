@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunnerI
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
@@ -31,6 +32,8 @@ class SwitchToFrameWebExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private SubCommandRunnerImpl subCommandRunner;
     @Mock
     private WebDriver driver;
@@ -55,6 +58,7 @@ class SwitchToFrameWebExecutorTest {
         executor = new SwitchToFrameWebExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "subCommandRunner", subCommandRunner);
     }
 
@@ -73,8 +77,8 @@ class SwitchToFrameWebExecutorTest {
 
             verify(targetLocator).frame(element);
             verify(subCommandRunner).runCommands(any(), eq(result), any());
-            verify(logUtil).startUiCommandsInFrame();
-            verify(logUtil).endUiCommandsInFrame();
+            verify(uiLogUtil).startUiCommandsInFrame();
+            verify(uiLogUtil).endUiCommandsInFrame();
             verify(targetLocator).parentFrame();
             assertEquals("iframe-main", result.getMetadata().get(ResultUtil.SWITCH_LOCATOR));
         }

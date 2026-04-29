@@ -11,7 +11,7 @@ import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import lombok.RequiredArgsConstructor;
@@ -70,8 +70,8 @@ public class RootTest {
 
     private void prepareAndRun(final ScenarioArguments args) {
         boolean ignore = args.getException() instanceof IntegrationDisabledException;
-        LogUtil logUtil = ctx.getBean(LogUtil.class);
-        logUtil.logScenarioDetails(args, args.getException(), ignore ? Color.YELLOW : Color.GREEN);
+        UiLogUtil uiLogUtil = ctx.getBean(UiLogUtil.class);
+        uiLogUtil.logScenarioDetails(args, args.getException(), ignore ? Color.YELLOW : Color.GREEN);
         if (!ignore) {
             if (args.getScenario().getSettings().isTruncateStorages()) {
                 SystemDataStoreCleaner systemDataStoreCleaner = ctx.getBean(SystemDataStoreCleaner.class);

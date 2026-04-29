@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwipeDirection;
@@ -39,6 +40,8 @@ class SwipeNativeExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private ApplicationContext context;
 
     private SwipeNativeExecutor createExecutor(final AppiumDriver appiumDriver) {
@@ -51,6 +54,7 @@ class SwipeNativeExecutorTest {
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         return executor;
     }
 
@@ -242,7 +246,7 @@ class SwipeNativeExecutorTest {
             executor.execute(swipeNative, result);
 
             verify(resultUtil).addSwipeMetaData(eq(swipeNative), eq(result));
-            verify(logUtil).logSwipeNativeInfo(eq(swipeNative));
+            verify(uiLogUtil).logSwipeNativeInfo(eq(swipeNative));
             verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }

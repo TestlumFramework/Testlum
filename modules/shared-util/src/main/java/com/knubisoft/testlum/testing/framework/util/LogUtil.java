@@ -1,6 +1,10 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.log.table.Align;
+import com.knubisoft.testlum.log.table.DynamicTableBuilder;
+import com.knubisoft.testlum.log.table.TableBuilder;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
@@ -11,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -73,5 +78,26 @@ public class LogUtil {
 
     public void logScenarioWithoutTags(final String scenarioPath) {
         log.warn(LogMessage.SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
+    }
+
+    public void logInvalidScenariosSummary(final Map<String, String> warnings, final Map<String, String> errors) {
+        if (!errors.isEmpty()) {
+            log.error(constructInvalidScenarioTable(LogMessage.FAILED_SCENARIOS_TITLE, Color.RED, errors));
+        }
+        if (!warnings.isEmpty()) {
+            log.warn(constructInvalidScenarioTable(LogMessage.SKIPPED_SCENARIOS_TITLE, Color.YELLOW, warnings));
+        }
+    }
+
+    private String constructInvalidScenarioTable(final String title,
+                                                 final Color color,
+                                                 final Map<String, String> entries) {
+        DynamicTableBuilder tableBuilder = TableBuilder.grid(title)
+                .columns("Scenario", "Reason");
+        entries.forEach(tableBuilder::row);
+        return tableBuilder
+                .color(color)
+                .align(Align.CENTER)
+                .build();
     }
 }

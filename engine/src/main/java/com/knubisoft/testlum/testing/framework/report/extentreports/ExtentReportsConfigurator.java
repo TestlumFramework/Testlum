@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.report.extentreports;
 
 import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
@@ -49,7 +50,14 @@ public class ExtentReportsConfigurator {
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
         String reportPath = buildReportPath(projectName);
         try {
-            extentReports.attachReporter(new ExtentSparkReporter(reportPath));
+            ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportPath);
+            if (globalTestConfiguration.getReport().getExtentReports().isOnlyFailedScenarios()) {
+                sparkReporter.filter()
+                        .statusFilter()
+                        .as(new Status[]{Status.FAIL})
+                        .apply();
+            }
+            extentReports.attachReporter(sparkReporter);
         } catch (Exception e) {
             log.error("Unable to create report file by path: {}", reportPath);
         }

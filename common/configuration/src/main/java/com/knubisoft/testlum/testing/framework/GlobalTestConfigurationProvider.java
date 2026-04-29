@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.validator.IntegrationsValidator;
 import com.knubisoft.testlum.testing.framework.validator.UiConfigValidator;
 import com.knubisoft.testlum.testing.framework.vault.VaultService;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
+import com.knubisoft.testlum.testing.logger.ConfigurationLogger;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class GlobalTestConfigurationProvider {
     private final UiConfigValidator validator;
     private final IntegrationsValidator integrationsValidator;
     private final InjectionService injectionService;
+    private final ConfigurationLogger configurationLogger;
 
     @Bean
     public GlobalTestConfiguration globalTestConfiguration() {
@@ -83,6 +85,7 @@ public class GlobalTestConfigurationProvider {
                                                     final Optional<VaultService> vaultService) {
         Map<String, Integrations> integrationsMap = environments.stream()
                 .collect(Collectors.toMap(Environment::getFolder, e -> initIntegration(e, vaultService)));
+        configurationLogger.logIntegrationConfiguration(integrationsMap);
         integrationsValidator.validate(integrationsMap);
         return new EnvToIntegrationMap(integrationsMap);
     }
@@ -103,6 +106,7 @@ public class GlobalTestConfigurationProvider {
                                              final Optional<VaultService> vaultService) {
         Map<String, UiConfig> uiConfigMap = environments.stream()
                 .collect(Collectors.toMap(Environment::getFolder, env -> initUiConfig(env, vaultService)));
+        configurationLogger.logUiConfiguration(uiConfigMap);
         validator.validate(uiConfigMap);
         return new UIConfiguration(uiConfigMap);
     }

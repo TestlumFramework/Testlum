@@ -182,12 +182,14 @@ public final class LogMessage {
     public static final String UI_CONFIG_TABLE_MOBILE_BROWSER_ROW = "Mobile Browser";
     public static final String UI_CONFIG_TABLE_BASE_URL_HEADER = "Base URL";
     public static final String UI_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
-    public static final String UI_CONFIG_TABLE_BROWSER_ALIAS_HEADER = "Browser Aliases";
+    public static final String UI_CONFIG_TABLE_BROWSER_ALIAS_HEADER = "Aliases";
+    public static final String UI_CONFIG_TABLE_BROWSER_TYPE_HEADER = "Browser Types";
     public static final String UI_CONFIG_TABLE_DEVICE_ALIAS_HEADER = "Device Aliases";
     public static final String UI_CONFIG_TABLE_CONNECTION_TYPE_HEADER = "Connection Type";
+    public static final String UI_CONFIG_TABLE_NATIVE_PLATFORM_HEADER = "Platform";
     public static final String CONNECTION_APPIUM_SERVER = "Appium Server";
     public static final String CONNECTION_BROWSER_STACK = "BrowserStack";
-    public static final String ALIAS_DELIMITER = " ";
+    public static final String EMPTY_DELIMITER = " ";
 
     public static final String INTEGRATION_CONFIG_TABLE_TITLE = "Integrations Configuration";
     public static final String INTEGRATION_CONFIG_TABLE_ENV_ROW = "Environment: %s";

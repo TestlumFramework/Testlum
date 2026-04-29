@@ -163,14 +163,6 @@ jobs:
           twilio_auth_token: ${{ secrets.TWILIO_AUTH_TOKEN }}
           twilio_phone_number: ${{ secrets.TWILIO_PHONE_NUMBER }}
 
-      - name: Print mega-test-api logs
-        if: ${{ always() }}
-        run: | 
-          echo "=== Docker containers ==="
-          docker ps -a || true
-          echo "=== mega-test-api logs ==="
-          docker logs maga-test-api --tail=2000 --timestamps || true
-
       - name: Cleanup Test Environment
         if: ${{ always() }}
         uses: ./testlum-core/.github/actions/cleanup-test-env

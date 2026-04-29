@@ -403,6 +403,11 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-include</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-wait</artifactId>
         </dependency>
 

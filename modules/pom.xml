@@ -28,6 +28,7 @@
         <module>ai-util</module>
 
         <module>conditional</module>
+        <module>include</module>
         <module>variable</module>
         <module>websocket</module>
         <module>twilio</module>

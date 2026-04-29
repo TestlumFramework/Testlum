@@ -1,11 +1,9 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
-import com.knubisoft.testlum.testing.framework.util.ScenarioInjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
@@ -28,9 +26,7 @@ public class ScenarioCollector {
     private final XMLParsers xmlParsers;
     private final TestResourceSettings testResourceSettings;
     private final IntegrationsUtil integrationUtil;
-    private final FileSearcher fileSearcher;
     private final GlobalVariationsProvider globalVariationsProvider;
-    private final ScenarioInjectionUtil scenarioInjectionUtil;
     private final Integrations integrations;
 
     public Result collect() {
@@ -116,8 +112,6 @@ public class ScenarioCollector {
                                     final Optional<String> variationFileName) {
         if (command instanceof Auth auth) {
             addAuthCommands(updatedCommand, auth);
-        } else if (command instanceof Include include) {
-            addIncludeCommands(updatedCommand, include, variationFileName);
         } else {
             updatedCommand.add(command);
         }
@@ -146,34 +140,6 @@ public class ScenarioCollector {
             return apiIntegration.getAuth().isAutoLogout();
         }
         throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, apiIntegration.getAlias());
-    }
-
-    private void addIncludeCommands(final List<AbstractCommand> updatedCommands,
-                                    final Include command,
-                                    final Optional<String> variationFileName) {
-        Include include = getIncludeCommand(command, variationFileName);
-        Scenario includedScenario = findIncludedScenarioAndParse(include);
-        updateScenario(includedScenario, variationFileName);
-        updatedCommands.addAll(includedScenario.getCommands());
-    }
-
-    private Include getIncludeCommand(final Include include, final Optional<String> variationFileName) {
-        if (variationFileName != null && variationFileName.isPresent()) {
-            List<Map<String, String>> variationList = globalVariationsProvider.getVariations(variationFileName.get());
-            return variationList.stream()
-                    .map(variationMap -> (Include) scenarioInjectionUtil.injectObjectVariation(include, variationMap))
-                    .findFirst()
-                    .orElseThrow(() -> new DefaultFrameworkException("No variations found for include command"));
-        }
-        return include;
-    }
-
-    private Scenario findIncludedScenarioAndParse(final Include include) {
-        File scenariosFolder = testResourceSettings.getScenariosFolder();
-        File includedScenarioFolder = new File(scenariosFolder,
-                include.getScenario());
-        File file = fileSearcher.searchFileFromDir(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
-        return xmlParsers.forScenario().process(file, scenarioValidator);
     }
 
     public static class Result extends ArrayList<MappingResult> {

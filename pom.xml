@@ -199,6 +199,11 @@
             </dependency>
             <dependency>
                 <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-include</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
                 <artifactId>testlum-db-util</artifactId>
                 <version>${project.version}</version>
             </dependency>

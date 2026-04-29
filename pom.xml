@@ -155,6 +155,7 @@
         <jacoco.maven.plugin.version>0.8.14</jacoco.maven.plugin.version>
         <jaxb2-maven-plugin.version>4.0.0</jaxb2-maven-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <asciitable.version>0.3.2</asciitable.version>
     </properties>
 
     <dependencyManagement>
@@ -1443,6 +1444,12 @@
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j</artifactId>
                 <version>${langchain4j-open-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.vandermeer</groupId>
+                <artifactId>asciitable</artifactId>
+                <version>${asciitable.version}</version>
             </dependency>
 
         </dependencies>

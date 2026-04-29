@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.starter;
 
+import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -237,6 +238,7 @@ public class TESTLUMStarter {
      *   <li>{@link #TESTS_FAILED} (1) - One or more tests failed or encountered errors</li>
      *   <li>{@link #NO_TESTS_FOUND} (2) - No tests were discovered for execution</li>
      *   <li>{@link #INVALID_CONFIGURATION} (3) - Configuration is invalid or files not found</li>
+     *   <li>{@link #TESTS_WERE_SKIPPED} (4) - Some tests were configured to run but failed to load and execute. </li>
      * </ul>
      */
     @Getter
@@ -244,19 +246,27 @@ public class TESTLUMStarter {
     enum ExitCode {
 
         /** All tests passed successfully. Exit code: 0 */
-        TESTS_PASSED(0, "Tests passed"),
+        TESTS_PASSED(0, "Tests passed", Color.GREEN),
 
         /** One or more tests failed. Exit code: 1 */
-        TESTS_FAILED(1, "Tests failed"),
+        TESTS_FAILED(1, "Tests failed", Color.RED),
 
         /** No tests were found for execution. Exit code: 2 */
-        NO_TESTS_FOUND(2, "No tests found"),
+        NO_TESTS_FOUND(2, "No tests found", Color.ORANGE),
 
-        /** Invalid configuration. Exit code: 3 */
-        INVALID_CONFIGURATION(3, "Invalid configuration");
+        /**
+         * Invalid configuration. Exit code: 3
+         */
+        INVALID_CONFIGURATION(3, "Invalid configuration", Color.RED),
+
+        /**
+         * Some tests were configured to run but failed to load and execute. Exit code: 4
+         */
+        TESTS_WERE_SKIPPED(4, "Tests were expected to run but failed to load", Color.RED);
 
         private final int exitCode;
         private final String message;
+        private final Color logColor;
     }
 
     /**
@@ -266,14 +276,15 @@ public class TESTLUMStarter {
      * @return the exit code corresponding to the test results
      */
     static @NotNull ExitCode getExitCode(final TestExecutionSummary summary) {
-        final ExitCode code;
         if (summary.getTestsFoundCount() == 0) {
-            code = ExitCode.NO_TESTS_FOUND;
-        } else if (summary.getTestsFailedCount() > 0) {
-            code = ExitCode.TESTS_FAILED;
-        } else {
-            code = ExitCode.TESTS_PASSED;
+            return ExitCode.NO_TESTS_FOUND;
         }
-        return code;
+        if (summary.getTestsFailedCount() > 0) {
+            return ExitCode.TESTS_FAILED;
+        }
+        if (summary.getTestsSkippedCount() > 0) {
+            return ExitCode.TESTS_WERE_SKIPPED;
+        }
+        return ExitCode.TESTS_PASSED;
     }
 }

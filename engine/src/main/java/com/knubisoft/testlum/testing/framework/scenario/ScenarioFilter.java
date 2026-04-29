@@ -31,13 +31,22 @@ public class ScenarioFilter {
         handleNonParsedScenarios(nonParsedScenarios, original.isEmpty());
         List<MappingResult> originalWithoutNonParsed = new ArrayList<>(original);
         originalWithoutNonParsed.removeAll(nonParsedScenarios);
-        return filterValidScenarios(originalWithoutNonParsed);
+        List<MappingResult> validScenarios = filterValidScenarios(originalWithoutNonParsed);
+        registerInvalidScenarios(validScenarios);
+        return validScenarios;
+    }
+
+    private void registerInvalidScenarios(final List<MappingResult> validScenarios) {
+        validScenarios.stream()
+                .filter(e -> e.exception != null)
+                .forEach(e -> InvalidScenarioCondition.registerError(
+                        e.file, e.exception.getMessage()));
     }
 
     private void handleNonParsedScenarios(final List<MappingResult> nonParsed, final boolean originalEmpty) {
         if (!nonParsed.isEmpty()) {
-            nonParsed.forEach(entry ->
-                    logUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage()));
+            nonParsed.forEach(entry -> InvalidScenarioCondition.registerWarning(
+                    entry.file, entry.exception.getMessage()));
             if (globalTestConfiguration.isStopIfInvalidScenario()) {
                 throw new DefaultFrameworkException(ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO);
             }

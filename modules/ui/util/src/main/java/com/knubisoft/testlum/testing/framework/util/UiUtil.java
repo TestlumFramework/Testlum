@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
 
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.constant.JavascriptConstant;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 
 @Slf4j
 @Component
@@ -83,6 +84,14 @@ public class UiUtil {
                                      final LocatorStrategy locatorStrategy) {
         LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
         return webElementFinder.find(locatorData, dependencies);
+    }
+
+    public WebElement findWebElement(final ExecutorDependencies dependencies,
+                                     final String locatorId,
+                                     final LocatorStrategy locatorStrategy,
+                                     final AbstractElementCheck... checks) {
+        LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
+        return webElementFinder.find(locatorData, dependencies, checks);
     }
 
     // CHECKSTYLE:OFF

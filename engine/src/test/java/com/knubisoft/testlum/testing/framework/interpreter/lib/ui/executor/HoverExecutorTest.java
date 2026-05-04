@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -89,11 +90,12 @@ class HoverExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
-            when(uiUtil.findWebElement(any(), eq("link-hover"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("link-hover"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             executor.execute(hover, result);
 
-            verify(uiUtil).findWebElement(any(), eq("link-hover"), any());
+            verify(uiUtil).findWebElement(any(), eq("link-hover"), any(), any(AbstractElementCheck[].class));
         }
 
         @Test
@@ -105,7 +107,7 @@ class HoverExecutorTest {
 
             executor.execute(hover, result);
 
-            verify(uiUtil, never()).findWebElement(any(), any(), any());
+            verify(uiUtil, never()).findWebElement(any(), any(), any(), any(AbstractElementCheck[].class));
         }
     }
 
@@ -120,7 +122,8 @@ class HoverExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
-            when(uiUtil.findWebElement(any(), eq("tooltip-trigger"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("tooltip-trigger"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             WebElement htmlElement = mock(WebElement.class);
             when(driver.findElement(any())).thenReturn(htmlElement);
@@ -138,7 +141,8 @@ class HoverExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
-            when(uiUtil.findWebElement(any(), eq("simple-hover"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("simple-hover"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             executor.execute(hover, result);
 
@@ -159,7 +163,7 @@ class HoverExecutorTest {
             executor.execute(hover, result);
 
             verify(driver).findElement(any());
-            verify(uiUtil, never()).findWebElement(any(), any(), any());
+            verify(uiUtil, never()).findWebElement(any(), any(), any(), any(AbstractElementCheck[].class));
         }
     }
 }

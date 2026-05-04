@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.model.scenario.Input;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -58,14 +59,14 @@ class InputExecutorTest {
             input.setValue("testUser");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("username"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("username"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
             when(uiUtil.resolveSendKeysType(eq("testUser"), eq(element), eq(scenarioFile)))
                     .thenReturn("testUser");
 
             executor.execute(input, result);
 
             verify(element).sendKeys("testUser");
-            verify(uiUtil).waitForElementVisibility(any(), eq(element));
             verify(uiUtil).highlightElementIfRequired(anyBoolean(), eq(element), eq(driver));
             verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
             assertEquals("username", result.getMetadata().get(ResultUtil.INPUT_LOCATOR));

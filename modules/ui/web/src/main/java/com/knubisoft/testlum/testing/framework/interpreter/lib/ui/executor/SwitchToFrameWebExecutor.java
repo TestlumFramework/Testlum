@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
 import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
 import org.openqa.selenium.WebElement;
 
@@ -38,7 +39,8 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
     private void switchToFrameByLocator(final SwitchToFrame switchToFrame, final CommandResult result,
                                         final String locatorId) {
         result.put(ResultUtil.SWITCH_LOCATOR, locatorId);
-        WebElement element = uiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
+        WebElement element = uiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy(),
+                new VisibilityCheck());
         dependencies.getDriver().switchTo().frame(element);
     }
 

@@ -9,6 +9,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -87,8 +88,10 @@ class DragAndDropExecutorTest {
             CommandResult result = new CommandResult();
             WebElement target = mock(WebElement.class);
             WebElement source = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("target-box"), any())).thenReturn(target);
-            when(uiUtil.findWebElement(any(), eq("source-box"), any())).thenReturn(source);
+            when(uiUtil.findWebElement(any(), eq("target-box"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(target);
+            when(uiUtil.findWebElement(any(), eq("source-box"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(source);
 
             executor.execute(dragAndDrop, result);
 
@@ -104,8 +107,10 @@ class DragAndDropExecutorTest {
             dragAndDrop.setFromLocator("from");
             WebElement target = mock(WebElement.class);
             WebElement source = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("to"), any())).thenReturn(target);
-            when(uiUtil.findWebElement(any(), eq("from"), any())).thenReturn(source);
+            when(uiUtil.findWebElement(any(), eq("to"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(target);
+            when(uiUtil.findWebElement(any(), eq("from"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(source);
             CommandResult result = new CommandResult();
 
             executor.execute(dragAndDrop, result);
@@ -124,7 +129,8 @@ class DragAndDropExecutorTest {
             dragAndDrop.setFileName("test.png");
 
             WebElement target = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("drop-zone"), any())).thenReturn(target);
+            when(uiUtil.findWebElement(any(), eq("drop-zone"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(target);
             File fakeFile = mock(File.class);
             when(fakeFile.exists()).thenReturn(false);
             when(fakeFile.getName()).thenReturn("test.png");
@@ -141,7 +147,8 @@ class DragAndDropExecutorTest {
             dragAndDrop.setFileName("dir-name");
 
             WebElement target = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("drop-zone"), any())).thenReturn(target);
+            when(uiUtil.findWebElement(any(), eq("drop-zone"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(target);
             File fakeFile = mock(File.class);
             when(fakeFile.exists()).thenReturn(true);
             when(fakeFile.isFile()).thenReturn(false);
@@ -160,7 +167,8 @@ class DragAndDropExecutorTest {
 
             WebElement inputTarget = mock(WebElement.class);
             when(inputTarget.getTagName()).thenReturn("input");
-            when(uiUtil.findWebElement(any(), eq("file-input"), any())).thenReturn(inputTarget);
+            when(uiUtil.findWebElement(any(), eq("file-input"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(inputTarget);
 
             File realFile = mock(File.class);
             when(realFile.exists()).thenReturn(true);
@@ -181,7 +189,8 @@ class DragAndDropExecutorTest {
 
             WebElement divTarget = mock(WebElement.class);
             when(divTarget.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("drop-div"), any())).thenReturn(divTarget);
+            when(uiUtil.findWebElement(any(), eq("drop-div"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(divTarget);
 
             WebElement inputCreated = mock(WebElement.class);
             when(javascriptUtil.executeJsScript(any(String.class), eq(driver), eq(divTarget))).thenReturn(inputCreated);
@@ -205,7 +214,8 @@ class DragAndDropExecutorTest {
 
             WebElement inputTarget = mock(org.openqa.selenium.remote.RemoteWebElement.class);
             when(inputTarget.getTagName()).thenReturn("input");
-            when(uiUtil.findWebElement(any(), eq("remote-input"), any())).thenReturn(inputTarget);
+            when(uiUtil.findWebElement(any(), eq("remote-input"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(inputTarget);
             doThrow(new InvalidArgumentException("invalid"))
                     .doNothing()
                     .when(inputTarget).sendKeys(any(CharSequence[].class));

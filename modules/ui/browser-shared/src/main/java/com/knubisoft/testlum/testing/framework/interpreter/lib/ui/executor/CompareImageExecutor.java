@@ -12,6 +12,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
 import com.knubisoft.testlum.testing.model.scenario.ByArea;
 import com.knubisoft.testlum.testing.model.scenario.ByLocator;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
@@ -80,13 +82,15 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     private BufferedImage getImageFromPicture(final Image image, final CommandResult result) throws IOException {
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
-                image.getPicture().getLocatorStrategy());
+                image.getPicture().getLocatorStrategy(),
+                new VisibilityCheck(), new InteractabilityCheck());
         return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
     }
 
     private BufferedImage getImageFromPart(final Image image) throws IOException {
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                image.getPart().getLocatorStrategy());
+                image.getPart().getLocatorStrategy(),
+                new VisibilityCheck(), new InteractabilityCheck());
         return ImageIO.read(uiUtil.takeScreenshot(webElement));
     }
 
@@ -138,7 +142,8 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     private Rectangle getElementArea(final String locatorId, final Scale scale, final LocatorStrategy locatorStrategy) {
         org.openqa.selenium.Rectangle seleniumRectangle =
-                uiUtil.findWebElement(dependencies, locatorId, locatorStrategy).getRect();
+                uiUtil.findWebElement(dependencies, locatorId, locatorStrategy,
+                        new VisibilityCheck(), new InteractabilityCheck()).getRect();
         double x = seleniumRectangle.getX() * scale.getScaleX();
         double y = seleniumRectangle.getY() * scale.getScaleY();
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();

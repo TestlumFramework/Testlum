@@ -6,6 +6,9 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.check.EnabledCheck;
+import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
 import com.knubisoft.testlum.testing.model.scenario.Input;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
@@ -21,8 +24,8 @@ public class InputExecutor extends AbstractUiExecutor<Input> {
     @Override
     public void execute(final Input input, final CommandResult result) {
         result.put(ResultUtil.INPUT_LOCATOR, input.getLocator());
-        WebElement webElement = uiUtil.findWebElement(dependencies, input.getLocator(), input.getLocatorStrategy());
-        uiUtil.waitForElementVisibility(dependencies, webElement);
+        WebElement webElement = uiUtil.findWebElement(dependencies, input.getLocator(), input.getLocatorStrategy(),
+                new VisibilityCheck(), new InteractabilityCheck(), new EnabledCheck());
         uiUtil.highlightElementIfRequired(input.isHighlight(), webElement, dependencies.getDriver());
         String value = uiUtil.resolveSendKeysType(input.getValue(), webElement, dependencies.getFile());
         result.put(ResultUtil.INPUT_VALUE, value);

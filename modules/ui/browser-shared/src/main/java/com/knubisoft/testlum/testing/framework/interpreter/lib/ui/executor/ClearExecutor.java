@@ -5,6 +5,9 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.check.EnabledCheck;
+import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
 import com.knubisoft.testlum.testing.model.scenario.Clear;
 import org.openqa.selenium.WebElement;
 
@@ -19,8 +22,8 @@ public class ClearExecutor extends AbstractUiExecutor<Clear> {
     public void execute(final Clear clear, final CommandResult result) {
         String locatorId = clear.getLocator();
         result.put(ResultUtil.CLEAR_LOCATOR, locatorId);
-        WebElement element = uiUtil.findWebElement(dependencies, locatorId, clear.getLocatorStrategy());
-        uiUtil.waitForElementVisibility(dependencies, element);
+        WebElement element = uiUtil.findWebElement(dependencies, locatorId, clear.getLocatorStrategy(),
+                new VisibilityCheck(), new InteractabilityCheck(), new EnabledCheck());
         uiUtil.highlightElementIfRequired(clear.isHighlight(), element, dependencies.getDriver());
         element.clear();
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);

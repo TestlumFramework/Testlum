@@ -8,6 +8,9 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.check.EnabledCheck;
+import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
 import com.knubisoft.testlum.testing.model.scenario.AllValues;
 import com.knubisoft.testlum.testing.model.scenario.DropDown;
 import com.knubisoft.testlum.testing.model.scenario.OneValue;
@@ -42,7 +45,8 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
     public void execute(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocator();
         result.put(ResultUtil.DROP_DOWN_LOCATOR, locatorId);
-        WebElement dropDownElement = uiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy());
+        WebElement dropDownElement = uiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy(),
+                new VisibilityCheck(), new InteractabilityCheck(), new EnabledCheck());
         if (dropDownElement.getTagName().equals("select")) {
             processSelectDropDown(dropDown, result, dropDownElement);
         } else {

@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -71,7 +72,8 @@ class SwitchToFrameWebExecutorTest {
             frame.setLocator("iframe-main");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("iframe-main"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("iframe-main"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             executor.execute(frame, result);
 

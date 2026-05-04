@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.model.scenario.Clear;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -52,13 +53,13 @@ class ClearExecutorTest {
             clear.setLocator("input-field");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("input-field"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             executor.execute(clear, result);
 
-            verify(element).clear();
-            verify(uiUtil).waitForElementVisibility(any(), eq(element));
             verify(uiUtil).highlightElementIfRequired(anyBoolean(), eq(element), eq(driver));
+            verify(element).clear();
             verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
             assertEquals("input-field", result.getMetadata().get(ResultUtil.CLEAR_LOCATOR));
         }

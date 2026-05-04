@@ -5,8 +5,11 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
+import com.knubisoft.testlum.testing.framework.util.check.ElementCheckChain;
+import com.knubisoft.testlum.testing.framework.util.check.PageLoadCheck;
 import com.knubisoft.testlum.testing.model.global_config.BrowserSettings;
 import com.knubisoft.testlum.testing.model.global_config.ElementAutowait;
+import com.knubisoft.testlum.testing.model.global_config.Native;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import com.knubisoft.testlum.testing.model.pages.ClassName;
 import com.knubisoft.testlum.testing.model.pages.CssSelector;
@@ -33,7 +36,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +47,12 @@ class WebElementFinderTest {
     @Mock
     private ByService byService;
 
+    @Mock
+    private PageLoadCheck pageLoadCheck;
+
+    @Mock
+    private ElementCheckChain elementCheckChain;
+
     @InjectMocks
     private WebElementFinder webElementFinder;
 
@@ -53,9 +61,17 @@ class WebElementFinderTest {
         Web web = mock(Web.class);
         BrowserSettings browserSettings = mock(BrowserSettings.class);
         ElementAutowait autowait = mock(ElementAutowait.class);
-        when(environmentLoader.getCurrentEnvWebSettings()).thenReturn(Optional.of(web));
+        when(environmentLoader.getWebSettings(any())).thenReturn(Optional.of(web));
         when(web.getBrowserSettings()).thenReturn(browserSettings);
         when(browserSettings.getElementAutowait()).thenReturn(autowait);
+        when(autowait.getSeconds()).thenReturn(seconds);
+    }
+
+    private void stubNativeSettings(final int seconds) {
+        Native nativeSettings = mock(Native.class);
+        ElementAutowait autowait = mock(ElementAutowait.class);
+        when(environmentLoader.getNativeSettings(any())).thenReturn(Optional.of(nativeSettings));
+        when(nativeSettings.getElementAutowait()).thenReturn(autowait);
         when(autowait.getSeconds()).thenReturn(seconds);
     }
 
@@ -315,7 +331,6 @@ class WebElementFinderTest {
             JsWebDriver mockDriver = createJsDriver();
             when(mockDriver.findElement(any(By.class))).thenReturn(mockElement);
             stubWebSettings(5);
-            when(mockDriver.executeScript(anyString())).thenReturn("complete");
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
@@ -349,7 +364,6 @@ class WebElementFinderTest {
             JsWebDriver mockDriver = createJsDriver();
             when(mockDriver.findElement(expectedBy)).thenReturn(mockElement);
             stubWebSettings(10);
-            when(mockDriver.executeScript(anyString())).thenReturn("complete");
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
@@ -374,7 +388,6 @@ class WebElementFinderTest {
             JsWebDriver mockDriver = createJsDriver();
             when(mockDriver.findElement(expectedBy)).thenReturn(mockElement);
             stubWebSettings(10);
-            when(mockDriver.executeScript(anyString())).thenReturn("complete");
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
@@ -404,7 +417,7 @@ class WebElementFinderTest {
 
             WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
             assertEquals(mockElement, result);
-            verifyNoInteractions(environmentLoader);
+            verify(pageLoadCheck).waitUntilDomReady(deps);
         }
     }
 
@@ -431,7 +444,6 @@ class WebElementFinderTest {
             JsWebDriver mockDriver = createJsDriver();
             when(mockDriver.findElement(expectedBy)).thenReturn(mockElement);
             stubWebSettings(5);
-            when(mockDriver.executeScript(anyString())).thenReturn("complete");
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
@@ -462,7 +474,6 @@ class WebElementFinderTest {
             when(mockDriver.findElement(by1)).thenThrow(new NoSuchElementException("not found"));
             when(mockDriver.findElement(by2)).thenReturn(mockElement);
             stubWebSettings(5);
-            when(mockDriver.executeScript(anyString())).thenReturn("complete");
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
@@ -498,7 +509,7 @@ class WebElementFinderTest {
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
             webElementFinder.find(new LocatorData(null, locator), deps);
-            verifyNoInteractions(environmentLoader);
+            verify(pageLoadCheck).waitUntilDomReady(deps);
         }
 
         @Test
@@ -516,13 +527,12 @@ class WebElementFinderTest {
             JsWebDriver mockDriver = createJsDriver();
             when(mockDriver.findElement(any(By.class))).thenReturn(mockElement);
             stubWebSettings(5);
-            when(mockDriver.executeScript("return document.readyState")).thenReturn("complete");
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
             webElementFinder.find(new LocatorData(null, locator), deps);
-            verify(environmentLoader).getCurrentEnvWebSettings();
+            verify(pageLoadCheck).waitUntilDomReady(deps);
         }
     }
 
@@ -549,7 +559,6 @@ class WebElementFinderTest {
             JsWebDriver mockDriver = createJsDriver();
             when(mockDriver.findElement(expectedBy)).thenThrow(new NoSuchElementException("not found"));
             stubWebSettings(1);
-            when(mockDriver.executeScript("return document.readyState")).thenReturn("complete");
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
@@ -574,7 +583,7 @@ class WebElementFinderTest {
 
             WebDriver mockDriver = mock(WebDriver.class);
             when(mockDriver.findElement(expectedBy)).thenThrow(new NoSuchElementException("not found"));
-            stubWebSettings(1);
+            stubNativeSettings(1);
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
@@ -605,7 +614,7 @@ class WebElementFinderTest {
 
             WebDriver mockDriver = mock(WebDriver.class);
             when(mockDriver.findElement(any(By.class))).thenThrow(new NoSuchElementException("not found"));
-            when(environmentLoader.getCurrentEnvWebSettings()).thenReturn(Optional.empty());
+            stubNativeSettings(1);
 
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();

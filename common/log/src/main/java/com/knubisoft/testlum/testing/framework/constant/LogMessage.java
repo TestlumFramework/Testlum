@@ -197,6 +197,15 @@ public final class LogMessage {
     public static final String INTEGRATION_CONFIG_TABLE_ALIAS_HEADER = "Alias";
     public static final String INTEGRATION_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
 
+    public static final String UI_ELEMENT_DISABLED_EXCEPTION_MESSAGE =
+            "Element is disabled and cannot accept interactions. Check if the '%s' attribute is set on the element";
+    public static final String UI_ELEMENT_IS_NOT_INTERACTABLE_EXCEPTION_MESSAGE =
+            "Element is not interactable: it is covered by another element such as an overlay, modal, or tooltip";
+    public static final String UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE =
+            "Element is not visible: it may have 'display:none' or 'visibility:hidden' applied";
+    public static final String UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE =
+            "Element has zero dimensions and cannot be interacted with";
+
     private LogMessage() {
         // nop
     }

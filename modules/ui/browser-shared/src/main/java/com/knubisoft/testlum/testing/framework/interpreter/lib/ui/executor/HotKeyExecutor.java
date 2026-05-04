@@ -8,6 +8,9 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.check.EnabledCheck;
+import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.BackSpace;
 import com.knubisoft.testlum.testing.model.scenario.Copy;
@@ -144,7 +147,8 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                                            final LocatorStrategy locatorStrategy) {
         result.put(ResultUtil.HOTKEY_LOCATOR, locatorId);
         log.info(LogMessage.HOTKEY_COMMAND_LOCATOR, locatorId);
-        return uiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
+        return uiUtil.findWebElement(dependencies, locatorId, locatorStrategy,
+                new VisibilityCheck(), new InteractabilityCheck(), new EnabledCheck());
     }
 
     private Keys chooseKeyForOperatingSystem() {

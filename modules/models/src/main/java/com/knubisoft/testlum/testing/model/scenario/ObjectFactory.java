@@ -782,14 +782,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Alert }
-     * 
-     */
-    public Alert createAlert() {
-        return new Alert();
-    }
-
-    /**
      * Create an instance of {@link SwitchToFrame }
      * 
      */

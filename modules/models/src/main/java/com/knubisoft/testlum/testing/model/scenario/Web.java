@@ -78,8 +78,7 @@ public class Web
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = WebRepeat.class),
         @XmlElement(name = "doubleClick", type = DoubleClick.class),
-        @XmlElement(name = "ai", type = UiAi.class),
-        @XmlElement(name = "alert", type = Alert.class)
+        @XmlElement(name = "ai", type = UiAi.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -126,7 +125,6 @@ public class Web
      * {@link WebRepeat }
      * {@link DoubleClick }
      * {@link UiAi }
-     * {@link Alert }
      *
      * 
      */

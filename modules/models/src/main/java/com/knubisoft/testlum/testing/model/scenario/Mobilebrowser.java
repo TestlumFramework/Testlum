@@ -74,8 +74,7 @@ public class Mobilebrowser
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = MobilebrowserRepeat.class),
-        @XmlElement(name = "ai", type = UiAi.class),
-        @XmlElement(name = "alert", type = Alert.class)
+        @XmlElement(name = "ai", type = UiAi.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -120,7 +119,6 @@ public class Mobilebrowser
      * {@link UiCondition }
      * {@link MobilebrowserRepeat }
      * {@link UiAi }
-     * {@link Alert }
      *
      * 
      */

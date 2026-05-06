@@ -20,6 +20,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 @Slf4j
 @InterpreterForClass(Kafka.class)
@@ -134,15 +138,39 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
                              final String value,
                              final AliasEnv aliasEnv) {
         ProducerRecord<String, String> producerRecord = buildProducerRecord(send, value);
-        kafkaProducer.get(aliasEnv).send(producerRecord);
+        Future<RecordMetadata> future = kafkaProducer.get(aliasEnv).send(producerRecord);
         kafkaProducer.get(aliasEnv).flush();
+        try {
+            RecordMetadata metadata = future.get();
+            log.info(">>> KAFKA DEBUG: sent to topic={}, partition={}, offset={}, timestamp={}",
+                    metadata.topic(), metadata.partition(), metadata.offset(), metadata.timestamp());
+        } catch (Exception e) {
+            log.error(">>> KAFKA DEBUG: send failed", e);
+        }
     }
 
     private List<KafkaMessage> receiveKafkaMessages(final ReceiveKafkaMessage receive, final AliasEnv aliasEnv) {
         Duration timeout = Duration.ofMillis(receive.getTimeoutMillis());
         KafkaConsumer<String, String> consumer = kafkaConsumer.get(aliasEnv);
         consumer.subscribe(Collections.singleton(receive.getTopic()));
+        consumer.poll(Duration.ZERO);
+        Set<TopicPartition> assignment = consumer.assignment();
+        log.info(">>> KAFKA DEBUG: assignment after subscribe = {}", assignment);
+
+        // ДІАГНОСТИКА 2: показати позиції
+        for (TopicPartition tp : assignment) {
+            try {
+                long position = consumer.position(tp);
+                long beginningOffset = consumer.beginningOffsets(Collections.singleton(tp)).get(tp);
+                long endOffset = consumer.endOffsets(Collections.singleton(tp)).get(tp);
+                log.info(">>> KAFKA DEBUG: partition={}, position={}, beginning={}, end={}",
+                        tp, position, beginningOffset, endOffset);
+            } catch (Exception e) {
+                log.error(">>> KAFKA DEBUG: failed to get position for {}", tp, e);
+            }
+        }
         ConsumerRecords<String, String> consumerRecords = consumer.poll(timeout);
+        log.info(">>> KAFKA DEBUG: poll returned {} records", consumerRecords.count());
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
         List<KafkaMessage> kafkaMessages = convertRecordsToKafkaMessages(iterator, receive);

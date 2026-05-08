@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.autohealing;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealedLocators;
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealingElementMetadata;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -528,7 +528,7 @@ public class LocatorAutohealer {
         String xpathAndClassNames = (String) js.executeScript(script, healedElement);
         try {
             return OBJECT_MAPPER.readValue(xpathAndClassNames, HealedLocators.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return new HealedLocators();
         }
     }

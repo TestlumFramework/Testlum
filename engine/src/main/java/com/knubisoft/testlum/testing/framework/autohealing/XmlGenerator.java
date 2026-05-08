@@ -1,23 +1,19 @@
 package com.knubisoft.testlum.testing.framework.autohealing;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.databind.SerializationFeature;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 
 public class XmlGenerator {
-    private static final XmlMapper XML_MAPPER = new XmlMapper();
-
-    static {
-        XML_MAPPER.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, false);
-        XML_MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
-    }
+    private static final XmlMapper XML_MAPPER = XmlMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .build();
 
     public static String toXml(final Object obj) {
         try {
             return XML_MAPPER.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new DefaultFrameworkException(e.getMessage());
         }
     }

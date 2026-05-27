@@ -453,6 +453,11 @@
             <artifactId>testlum-auth</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-http-inbound</artifactId>
+        </dependency>
+
         <!--    TESTLUM UI PLUGINS    -->
 
         <dependency>

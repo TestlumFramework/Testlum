@@ -26,7 +26,9 @@ import org.springframework.stereotype.Component;
 
 import org.springframework.beans.factory.DisposableBean;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -64,6 +66,22 @@ public class ApiClient implements DisposableBean {
         }
     }
 
+    /**
+     * It differs from {@link #call} by return raw body instead of string one
+     * and allows duplication for HTTP headers.
+     * <p>
+     * The method is used for forwarding to the destination during inbound command flow.
+     */
+    public RawApiResponse callRaw(final HttpMethod httpMethod,
+                                  final String url,
+                                  final Map<String, String> headers,
+                                  final HttpEntity body) throws Exception {
+        HttpUriRequest request = buildRequest(httpMethod, url, headers, body);
+        try (CloseableHttpResponse response = httpClient.execute(request)) {
+            return readRawAPIResponse(response);
+        }
+    }
+
     private ApiResponse readAPIResponse(final CloseableHttpResponse response) throws Exception {
         Map<String, String> responseHeaders = new LinkedHashMap<>();
         for (Header each : response.getAllHeaders()) {
@@ -74,6 +92,18 @@ public class ApiClient implements DisposableBean {
         log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
         return new ApiResponse(response.getStatusLine().getStatusCode(), responseHeaders, responseBody);
+    }
+
+    private RawApiResponse readRawAPIResponse(final CloseableHttpResponse response) throws Exception {
+        Map<String, List<String>> responseHeaders = new LinkedHashMap<>();
+        for (Header header : response.getAllHeaders()) {
+            responseHeaders.computeIfAbsent(header.getName(), k -> new ArrayList<>()).add(header.getValue());
+        }
+        HttpEntity entity = response.getEntity();
+        byte[] responseBody = Objects.isNull(entity) ? new byte[0] : EntityUtils.toByteArray(entity);
+        log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
+                response.getStatusLine().getReasonPhrase());
+        return new RawApiResponse(response.getStatusLine().getStatusCode(), responseHeaders, responseBody);
     }
 
     private HttpUriRequest buildRequest(final HttpMethod httpMethod,

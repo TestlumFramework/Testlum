@@ -113,7 +113,7 @@ public class JdkInboundServer implements InboundServer {
 
     private void writeResponse(HttpExchange httpExchange, InboundResponse response) throws IOException {
         Headers responseHeaders = httpExchange.getResponseHeaders();
-        response.getHeaders().forEach(responseHeaders::put);
+        responseHeaders.putAll(response.getHeaders());
 
         byte[] body = response.getBody();
 

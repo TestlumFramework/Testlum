@@ -61,6 +61,7 @@
         <module>ui</module>
         <module>ai</module>
         <module>http-inbound</module>
+        <module>inbound-server</module>
     </modules>
 
 </project>

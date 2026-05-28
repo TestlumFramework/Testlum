@@ -456,6 +456,7 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-http-inbound</artifactId>
+            <version>1.1.0</version>
         </dependency>
 
         <!--    TESTLUM UI PLUGINS    -->

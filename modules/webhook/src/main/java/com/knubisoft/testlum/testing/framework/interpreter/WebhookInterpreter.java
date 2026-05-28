@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testing.framework.exchange.producer.ResponseProducer;
+import com.knubisoft.testing.framework.exchange.producer.ResponseProducerFactory;
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testing.framework.exchange.coordinator.HttpInboundCoordinator;
 import com.knubisoft.testing.framework.exchange.coordinator.InboundDestination;
@@ -38,10 +39,12 @@ import java.util.Map;
 public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
 
     private final HttpInboundCoordinator coordinator;
+    private final ResponseProducerFactory producerFactory;
 
     protected WebhookInterpreter(InterpreterDependencies dependencies) {
         super(dependencies);
         this.coordinator = dependencies.getContext().getBean(HttpInboundCoordinator.class);
+        this.producerFactory = dependencies.getContext().getBean(ResponseProducerFactory.class);
     }
 
     @Override
@@ -85,6 +88,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
         if (response != null && response.getExpected() != null && exchange.getResponseFromDestination() != null) {
             validateResponseFromDestination(response.getExpected(), exchange.getResponseFromDestination(), httpValidator, result);
         }
+        httpValidator.rethrowOnErrors();
     }
 
     private void validateReceiveBodyIfFile(WebhookReceive receive, InboundExchange exchange, HttpValidator validator, CommandResult result) {
@@ -132,9 +136,17 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
 
     private ResponseProducer buildResponseProducer(Webhook webhook, InboundDestination destination) {
         WebhookReceive receive = webhook.getReceive();
+        WebhookResponse response = webhook.getResponse();
         if (receive.getForward()) {
-            // TODO: made forwarding to the destination
-            return null;
+            String destinationUrl = destination.getEndpoint();
+            if (StringUtils.isBlank(destinationUrl)) {
+                throw new DefaultFrameworkException("forward=\"true\" requires destinationUrl for alias " + receive.getAlias());
+            }
+            if (response != null && response.getMockResult() != null) {
+                InboundResponse modifiedResponse = buildMockResponse(response);
+                return producerFactory.modifiedProducer(destinationUrl, modifiedResponse);
+            }
+            return producerFactory.forwardingProducer(destinationUrl);
         }
         InboundResponse mockResponse = buildMockResponse(webhook.getResponse());
         return request -> InboundExchangeResponseResult.mock(mockResponse);

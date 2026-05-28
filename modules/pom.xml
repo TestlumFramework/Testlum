@@ -62,6 +62,7 @@
         <module>ai</module>
         <module>http-inbound</module>
         <module>inbound-server</module>
+        <module>webhook</module>
     </modules>
 
 </project>

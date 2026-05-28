@@ -33,13 +33,14 @@ public class InboundRequest {
         this.method = method;
         this.path = path;
         this.rawQuery = rawQuery;
-        // Because HTTP headers are case-insensitive. So, we need case-insensitive lookup
+        // Because HTTP headers are case-insensitive. So, we need case-insensitive lookup.
+        // For example, "X-Test-Id" has to be found with get("x-test-id").
         TreeMap<String, List<String>> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         if (headers != null) {
             caseInsensitiveHeaders.putAll(headers);
         }
         // To restrict modification of the headers.
-        this.headers = Collections.unmodifiableMap(caseInsensitiveHeaders);
+        this.headers = Collections.unmodifiableSortedMap(caseInsensitiveHeaders);
         this.queryParams = queryParams == null ? Map.of() : Map.copyOf(queryParams);
         this.body = body == null ? new byte[0] : body.clone();
     }

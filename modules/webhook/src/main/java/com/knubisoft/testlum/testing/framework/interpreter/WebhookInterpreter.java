@@ -27,6 +27,11 @@ import com.knubisoft.testlum.testing.framework.stub.WebhookResponse;
 import com.knubisoft.testlum.testing.framework.stub.WebhookResponseExpected;
 import com.knubisoft.testlum.testing.framework.stub.WebhookRetry;
 import com.knubisoft.testlum.testing.framework.stub.WebhookRetryAttempt;
+import com.knubisoft.testlum.testing.framework.stub.matcher.ByHeader;
+import com.knubisoft.testlum.testing.framework.stub.matcher.ByJson;
+import com.knubisoft.testlum.testing.framework.stub.matcher.ByPath;
+import com.knubisoft.testlum.testing.framework.stub.matcher.ByQueryParam;
+import com.knubisoft.testlum.testing.framework.stub.matcher.WebhookMatcher;
 import com.knubisoft.testlum.testing.model.scenario.Header;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,13 +70,48 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
 
         RetryPlan retryPlan = buildRetryPlan(webhook, destination);
 
-        // TODO: process correlation matcher
-        CorrelationMatcher matcher = CorrelationMatcher.always();
+        CorrelationMatcher matcher = buildMatcher(webhook);
 
         WebhookExchange exchange = coordinator.awaitOneRequest(
                 destination.getEndpoint(), currentTestId(), matcher, retryPlan);
 
         compare(retryPlan, webhook, receive, exchange, result);
+    }
+
+    private CorrelationMatcher buildMatcher(Webhook webhook) {
+        WebhookMatcher matcherStub = webhook.getWebhookMatcher();
+        if (matcherStub == null) {
+            return CorrelationMatcher.always();
+        }
+
+        List<ByHeader> headers = nullSafeList(matcherStub.getByHeader());
+        List<ByJson> jsons = nullSafeList(matcherStub.getByJson());
+        List<ByQueryParam> qParams = nullSafeList(matcherStub.getByQueryParam());
+        List<ByPath> paths = nullSafeList(matcherStub.getByPath());
+        boolean always = matcherStub.getAlways();
+
+        int otherCount = headers.size() + jsons.size() + qParams.size() + paths.size();
+        if (otherCount > 0 && always) {
+            throw new DefaultFrameworkException("<always>=\"false\" cannot be combined with other criteria");
+        }
+        if (otherCount == 0 || always) {
+            return CorrelationMatcher.always();
+        }
+
+        List<CorrelationMatcher> matchers = new ArrayList<>(otherCount);
+        for (ByHeader header : headers) {
+            matchers.add(CorrelationMatcher.header(header.getName(), header.getValue(), header.getContains()));
+        }
+        for (ByJson json : jsons) {
+            matchers.add(CorrelationMatcher.jsonPath(json.getjPath(), json.getValue()));
+        }
+        for (ByQueryParam qParam : qParams) {
+            matchers.add(CorrelationMatcher.queryParam(qParam.getName(), qParam.getValue(), qParam.getContains()));
+        }
+        for (ByPath path : paths) {
+            matchers.add(CorrelationMatcher.endpoint(path.getUrl()));
+        }
+        return CorrelationMatcher.combined(matchers);
     }
 
     private RetryPlan buildRetryPlan(Webhook webhook, InboundDestination destination) {
@@ -307,5 +347,9 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
         result.put(ALIAS, alias);
         result.put(ENDPOINT_LOG, endpoint);
         result.put(LogFormat.table("Forward"), forward);
+    }
+
+    private static <T> List<T> nullSafeList(List<T> list) {
+        return list != null ? list : List.of();
     }
 }

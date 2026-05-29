@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.stub;
 
+import com.knubisoft.testlum.testing.framework.stub.matcher.WebhookMatcher;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 
 public class Webhook extends AbstractCommand {
@@ -9,6 +10,7 @@ public class Webhook extends AbstractCommand {
     protected WebhookRetry retry;
     protected WebhookNoRetry noRetry;
     protected Integer timeout;
+    protected WebhookMatcher webhookMatcher;
 
     public WebhookReceive getReceive() {
         return receive;
@@ -48,5 +50,13 @@ public class Webhook extends AbstractCommand {
 
     public void setTimeout(Integer timeout) {
         this.timeout = timeout;
+    }
+
+    public WebhookMatcher getWebhookMatcher() {
+        return webhookMatcher;
+    }
+
+    public void setWebhookMatcher(WebhookMatcher webhookMatcher) {
+        this.webhookMatcher = webhookMatcher;
     }
 }

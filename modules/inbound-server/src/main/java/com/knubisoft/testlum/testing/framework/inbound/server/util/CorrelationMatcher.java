@@ -5,6 +5,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,40 @@ public interface CorrelationMatcher {
      */
     static CorrelationMatcher always() {
         return request -> true;
+    }
+
+    /**
+     * AND-combination of matchers. The request must match all matchers.
+     * <p>
+     * It's used to build a compound correlation key when any single matcher
+     * could not fully satisfy the match condition.
+     */
+    static CorrelationMatcher combined(CorrelationMatcher... matchers) {
+        if (matchers == null || matchers.length == 0) {
+            return always();
+        }
+        if (matchers.length == 1) {
+            return matchers[0];
+        }
+        CorrelationMatcher[] copy = matchers.clone();
+        return request -> {
+            for (CorrelationMatcher matcher : copy) {
+                if (!matcher.matches(request)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+    }
+
+    static CorrelationMatcher combined(List<CorrelationMatcher> matchers) {
+        if (matchers == null || matchers.isEmpty()) {
+            return always();
+        }
+        if (matchers.size() == 1) {
+            return matchers.get(0);
+        }
+        return combined(matchers.toArray(new CorrelationMatcher[0]));
     }
 
     static CorrelationMatcher header(String name, String expected, boolean contains) {
@@ -54,6 +89,11 @@ public interface CorrelationMatcher {
         };
     }
 
+    static CorrelationMatcher endpoint(String url) {
+        String path = extractPath(url);
+        return request -> path.equals(request.getPath());
+    }
+
     private static boolean isValuePresent(String name, String expected, boolean contains, Map<String, List<String>> valuesMap) {
         List<String> values = valuesMap.get(name);
         if (values == null || values.isEmpty()) {
@@ -63,5 +103,18 @@ public interface CorrelationMatcher {
             return values.stream().anyMatch(value -> value.contains(expected));
         }
         return values.stream().anyMatch(value -> value.equals(expected));
+    }
+
+    private static String extractPath(String url) {
+        if (url.startsWith("/")) {
+            return url;
+        }
+        try {
+            URI uri = URI.create(url);
+            String path = uri.getPath();
+            return (path == null || path.isEmpty()) ? "/" : path;
+        } catch (IllegalArgumentException e) {
+            return url;
+        }
     }
 }

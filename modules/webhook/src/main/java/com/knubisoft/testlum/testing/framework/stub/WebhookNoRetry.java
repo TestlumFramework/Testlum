@@ -2,13 +2,13 @@ package com.knubisoft.testlum.testing.framework.stub;
 
 public class WebhookNoRetry {
 
-    protected String timeout;
+    protected Integer timeout;
 
-    public String getTimeout() {
+    public Integer getTimeout() {
         return timeout;
     }
 
-    public void setTimeout(String timeout) {
+    public void setTimeout(Integer timeout) {
         this.timeout = timeout;
     }
 }

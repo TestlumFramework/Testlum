@@ -5,8 +5,9 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 public class Webhook extends AbstractCommand {
 
     protected WebhookReceive receive;
-
     protected WebhookResponse response;
+    protected WebhookRetry retry;
+    protected WebhookNoRetry noRetry;
     protected Integer timeout;
 
     public WebhookReceive getReceive() {
@@ -23,6 +24,22 @@ public class Webhook extends AbstractCommand {
 
     public void setResponse(WebhookResponse response) {
         this.response = response;
+    }
+
+    public WebhookRetry getRetry() {
+        return retry;
+    }
+
+    public void setRetry(WebhookRetry retry) {
+        this.retry = retry;
+    }
+
+    public WebhookNoRetry getNoRetry() {
+        return noRetry;
+    }
+
+    public void setNoRetry(WebhookNoRetry noRetry) {
+        this.noRetry = noRetry;
     }
 
     public Integer getTimeout() {

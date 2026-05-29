@@ -1,12 +1,16 @@
 package com.knubisoft.testlum.testing.framework.stub;
 
+import java.util.List;
+
 public class WebhookRetry {
 
     protected Integer min;
     protected Integer max;
-    protected String idleTimeout;
+    protected Integer idleTimeout;
     protected WebhookReceive receive;
     protected WebhookResponse response;
+
+    protected List<WebhookRetryAttempt> attempts;
 
     public Integer getMin() {
         return min;
@@ -24,11 +28,11 @@ public class WebhookRetry {
         this.max = max;
     }
 
-    public String getIdleTimeout() {
+    public Integer getIdleTimeout() {
         return idleTimeout;
     }
 
-    public void setIdleTimeout(String idleTimeout) {
+    public void setIdleTimeout(Integer idleTimeout) {
         this.idleTimeout = idleTimeout;
     }
 
@@ -46,5 +50,13 @@ public class WebhookRetry {
 
     public void setResponse(WebhookResponse response) {
         this.response = response;
+    }
+
+    public List<WebhookRetryAttempt> getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(List<WebhookRetryAttempt> attempts) {
+        this.attempts = attempts;
     }
 }

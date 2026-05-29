@@ -9,16 +9,26 @@ import com.knubisoft.testing.framework.producer.ResponseProducer;
 public class RetryAttempt {
 
     // If expectedFile is null, the actual won't be validated against it.
-    private final String expectedFile;
+    private final String expectedRequestFile;
+    private final Object expectedDestinationResponse;
     private final ResponseProducer producer;
 
-    public RetryAttempt(String expectedFile, ResponseProducer producer) {
-        this.expectedFile = expectedFile;
+    public RetryAttempt(String expectedRequestFile, ResponseProducer producer) {
+        this(expectedRequestFile, null, producer);
+    }
+
+    public RetryAttempt(String expectedRequestFile, Object expectedDestinationResponse, ResponseProducer producer) {
+        this.expectedRequestFile = expectedRequestFile;
+        this.expectedDestinationResponse = expectedDestinationResponse;
         this.producer = producer;
     }
 
-    public String getExpectedFile() {
-        return expectedFile;
+    public String getExpectedRequestFile() {
+        return expectedRequestFile;
+    }
+
+    public Object getExpectedDestinationResponse() {
+        return expectedDestinationResponse;
     }
 
     public ResponseProducer getProducer() {

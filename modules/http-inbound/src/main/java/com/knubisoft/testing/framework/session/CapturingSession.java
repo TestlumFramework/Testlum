@@ -1,10 +1,9 @@
-package com.knubisoft.testing.framework.exchange.session;
+package com.knubisoft.testing.framework.session;
 
-import com.knubisoft.testing.framework.exchange.producer.ResponseProducer;
-import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchangeResponseResult;
+import com.knubisoft.testing.framework.producer.ResponseProducer;
+import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchangeOutput;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRequest;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundResponse;
-import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchange;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.InboundSession;
 import com.knubisoft.testlum.testing.framework.inbound.server.util.InboundResponseFactory;
 
@@ -23,7 +22,7 @@ public class CapturingSession implements InboundSession {
     private final Duration timeout;
     private final ResponseProducer responseProducer;
 
-    private final CompletableFuture<InboundExchange> exchangeTask = new CompletableFuture<>();
+    private final CompletableFuture<SingleInboundExchange> exchangeTask = new CompletableFuture<>();
     private final Object lock = new Object();
     private boolean terminated = false;
 
@@ -47,20 +46,20 @@ public class CapturingSession implements InboundSession {
             }
 
             try {
-                InboundExchangeResponseResult outcome = responseProducer.produce(request);
+                InboundExchangeOutput outcome = responseProducer.produce(request);
                 terminated = true;
-                exchangeTask.complete(InboundExchange.received(request, outcome));
+                exchangeTask.complete(SingleInboundExchange.received(request, outcome));
                 return outcome.getResponseToSender();
             } catch (Exception e) {
                 terminated = true;
-                exchangeTask.complete(InboundExchange.error(request, e.getMessage()));
+                exchangeTask.complete(SingleInboundExchange.error(request, e.getMessage()));
                 return InboundResponseFactory.internalError("webhook processing failed: " + e.getMessage());
             }
         }
     }
 
     @Override
-    public InboundExchange awaitExchange() {
+    public SingleInboundExchange awaitExchange() {
         long millis = Math.max(0, timeout.toMillis());
         try {
             return exchangeTask.get(millis, TimeUnit.MILLISECONDS);
@@ -68,15 +67,15 @@ public class CapturingSession implements InboundSession {
             synchronized (lock) {
                 if (!terminated) {
                     terminated = true;
-                    exchangeTask.complete(InboundExchange.timeout());
+                    exchangeTask.complete(SingleInboundExchange.timeout());
                 }
             }
-            return exchangeTask.getNow(InboundExchange.timeout());
+            return exchangeTask.getNow(SingleInboundExchange.timeout());
         } catch (ExecutionException | InterruptedException e) {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            return InboundExchange.error(null, "session terminated with exception: " + e.getMessage());
+            return SingleInboundExchange.error(null, "session terminated with exception: " + e.getMessage());
         }
     }
 

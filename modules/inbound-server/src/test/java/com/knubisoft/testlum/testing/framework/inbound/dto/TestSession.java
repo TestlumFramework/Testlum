@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.inbound.dto;
 
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRequest;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundResponse;
-import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchange;
+import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.AbstractInboundExchange;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.InboundSession;
 import com.knubisoft.testlum.testing.framework.inbound.server.util.InboundResponseFactory;
 
@@ -29,7 +29,7 @@ public class TestSession implements InboundSession {
     }
 
     @Override
-    public InboundExchange awaitExchange() {
+    public AbstractInboundExchange awaitExchange() {
         return null;
     }
 

@@ -1,6 +1,6 @@
-package com.knubisoft.testing.framework.exchange.producer;
+package com.knubisoft.testing.framework.producer;
 
-import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchangeResponseResult;
+import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchangeOutput;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRequest;
 
 /**
@@ -20,6 +20,6 @@ import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRequest
 @FunctionalInterface
 public interface ResponseProducer {
 
-    InboundExchangeResponseResult produce(InboundRequest request) throws Exception;
+    InboundExchangeOutput produce(InboundRequest request) throws Exception;
 
 }

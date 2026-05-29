@@ -1,4 +1,4 @@
-package com.knubisoft.testing.framework.exchange.coordinator;
+package com.knubisoft.testing.framework.coordinator;
 
 public class InboundDestination {
 

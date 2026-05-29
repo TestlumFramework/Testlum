@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.inbound.server.subscription;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRequest;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundResponse;
 
-import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchange;
+import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.AbstractInboundExchange;
 
 /**
  * Session associated with a single inbound test step.
@@ -29,7 +29,7 @@ public interface InboundSession {
     /**
      * Caller-thread waits until the session is completed.
      */
-    InboundExchange awaitExchange();
+    AbstractInboundExchange awaitExchange();
 
     /**
      * To check whether the session is completed and could be remove from the session registry

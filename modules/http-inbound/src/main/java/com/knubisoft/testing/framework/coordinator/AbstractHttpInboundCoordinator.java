@@ -1,10 +1,9 @@
-package com.knubisoft.testing.framework.exchange.coordinator;
+package com.knubisoft.testing.framework.coordinator;
 
-import com.knubisoft.testing.framework.exchange.producer.ResponseProducer;
-import com.knubisoft.testing.framework.exchange.session.CapturingSession;
+import com.knubisoft.testing.framework.producer.ResponseProducer;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.AbstractInboundExchange;
 import com.knubisoft.testlum.testing.framework.inbound.server.server.InboundServer;
-import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchange;
-import com.knubisoft.testlum.testing.framework.inbound.server.subscription.Subscription;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.SubscriptionRegistry;
 import com.knubisoft.testlum.testing.framework.inbound.server.util.CorrelationMatcher;
 
@@ -15,15 +14,14 @@ import java.util.Map;
  * Coordinator of the whole inbound request flow. It creates a server and a registry.
  * Interpretator uses this bean and register/wait for the incoming requests.
  */
-public class HttpInboundCoordinator {
+public abstract class AbstractHttpInboundCoordinator {
 
     private final InboundServer server;
-    private final SubscriptionRegistry registry;
+    protected final SubscriptionRegistry registry;
     // alias+env -> destination
     private final Map<String, InboundDestination> destinationsByAliasEnv;
 
-
-    public HttpInboundCoordinator(InboundServer server,
+    protected AbstractHttpInboundCoordinator(InboundServer server,
                                   SubscriptionRegistry registry,
                                   Map<String, InboundDestination> destinationsByAliasEnv) {
         this.server = server;
@@ -45,8 +43,8 @@ public class HttpInboundCoordinator {
     public InboundDestination resolve(String alias, String environment) {
         InboundDestination destination = destinationsByAliasEnv.get(getKey(alias, environment));
         if (destination == null) {
-            // Log that alias has not been found
-            return null;
+            throw new DefaultFrameworkException("No destination found for alias " + alias +
+                    " in environment " + environment);
         }
         return destination;
     }
@@ -61,19 +59,12 @@ public class HttpInboundCoordinator {
      * @param timeout the duration to wait for the request before timing out.
      * @param producer the response producer strategy
      */
-    public InboundExchange awaitOneRequest(String endpoint, String testId, CorrelationMatcher matcher,
-                                           Duration timeout, ResponseProducer producer) {
-        CapturingSession session = new CapturingSession(endpoint, timeout, producer);
-        Subscription subscription = new Subscription(endpoint, testId, matcher, session);
-        registry.register(subscription);
-        try {
-            return session.awaitExchange();
-        } finally {
-            registry.unregister(subscription);
-        }
-    }
+    public abstract AbstractInboundExchange awaitOneRequest(String endpoint, String testId,
+                                                            CorrelationMatcher matcher, Duration timeout,
+                                                            ResponseProducer producer);
 
     private String getKey(String alias, String environment) {
         return alias + "@" + environment;
     }
+
 }

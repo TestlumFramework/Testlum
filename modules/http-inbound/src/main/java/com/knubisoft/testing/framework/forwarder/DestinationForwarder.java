@@ -1,4 +1,4 @@
-package com.knubisoft.testing.framework.exchange.forwarder;
+package com.knubisoft.testing.framework.forwarder;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRequest;

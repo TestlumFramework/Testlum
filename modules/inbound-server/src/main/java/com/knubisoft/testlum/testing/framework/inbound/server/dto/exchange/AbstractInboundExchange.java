@@ -5,7 +5,7 @@ public abstract class AbstractInboundExchange {
     private final InboundExchangeStatus status;
     private final String errorMessage;
 
-    protected AbstractInboundExchange(InboundExchangeStatus status, String errorMessage) {
+    protected AbstractInboundExchange(final InboundExchangeStatus status, final String errorMessage) {
         this.status = status;
         this.errorMessage = errorMessage;
     }

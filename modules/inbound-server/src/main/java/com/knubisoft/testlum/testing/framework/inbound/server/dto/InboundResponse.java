@@ -18,7 +18,7 @@ public class InboundResponse {
     private final Map<String, List<String>> headers;
     private final byte[] body;
 
-    public InboundResponse(int status, Map<String, List<String>> headers, byte[] body) {
+    public InboundResponse(final int status, final Map<String, List<String>> headers, final byte[] body) {
         this.status = status;
         TreeMap<String, List<String>> caseInsensitiveHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         if (headers != null) {

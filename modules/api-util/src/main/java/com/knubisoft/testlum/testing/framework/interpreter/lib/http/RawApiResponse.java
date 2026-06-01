@@ -26,13 +26,13 @@ public class RawApiResponse {
     private final Map<String, List<String>> headers;
     private final byte[] body;
 
-    public RawApiResponse(int code, Map<String, List<String>> headers, byte[] body) {
+    public RawApiResponse(final int code, final Map<String, List<String>> headers, final byte[] body) {
         this.code = code;
         this.headers = headers == null ? Map.of() : copy(headers);
         this.body = body == null ? new byte[0] : body.clone();
     }
 
-    private static Map<String, List<String>> copy(Map<String, List<String>> sourceHeaders) {
+    private static Map<String, List<String>> copy(final Map<String, List<String>> sourceHeaders) {
         Map<String, List<String>> headers = new LinkedHashMap<>();
         sourceHeaders.forEach((k, v) -> headers.put(k, new ArrayList<>(v)));
         return Map.copyOf(headers);

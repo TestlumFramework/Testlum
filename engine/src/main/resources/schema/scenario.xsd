@@ -39,6 +39,7 @@
     <x:include schemaLocation="lambda.xsd"/>
     <x:include schemaLocation="condition.xsd"/>
     <x:include schemaLocation="ai.xsd"/>
+    <x:include schemaLocation="webhook.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -102,6 +103,7 @@
                     <x:element name="twilio" type="tns:twilio"/>
 
                     <x:element name="ai" type="tns:ai"/>
+                    <x:element name="webhook" type="tns:webhook"/>
                 </x:choice>
             </x:sequence>
         </x:complexType>

@@ -6,6 +6,6 @@ public enum InboundExchangeStatus {
     TIMEOUT, // request has timed out
     BELOW_MIN_RETRIES, // initial request arrived, but min required retries not reached
     UNEXPECTED_EXTRA_RETRY, // unexpected retry has been received
-    ERROR, // error while processing the request
+    ERROR // error while processing the request
 
 }

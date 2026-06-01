@@ -20,19 +20,18 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.retry.RetryAttempt;
 import com.knubisoft.testlum.testing.framework.retry.RetryPlan;
 import com.knubisoft.testlum.testing.framework.session.WebhookExchange;
-import com.knubisoft.testlum.testing.framework.stub.Webhook;
-import com.knubisoft.testlum.testing.framework.stub.WebhookMockResult;
-import com.knubisoft.testlum.testing.framework.stub.WebhookReceive;
-import com.knubisoft.testlum.testing.framework.stub.WebhookResponse;
-import com.knubisoft.testlum.testing.framework.stub.WebhookResponseExpected;
-import com.knubisoft.testlum.testing.framework.stub.WebhookRetry;
-import com.knubisoft.testlum.testing.framework.stub.WebhookRetryAttempt;
-import com.knubisoft.testlum.testing.framework.stub.matcher.ByHeader;
-import com.knubisoft.testlum.testing.framework.stub.matcher.ByJson;
-import com.knubisoft.testlum.testing.framework.stub.matcher.ByPath;
-import com.knubisoft.testlum.testing.framework.stub.matcher.ByQueryParam;
-import com.knubisoft.testlum.testing.framework.stub.matcher.WebhookMatcher;
-import com.knubisoft.testlum.testing.model.scenario.Header;
+import com.knubisoft.testlum.testing.model.scenario.Webhook;
+import com.knubisoft.testlum.testing.model.scenario.WebhookExpected;
+import com.knubisoft.testlum.testing.model.scenario.WebhookHeader;
+import com.knubisoft.testlum.testing.model.scenario.WebhookMatcher;
+import com.knubisoft.testlum.testing.model.scenario.WebhookMatcherEndpoint;
+import com.knubisoft.testlum.testing.model.scenario.WebhookMatcherJson;
+import com.knubisoft.testlum.testing.model.scenario.WebhookMatcherNameValue;
+import com.knubisoft.testlum.testing.model.scenario.WebhookMockReturn;
+import com.knubisoft.testlum.testing.model.scenario.WebhookReceive;
+import com.knubisoft.testlum.testing.model.scenario.WebhookResponse;
+import com.knubisoft.testlum.testing.model.scenario.WebhookRetry;
+import com.knubisoft.testlum.testing.model.scenario.WebhookRetryAttempt;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -65,8 +64,8 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
 
         InboundDestination destination = coordinator.resolve(receive.getAlias(), dependencies.getEnvironment());
 
-        logWebhookInfo(receive.getAlias(), destination.getEndpoint(), receive.getForward());
-        addWebhookMetaData(receive.getAlias(), destination.getEndpoint(), receive.getForward(), result);
+        logWebhookInfo(receive.getAlias(), destination.getEndpoint(), receive.isForward());
+        addWebhookMetaData(receive.getAlias(), destination.getEndpoint(), receive.isForward(), result);
 
         RetryPlan retryPlan = buildRetryPlan(webhook, destination);
 
@@ -84,11 +83,11 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
             return CorrelationMatcher.always();
         }
 
-        List<ByHeader> headers = nullSafeList(matcherStub.getByHeader());
-        List<ByJson> jsons = nullSafeList(matcherStub.getByJson());
-        List<ByQueryParam> qParams = nullSafeList(matcherStub.getByQueryParam());
-        List<ByPath> paths = nullSafeList(matcherStub.getByPath());
-        boolean always = matcherStub.getAlways();
+        List<WebhookMatcherNameValue> headers = nullSafeList(matcherStub.getByHeader());
+        List<WebhookMatcherJson> jsons = nullSafeList(matcherStub.getByJson());
+        List<WebhookMatcherNameValue> qParams = nullSafeList(matcherStub.getByQueryParam());
+        List<WebhookMatcherEndpoint> paths = nullSafeList(matcherStub.getByEndpoint());
+        boolean always = matcherStub.isAlways();
 
         int otherCount = headers.size() + jsons.size() + qParams.size() + paths.size();
         if (otherCount > 0 && always) {
@@ -99,16 +98,16 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
         }
 
         List<CorrelationMatcher> matchers = new ArrayList<>(otherCount);
-        for (ByHeader header : headers) {
-            matchers.add(CorrelationMatcher.header(header.getName(), header.getValue(), header.getContains()));
+        for (WebhookMatcherNameValue header : headers) {
+            matchers.add(CorrelationMatcher.header(header.getName(), header.getValue(), false));
         }
-        for (ByJson json : jsons) {
-            matchers.add(CorrelationMatcher.jsonPath(json.getjPath(), json.getValue()));
+        for (WebhookMatcherJson json : jsons) {
+            matchers.add(CorrelationMatcher.jsonPath(json.getJpath(), json.getValue()));
         }
-        for (ByQueryParam qParam : qParams) {
-            matchers.add(CorrelationMatcher.queryParam(qParam.getName(), qParam.getValue(), qParam.getContains()));
+        for (WebhookMatcherNameValue qParam : qParams) {
+            matchers.add(CorrelationMatcher.queryParam(qParam.getName(), qParam.getValue(), false));
         }
-        for (ByPath path : paths) {
+        for (WebhookMatcherEndpoint path : paths) {
             matchers.add(CorrelationMatcher.endpoint(path.getUrl()));
         }
         return CorrelationMatcher.combined(matchers);
@@ -118,7 +117,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
         RetryAttempt initialRequest = buildAttempt(
                 webhook.getReceive().getExpected(),
                 webhook.getResponse(),
-                webhook.getReceive().getForward(),
+                webhook.getReceive().isForward(),
                 destination);
 
         List<RetryAttempt> retryAttempts = buildRetries(webhook, destination);
@@ -161,7 +160,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
         if (retry == null) {
             return List.of();
         }
-        List<WebhookRetryAttempt> retryAttemptsDto = retry.getAttempts();
+        List<WebhookRetryAttempt> retryAttemptsDto = retry.getAttempt();
         boolean perAttemptRetry = retryAttemptsDto != null && !retryAttemptsDto.isEmpty();
         boolean commonRetryTemplate = retry.getReceive() != null;
 
@@ -176,7 +175,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
                 attempts.add(buildAttempt(
                         attempt.getReceive().getExpected(),
                         attempt.getResponse(),
-                        attempt.getReceive().getForward(),
+                        attempt.getReceive().isForward(),
                         destination
                 ));
             }
@@ -191,7 +190,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
             RetryAttempt templateAttempt = buildAttempt(
                     retry.getReceive().getExpected(),
                     retry.getResponse(),
-                    retry.getReceive().getForward(),
+                    retry.getReceive().isForward(),
                     destination);
             List<RetryAttempt> attempts = new ArrayList<>(retryAttemptsDto.size());
             for (int i = 0; i < max; i++) {
@@ -205,7 +204,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
     private RetryAttempt buildAttempt(String expectedFile, WebhookResponse response,
                                       Boolean forward, InboundDestination destination) {
         ResponseProducer producer = buildResponseProducer(forward, response, destination);
-        WebhookResponseExpected expectedDestination = (response != null) ? response.getExpected() : null;
+        WebhookExpected expectedDestination = (response != null) ? response.getExpected() : null;
         return new RetryAttempt(expectedFile, expectedDestination, producer);
     }
 
@@ -236,7 +235,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
                                     httpValidator, result);
 
             Object expectedDestinationResponse = attempt.getExpectedDestinationResponse();
-            if (expectedDestinationResponse instanceof WebhookResponseExpected response
+            if (expectedDestinationResponse instanceof WebhookExpected response
                     && i < responseFromDestination.size()) {
                 validateResponseFromDestination(response, responseFromDestination.get(i), httpValidator, result);
             }
@@ -261,14 +260,14 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
         }
     }
 
-    private void validateResponseFromDestination(WebhookResponseExpected expected, InboundResponse actual,
+    private void validateResponseFromDestination(WebhookExpected expected, InboundResponse actual,
                                                  HttpValidator validator, CommandResult result) {
-        validator.validateCode(expected.getStatus(), actual.getStatus());
+        validator.validateCode(expected.getCode(), actual.getStatus());
 
-        if (expected.getHeader() != null && !expected.getHeader().isEmpty()) {
+        if (expected.getHeaders() != null && !expected.getHeaders().getHeader().isEmpty()) {
             Map<String, String> expectedHeaders = new LinkedHashMap<>();
-            for (Header header : expected.getHeader()) {
-                expectedHeaders.put(header.getName(), header.getData());
+            for (WebhookHeader header : expected.getHeaders().getHeader()) {
+                expectedHeaders.put(header.getName(), header.getValue());
             }
             Map<String, String> actualHeaders = firstValueHeader(actual.getHeaders());
             validator.validateHeaders(expectedHeaders, actualHeaders);
@@ -302,7 +301,7 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
             if (StringUtils.isBlank(destinationUrl)) {
                 throw new DefaultFrameworkException("forward=\"true\" requires destinationUrl for alias " + destination.getAlias());
             }
-            if (response != null && response.getMockResult() != null) {
+            if (response != null && response.getMockReturn() != null) {
                 InboundResponse modifiedResponse = buildMockResponse(response);
                 return producerFactory.modifiedProducer(destinationUrl, modifiedResponse);
             }
@@ -314,21 +313,21 @@ public class WebhookInterpreter extends AbstractInterpreter<Webhook> {
     }
 
     private InboundResponse buildMockResponse(WebhookResponse response) {
-        WebhookMockResult mockResult = response != null ? response.getMockResult() : null;
+        WebhookMockReturn mockResult = response != null ? response.getMockReturn() : null;
         if (mockResult == null) {
             // Log warning
             return InboundResponseFactory.of(HttpStatus.NO_CONTENT.value(), Map.of(), new byte[0]);
         }
-        Integer status = mockResult.getStatus();
+        Integer status = mockResult.getCode();
         byte[] body = new byte[0];
         String bodyContent = getContentIfFile(mockResult.getFile());
         if (StringUtils.isNotBlank(bodyContent)) {
             body = bodyContent.getBytes(StandardCharsets.UTF_8);
         }
         Map<String, List<String>> headers = new LinkedHashMap<>();
-        if (mockResult.getHeader() != null) {
-            for (Header header : mockResult.getHeader()) {
-                headers.computeIfAbsent(header.getName(), k -> new ArrayList<>()).add(header.getData());
+        if (mockResult.getHeaders().getHeader() != null) {
+            for (WebhookHeader header : mockResult.getHeaders().getHeader()) {
+                headers.computeIfAbsent(header.getName(), k -> new ArrayList<>()).add(header.getValue());
             }
         }
         return InboundResponseFactory.of(status, headers, body);

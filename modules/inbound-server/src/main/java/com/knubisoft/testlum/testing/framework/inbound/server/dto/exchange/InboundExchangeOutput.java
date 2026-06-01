@@ -7,21 +7,22 @@ public class InboundExchangeOutput {
     private final InboundResponse responseToSender;
     private final InboundResponse responseFromDestination;
 
-    public InboundExchangeOutput(InboundResponse responseToSender, InboundResponse responseFromDestination) {
+    public InboundExchangeOutput(final InboundResponse responseToSender,
+                                 final InboundResponse responseFromDestination) {
         this.responseToSender = responseToSender;
         this.responseFromDestination = responseFromDestination;
     }
 
-    public static InboundExchangeOutput mock(InboundResponse mock) {
+    public static InboundExchangeOutput mock(final InboundResponse mock) {
         return new InboundExchangeOutput(mock, null);
     }
 
-    public static InboundExchangeOutput forwarded(InboundResponse responseFromDestination) {
+    public static InboundExchangeOutput forwarded(final InboundResponse responseFromDestination) {
         return new InboundExchangeOutput(responseFromDestination, responseFromDestination);
     }
 
-    public static InboundExchangeOutput modifyForwarded(InboundResponse responseFromDestination,
-                                                        InboundResponse modifiedResponse) {
+    public static InboundExchangeOutput modifyForwarded(final InboundResponse responseFromDestination,
+                                                        final InboundResponse modifiedResponse) {
         return new InboundExchangeOutput(modifiedResponse, responseFromDestination);
     }
 

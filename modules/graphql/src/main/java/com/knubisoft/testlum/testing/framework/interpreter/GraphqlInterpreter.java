@@ -19,6 +19,7 @@ import com.knubisoft.testlum.testing.model.scenario.GraphqlGet;
 import com.knubisoft.testlum.testing.model.scenario.GraphqlPost;
 import com.knubisoft.testlum.testing.model.scenario.Header;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.Mode;
 import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.Getter;

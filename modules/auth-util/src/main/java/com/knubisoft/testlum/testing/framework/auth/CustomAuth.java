@@ -47,9 +47,7 @@ public class CustomAuth extends AbstractAuthStrategy {
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
         logAuthInfo(auth);
-
         final String token = getCustomToken(auth);
-
         result.put(AUTHENTICATION_TYPE, "CUSTOM");
         login(token, CUSTOM_PREFIX);
     }
@@ -57,7 +55,6 @@ public class CustomAuth extends AbstractAuthStrategy {
     private String getCustomToken(final Auth auth) {
         final String body = getCredentialsFromFile(auth.getCredentials());
         final HttpEntity<String> request = new HttpEntity<>(body, getHeaders());
-
         final String response = new RestTemplate().postForObject(getFullApiUrl(auth), request, String.class);
         if (StringUtils.isBlank(response)) {
             return DelimiterConstant.EMPTY;
@@ -69,11 +66,9 @@ public class CustomAuth extends AbstractAuthStrategy {
     private String extractToken(final Auth auth, final String response) {
         final DocumentContext context = JsonPath.parse(response);
         final Api apiIntegration = integrationsProvider.findApiForAlias(apiList, auth.getApiAlias());
-
         final String tokenName = StringUtils.isNotBlank(apiIntegration.getAuth().getTokenName())
                 ? apiIntegration.getAuth().getTokenName()
                 : "customToken";
-
         return context.read("$." + tokenName);
     }
 

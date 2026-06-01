@@ -86,10 +86,7 @@ public class CustomAuth extends AbstractAuthStrategy {
 
     @SneakyThrows
     private String getCredentialsFromFile(final String fileName) {
-        return FileUtils.readFileToString(
-                fileSearcher.searchFileFromDataFolder(fileName),
-                StandardCharsets.UTF_8
-        );
+        return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
     }
 
     private void logAuthInfo(final Auth auth) {

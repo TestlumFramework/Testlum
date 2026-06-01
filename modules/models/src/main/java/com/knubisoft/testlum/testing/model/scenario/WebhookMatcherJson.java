@@ -22,7 +22,7 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webhookMatcherJson", propOrder = {
-        "name",
+        "jpath",
         "value"
 })
 public class WebhookMatcherJson {

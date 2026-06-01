@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.inbound.server.server.impl;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRequest;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundResponse;
 import com.knubisoft.testlum.testing.framework.inbound.server.handler.InboundRequestHandler;
@@ -9,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.inbound.server.util.InboundRespon
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Implementation of @{link InboundServer} using {@code com.sun.net.httpserver.HttpServer}.
  */
+@Slf4j
 public class JdkInboundServer implements InboundServer {
 
     private final String host;
@@ -60,9 +63,14 @@ public class JdkInboundServer implements InboundServer {
 
             this.server = httpServer;
             this.boundPort = httpServer.getAddress().getPort();
-            // Log that server has started
+            String displayHost = "0.0.0.0".equals(host) ? "localhost" : host;
+            log.info("============================================================");
+            log.info(" Testlum inbound HTTP server STARTED");
+            log.info("   listening on http://" + displayHost + ":" + boundPort);
+            log.info("   (any path; routing by correlation matchers)");
+            log.info("============================================================");
         } catch (IOException e) {
-            // Throw custom exception that server cannot be started
+            throw new DefaultFrameworkException("Failed to start inbound server on " + host + ":" + requestedPort, e);
         }
     }
 

@@ -26,7 +26,7 @@ import jakarta.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "kafkaHeader")
+@XmlType(name = "webhookHeader")
 public class WebhookHeader {
 
     @XmlAttribute(name = "name", required = true)

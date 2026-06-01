@@ -33,7 +33,8 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webhookRetry", propOrder = {
         "receive",
-        "response"
+        "response",
+        "attempt"
 })
 public class WebhookRetry {
 

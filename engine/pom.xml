@@ -414,6 +414,12 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-webhook</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shell</artifactId>
         </dependency>
 

@@ -11,6 +11,12 @@
     <artifactId>testlum-inbound-server</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-shared-util</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>

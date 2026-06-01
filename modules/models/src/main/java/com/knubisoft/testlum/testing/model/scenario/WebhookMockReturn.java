@@ -23,36 +23,36 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webhookMockReturn", propOrder = {
-        "code",
+        "status",
         "file",
         "headers"
 })
 public class WebhookMockReturn {
 
-    protected Integer code;
+    protected Integer status;
     protected String file;
     protected WebhookHeaders headers;
 
     /**
-     * Gets the value of the code property.
+     * Gets the value of the status property.
      *
      * @return possible object is
      * {@link Integer }
      *
      */
-    public Integer getCode() {
-        return code;
+    public Integer getStatus() {
+        return status;
     }
 
     /**
-     * Sets the value of the code property.
+     * Sets the value of the status property.
      *
      * @param value allowed object is
      *              {@link Integer }
      *
      */
-    public void setCode(Integer value) {
-        this.code = value;
+    public void setStatus(Integer value) {
+        this.status = value;
     }
 
     /**

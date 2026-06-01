@@ -23,6 +23,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *         &lt;element name="noRetry" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webhookNoRetry" minOccurs="0"/&gt;
  *         &lt;element name="webhookMatcher" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webhookMatcher" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="path" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" use="required"/&gt;
  *       &lt;attribute name="timeout" type="{http://www.w3.org/2001/XMLSchema}int" use="required"/&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -48,6 +49,8 @@ public class Webhook
     protected WebhookRetry retry;
     protected WebhookNoRetry noRetry;
     protected WebhookMatcher webhookMatcher;
+    @XmlAttribute(name = "path", required = true)
+    protected String path;
     @XmlAttribute(name = "timeout", required = true)
     protected Integer timeout;
 
@@ -169,6 +172,30 @@ public class Webhook
      */
     public void setWebhookMatcher(WebhookMatcher value) {
         this.webhookMatcher = value;
+    }
+
+    /**
+     * Gets the value of the path property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * Sets the value of the path property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setPath(String value) {
+        this.path = value;
     }
 
     /**

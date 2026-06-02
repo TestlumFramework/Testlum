@@ -1,14 +1,12 @@
 package com.knubisoft.testing.framework.coordinator;
 
 import com.knubisoft.testing.framework.producer.ResponseProducer;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.AbstractInboundExchange;
 import com.knubisoft.testlum.testing.framework.inbound.server.server.InboundServer;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.SubscriptionRegistry;
 import com.knubisoft.testlum.testing.framework.inbound.server.util.CorrelationMatcher;
 
 import java.time.Duration;
-import java.util.Map;
 
 /**
  * Coordinator of the whole inbound request flow. It creates a server and a registry.
@@ -18,35 +16,21 @@ public abstract class AbstractHttpInboundCoordinator {
 
     private final InboundServer server;
     protected final SubscriptionRegistry registry;
-    // alias+env -> destination
-    private final Map<String, InboundDestination> destinationsByAliasEnv;
 
-    protected AbstractHttpInboundCoordinator(InboundServer server,
-                                  SubscriptionRegistry registry,
-                                  Map<String, InboundDestination> destinationsByAliasEnv) {
+    protected AbstractHttpInboundCoordinator(InboundServer server, SubscriptionRegistry registry) {
         this.server = server;
         this.registry = registry;
-        this.destinationsByAliasEnv = destinationsByAliasEnv;
     }
 
     public void start() {
+        if (server.isRunning()) {
+            return;
+        }
         server.start();
     }
 
     public void stop() {
         server.stop(Duration.ofSeconds(5));
-    }
-
-    /**
-     * Resolved webhook destination by alias and environment.
-     */
-    public InboundDestination resolve(String alias, String environment) {
-        InboundDestination destination = destinationsByAliasEnv.get(getKey(alias, environment));
-        if (destination == null) {
-            throw new DefaultFrameworkException("No destination found for alias " + alias +
-                    " in environment " + environment);
-        }
-        return destination;
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.knubisoft.testlum.testing.framework.session;
 
+import com.knubisoft.testing.framework.session.SessionListener;
+import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchangeStatus;
 import com.knubisoft.testlum.testing.framework.retry.RetryAttempt;
 import com.knubisoft.testlum.testing.framework.retry.RetryPlan;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -8,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.inbound.server.dto.InboundRespons
 import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.InboundExchangeOutput;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.InboundSession;
 import com.knubisoft.testlum.testing.framework.inbound.server.util.InboundResponseFactory;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ public class WebhookCapturingSession implements InboundSession {
     private final String endpoint;
     private final RetryPlan retryPlan;
     private final ScheduledExecutorService scheduler;
+    @Setter
+    private volatile SessionListener listener;
 
     private final CompletableFuture<WebhookExchange> exchangeTask = new CompletableFuture<>();
     private final Object lock = new Object();
@@ -82,9 +87,7 @@ public class WebhookCapturingSession implements InboundSession {
                 case GUARD -> {
                     return handleGuardViolation(request);
                 }
-                default -> {
-                    throw new DefaultFrameworkException("Unexpected phase: " + phase);
-                }
+                default -> throw new DefaultFrameworkException("Unexpected phase: " + phase);
             }
         }
     }
@@ -97,6 +100,7 @@ public class WebhookCapturingSession implements InboundSession {
             return completeAsError(request, e);
         }
         captureExchange(request, outcome);
+        listener.onRequestReceived(0, request, outcome);
 
         if (retryPlan.getMaxRetries() == 0) {
             return transitionToGuardOrFinish(outcome);
@@ -119,6 +123,7 @@ public class WebhookCapturingSession implements InboundSession {
         }
         retriesSeen++;
         captureExchange(request, outcome);
+        listener.onRequestReceived(retriesSeen, request, outcome);
 
         if (retriesSeen >= retryPlan.getMaxRetries()) {
             return transitionToGuardOrFinish(outcome);
@@ -147,12 +152,15 @@ public class WebhookCapturingSession implements InboundSession {
     private void finishSuccess() {
         cancelDeadline();
         terminated = true;
+        listener.onComplete();
         exchangeTask.complete(WebhookExchange.success(receivedRequests, responsesSendToSender, responsesFromDestination));
     }
 
     private InboundResponse finishWithUnexpectedExtraRetry(InboundRequest extraRequest) {
         cancelDeadline();
         terminated = true;
+        listener.onFailure(InboundExchangeStatus.UNEXPECTED_EXTRA_RETRY,
+                "Unexpected extra call after completion", extraRequest);
         exchangeTask.complete(WebhookExchange
                 .unexpectedExtraRequest(receivedRequests, responsesSendToSender, responsesFromDestination, extraRequest));
         return InboundResponseFactory.json(409,  "{\"error\":\"webhook session received unexpected extra call\"}");
@@ -162,23 +170,28 @@ public class WebhookCapturingSession implements InboundSession {
     private InboundResponse completeAsError(InboundRequest request, Exception e) {
         cancelDeadline();
         terminated = true;
+        listener.onFailure(InboundExchangeStatus.ERROR, "Producer failed: " + e.getMessage(), null);
         exchangeTask.complete(WebhookExchange.error(request, e.getMessage()));
         return InboundResponseFactory.internalError("webhook processing failed: " + e.getMessage());
     }
 
+    /**
+     * Here is the logic: if some retry has arrived, it's not timeout but success.
+     * Reason: because idle/guard handler has already completed the guard logic (noRetry, min/max retries)
+     */
     private void onOverallTimeout() {
         synchronized (lock) {
             if (terminated) {
                 return;
             }
             terminated = true;
-            exchangeTask.complete(receivedRequests.isEmpty() ?
-                    WebhookExchange.timeout() :
-                    WebhookExchange.success(receivedRequests, responsesSendToSender, responsesFromDestination));
-            /*
-             * Here is the logic: if some retry has arrived, it's not timeout but success.
-             * Reason: because idle/guard handler has already completed the guard logic (noRetry, min/max retries)
-             */
+            if (receivedRequests.isEmpty()) {
+                listener.onFailure(InboundExchangeStatus.TIMEOUT, "Overall timeout, no request received", null);
+                exchangeTask.complete(WebhookExchange.timeout());
+            } else {
+                listener.onComplete();
+                exchangeTask.complete(WebhookExchange.success(receivedRequests, responsesSendToSender, responsesFromDestination));
+            }
         }
     }
 
@@ -191,6 +204,8 @@ public class WebhookCapturingSession implements InboundSession {
             // min retries have not been reached
             if (retriesSeen < retryPlan.getMinRetries()) {
                 terminated = true;
+                listener.onFailure(InboundExchangeStatus.BELOW_MIN_RETRIES,
+                        "Expected at least " + retryPlan + " retries, got " + retriesSeen, null);
                 exchangeTask.complete(WebhookExchange.belowMin(receivedRequests, responsesSendToSender,
                         responsesFromDestination, retryPlan.getMinRetries(), retriesSeen));
                 return;
@@ -244,6 +259,8 @@ public class WebhookCapturingSession implements InboundSession {
             if (!terminated) {
                 terminated = true;
                 cancelDeadline();
+                listener.onFailure(fallback.getStatus(),
+                        "Session force terminated by emergency timeout", null);
                 exchangeTask.complete(fallback);
             }
         }

@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.coordinator;
 
 import com.knubisoft.testing.framework.coordinator.AbstractHttpInboundCoordinator;
-import com.knubisoft.testing.framework.coordinator.InboundDestination;
 import com.knubisoft.testing.framework.producer.ResponseProducer;
+import com.knubisoft.testing.framework.session.SessionListener;
 import com.knubisoft.testlum.testing.framework.inbound.server.server.InboundServer;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.Subscription;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.SubscriptionRegistry;
@@ -11,22 +11,19 @@ import com.knubisoft.testlum.testing.framework.retry.RetryAttempt;
 import com.knubisoft.testlum.testing.framework.retry.RetryPlan;
 import com.knubisoft.testlum.testing.framework.session.WebhookCapturingSession;
 import com.knubisoft.testlum.testing.framework.session.WebhookExchange;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Component
 public class WebhookCoordinator extends AbstractHttpInboundCoordinator {
 
     private final ScheduledExecutorService scheduler;
 
-    public WebhookCoordinator(InboundServer server, SubscriptionRegistry registry, Map<String, InboundDestination> destinationsByAliasEnv) {
-        super(server, registry, destinationsByAliasEnv);
+    public WebhookCoordinator(InboundServer server, SubscriptionRegistry registry) {
+        super(server, registry);
         AtomicLong n = new AtomicLong();
         this.scheduler = Executors.newScheduledThreadPool(2, r -> {
             Thread t = new Thread(r, "testlum-inbound-timer-" + n.incrementAndGet());
@@ -46,9 +43,19 @@ public class WebhookCoordinator extends AbstractHttpInboundCoordinator {
         }
     }
 
+    @Override
     public WebhookExchange awaitOneRequest(String endpoint, String testId, CorrelationMatcher matcher,
-                                           RetryPlan retryPlan) {
+                                           Duration timeout, ResponseProducer producer) {
+        RetryAttempt initialRequest = new RetryAttempt(null, producer);
+        return awaitOneRequest(endpoint, testId, matcher, RetryPlan.single(initialRequest, timeout), null);
+    }
+
+    public WebhookExchange awaitOneRequest(String endpoint, String testId, CorrelationMatcher matcher,
+                                            RetryPlan retryPlan, SessionListener listener) {
         WebhookCapturingSession session = new WebhookCapturingSession(endpoint, retryPlan, scheduler);
+        if (listener != null) {
+            session.setListener(listener);
+        }
         Subscription subscription = new Subscription(endpoint, testId, matcher, session);
         registry.register(subscription);
         try {
@@ -56,12 +63,5 @@ public class WebhookCoordinator extends AbstractHttpInboundCoordinator {
         } finally {
             registry.unregister(subscription);
         }
-    }
-
-    @Override
-    public WebhookExchange awaitOneRequest(String endpoint, String testId, CorrelationMatcher matcher,
-                                           Duration timeout, ResponseProducer producer) {
-        RetryAttempt initialRequest = new RetryAttempt(null, producer);
-        return awaitOneRequest(endpoint, testId, matcher, RetryPlan.single(initialRequest, timeout));
     }
 }

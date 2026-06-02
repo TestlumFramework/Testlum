@@ -10,17 +10,14 @@ import com.knubisoft.testlum.testing.framework.inbound.server.util.CorrelationMa
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.Map;
-
 
 @Component
 public class HttpInboundCoordinator extends AbstractHttpInboundCoordinator {
 
 
     public HttpInboundCoordinator(InboundServer server,
-                                  SubscriptionRegistry registry,
-                                  Map<String, InboundDestination> destinationsByAliasEnv) {
-        super(server, registry, destinationsByAliasEnv);
+                                  SubscriptionRegistry registry) {
+        super(server, registry);
     }
 
     @Override

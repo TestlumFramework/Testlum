@@ -10,6 +10,10 @@
 
     <artifactId>testlum-inbound-server</artifactId>
 
+    <properties>
+        <ngrok.version>1.1.1</ngrok.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -20,6 +24,54 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ngrok</groupId>
+            <artifactId>ngrok-java</artifactId>
+            <version>${ngrok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ngrok</groupId>
+            <artifactId>ngrok-java-native</artifactId>
+            <version>${ngrok.version}</version>
+            <classifier>osx-aarch_64</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ngrok</groupId>
+            <artifactId>ngrok-java-native</artifactId>
+            <version>${ngrok.version}</version>
+            <classifier>osx-x86_64</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ngrok</groupId>
+            <artifactId>ngrok-java-native</artifactId>
+            <version>${ngrok.version}</version>
+            <classifier>windows-x86_64</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ngrok</groupId>
+            <artifactId>ngrok-java-native</artifactId>
+            <version>${ngrok.version}</version>
+            <classifier>windows-x86_32</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ngrok</groupId>
+            <artifactId>ngrok-java-native</artifactId>
+            <version>${ngrok.version}</version>
+            <classifier>linux-x86_64</classifier>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ngrok</groupId>
+            <artifactId>ngrok-java-native</artifactId>
+            <version>${ngrok.version}</version>
+            <classifier>linux-x86_32</classifier>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

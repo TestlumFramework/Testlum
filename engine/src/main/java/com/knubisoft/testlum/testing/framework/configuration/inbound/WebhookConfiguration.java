@@ -10,6 +10,10 @@ import com.knubisoft.testlum.testing.framework.inbound.server.server.InboundServ
 import com.knubisoft.testlum.testing.framework.inbound.server.server.impl.JdkInboundServer;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.SubscriptionRegistry;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient;
+import com.knubisoft.testlum.testing.framework.inbound.ngrok.NgrokConfigProvider;
+import com.knubisoft.testlum.testing.framework.inbound.ngrok.NgrokTunnel;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,8 +54,10 @@ public class WebhookConfiguration {
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
-    public WebhookCoordinator webhookCoordinator(InboundServer server, SubscriptionRegistry registry) {
-        return new WebhookCoordinator(server, registry);
+    public WebhookCoordinator webhookCoordinator(InboundServer server,
+                                                 SubscriptionRegistry registry,
+                                                 @Autowired(required = false) NgrokTunnel ngrokTunnel) {
+        return new WebhookCoordinator(server, registry, ngrokTunnel);
     }
 
     /**
@@ -73,4 +79,33 @@ public class WebhookConfiguration {
         return () -> webhookSessionExecutor;
     }
 
+    @Bean
+    public NgrokConfigProvider ngrokConfigProvider(GlobalTestConfiguration globalTestConfiguration) {
+        return new NgrokConfigProvider() {
+            @Override
+            public boolean isEnabled() {
+                return globalTestConfiguration.getNgrok() != null && globalTestConfiguration.getNgrok().isEnabled();
+            }
+
+            @Override
+            public String authToken() {
+                return globalTestConfiguration.getNgrok() != null
+                        ? globalTestConfiguration.getNgrok().getAuthToken() : null;
+            }
+
+            @Override
+            public String reservedDomain() {
+                return globalTestConfiguration.getNgrok() != null
+                        ? globalTestConfiguration.getNgrok().getReservedDomain() : null;
+            }
+        };
+    }
+
+    @Bean(destroyMethod = "stop")
+    public NgrokTunnel ngrokTunnel(NgrokConfigProvider config, InboundServer localServer) {
+        if (!config.isEnabled()) {
+            return null;
+        }
+        return new NgrokTunnel(config, localServer);
+    }
 }

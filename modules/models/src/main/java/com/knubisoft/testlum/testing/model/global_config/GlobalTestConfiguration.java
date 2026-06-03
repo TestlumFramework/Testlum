@@ -39,7 +39,8 @@ import jakarta.xml.bind.annotation.*;
     "runScenariosByTag",
     "report",
     "environments",
-    "vault"
+    "vault",
+    "ngrok"
 })
 @XmlRootElement(name = "globalTestConfiguration")
 public class GlobalTestConfiguration {
@@ -57,6 +58,7 @@ public class GlobalTestConfiguration {
     @XmlElement(required = true)
     protected Environments environments;
     protected Vault vault;
+    protected Ngrok ngrok;
 
     /**
      * Gets the value of the parallelExecution property.
@@ -232,6 +234,30 @@ public class GlobalTestConfiguration {
      */
     public void setVault(Vault value) {
         this.vault = value;
+    }
+
+    /**
+     * Gets the value of the ngrok property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Ngrok }
+     *
+     */
+    public Ngrok getNgrok() {
+        return ngrok;
+    }
+
+    /**
+     * Sets the value of the ngrok property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Ngrok }
+     *
+     */
+    public void setNgrok(Ngrok value) {
+        this.ngrok = value;
     }
 
 }

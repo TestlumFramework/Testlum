@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.coordinator;
 import com.knubisoft.testing.framework.coordinator.AbstractHttpInboundCoordinator;
 import com.knubisoft.testing.framework.producer.ResponseProducer;
 import com.knubisoft.testing.framework.session.SessionListener;
+import com.knubisoft.testlum.testing.framework.inbound.ngrok.NgrokTunnel;
 import com.knubisoft.testlum.testing.framework.inbound.server.server.InboundServer;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.Subscription;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.SubscriptionRegistry;
@@ -22,8 +23,8 @@ public class WebhookCoordinator extends AbstractHttpInboundCoordinator {
 
     private final ScheduledExecutorService scheduler;
 
-    public WebhookCoordinator(InboundServer server, SubscriptionRegistry registry) {
-        super(server, registry);
+    public WebhookCoordinator(InboundServer server, SubscriptionRegistry registry, NgrokTunnel ngrokTunnel) {
+        super(server, registry, ngrokTunnel);
         AtomicLong n = new AtomicLong();
         this.scheduler = Executors.newScheduledThreadPool(2, r -> {
             Thread t = new Thread(r, "testlum-inbound-timer-" + n.incrementAndGet());

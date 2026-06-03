@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.inbound.server.dto.exchange.Abstr
 import com.knubisoft.testlum.testing.framework.inbound.server.server.InboundServer;
 import com.knubisoft.testlum.testing.framework.inbound.server.subscription.SubscriptionRegistry;
 import com.knubisoft.testlum.testing.framework.inbound.server.util.CorrelationMatcher;
+import com.knubisoft.testlum.testing.framework.inbound.ngrok.NgrokTunnel;
 
 import java.time.Duration;
 
@@ -16,10 +17,18 @@ public abstract class AbstractHttpInboundCoordinator {
 
     private final InboundServer server;
     protected final SubscriptionRegistry registry;
+    private final NgrokTunnel ngrokTunnel;
 
     protected AbstractHttpInboundCoordinator(InboundServer server, SubscriptionRegistry registry) {
+        this(server, registry, null);
+    }
+
+    protected AbstractHttpInboundCoordinator(InboundServer server,
+                                             SubscriptionRegistry registry,
+                                             NgrokTunnel ngrokTunnel) {
         this.server = server;
         this.registry = registry;
+        this.ngrokTunnel = ngrokTunnel;
     }
 
     public void start() {
@@ -27,9 +36,15 @@ public abstract class AbstractHttpInboundCoordinator {
             return;
         }
         server.start();
+        if (ngrokTunnel != null) {
+            ngrokTunnel.start();
+        }
     }
 
     public void stop() {
+        if (ngrokTunnel != null) {
+            ngrokTunnel.stop();
+        }
         server.stop(Duration.ofSeconds(5));
     }
 

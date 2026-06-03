@@ -12,11 +12,6 @@ inputs:
     description: BrowserStack access key for local testing.
     required: true
 
-  browserstack_local_identifier:
-    description: BrowserStack local identifier.
-    required: false
-    default: random
-
   enable_browserstack:
     description: Whether BrowserStackLocal should be started.
     required: false

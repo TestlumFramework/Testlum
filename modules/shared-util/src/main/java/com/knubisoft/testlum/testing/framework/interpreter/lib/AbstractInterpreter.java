@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.CommandResultHelper;
 import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
+import com.knubisoft.testlum.testing.framework.util.ContentResolver;
 import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
@@ -38,7 +39,6 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected static final String HEADER_TEMPLATE = CommandResultHelper.HEADER_TEMPLATE;
     protected static final String ADDITIONAL_HEADERS = CommandResultHelper.ADDITIONAL_HEADERS;
     protected static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
-    private static final String JSON_EXTENSION = ".json";
     private static final String ACTUAL_FILENAME = "actual.json";
     private static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
 
@@ -56,6 +56,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected final FileSearcher fileSearcher;
     protected final JacksonService jacksonService;
     protected final StringPrettifier stringPrettifier;
+    protected final ContentResolver contentResolver;
 
     private final boolean stopScenarioOnFailure;
 
@@ -68,6 +69,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         this.stringPrettifier = dependencies.getContext().getBean(StringPrettifier.class);
         this.stopScenarioOnFailure = dependencies.getContext().
                 getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
+        this.contentResolver = new ContentResolver(fileSearcher, dependencies.getScenarioContext(), dependencies.getFile());
     }
 
     public final void apply(final T o, final CommandResult result) {
@@ -119,11 +121,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     public String getContentIfFile(final String fileOrContent) {
-        if (StringUtils.isNotBlank(fileOrContent) && fileOrContent.endsWith(JSON_EXTENSION)) {
-            String content = fileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
-            return inject(content);
-        }
-        return fileOrContent;
+        return contentResolver.getContentIfFile(fileOrContent);
     }
 
     public String getContextBodyKey(final String fileOrContent) {

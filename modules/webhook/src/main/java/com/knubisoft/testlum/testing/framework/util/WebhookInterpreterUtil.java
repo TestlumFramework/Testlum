@@ -20,8 +20,4 @@ public class WebhookInterpreterUtil {
         };
     }
 
-    public static <T> List<T> nullSafeList(List<T> list) {
-        return list != null ? list : List.of();
-    }
-
 }

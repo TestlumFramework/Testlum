@@ -23,7 +23,7 @@ on:
       run_mobile_native:
         description: "Do need to run mobile and native tests"
         required: false
-        default: true
+        default: false
         type: boolean
 
       config_file:

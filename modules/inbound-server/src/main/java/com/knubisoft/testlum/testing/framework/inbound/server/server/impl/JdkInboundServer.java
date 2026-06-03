@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Slf4j
 public class JdkInboundServer implements InboundServer {
 
+    private final boolean enabled;
     private final String host;
     private final int requestedPort;
     private final int maxThreads;
@@ -40,8 +41,9 @@ public class JdkInboundServer implements InboundServer {
     // Inject it
     private final InboundDtoMapper inboundDtoMapper = new InboundDtoMapper();
 
-
-    public JdkInboundServer(String host, int requestedPort, int maxThreads, InboundRequestHandler handler) {
+    public JdkInboundServer(boolean enabled, String host, int requestedPort, int maxThreads,
+                            InboundRequestHandler handler) {
+        this.enabled = enabled;
         this.host = host == null ? "0.0.0.0" : host;
         this.requestedPort = requestedPort;
         this.maxThreads = maxThreads <= 0 ? 10 : maxThreads;
@@ -50,6 +52,10 @@ public class JdkInboundServer implements InboundServer {
 
     @Override
     public synchronized void start() {
+        if (!enabled) {
+            throw new DefaultFrameworkException("Inbound server is disabled. " +
+                    "Please, enable it in the global config file.");
+        }
         if (server != null) {
             // Log it
             return;

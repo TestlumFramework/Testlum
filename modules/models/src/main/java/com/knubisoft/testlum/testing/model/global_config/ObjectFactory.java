@@ -813,4 +813,20 @@ public class ObjectFactory {
         return new Environment();
     }
 
+    /**
+     * Create an instance of {@link HttpServer }
+     *
+     */
+    public HttpServer createHttpServer() {
+        return new HttpServer();
+    }
+
+    /**
+     * Create an instance of {@link Ngrok }
+     *
+     */
+    public Ngrok createNgrok() {
+        return new Ngrok();
+    }
+
 }

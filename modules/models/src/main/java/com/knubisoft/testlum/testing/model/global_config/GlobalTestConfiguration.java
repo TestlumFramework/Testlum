@@ -40,7 +40,7 @@ import jakarta.xml.bind.annotation.*;
     "report",
     "environments",
     "vault",
-    "ngrok"
+    "httpServer"
 })
 @XmlRootElement(name = "globalTestConfiguration")
 public class GlobalTestConfiguration {
@@ -58,7 +58,7 @@ public class GlobalTestConfiguration {
     @XmlElement(required = true)
     protected Environments environments;
     protected Vault vault;
-    protected Ngrok ngrok;
+    protected HttpServer httpServer;
 
     /**
      * Gets the value of the parallelExecution property.
@@ -237,27 +237,27 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the ngrok property.
+     * Gets the value of the httpServer property.
      *
      * @return
      *     possible object is
      *     {@link Ngrok }
      *
      */
-    public Ngrok getNgrok() {
-        return ngrok;
+    public HttpServer getHttpServer() {
+        return httpServer;
     }
 
     /**
-     * Sets the value of the ngrok property.
+     * Sets the value of the httpServer property.
      *
      * @param value
      *     allowed object is
      *     {@link Ngrok }
      *
      */
-    public void setNgrok(Ngrok value) {
-        this.ngrok = value;
+    public void setHttpServer(HttpServer value) {
+        this.httpServer = value;
     }
 
 }

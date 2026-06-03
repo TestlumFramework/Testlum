@@ -13,6 +13,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.testlum.testing.framework.inbound.ngrok.NgrokConfigProvider;
 import com.knubisoft.testlum.testing.framework.inbound.ngrok.NgrokTunnel;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.testlum.testing.model.global_config.HttpServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,34 +25,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Configuration
 public class WebhookConfiguration {
-
-    @Bean
-    public SubscriptionRegistry subscriptionRegistry() {
-        return new SubscriptionRegistry(true);
-    }
-
-    @Bean
-    public InboundRequestHandler inboundRequestHandler(SubscriptionRegistry subscriptionRegistry) {
-        return new RegistryRequestHandler(subscriptionRegistry);
-    }
-
-    @Bean
-    public InboundServer inboundServer(InboundRequestHandler handler,
-                                       @Value("${testlum.webhook.host:0.0.0.0}") String host,
-                                       @Value("${testlum.webhook.port:8080}") int port,
-                                       @Value("${testlum.webhook.maxThreads:200}") int maxThreads) {
-        return new JdkInboundServer(host, port, maxThreads, handler);
-    }
-
-    @Bean
-    public DestinationForwarder destinationForwarder(ApiClient apiClient) {
-        return new DestinationForwarder(apiClient);
-    }
-
-    @Bean
-    public ResponseProducerFactory responseProducerFactory(DestinationForwarder destinationForwarder) {
-        return new ResponseProducerFactory(destinationForwarder);
-    }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public WebhookCoordinator webhookCoordinator(InboundServer server,
@@ -79,33 +52,4 @@ public class WebhookConfiguration {
         return () -> webhookSessionExecutor;
     }
 
-    @Bean
-    public NgrokConfigProvider ngrokConfigProvider(GlobalTestConfiguration globalTestConfiguration) {
-        return new NgrokConfigProvider() {
-            @Override
-            public boolean isEnabled() {
-                return globalTestConfiguration.getNgrok() != null && globalTestConfiguration.getNgrok().isEnabled();
-            }
-
-            @Override
-            public String authToken() {
-                return globalTestConfiguration.getNgrok() != null
-                        ? globalTestConfiguration.getNgrok().getAuthToken() : null;
-            }
-
-            @Override
-            public String reservedDomain() {
-                return globalTestConfiguration.getNgrok() != null
-                        ? globalTestConfiguration.getNgrok().getReservedDomain() : null;
-            }
-        };
-    }
-
-    @Bean(destroyMethod = "stop")
-    public NgrokTunnel ngrokTunnel(NgrokConfigProvider config, InboundServer localServer) {
-        if (!config.isEnabled()) {
-            return null;
-        }
-        return new NgrokTunnel(config, localServer);
-    }
 }

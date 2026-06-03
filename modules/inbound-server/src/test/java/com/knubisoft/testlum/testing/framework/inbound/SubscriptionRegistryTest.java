@@ -35,7 +35,7 @@ public class SubscriptionRegistryTest {
     public static void main(String[] args) throws Exception {
         SubscriptionRegistry registry = new SubscriptionRegistry(true);
         InboundServer server = new JdkInboundServer(
-                "127.0.0.1", 0, 10, new RegistryRequestHandler(registry));
+                true, "127.0.0.1", 0, 10, new RegistryRequestHandler(registry));
         server.start();
         try {
             testRegistry(server, registry);

@@ -59,7 +59,6 @@ public class CustomAuth extends AbstractAuthStrategy {
         if (StringUtils.isBlank(response)) {
             return DelimiterConstant.EMPTY;
         }
-
         return extractToken(auth, response);
     }
 

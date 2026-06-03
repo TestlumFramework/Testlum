@@ -68,7 +68,7 @@ jobs:
 
           run_mobile_native="${{ inputs.run_mobile_native }}"
           if [[ -z "$run_mobile_native" ]]; then
-            run_mobile_native="true"
+            run_mobile_native="false"
           fi
           
           config_file="${{ inputs.config_file }}"

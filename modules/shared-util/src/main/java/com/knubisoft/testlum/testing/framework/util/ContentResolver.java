@@ -4,11 +4,9 @@ import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 
-@Service
 @AllArgsConstructor
 public class ContentResolver {
 

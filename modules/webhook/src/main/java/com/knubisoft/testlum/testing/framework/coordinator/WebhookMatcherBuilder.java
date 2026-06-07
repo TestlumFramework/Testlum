@@ -25,7 +25,7 @@ public class WebhookMatcherBuilder {
         boolean always = matcherStub.isAlways();
         int otherCount = headers.size() + jsons.size() + qParams.size() + paths.size();
         if (otherCount > 0 && always) {
-            throw new DefaultFrameworkException("<always>=\"false\" cannot be combined with other criteria");
+            throw new DefaultFrameworkException("<always>=\"true\" cannot be combined with other criteria");
         }
         if (otherCount == 0 || always) {
             return CorrelationMatcher.always();

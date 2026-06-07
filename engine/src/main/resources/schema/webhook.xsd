@@ -101,7 +101,7 @@
             <x:element name="byJson" type="tns:webhookMatcherJson"/>
             <x:element name="byQueryParam" type="tns:webhookMatcherNameValue"/>
             <x:element name="byEndpoint" type="tns:webhookMatcherEndpoint"/>
-            <x:element name="always" type="x:boolean" default="true"/>
+            <x:element name="always" type="x:boolean" default="false"/>
         </x:choice>
     </x:complexType>
 

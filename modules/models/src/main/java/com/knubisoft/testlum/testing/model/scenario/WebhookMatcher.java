@@ -19,7 +19,7 @@ import java.util.List;
  *     &lt;element name="byJson" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webhookMatcherJson"/&gt;
  *     &lt;element name="byQueryParam" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webhookMatcherNameValue"/&gt;
  *     &lt;element name="byEndpoint" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webhookMatcherEndpoint"/&gt;
- *     &lt;element name="always" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true"/&gt;
+ *     &lt;element name="always" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false"/&gt;
  *   &lt;/choice&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -168,7 +168,7 @@ public class WebhookMatcher {
      */
     public Boolean isAlways() {
         if (always == null) {
-            return true;
+            return false;
         } else {
             return always;
         }

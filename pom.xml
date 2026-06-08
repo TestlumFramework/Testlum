@@ -127,7 +127,7 @@
         <netty-common.version>4.2.12.Final</netty-common.version>
         <netty-buffer.version>4.2.12.Final</netty-buffer.version>
         <netty-transport.version>4.2.12.Final</netty-transport.version>
-        <netty-transport-native-kqueue.version>4.2.12.Final</netty-transport-native-kqueue.version>
+        <netty-transport-native-kqueue.version>4.2.15.Final</netty-transport-native-kqueue.version>
         <netty-transport-native-epoll.version>4.2.12.Final</netty-transport-native-epoll.version>
         <netty-codec.version>4.2.12.Final</netty-codec.version>
         <netty-codec-http.version>4.2.12.Final</netty-codec-http.version>

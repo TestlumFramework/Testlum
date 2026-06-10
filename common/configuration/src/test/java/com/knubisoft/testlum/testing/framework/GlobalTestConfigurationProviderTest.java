@@ -7,7 +7,12 @@ import com.knubisoft.testlum.testing.framework.validator.UiConfigValidator;
 import com.knubisoft.testlum.testing.framework.vault.VaultService;
 import com.knubisoft.testlum.testing.framework.xml.XMLParser;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
-import com.knubisoft.testlum.testing.model.global_config.*;
+import com.knubisoft.testlum.testing.logger.ConfigurationLogger;
+import com.knubisoft.testlum.testing.model.global_config.Environment;
+import com.knubisoft.testlum.testing.model.global_config.Environments;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,6 +35,7 @@ class GlobalTestConfigurationProviderTest {
     private IntegrationsValidator integrationsValidator;
     private InjectionService injectionService;
     private GlobalTestConfigurationProvider provider;
+    private ConfigurationLogger configurationLogger;
 
     @BeforeEach
     void setUp() {
@@ -39,9 +45,10 @@ class GlobalTestConfigurationProviderTest {
         uiConfigValidator = mock(UiConfigValidator.class);
         integrationsValidator = mock(IntegrationsValidator.class);
         injectionService = mock(InjectionService.class);
+        configurationLogger = mock(ConfigurationLogger.class);
         provider = new GlobalTestConfigurationProvider(
                 testResourceSettings, fileSearcher, xmlParsers,
-                uiConfigValidator, integrationsValidator, injectionService);
+                uiConfigValidator, integrationsValidator, injectionService, configurationLogger);
     }
 
     @Nested

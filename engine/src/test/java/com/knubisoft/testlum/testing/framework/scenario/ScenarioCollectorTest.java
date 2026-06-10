@@ -1,11 +1,9 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
-import com.knubisoft.testlum.testing.framework.util.ScenarioInjectionUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.framework.xml.XMLParser;
@@ -51,11 +49,7 @@ class ScenarioCollectorTest {
     @Mock
     private IntegrationsUtil integrationUtil;
     @Mock
-    private FileSearcher fileSearcher;
-    @Mock
     private GlobalVariationsProvider globalVariationsProvider;
-    @Mock
-    private ScenarioInjectionUtil scenarioInjectionUtil;
     @Mock
     private Integrations integrations;
 
@@ -65,8 +59,7 @@ class ScenarioCollectorTest {
     void setUp() {
         collector = new ScenarioCollector(
                 scenarioValidator, xmlParsers, testResourceSettings,
-                integrationUtil, fileSearcher, globalVariationsProvider,
-                scenarioInjectionUtil, integrations);
+                integrationUtil, globalVariationsProvider, integrations);
     }
 
     @Nested

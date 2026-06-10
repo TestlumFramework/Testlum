@@ -40,8 +40,8 @@ class TESTLUMStarterTest {
         }
 
         @Test
-        void hasFourValues() {
-            assertEquals(4, TESTLUMStarter.ExitCode.values().length);
+        void hasFiveValues() {
+            assertEquals(5, TESTLUMStarter.ExitCode.values().length);
         }
 
         @Test

@@ -15,6 +15,13 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>util</module>
+        <module>configuration</module>
+        <module>image</module>
+        <module>locator</module>
+        <module>autohealing</module>
+        <module>executor</module>
+        <module>browser-shared</module>
         <module>web</module>
         <module>native</module>
         <module>mobilebrowser</module>

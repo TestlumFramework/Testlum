@@ -48,6 +48,7 @@ class ExtentReportsConfiguratorTest {
         final HtmlReportGenerator html = new HtmlReportGenerator();
         html.setEnabled(htmlEnabled);
         erConfig.setHtmlReportGenerator(html);
+        erConfig.setOnlyFailedScenarios(true);
         erConfig.setKlovServerReportGenerator(klov);
         report.setExtentReports(erConfig);
         when(globalTestConfiguration.getReport()).thenReturn(report);

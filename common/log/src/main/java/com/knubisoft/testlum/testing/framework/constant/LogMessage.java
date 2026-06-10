@@ -169,6 +169,43 @@ public final class LogMessage {
     public static final String HEAL_RESULT_LOG =
             LogFormat.withGreen("Element was healed successfully. New values for locator {} were generated in {}");
 
+    public static final String SKIPPED_SCENARIOS_TITLE = "Skipped scenarios (not configured to run)";
+    public static final String FAILED_SCENARIOS_TITLE = "Failed scenarios (expected to run but could not)";
+    public static final String INVALID_SCENARIOS_SUMMARY = LogFormat.withRed(
+            "{} scenario(s) were expected to run but failed to load. See the error table above for details."
+    );
+
+    public static final String UI_CONFIG_TABLE_TITLE = "UI Configuration";
+    public static final String UI_CONFIG_TABLE_ENV_ROW = "Environment: %s";
+    public static final String UI_CONFIG_TABLE_WEB_ROW = "Web";
+    public static final String UI_CONFIG_TABLE_NATIVE_ROW = "Native";
+    public static final String UI_CONFIG_TABLE_MOBILE_BROWSER_ROW = "Mobile Browser";
+    public static final String UI_CONFIG_TABLE_BASE_URL_HEADER = "Base URL";
+    public static final String UI_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
+    public static final String UI_CONFIG_TABLE_BROWSER_ALIAS_HEADER = "Aliases";
+    public static final String UI_CONFIG_TABLE_BROWSER_TYPE_HEADER = "Browser Types";
+    public static final String UI_CONFIG_TABLE_DEVICE_ALIAS_HEADER = "Device Aliases";
+    public static final String UI_CONFIG_TABLE_CONNECTION_TYPE_HEADER = "Connection Type";
+    public static final String UI_CONFIG_TABLE_NATIVE_PLATFORM_HEADER = "Platform";
+    public static final String CONNECTION_APPIUM_SERVER = "Appium Server";
+    public static final String CONNECTION_BROWSER_STACK = "BrowserStack";
+    public static final String EMPTY_DELIMITER = " ";
+
+    public static final String INTEGRATION_CONFIG_TABLE_TITLE = "Integrations Configuration";
+    public static final String INTEGRATION_CONFIG_TABLE_ENV_ROW = "Environment: %s";
+    public static final String INTEGRATION_CONFIG_TABLE_NAME_HEADER = "Name";
+    public static final String INTEGRATION_CONFIG_TABLE_ALIAS_HEADER = "Alias";
+    public static final String INTEGRATION_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
+
+    public static final String UI_ELEMENT_DISABLED_EXCEPTION_MESSAGE =
+            "Element is disabled and cannot accept interactions. Check if the '%s' attribute is set on the element";
+    public static final String UI_ELEMENT_IS_NOT_INTERACTABLE_EXCEPTION_MESSAGE =
+            "Element is not interactable: it is covered by another element such as an overlay, modal, or tooltip";
+    public static final String UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE =
+            "Element is not visible: it may have 'display:none' or 'visibility:hidden' applied";
+    public static final String UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE =
+            "Element has zero dimensions and cannot be interacted with";
+
     private LogMessage() {
         // nop
     }

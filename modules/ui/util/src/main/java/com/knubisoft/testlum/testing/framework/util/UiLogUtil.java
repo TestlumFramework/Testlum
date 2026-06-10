@@ -1,0 +1,334 @@
+package com.knubisoft.testlum.testing.framework.util;
+
+import com.knubisoft.testlum.log.Color;
+import com.knubisoft.testlum.log.ColoredText;
+import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.AssertAlert;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
+import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
+import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
+import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
+import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
+import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.FullScreen;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
+import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.MobileImage;
+import com.knubisoft.testlum.testing.model.scenario.NativeImage;
+import com.knubisoft.testlum.testing.model.scenario.Overview;
+import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.Part;
+import com.knubisoft.testlum.testing.model.scenario.Picture;
+import com.knubisoft.testlum.testing.model.scenario.Scroll;
+import com.knubisoft.testlum.testing.model.scenario.ScrollType;
+import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
+import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class UiLogUtil {
+
+    private final BrowserUtil browserUtil;
+    private final MobileUtil mobileUtil;
+    private final StringPrettifier stringPrettifier;
+
+    public void logScenarioDetails(final ScenarioArguments scenarioArguments,
+                                   @Nullable final Exception exception,
+                                   final Color color) {
+        ColoredText text = new ColoredText(color);
+        text.add(DelimiterConstant.EMPTY);
+        text.add(String.format(LogMessage.SCENARIO_NUMBER_AND_PATH_LOG,
+                scenarioArguments.getFile().getAbsolutePath()));
+        addOverviewInfo(text, scenarioArguments.getScenario().getOverview());
+        addUiInfoIfPresent(text, scenarioArguments);
+        addExceptionIfPresent(text, exception);
+        text.info();
+    }
+
+    private void addOverviewInfo(final ColoredText text, final Overview overview) {
+        text.add(formatOverview(OverviewPart.NAME, overview.getName()));
+        text.add(formatOverview(OverviewPart.DESCRIPTION, overview.getDescription()));
+        text.add(formatOverview(OverviewPart.JIRA, overview.getJira()));
+        text.add(formatOverview(OverviewPart.DEVELOPER, overview.getDeveloper()));
+        text.add(formatOverview(OverviewPart.LINK, overview.getLink()));
+    }
+
+    private void addUiInfoIfPresent(final ColoredText text, final ScenarioArguments args) {
+        if (args.isContainsUiSteps()) {
+            text.addAll(getUIInfo(args.getScenario().getSettings().getVariations(),
+                    args.getEnvironment(), args.getBrowser(),
+                    args.getMobileBrowserDevice(), args.getNativeDevice()));
+        }
+    }
+
+    private void addExceptionIfPresent(final ColoredText text, @Nullable final Exception exception) {
+        Optional.ofNullable(exception).ifPresent(e -> {
+            text.add(DelimiterConstant.EMPTY);
+            text.add(e.getMessage());
+            text.add(DelimiterConstant.EMPTY);
+        });
+    }
+
+    private String formatOverview(final OverviewPart overviewPart, final String data) {
+        if (StringUtils.isNotBlank(data)) {
+            return String.format(LogMessage.OVERVIEW_INFO_LOG, overviewPart.value(), data);
+        } else {
+            return null;
+        }
+    }
+
+    private List<String> getUIInfo(final String variation,
+                                   final String environment,
+                                   final String browserAlias,
+                                   final String mobileBrowserAlias,
+                                   final String nativeDeviceAlias) {
+        List<String> messages = new ArrayList<>();
+        if (StringUtils.isNotBlank(variation)) {
+            messages.add(String.format(LogMessage.VARIATION_LOG, variation));
+        }
+        addBrowserInfo(messages, environment, browserAlias);
+        addMobileInfo(messages, environment, mobileBrowserAlias);
+        addNativeInfo(messages, environment, nativeDeviceAlias);
+        return messages;
+    }
+
+    private void addBrowserInfo(final List<String> messages, final String env, final String alias) {
+        browserUtil.getBrowserBy(env, alias).ifPresent(browser ->
+                messages.add(String.format(LogMessage.BROWSER_NAME_LOG, browserUtil.getBrowserInfo(browser))));
+    }
+
+    private void addMobileInfo(final List<String> messages, final String env, final String alias) {
+        mobileUtil.getMobileBrowserDeviceBy(env, alias).ifPresent(device ->
+                messages.add(String.format(LogMessage.MOBILE_BROWSER_LOG,
+                        mobileUtil.getMobileBrowserDeviceInfo(device))));
+    }
+
+    private void addNativeInfo(final List<String> messages, final String env, final String alias) {
+        mobileUtil.getNativeDeviceBy(env, alias).ifPresent(device ->
+                messages.add(String.format(LogMessage.NATIVE_LOG, mobileUtil.getNativeDeviceInfo(device))));
+    }
+
+    public void logUICommand(final long position, final AbstractCommand action) {
+        if (position != 0) {
+            log.info(LogMessage.UI_COMMAND_LOG, position, action.getClass().getSimpleName());
+        } else {
+            log.info(LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION, action.getClass().getSimpleName());
+        }
+        if (StringUtils.isNotBlank(action.getComment())) {
+            log.info(LogMessage.COMMENT_LOG, action.getComment());
+        }
+        if (action instanceof CommandWithLocator commandWithLocator) {
+            log.info(LogMessage.LOCATOR_LOG, commandWithLocator.getLocator());
+        }
+    }
+
+    public void startUiCommandsInFrame() {
+        log.info(LogMessage.START_UI_COMMANDS_IN_FRAME);
+    }
+
+    public void endUiCommandsInFrame() {
+        log.info(LogMessage.END_UI_COMMANDS_IN_FRAME);
+    }
+
+    public void startUiCommandsInWebView() {
+        log.info(LogMessage.START_UI_COMMANDS_IN_WEBVIEW);
+    }
+
+    public void endUiCommandsInWebView() {
+        log.info(LogMessage.END_UI_COMMANDS_IN_WEBVIEW);
+    }
+
+    public void logImageComparisonInfo(final Image image) {
+        log(image.getFile(),
+                image.isHighlightDifference(),
+                image.getPicture(),
+                image.getFullScreen(),
+                image.getPart());
+    }
+
+    public void logImageComparisonInfo(final MobileImage image) {
+        log(image.getFile(),
+                image.isHighlightDifference(),
+                image.getPicture(),
+                image.getFullScreen(),
+                image.getPart());
+    }
+
+    public void logImageComparisonInfo(final NativeImage image) {
+        log(image.getFile(),
+                image.isHighlightDifference(),
+                null,
+                image.getFullScreen(),
+                image.getPart());
+    }
+
+    private void log(final String file,
+                     final boolean isHighlightDifference,
+                     final Picture picture,
+                     final FullScreen fullScreen,
+                     final Part part) {
+        log.info(LogMessage.IMAGE_FOR_COMPARISON_LOG, file);
+        log.info(LogMessage.HIGHLIGHT_DIFFERENCE_LOG, isHighlightDifference);
+        if (Objects.nonNull(picture)) {
+            logCompareWithElementInfo(picture);
+        } else if (Objects.nonNull(fullScreen)) {
+            if (fullScreen instanceof WebFullScreen webFullScreen) {
+                logCompareWithFullscreen(webFullScreen);
+            } else {
+                logCompareWithFullscreen(fullScreen);
+            }
+        } else if (Objects.nonNull(part)) {
+            logCompareWithPart(part);
+        }
+    }
+
+    private void logCompareWithElementInfo(final Picture element) {
+        log.info(LogMessage.IMAGE_COMPARISON_TYPE_LOG, LogMessage.EXTRACT_THEN_COMPARE);
+        log.info(LogMessage.LOCATOR_LOG, element.getLocator());
+        log.info(LogMessage.IMAGE_SOURCE_ATT_LOG, element.getAttribute());
+    }
+
+    private void logCompareWithFullscreen(final WebFullScreen fullScreen) {
+        log.info(LogMessage.IMAGE_COMPARISON_TYPE_LOG, LogMessage.TAKE_SCREENSHOT_THEN_COMPARE);
+        if (Objects.nonNull(fullScreen.getPercentage())) {
+            log.info(LogMessage.IMAGE_MATCH_PERCENTAGE_LOG, fullScreen.getPercentage());
+        }
+        if (!fullScreen.getExclude().isEmpty()) {
+            log.info(LogMessage.IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(fullScreen.getExclude().stream()
+                    .map(ImageComparisonUtil::addExcludedMetaData)
+                    .collect(Collectors.joining(DelimiterConstant.COMMA + DelimiterConstant.SPACE))));
+        }
+    }
+
+    private void logCompareWithFullscreen(final FullScreen fullScreen) {
+        log.info(LogMessage.IMAGE_COMPARISON_TYPE_LOG, LogMessage.TAKE_SCREENSHOT_THEN_COMPARE);
+        if (Objects.nonNull(fullScreen.getPercentage())) {
+            log.info(LogMessage.IMAGE_MATCH_PERCENTAGE_LOG, fullScreen.getPercentage());
+        }
+    }
+
+    private void logCompareWithPart(final Part part) {
+        log.info(LogMessage.IMAGE_COMPARISON_TYPE_LOG, LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
+        log.info(LogMessage.LOCATOR_LOG, part.getLocator());
+        if (Objects.nonNull(part.getPercentage())) {
+            log.info(LogMessage.IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
+        }
+    }
+
+    public void logScrollInfo(final Scroll scroll) {
+        log.info(LogMessage.SCROLL_DIRECTION_LOG, scroll.getDirection());
+        log.info(LogMessage.SCROLL_BY_LOG, scroll.getMeasure());
+        log.info(LogMessage.VALUE_LOG, scroll.getValue());
+        log.info(LogMessage.SCROLL_TYPE, scroll.getType());
+        if (ScrollType.INNER == scroll.getType()) {
+            log.info(LogMessage.SCROLL_LOCATOR, scroll.getLocator());
+            log.info(LogMessage.LOCATOR_STRATEGY, scroll.getLocatorStrategy());
+        }
+    }
+
+    public void logHover(final Hover hover) {
+        if (hover.isMoveToEmptySpace()) {
+            log.info(LogMessage.MOVE_TO_EMPTY_SPACE, hover.isMoveToEmptySpace());
+        }
+    }
+
+    public void logHotKeyInfo(final AbstractUiCommand command, final int position) {
+        log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
+        log.info(LogMessage.COMMENT_LOG, command.getComment());
+    }
+
+    public void logSingleKeyCommandTimes(final int times) {
+        if (times > 1) {
+            log.info(LogMessage.HOTKEY_COMMAND_TIMES, times);
+        }
+    }
+
+    public void logCloseOrSwitchTabCommand(final String command, final Integer tabNumber) {
+        log.info(LogMessage.TAB_COMMAND, command);
+        log.info(LogMessage.TAB_INDEX, Objects.nonNull(tabNumber) ? tabNumber : ResultUtil.LAST_TAB);
+    }
+
+    public void logOpenTabCommand(final String url) {
+        log.info(LogMessage.TAB_COMMAND, ResultUtil.OPEN_TAB);
+        log.info(LogMessage.TAB_URL, StringUtils.isNotBlank(url) ? url : ResultUtil.WITHOUT_URL);
+    }
+
+    public void logAssertCommand(final AbstractCommand command, final int position) {
+        log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
+        log.info(LogMessage.COMMENT_LOG, command.getComment());
+    }
+
+    public void logAssertAttributeInfo(final AssertAttribute attribute) {
+        log.info(LogMessage.NEGATIVE_LOG, attribute.isNegative());
+        log.info(LogMessage.LOCATOR_LOG, attribute.getLocator());
+        log.info(LogMessage.ATTRIBUTE_LOG, attribute.getName());
+        log.info(LogMessage.CONTENT_LOG, stringPrettifier.cut(attribute.getContent()));
+    }
+
+    public void logAssertTitleCommand(final AssertTitle title) {
+        log.info(LogMessage.NEGATIVE_LOG, title.isNegative());
+        log.info(LogMessage.CONTENT_LOG, title.getContent());
+    }
+
+    public void logAssertAlertCommand(final AssertAlert alert) {
+        log.info(LogMessage.NEGATIVE_LOG, alert.isNegative());
+        log.info(LogMessage.CONTENT_LOG, alert.getText());
+    }
+
+    public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
+        if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
+            log.info(LogMessage.DRAGGING_FILE_PATH, dragAndDrop.getFileName());
+        } else if (StringUtils.isNotBlank(dragAndDrop.getFromLocator())) {
+            log.info(LogMessage.DRAGGING_FROM, dragAndDrop.getFromLocator());
+        }
+        log.info(LogMessage.DROPPING_TO, dragAndDrop.getToLocator());
+    }
+
+    public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
+        log.info(LogMessage.DRAGGING_FROM, dragAndDropNative.getFromLocator());
+        log.info(LogMessage.DROPPING_TO, dragAndDropNative.getToLocator());
+    }
+
+    public void logSwipeNativeInfo(final SwipeNative swipeNative) {
+        if (swipeNative.getElement() != null) {
+            log.info(LogMessage.SWIPE_TYPE, "ELEMENT");
+            log.info(LogMessage.SWIPE_QUANTITY, swipeNative.getElement().getQuantity());
+            log.info(LogMessage.SWIPE_DIRECTION, swipeNative.getElement().getDirection());
+            log.info(LogMessage.SWIPE_VALUE, swipeNative.getElement().getPercent());
+            log.info(LogMessage.LOCATOR_LOG, swipeNative.getElement().getLocator());
+        } else {
+            log.info(LogMessage.SWIPE_TYPE, "PAGE");
+            log.info(LogMessage.SWIPE_QUANTITY, swipeNative.getPage().getQuantity());
+            log.info(LogMessage.SWIPE_DIRECTION, swipeNative.getPage().getDirection());
+            log.info(LogMessage.SWIPE_VALUE, swipeNative.getPage().getPercent());
+        }
+    }
+
+    public void logAssertPresent(final AssertPresent command) {
+        log.info(LogMessage.LOCATOR_LOG, command.getLocator());
+        log.info(LogMessage.NEGATIVE_LOG, command.isNegative());
+    }
+
+    public void logAssertChecked(final AssertChecked command) {
+        log.info(LogMessage.LOCATOR_LOG, command.getLocator());
+        log.info(LogMessage.NEGATIVE_LOG, command.isNegative());
+    }
+}

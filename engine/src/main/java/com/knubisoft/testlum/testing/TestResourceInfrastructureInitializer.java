@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing;
 
+import com.knubisoft.testlum.starter.summary.TestExecutionPostProcessor;
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
@@ -20,6 +21,7 @@ public class TestResourceInfrastructureInitializer
             registerBeanDefinition(registry, "testResourceSettings", TestResourceSettings.class, false);
             registerBeanDefinition(registry, "fileSearcher", FileSearcher.class, true);
             registerBeanDefinition(registry, "XMLParsers", XMLParsers.class, false);
+            registerBeanDefinition(registry, "testExecutionPostProcessor", TestExecutionPostProcessor.class, false);
         });
     }
 

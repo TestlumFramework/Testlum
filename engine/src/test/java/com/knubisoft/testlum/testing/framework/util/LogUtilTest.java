@@ -34,10 +34,10 @@ import com.knubisoft.testlum.testing.model.scenario.SwipePage;
 import com.knubisoft.testlum.testing.model.scenario.Web;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import com.knubisoft.testlum.log.Color;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -66,8 +66,14 @@ class LogUtilTest {
     @Mock
     private StringPrettifier stringPrettifier;
 
-    @InjectMocks
     private LogUtil logUtil;
+    private UiLogUtil uiLogUtil;
+
+    @BeforeEach
+    void setUp() {
+        logUtil = new LogUtil(stringPrettifier);
+        uiLogUtil = new UiLogUtil(browserUtil, mobileUtil, stringPrettifier);
+    }
 
     @Nested
     class LogCondition {
@@ -173,21 +179,21 @@ class LogUtilTest {
         void logsUiCommandWithPosition() {
             final AbstractCommand command = mock(AbstractCommand.class);
             when(command.getComment()).thenReturn(null);
-            assertDoesNotThrow(() -> logUtil.logUICommand(1, command));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommand(1, command));
         }
 
         @Test
         void logsUiCommandWithZeroPosition() {
             final AbstractCommand command = mock(AbstractCommand.class);
             when(command.getComment()).thenReturn(null);
-            assertDoesNotThrow(() -> logUtil.logUICommand(0, command));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommand(0, command));
         }
 
         @Test
         void logsUiCommandWithComment() {
             final AbstractCommand command = mock(AbstractCommand.class);
             when(command.getComment()).thenReturn("my comment");
-            assertDoesNotThrow(() -> logUtil.logUICommand(3, command));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommand(3, command));
         }
 
         @Test
@@ -195,14 +201,14 @@ class LogUtilTest {
             final Click click = new Click();
             click.setLocator("myLocator");
             click.setComment("click comment");
-            assertDoesNotThrow(() -> logUtil.logUICommand(5, click));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommand(5, click));
         }
 
         @Test
         void logsUiCommandWithCommandWithLocatorAndNoComment() {
             final Click click = new Click();
             click.setLocator("loc");
-            assertDoesNotThrow(() -> logUtil.logUICommand(2, click));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommand(2, click));
         }
     }
 
@@ -210,22 +216,22 @@ class LogUtilTest {
     class FrameAndWebViewLogs {
         @Test
         void startUiCommandsInFrameDoesNotThrow() {
-            assertDoesNotThrow(() -> logUtil.startUiCommandsInFrame());
+            assertDoesNotThrow(() -> uiLogUtil.startUiCommandsInFrame());
         }
 
         @Test
         void endUiCommandsInFrameDoesNotThrow() {
-            assertDoesNotThrow(() -> logUtil.endUiCommandsInFrame());
+            assertDoesNotThrow(() -> uiLogUtil.endUiCommandsInFrame());
         }
 
         @Test
         void startUiCommandsInWebViewDoesNotThrow() {
-            assertDoesNotThrow(() -> logUtil.startUiCommandsInWebView());
+            assertDoesNotThrow(() -> uiLogUtil.startUiCommandsInWebView());
         }
 
         @Test
         void endUiCommandsInWebViewDoesNotThrow() {
-            assertDoesNotThrow(() -> logUtil.endUiCommandsInWebView());
+            assertDoesNotThrow(() -> uiLogUtil.endUiCommandsInWebView());
         }
     }
 
@@ -242,12 +248,12 @@ class LogUtilTest {
     class LogSingleKeyCommandTimes {
         @Test
         void logsWhenTimesGreaterThanOne() {
-            assertDoesNotThrow(() -> logUtil.logSingleKeyCommandTimes(3));
+            assertDoesNotThrow(() -> uiLogUtil.logSingleKeyCommandTimes(3));
         }
 
         @Test
         void doesNotLogWhenTimesIsOne() {
-            assertDoesNotThrow(() -> logUtil.logSingleKeyCommandTimes(1));
+            assertDoesNotThrow(() -> uiLogUtil.logSingleKeyCommandTimes(1));
         }
     }
 
@@ -284,14 +290,14 @@ class LogUtilTest {
         @Test
         void logsScenarioDetailsWithoutUiStepsAndNoException() {
             ScenarioArguments args = buildArgs(false);
-            assertDoesNotThrow(() -> logUtil.logScenarioDetails(args, null, Color.GREEN));
+            assertDoesNotThrow(() -> uiLogUtil.logScenarioDetails(args, null, Color.GREEN));
         }
 
         @Test
         void logsScenarioDetailsWithException() {
             ScenarioArguments args = buildArgs(false);
             Exception ex = new RuntimeException("test failure");
-            assertDoesNotThrow(() -> logUtil.logScenarioDetails(args, ex, Color.RED));
+            assertDoesNotThrow(() -> uiLogUtil.logScenarioDetails(args, ex, Color.RED));
         }
 
         @Test
@@ -301,7 +307,7 @@ class LogUtilTest {
             when(mobileUtil.getNativeDeviceBy(anyString(), anyString())).thenReturn(Optional.empty());
 
             ScenarioArguments args = buildArgs(true);
-            assertDoesNotThrow(() -> logUtil.logScenarioDetails(args, null, Color.GREEN));
+            assertDoesNotThrow(() -> uiLogUtil.logScenarioDetails(args, null, Color.GREEN));
         }
 
         @Test
@@ -322,7 +328,7 @@ class LogUtilTest {
                     .path("/tmp/test.xml")
                     .build();
 
-            assertDoesNotThrow(() -> logUtil.logScenarioDetails(args, null, Color.YELLOW));
+            assertDoesNotThrow(() -> uiLogUtil.logScenarioDetails(args, null, Color.YELLOW));
         }
     }
 
@@ -339,7 +345,7 @@ class LogUtilTest {
             image.setHighlightDifference(true);
             image.setPicture(picture);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -359,7 +365,7 @@ class LogUtilTest {
             image.setHighlightDifference(false);
             image.setFullScreen(fullScreen);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -370,7 +376,7 @@ class LogUtilTest {
             image.setFile("screen.png");
             image.setFullScreen(fullScreen);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -383,7 +389,7 @@ class LogUtilTest {
             image.setFile("part.png");
             image.setPart(part);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -395,7 +401,7 @@ class LogUtilTest {
             image.setFile("part2.png");
             image.setPart(part);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -403,7 +409,7 @@ class LogUtilTest {
             Image image = new Image();
             image.setFile("empty.png");
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
     }
 
@@ -419,7 +425,7 @@ class LogUtilTest {
             image.setHighlightDifference(true);
             image.setPicture(picture);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -431,7 +437,7 @@ class LogUtilTest {
             image.setFile("mobileFull.png");
             image.setFullScreen(fullScreen);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -442,7 +448,7 @@ class LogUtilTest {
             image.setFile("mobileFull2.png");
             image.setFullScreen(fullScreen);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -455,7 +461,7 @@ class LogUtilTest {
             image.setFile("mobilePart.png");
             image.setPart(part);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -463,7 +469,7 @@ class LogUtilTest {
             MobileImage image = new MobileImage();
             image.setFile("mobileEmpty.png");
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
     }
 
@@ -479,7 +485,7 @@ class LogUtilTest {
             image.setHighlightDifference(true);
             image.setFullScreen(fullScreen);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -490,7 +496,7 @@ class LogUtilTest {
             image.setFile("nativeFull.png");
             image.setFullScreen(fullScreen);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -503,7 +509,7 @@ class LogUtilTest {
             image.setFile("nativePart.png");
             image.setPart(part);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -515,7 +521,7 @@ class LogUtilTest {
             image.setFile("nativePart2.png");
             image.setPart(part);
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
 
         @Test
@@ -523,7 +529,7 @@ class LogUtilTest {
             NativeImage image = new NativeImage();
             image.setFile("nativeEmpty.png");
 
-            assertDoesNotThrow(() -> logUtil.logImageComparisonInfo(image));
+            assertDoesNotThrow(() -> uiLogUtil.logImageComparisonInfo(image));
         }
     }
 
@@ -537,7 +543,7 @@ class LogUtilTest {
             scroll.setValue(500);
             scroll.setMeasure(ScrollMeasure.PIXEL);
 
-            assertDoesNotThrow(() -> logUtil.logScrollInfo(scroll));
+            assertDoesNotThrow(() -> uiLogUtil.logScrollInfo(scroll));
         }
 
         @Test
@@ -549,7 +555,7 @@ class LogUtilTest {
             scroll.setLocator("scrollContainer");
             scroll.setLocatorStrategy(null);
 
-            assertDoesNotThrow(() -> logUtil.logScrollInfo(scroll));
+            assertDoesNotThrow(() -> uiLogUtil.logScrollInfo(scroll));
         }
     }
 
@@ -561,7 +567,7 @@ class LogUtilTest {
             hover.setMoveToEmptySpace(true);
             hover.setLocator("hoverEl");
 
-            assertDoesNotThrow(() -> logUtil.logHover(hover));
+            assertDoesNotThrow(() -> uiLogUtil.logHover(hover));
         }
 
         @Test
@@ -570,7 +576,7 @@ class LogUtilTest {
             hover.setMoveToEmptySpace(false);
             hover.setLocator("hoverEl");
 
-            assertDoesNotThrow(() -> logUtil.logHover(hover));
+            assertDoesNotThrow(() -> uiLogUtil.logHover(hover));
         }
 
         @Test
@@ -578,7 +584,7 @@ class LogUtilTest {
             Hover hover = new Hover();
             hover.setLocator("hoverEl");
 
-            assertDoesNotThrow(() -> logUtil.logHover(hover));
+            assertDoesNotThrow(() -> uiLogUtil.logHover(hover));
         }
     }
 
@@ -589,7 +595,7 @@ class LogUtilTest {
             AbstractUiCommand command = mock(AbstractUiCommand.class);
             when(command.getComment()).thenReturn("hotkey comment");
 
-            assertDoesNotThrow(() -> logUtil.logHotKeyInfo(command, 1));
+            assertDoesNotThrow(() -> uiLogUtil.logHotKeyInfo(command, 1));
         }
 
         @Test
@@ -597,7 +603,7 @@ class LogUtilTest {
             AbstractUiCommand command = mock(AbstractUiCommand.class);
             when(command.getComment()).thenReturn(null);
 
-            assertDoesNotThrow(() -> logUtil.logHotKeyInfo(command, 0));
+            assertDoesNotThrow(() -> uiLogUtil.logHotKeyInfo(command, 0));
         }
     }
 
@@ -605,12 +611,12 @@ class LogUtilTest {
     class LogCloseOrSwitchTabCommand {
         @Test
         void logsWithTabNumber() {
-            assertDoesNotThrow(() -> logUtil.logCloseOrSwitchTabCommand("Switch", 2));
+            assertDoesNotThrow(() -> uiLogUtil.logCloseOrSwitchTabCommand("Switch", 2));
         }
 
         @Test
         void logsWithNullTabNumber() {
-            assertDoesNotThrow(() -> logUtil.logCloseOrSwitchTabCommand("Close", null));
+            assertDoesNotThrow(() -> uiLogUtil.logCloseOrSwitchTabCommand("Close", null));
         }
     }
 
@@ -618,17 +624,17 @@ class LogUtilTest {
     class LogOpenTabCommand {
         @Test
         void logsWithUrl() {
-            assertDoesNotThrow(() -> logUtil.logOpenTabCommand("https://example.com"));
+            assertDoesNotThrow(() -> uiLogUtil.logOpenTabCommand("https://example.com"));
         }
 
         @Test
         void logsWithBlankUrl() {
-            assertDoesNotThrow(() -> logUtil.logOpenTabCommand(""));
+            assertDoesNotThrow(() -> uiLogUtil.logOpenTabCommand(""));
         }
 
         @Test
         void logsWithNullUrl() {
-            assertDoesNotThrow(() -> logUtil.logOpenTabCommand(null));
+            assertDoesNotThrow(() -> uiLogUtil.logOpenTabCommand(null));
         }
     }
 
@@ -639,7 +645,7 @@ class LogUtilTest {
             AbstractCommand command = mock(AbstractCommand.class);
             when(command.getComment()).thenReturn("assert comment");
 
-            assertDoesNotThrow(() -> logUtil.logAssertCommand(command, 1));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertCommand(command, 1));
         }
 
         @Test
@@ -647,7 +653,7 @@ class LogUtilTest {
             AbstractCommand command = mock(AbstractCommand.class);
             when(command.getComment()).thenReturn(null);
 
-            assertDoesNotThrow(() -> logUtil.logAssertCommand(command, 5));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertCommand(command, 5));
         }
     }
 
@@ -663,7 +669,7 @@ class LogUtilTest {
             attribute.setName("class");
             attribute.setContent("expectedContent");
 
-            assertDoesNotThrow(() -> logUtil.logAssertAttributeInfo(attribute));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertAttributeInfo(attribute));
         }
 
         @Test
@@ -676,7 +682,7 @@ class LogUtilTest {
             attribute.setName("data-id");
             attribute.setContent("val");
 
-            assertDoesNotThrow(() -> logUtil.logAssertAttributeInfo(attribute));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertAttributeInfo(attribute));
         }
     }
 
@@ -688,7 +694,7 @@ class LogUtilTest {
             title.setNegative(false);
             title.setContent("Page Title");
 
-            assertDoesNotThrow(() -> logUtil.logAssertTitleCommand(title));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertTitleCommand(title));
         }
 
         @Test
@@ -697,7 +703,7 @@ class LogUtilTest {
             title.setNegative(true);
             title.setContent("Not This Title");
 
-            assertDoesNotThrow(() -> logUtil.logAssertTitleCommand(title));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertTitleCommand(title));
         }
     }
 
@@ -709,7 +715,7 @@ class LogUtilTest {
             alert.setNegative(false);
             alert.setText("Alert text");
 
-            assertDoesNotThrow(() -> logUtil.logAssertAlertCommand(alert));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertAlertCommand(alert));
         }
 
         @Test
@@ -718,7 +724,7 @@ class LogUtilTest {
             alert.setNegative(true);
             alert.setText("Not this alert");
 
-            assertDoesNotThrow(() -> logUtil.logAssertAlertCommand(alert));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertAlertCommand(alert));
         }
     }
 
@@ -730,7 +736,7 @@ class LogUtilTest {
             dragAndDrop.setFileName("file.txt");
             dragAndDrop.setToLocator("dropTarget");
 
-            assertDoesNotThrow(() -> logUtil.logDragAndDropInfo(dragAndDrop));
+            assertDoesNotThrow(() -> uiLogUtil.logDragAndDropInfo(dragAndDrop));
         }
 
         @Test
@@ -739,7 +745,7 @@ class LogUtilTest {
             dragAndDrop.setFromLocator("sourceLocator");
             dragAndDrop.setToLocator("targetLocator");
 
-            assertDoesNotThrow(() -> logUtil.logDragAndDropInfo(dragAndDrop));
+            assertDoesNotThrow(() -> uiLogUtil.logDragAndDropInfo(dragAndDrop));
         }
 
         @Test
@@ -747,7 +753,7 @@ class LogUtilTest {
             DragAndDrop dragAndDrop = new DragAndDrop();
             dragAndDrop.setToLocator("target");
 
-            assertDoesNotThrow(() -> logUtil.logDragAndDropInfo(dragAndDrop));
+            assertDoesNotThrow(() -> uiLogUtil.logDragAndDropInfo(dragAndDrop));
         }
     }
 
@@ -759,7 +765,7 @@ class LogUtilTest {
             dragAndDropNative.setFromLocator("nativeFrom");
             dragAndDropNative.setToLocator("nativeTo");
 
-            assertDoesNotThrow(() -> logUtil.logDragAndDropNativeInfo(dragAndDropNative));
+            assertDoesNotThrow(() -> uiLogUtil.logDragAndDropNativeInfo(dragAndDropNative));
         }
     }
 
@@ -776,7 +782,7 @@ class LogUtilTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(element);
 
-            assertDoesNotThrow(() -> logUtil.logSwipeNativeInfo(swipeNative));
+            assertDoesNotThrow(() -> uiLogUtil.logSwipeNativeInfo(swipeNative));
         }
 
         @Test
@@ -789,7 +795,7 @@ class LogUtilTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setPage(page);
 
-            assertDoesNotThrow(() -> logUtil.logSwipeNativeInfo(swipeNative));
+            assertDoesNotThrow(() -> uiLogUtil.logSwipeNativeInfo(swipeNative));
         }
     }
 
@@ -801,7 +807,7 @@ class LogUtilTest {
             command.setLocator("presentLocator");
             command.setNegative(false);
 
-            assertDoesNotThrow(() -> logUtil.logAssertPresent(command));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertPresent(command));
         }
 
         @Test
@@ -810,7 +816,7 @@ class LogUtilTest {
             command.setLocator("notPresentLocator");
             command.setNegative(true);
 
-            assertDoesNotThrow(() -> logUtil.logAssertPresent(command));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertPresent(command));
         }
     }
 
@@ -822,7 +828,7 @@ class LogUtilTest {
             command.setLocator("checkedLocator");
             command.setNegative(false);
 
-            assertDoesNotThrow(() -> logUtil.logAssertChecked(command));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertChecked(command));
         }
 
         @Test
@@ -831,7 +837,7 @@ class LogUtilTest {
             command.setLocator("uncheckedLocator");
             command.setNegative(true);
 
-            assertDoesNotThrow(() -> logUtil.logAssertChecked(command));
+            assertDoesNotThrow(() -> uiLogUtil.logAssertChecked(command));
         }
     }
 }

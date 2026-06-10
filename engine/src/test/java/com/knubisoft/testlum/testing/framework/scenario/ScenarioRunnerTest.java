@@ -90,6 +90,7 @@ class ScenarioRunnerTest {
         logUtil = mock(LogUtil.class);
         scanner = mock(InterpreterScanner.class);
         config = mock(GlobalTestConfiguration.class);
+        final WebDownloadUtil webDownloadUtil = mock(WebDownloadUtil.class);
 
         when(ctx.getBean(ResultUtil.class)).thenReturn(resultUtil);
         when(ctx.getBean(MobileUtil.class)).thenReturn(mobileUtil);
@@ -101,6 +102,7 @@ class ScenarioRunnerTest {
         when(ctx.getBean(LogUtil.class)).thenReturn(logUtil);
         when(ctx.getBean(InterpreterScanner.class)).thenReturn(scanner);
         when(ctx.getBean(GlobalTestConfiguration.class)).thenReturn(config);
+        when(ctx.getBean(WebDownloadUtil.class)).thenReturn(webDownloadUtil);
 
         when(scanner.getInterpreters()).thenReturn(new CommandToInterpreterClassMap());
         when(config.isStopScenarioOnFailure()).thenReturn(false);

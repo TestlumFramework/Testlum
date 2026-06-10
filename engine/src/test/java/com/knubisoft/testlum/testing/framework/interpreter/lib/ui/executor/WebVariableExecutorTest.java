@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.model.scenario.ElementAttribute;
 import com.knubisoft.testlum.testing.model.scenario.ElementPresent;
@@ -125,7 +126,8 @@ class WebVariableExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getAttribute("outerHTML")).thenReturn("<div>content</div>");
-            when(uiUtil.findWebElement(any(), eq("main-content"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("main-content"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
                 @SuppressWarnings("unchecked")
@@ -231,7 +233,8 @@ class WebVariableExecutorTest {
             webVar.setElement(fromElement);
 
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("my-link"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("my-link"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
             when(uiUtil.getElementAttribute(eq(element), eq("href"), eq(driver))).thenReturn("/path/to");
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {

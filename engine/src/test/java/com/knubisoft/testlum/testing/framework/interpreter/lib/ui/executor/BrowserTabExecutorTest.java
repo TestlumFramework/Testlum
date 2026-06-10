@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.BrowserTab;
@@ -41,6 +42,8 @@ class BrowserTabExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private ApplicationContext context;
 
     private BrowserTabExecutor createExecutor(final WebDriver driver, final UiType uiType) {
@@ -56,6 +59,7 @@ class BrowserTabExecutorTest {
         ReflectionTestUtils.setField(exec, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(exec, "javascriptUtil", javascriptUtil);
         ReflectionTestUtils.setField(exec, "logUtil", logUtil);
+        ReflectionTestUtils.setField(exec, "uiLogUtil", uiLogUtil);
         return exec;
     }
 
@@ -133,7 +137,7 @@ class BrowserTabExecutorTest {
             executor.execute(browserTab, result);
 
             verify(javascriptUtil).executeJsScript(eq("window.open()"), eq(driver));
-            verify(logUtil).logOpenTabCommand(any());
+            verify(uiLogUtil).logOpenTabCommand(any());
         }
     }
 
@@ -152,7 +156,7 @@ class BrowserTabExecutorTest {
 
             executor.execute(browserTab, result);
 
-            verify(logUtil).logCloseOrSwitchTabCommand(eq(ResultUtil.CLOSE_TAB), any());
+            verify(uiLogUtil).logCloseOrSwitchTabCommand(eq(ResultUtil.CLOSE_TAB), any());
         }
 
         @Test
@@ -214,7 +218,7 @@ class BrowserTabExecutorTest {
 
             executor.execute(browserTab, result);
 
-            verify(logUtil).logCloseOrSwitchTabCommand(eq(ResultUtil.SWITCH_TAB), any());
+            verify(uiLogUtil).logCloseOrSwitchTabCommand(eq(ResultUtil.SWITCH_TAB), any());
         }
 
         @Test

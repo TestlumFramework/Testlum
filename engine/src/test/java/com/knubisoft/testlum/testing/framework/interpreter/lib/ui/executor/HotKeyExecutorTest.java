@@ -4,8 +4,10 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.model.scenario.BackSpace;
 import com.knubisoft.testlum.testing.model.scenario.Copy;
 import com.knubisoft.testlum.testing.model.scenario.Cut;
@@ -48,6 +50,8 @@ class HotKeyExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private UiUtil uiUtil;
     @Mock
     private InteractiveWebDriver driver;
@@ -67,6 +71,7 @@ class HotKeyExecutorTest {
         executor = new HotKeyExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
     }
 
@@ -86,7 +91,7 @@ class HotKeyExecutorTest {
             executor.execute(hotKey, result);
 
             assertNotNull(result.getSubCommandsResult());
-            verify(logUtil).logHotKeyInfo(any(), anyInt());
+            verify(uiLogUtil).logHotKeyInfo(any(), anyInt());
         }
 
         @Test
@@ -157,12 +162,13 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("input-field"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             executor.execute(hotKey, result);
 
             assertNotNull(result.getSubCommandsResult());
-            verify(uiUtil).findWebElement(any(), eq("input-field"), any());
+            verify(uiUtil).findWebElement(any(), eq("input-field"), any(), any(AbstractElementCheck[].class));
         }
 
         @Test
@@ -197,11 +203,12 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("text-area"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("text-area"), any(), any(AbstractElementCheck[].class)))
+                    .thenReturn(element);
 
             executor.execute(hotKey, result);
 
-            verify(uiUtil).findWebElement(any(), eq("text-area"), any());
+            verify(uiUtil).findWebElement(any(), eq("text-area"), any(), any(AbstractElementCheck[].class));
         }
 
         @Test
@@ -239,7 +246,7 @@ class HotKeyExecutorTest {
             executor.execute(hotKey, result);
 
             verify(resultUtil).addSingleKeyCommandMetaData(eq(2), eq(subResult));
-            verify(logUtil).logSingleKeyCommandTimes(2);
+            verify(uiLogUtil).logSingleKeyCommandTimes(2);
         }
 
         @Test

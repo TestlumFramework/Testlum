@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.starter;
 
+import com.knubisoft.testlum.starter.summary.TestExecutionPostProcessor;
 import com.knubisoft.testlum.testing.RootTest;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy;
@@ -18,11 +19,6 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -30,6 +26,7 @@ public class TestRunner implements CommandLineRunner {
 
     private final XMLParsers xmlParsers;
     private final TestResourceSettings testResourceSettings;
+    private final TestExecutionPostProcessor testExecutionPostProcessor;
 
     @Override
     public void run(final String... args) {
@@ -110,30 +107,9 @@ public class TestRunner implements CommandLineRunner {
      *
      * @param summary the test execution summary containing results
      */
-    private static void formatMessageAndExitCode(final TestExecutionSummary summary) {
+    private void formatMessageAndExitCode(final TestExecutionSummary summary) {
         TESTLUMStarter.ExitCode exitCode = TESTLUMStarter.getExitCode(summary);
-
-        log.info("Execution status [{}]", exitCode.getMessage());
-        log.info(toString(summary::printTo).lines().filter(line ->
-                        !line.contains("container"))
-                .collect(Collectors.joining(System.lineSeparator())));
-        if (summary.getTestsFailedCount() > 0 || summary.getFailures() != null && !summary.getFailures().isEmpty()) {
-            log.error(toString(summary::printFailuresTo));
-        }
-
+        testExecutionPostProcessor.process(summary, exitCode.getLogColor(), exitCode.getMessage());
         System.exit(exitCode.getExitCode());
-    }
-
-    /**
-     * Converts a PrintWriter consumer output to a String.
-     *
-     * @param writer consumer that writes to a PrintWriter
-     * @return the written content as a string
-     */
-    private static String toString(final Consumer<PrintWriter> writer) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        writer.accept(printWriter);
-        return stringWriter.toString();
     }
 }

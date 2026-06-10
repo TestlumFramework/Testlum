@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.*;
+import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Part;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
@@ -43,6 +44,8 @@ class CompareImageExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private FileSearcher fileSearcher;
     @Mock
     private ImageComparisonUtil imageComparisonUtil;
@@ -71,6 +74,7 @@ class CompareImageExecutorTest {
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "fileSearcher", fileSearcher);
         ReflectionTestUtils.setField(executor, "imageComparisonUtil", imageComparisonUtil);
         ReflectionTestUtils.setField(executor, "imageComparator", imageComparator);
@@ -115,7 +119,7 @@ class CompareImageExecutorTest {
                 // Expected since we cannot provide real image files in unit tests
             }
 
-            verify(logUtil).logImageComparisonInfo(image);
+            verify(uiLogUtil).logImageComparisonInfo(image);
             verify(resultUtil).addImageComparisonMetaData(image, result);
         }
 
@@ -164,8 +168,8 @@ class CompareImageExecutorTest {
             when(fileSearcher.searchFileFromDir(any(), eq("expected.png"))).thenReturn(tempFile);
 
             WebElement partElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("partLocator"), any()))
-                    .thenReturn(partElement);
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("partLocator"), any(),
+                    any(AbstractElementCheck[].class))).thenReturn(partElement);
 
             File partScreenshot = File.createTempFile("part-screenshot", ".png");
             partScreenshot.deleteOnExit();

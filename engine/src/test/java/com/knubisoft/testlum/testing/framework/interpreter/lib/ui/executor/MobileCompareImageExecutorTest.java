@@ -40,6 +40,8 @@ class MobileCompareImageExecutorTest {
     @Mock
     private LogUtil logUtil;
     @Mock
+    private UiLogUtil uiLogUtil;
+    @Mock
     private UiUtil uiUtil;
     @Mock
     private ImageComparator imageComparator;
@@ -68,6 +70,7 @@ class MobileCompareImageExecutorTest {
         executor = new MobileCompareImageExecutor(deps);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
         ReflectionTestUtils.setField(executor, "imageComparisonUtil", imageComparisonUtil);
         ReflectionTestUtils.setField(executor, "fileSearcher", fileSearcher);
@@ -127,7 +130,7 @@ class MobileCompareImageExecutorTest {
                 // Expected since we cannot provide real image files
             }
 
-            verify(logUtil).logImageComparisonInfo(image);
+            verify(uiLogUtil).logImageComparisonInfo(image);
             verify(resultUtil).addImageComparisonMetaData(image, result);
         }
 
@@ -179,6 +182,7 @@ class MobileCompareImageExecutorTest {
             MobileCompareImageExecutor androidExecutor = new MobileCompareImageExecutor(deps);
             ReflectionTestUtils.setField(androidExecutor, "resultUtil", resultUtil);
             ReflectionTestUtils.setField(androidExecutor, "logUtil", logUtil);
+        ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
             ReflectionTestUtils.setField(androidExecutor, "uiUtil", uiUtil);
             ReflectionTestUtils.setField(androidExecutor, "imageComparisonUtil", imageComparisonUtil);
             ReflectionTestUtils.setField(androidExecutor, "fileSearcher", fileSearcher);

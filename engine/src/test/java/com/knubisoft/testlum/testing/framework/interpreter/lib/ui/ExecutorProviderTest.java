@@ -144,9 +144,11 @@ class ExecutorProviderTest {
         when(ctx.getBean(ConfigUtil.class)).thenReturn(mock(ConfigUtil.class));
         when(ctx.getBean(FileSearcher.class)).thenReturn(mock(FileSearcher.class));
         when(ctx.getBean(LogUtil.class)).thenReturn(mock(LogUtil.class));
+        when(ctx.getBean(UiLogUtil.class)).thenReturn(mock(UiLogUtil.class));
         when(ctx.getBean(ScenarioInjectionUtil.class)).thenReturn(mock(ScenarioInjectionUtil.class));
         when(ctx.getBean(JacksonService.class)).thenReturn(mock(JacksonService.class));
         when(ctx.getBean(StringPrettifier.class)).thenReturn(mock(StringPrettifier.class));
+        when(ctx.getBean(WebDownloadUtil.class)).thenReturn(mock(WebDownloadUtil.class));
         return deps;
     }
 
@@ -184,7 +186,7 @@ class ExecutorProviderTest {
      */
     public static class BadExecutor extends AbstractUiExecutor<TestUiCommand> {
         BadExecutor() {
-            super(null, null, null, null, null, null, null, null, null, null, null, null, null);
+            super(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         }
 
         @Override

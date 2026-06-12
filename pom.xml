@@ -67,7 +67,7 @@
 
         <mongodb-driver-sync.version>5.5.1</mongodb-driver-sync.version>
         <mysql-connector-j.version>9.6.0</mysql-connector-j.version>
-        <spring-kafka.version>4.0.4</spring-kafka.version>
+        <spring-kafka.version>4.0.6</spring-kafka.version>
         <postgresql.driver.version>42.7.10</postgresql.driver.version>
         <oracle.database.ojdbc11>23.26.1.0.0</oracle.database.ojdbc11>
         <maria.driver.version>3.5.7</maria.driver.version>

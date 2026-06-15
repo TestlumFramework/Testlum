@@ -33,7 +33,8 @@ import jakarta.xml.bind.annotation.XmlType;
     "expression",
     "sql",
     "generate",
-    "date"
+    "date",
+    "otp"
 })
 public class Var
     extends AbstractCommand
@@ -46,6 +47,7 @@ public class Var
     protected FromSQL sql;
     protected FromRandomGenerate generate;
     protected FromDate date;
+    protected FromOtp otp;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -215,6 +217,30 @@ public class Var
      */
     public void setDate(FromDate value) {
         this.date = value;
+    }
+
+    /**
+     * Gets the value of the otp property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromOtp }
+     *     
+     */
+    public FromOtp getOtp() {
+        return otp;
+    }
+
+    /**
+     * Sets the value of the otp property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromOtp }
+     *     
+     */
+    public void setOtp(FromOtp value) {
+        this.otp = value;
     }
 
     /**

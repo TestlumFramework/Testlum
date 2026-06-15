@@ -37,6 +37,7 @@ import jakarta.xml.bind.annotation.XmlType;
     "sql",
     "generate",
     "date",
+    "otp",
     "element"
 })
 public class NativeVar
@@ -50,6 +51,7 @@ public class NativeVar
     protected FromSQL sql;
     protected FromRandomGenerate generate;
     protected FromDate date;
+    protected FromOtp otp;
     protected FromElement element;
     @XmlAttribute(name = "name", required = true)
     protected String name;
@@ -220,6 +222,30 @@ public class NativeVar
      */
     public void setDate(FromDate value) {
         this.date = value;
+    }
+
+    /**
+     * Gets the value of the otp property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromOtp }
+     *     
+     */
+    public FromOtp getOtp() {
+        return otp;
+    }
+
+    /**
+     * Sets the value of the otp property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromOtp }
+     *     
+     */
+    public void setOtp(FromOtp value) {
+        this.otp = value;
     }
 
     /**

@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -65,7 +66,12 @@ public class KafkaOperation extends AbstractStorageOperation {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new DefaultFrameworkException(e);
-        } catch (ExecutionException | TimeoutException e) {
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof UnknownTopicOrPartitionException) {
+                return;
+            }
+            throw new DefaultFrameworkException(e);
+        } catch (TimeoutException e) {
             throw new DefaultFrameworkException(e);
         }
     }

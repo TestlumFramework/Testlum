@@ -17,6 +17,7 @@ import org.openqa.selenium.remote.LocalFileDetector;
 import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.File;
+import java.time.Duration;
 
 @ExecutorForClass(DragAndDrop.class)
 public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
@@ -46,8 +47,11 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     private void dropElement(final WebElement target, final WebElement source) {
         Actions action = new Actions(driver);
-        action.dragAndDrop(source, target)
-                .build()
+        action.clickAndHold(source)
+                .moveByOffset(1, 1)
+                .pause(Duration.ofMillis(300))
+                .moveToElement(target)
+                .release(target)
                 .perform();
     }
 

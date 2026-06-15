@@ -22,6 +22,9 @@ import java.time.Duration;
 @ExecutorForClass(DragAndDrop.class)
 public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
+    private static final int DRAG_AND_DROP_OFFSET = 1;
+    private static final int DRAG_AND_DROP_TIMEOUT_MS = 300;
+
     private final WebDriver driver;
 
     public DragAndDropExecutor(final ExecutorDependencies dependencies) {
@@ -48,8 +51,8 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
     private void dropElement(final WebElement target, final WebElement source) {
         Actions action = new Actions(driver);
         action.clickAndHold(source)
-                .moveByOffset(1, 1)
-                .pause(Duration.ofMillis(300))
+                .moveByOffset(DRAG_AND_DROP_OFFSET, DRAG_AND_DROP_OFFSET)
+                .pause(Duration.ofMillis(DRAG_AND_DROP_TIMEOUT_MS))
                 .moveToElement(target)
                 .release(target)
                 .perform();

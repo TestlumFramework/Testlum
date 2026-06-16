@@ -130,7 +130,7 @@
         <netty-transport-native-kqueue.version>4.2.12.Final</netty-transport-native-kqueue.version>
         <netty-transport-native-epoll.version>4.2.12.Final</netty-transport-native-epoll.version>
         <netty-codec.version>4.2.12.Final</netty-codec.version>
-        <netty-codec-http.version>4.2.12.Final</netty-codec-http.version>
+        <netty-codec-http.version>4.2.15.Final</netty-codec-http.version>
         <netty-reactive-streams.version>2.0.17</netty-reactive-streams.version>
         <extent-reports.version>5.1.2</extent-reports.version>
         <klov-reporter.version>5.1.0</klov-reporter.version>

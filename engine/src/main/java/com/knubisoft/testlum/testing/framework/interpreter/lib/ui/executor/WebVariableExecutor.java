@@ -51,6 +51,7 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
         map.put(var -> Objects.nonNull(var.getSql()), (v, r) -> getSQLResult(v, r, v.getSql()));
         map.put(var -> Objects.nonNull(var.getGenerate()), (v, r) -> getRandomGenerateResult(v, r, v.getGenerate()));
         map.put(var -> Objects.nonNull(var.getDate()), (v, r) -> getDateResult(v, r, v.getDate()));
+        map.put(var -> Objects.nonNull(var.getOtp()), (v, r) -> getOtpResult(v, r, v.getOtp()));
     }
 
     @Override

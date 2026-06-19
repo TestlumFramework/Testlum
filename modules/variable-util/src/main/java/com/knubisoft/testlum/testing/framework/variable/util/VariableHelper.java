@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.model.scenario.FromPath;
 import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.FromAlert;
+import com.knubisoft.testlum.testing.model.scenario.FromOtp;
 import org.openqa.selenium.Alert;
 
 import java.util.Map;
@@ -39,6 +40,8 @@ public interface VariableHelper {
     String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result);
 
     String getDateResult(FromDate fromDate, String varName, CommandResult result);
+
+    String getOtpResult(FromOtp fromOtp, String resolvedSecretKey, String varName, CommandResult result);
 
     interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
 

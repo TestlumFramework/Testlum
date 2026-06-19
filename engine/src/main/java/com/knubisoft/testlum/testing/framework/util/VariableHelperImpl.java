@@ -22,6 +22,7 @@ import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.FromDate;
 import com.knubisoft.testlum.testing.model.scenario.FromAlert;
+import com.knubisoft.testlum.testing.model.scenario.FromOtp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.cornutum.regexpgen.RandomGen;
@@ -76,6 +77,7 @@ public class VariableHelperImpl implements VariableHelper {
     private final AliasToStorageOperation aliasToStorageOperation;
     private final ResultUtil resultUtil;
     private final LogUtil logUtil;
+    private final OtpGenerator otpGenerator;
 
     public VariableHelperImpl(final ApplicationContext ctx) {
         RandomStringUtils util = RandomStringUtils.secure();
@@ -87,6 +89,7 @@ public class VariableHelperImpl implements VariableHelper {
         this.aliasToStorageOperation = ctx.getBean(AliasToStorageOperation.class);
         this.resultUtil = ctx.getBean(ResultUtil.class);
         this.logUtil = ctx.getBean(LogUtil.class);
+        this.otpGenerator = ctx.getBean(OtpGenerator.class);
     }
 
     @Override
@@ -263,6 +266,15 @@ public class VariableHelperImpl implements VariableHelper {
         ZonedDateTime calculatedDateTime = calculateDateTime(fromDate, dateFormatPattern, dateTimeFormatter, zoneId);
         return formatAndRegisterResult(calculatedDateTime, dateTimeFormatter,
                 variableName, dateFormatPattern, commandResult);
+    }
+
+    @Override
+    public String getOtpResult(final FromOtp fromOtp, final String resolvedSecretKey,
+                               final String varName, final CommandResult result) {
+        String valueResult = otpGenerator.generateOtp(resolvedSecretKey);
+        resultUtil.addVariableMetaData(ResultUtil.GENERATED_STRING, varName,
+                ResultUtil.NO_EXPRESSION, valueResult, result);
+        return valueResult;
     }
 
     private ZonedDateTime calculateDateTime(final FromDate fromDate, final String dateFormatPattern,

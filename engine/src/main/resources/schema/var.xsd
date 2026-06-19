@@ -59,7 +59,6 @@
 
     <x:complexType name="fromOtp">
         <x:attribute name="secretKey" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="comment" type="tns:stringMin10"/>
     </x:complexType>
 
     <x:complexType name="fromFile">

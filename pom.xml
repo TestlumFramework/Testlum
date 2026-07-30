@@ -74,7 +74,7 @@
         <com.clickhouse.version>0.9.8</com.clickhouse.version>
         <sendgrid-java.version>4.10.3</sendgrid-java.version>
         <selenium-java.version>4.41.0</selenium-java.version>
-        <appium-client.version>10.1.0</appium-client.version>
+        <appium-client.version>10.1.1</appium-client.version>
         <webdrivermanager.version>6.3.3</webdrivermanager.version>
         <elasticsearch-rest-client.version>7.17.28</elasticsearch-rest-client.version>
 

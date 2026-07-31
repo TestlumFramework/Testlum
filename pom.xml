@@ -103,7 +103,7 @@
         <org.jsoup.version>1.22.1</org.jsoup.version>
         <HikariCP.version>7.0.2</HikariCP.version>
         <org.spring.boot.version>4.0.5</org.spring.boot.version>
-        <org.spring.version>7.0.6</org.spring.version>
+        <org.spring.version>7.0.8</org.spring.version>
         <io.jsonwebtoken.version>0.13.0</io.jsonwebtoken.version>
         <json-smart.version>2.6.0</json-smart.version>
         <jackson.version>3.1.1</jackson.version>

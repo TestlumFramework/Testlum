@@ -121,7 +121,7 @@
         <org.junit.jupiter.version>6.0.3</org.junit.jupiter.version>
         <org.slf4j.api.version>2.0.17</org.slf4j.api.version>
         <com.opencsv.version>5.12.0</com.opencsv.version>
-        <io.micrometer.version>1.16.4</io.micrometer.version>
+        <io.micrometer.version>1.16.6</io.micrometer.version>
         <jedis.version>7.4.0</jedis.version>
         <netty-handler.version>4.2.12.Final</netty-handler.version>
         <netty-common.version>4.2.12.Final</netty-common.version>

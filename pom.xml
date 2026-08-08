@@ -100,7 +100,7 @@
         <apache.commons.text.version>1.15.0</apache.commons.text.version>
         <commons-dbutils.version>1.8.1</commons-dbutils.version>
         <commons-codec.version>1.21.0</commons-codec.version>
-        <org.jsoup.version>1.22.1</org.jsoup.version>
+        <org.jsoup.version>1.23.1</org.jsoup.version>
         <HikariCP.version>7.0.2</HikariCP.version>
         <org.spring.boot.version>4.0.5</org.spring.boot.version>
         <org.spring.version>7.0.6</org.spring.version>

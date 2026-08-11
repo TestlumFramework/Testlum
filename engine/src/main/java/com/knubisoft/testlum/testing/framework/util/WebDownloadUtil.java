@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -196,7 +197,8 @@ public class WebDownloadUtil {
         String fileName = path.getFileName().toString();
         boolean isActual = fileName.startsWith(FINAL_ACTUAL_FILENAME);
         boolean isImage = fileName.startsWith(ACTUAL_IMAGE_PREFIX);
-        if (isActual || isImage) {
+        boolean isHealingPatch = fileName.startsWith(TestResourceSettings.PATCH_FILE_PREFIX);
+        if (isActual || isImage || isHealingPatch) {
             return false;
         }
         return !existingFiles.contains(fileName);

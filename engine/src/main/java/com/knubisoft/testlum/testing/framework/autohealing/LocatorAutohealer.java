@@ -3,14 +3,24 @@ package com.knubisoft.testlum.testing.framework.autohealing;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealedLocators;
+import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealingElementMetadata;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.framework.util.LocatorXmlUpdater;
+import com.knubisoft.testlum.testing.framework.util.HealingScenarioUpdater;
 import com.knubisoft.testlum.testing.model.global_config.AutoHealingMode;
+import com.knubisoft.testlum.testing.model.pages.ClassName;
+import com.knubisoft.testlum.testing.model.pages.CssSelector;
+import com.knubisoft.testlum.testing.model.pages.Id;
 import com.knubisoft.testlum.testing.model.pages.Locator;
+import com.knubisoft.testlum.testing.model.pages.Text;
+import com.knubisoft.testlum.testing.model.pages.Xpath;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.apache.commons.text.similarity.LevenshteinDistance;
@@ -37,6 +47,7 @@ import java.util.stream.Collectors;
 
 import static java.nio.charset.Charset.defaultCharset;
 
+@Slf4j
 public class LocatorAutohealer {
 
     private static final double MIN_ACCEPTABLE_SCORE = 0.35;
@@ -51,7 +62,7 @@ public class LocatorAutohealer {
     private static final List<String> FALLBACK_TAGS =
             List.of("input", "button", "a", "select", "textarea", "div", "span", "label");
 
-    private static final String PATCH_FILE_PREFIX = "patch_";
+    private static final String PATCH_FILE_PREFIX = TestResourceSettings.PATCH_FILE_PREFIX;
     private static final String PATCH_FILE_EXTENSION = ".xml";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -108,12 +119,57 @@ public class LocatorAutohealer {
         if (mode == AutoHealingMode.SOFT) {
             return generatePatchForLocatorDefinedInScenario(
                   dependencies, healedLocators, locatorData.getFile() != null, locatorData);
-        } else {
-            if (locatorData.getFile() != null) {
-                LocatorXmlUpdater.updateLocator(locatorData, healedLocators);
-            }
         }
-        return locatorData.getFile();
+        return updateLocatorInPlace(dependencies, locatorData, healedLocators);
+    }
+
+    private File updateLocatorInPlace(final ExecutorDependencies dependencies,
+                                      final LocatorData locatorData,
+                                      final HealedLocators healedLocators) {
+        if (locatorData.getFile() != null) {
+            LocatorXmlUpdater.updateLocator(locatorData, healedLocators);
+            return locatorData.getFile();
+        }
+        return updateScenarioLocator(dependencies.getFile(), locatorData, healedLocators);
+    }
+
+    private File updateScenarioLocator(final File scenario, final LocatorData locatorData,
+                                       final HealedLocators healedLocators) {
+        String oldValue = locatorData.getLocator().getLocatorId();
+        LocatorStrategy strategy = resolveStrategy(locatorData);
+        HealingScenarioUpdater.HealedLocator newLocator =
+                HealingScenarioUpdater.resolveNewLocator(healedLocators, strategy);
+        int updated = newLocator == null ? 0
+                : HealingScenarioUpdater.updateInlineLocator(scenario, oldValue, strategy, newLocator);
+        if (updated == 0) {
+            log.warn(LogMessage.SCENARIO_LOCATOR_NOT_FOUND, oldValue, scenario);
+            return null;
+        }
+        log.info(LogMessage.SCENARIO_LOCATOR_UPDATED, oldValue, newLocator.getValue(), scenario, updated);
+        return scenario;
+    }
+
+    private LocatorStrategy resolveStrategy(final LocatorData locatorData) {
+        Object element = locatorData.getLocator().getXpathOrIdOrClassName().stream()
+                .findFirst()
+                .orElse(null);
+        if (element instanceof Xpath) {
+            return LocatorStrategy.XPATH;
+        }
+        if (element instanceof CssSelector) {
+            return LocatorStrategy.CSS_SELECTOR;
+        }
+        return resolveRemainingStrategy(element);
+    }
+
+    private LocatorStrategy resolveRemainingStrategy(final Object element) {
+        if (element instanceof Id) {
+            return LocatorStrategy.ID;
+        }
+        if (element instanceof ClassName) {
+            return LocatorStrategy.CLASS;
+        }
+        return element instanceof Text ? LocatorStrategy.TEXT : LocatorStrategy.LOCATOR_ID;
     }
 
     private List<WebElement> collectCandidates(final HealingElementMetadata metadata) {

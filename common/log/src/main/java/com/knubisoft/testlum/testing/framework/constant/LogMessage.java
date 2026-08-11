@@ -168,6 +168,10 @@ public final class LogMessage {
             LogFormat.withYellow("Unable to find element by provided locators. Start healing process...");
     public static final String HEAL_RESULT_LOG =
             LogFormat.withGreen("Element was healed successfully. New values for locator {} were generated in {}");
+    public static final String SCENARIO_LOCATOR_UPDATED =
+            LogFormat.withGreen("Inline locator {} was replaced with {} in {}. Updated occurrences: {}");
+    public static final String SCENARIO_LOCATOR_NOT_FOUND =
+            LogFormat.withOrange("Unable to find inline locator {} in {}. Healed value was not persisted");
 
     private LogMessage() {
         // nop

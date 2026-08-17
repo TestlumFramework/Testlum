@@ -15,6 +15,7 @@ import com.knubisoft.testlum.testing.model.scenario.FromPath;
 import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.FromDate;
+import com.knubisoft.testlum.testing.model.scenario.FromOtp;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -87,5 +88,9 @@ public abstract class AbstractVariableExecutor<T extends AbstractUiCommand> exte
 
     protected String getDateResult(final T var, final CommandResult result, final FromDate date) {
         return variableHelper.getDateResult(date, getVarName(var), result);
+    }
+
+    protected String getOtpResult(final T var, final CommandResult result, final FromOtp otp) {
+        return variableHelper.getOtpResult(otp, inject(otp.getSecretKey()), getVarName(var), result);
     }
 }

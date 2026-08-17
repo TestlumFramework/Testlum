@@ -53,8 +53,13 @@
             <x:element name="sql" type="tns:fromSQL"/>
             <x:element name="generate" type="tns:fromRandomGenerate"/>
             <x:element name="date" type="tns:fromDate"/>
+            <x:element name="otp" type="tns:fromOtp"/>
         </x:choice>
     </x:group>
+
+    <x:complexType name="fromOtp">
+        <x:attribute name="secretKey" type="tns:base32String" use="required"/>
+    </x:complexType>
 
     <x:complexType name="fromFile">
         <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>

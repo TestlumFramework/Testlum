@@ -34,7 +34,8 @@ public class NativeVariableExecutor extends AbstractVariableExecutor<NativeVar> 
                 entry(v -> Objects.nonNull(v.getFile()), (v, r) -> getFileResult(v, r, v.getFile())),
                 entry(v -> Objects.nonNull(v.getSql()), (v, r) -> getSQLResult(v, r, v.getSql())),
                 entry(v -> Objects.nonNull(v.getGenerate()), (v, r) -> getRandomGenerateResult(v, r, v.getGenerate())),
-                entry(v -> Objects.nonNull(v.getDate()), (v, r) -> getDateResult(v, r, v.getDate()))
+                entry(v -> Objects.nonNull(v.getDate()), (v, r) -> getDateResult(v, r, v.getDate())),
+                entry(v -> Objects.nonNull(v.getOtp()), (v, r) -> getOtpResult(v, r, v.getOtp()))
         );
     }
 

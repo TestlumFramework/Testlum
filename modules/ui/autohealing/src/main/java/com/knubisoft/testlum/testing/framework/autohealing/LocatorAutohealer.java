@@ -10,7 +10,6 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.framework.util.LocatorXmlUpdater;
-import com.knubisoft.testlum.testing.framework.util.HealingScenarioUpdater;
 import com.knubisoft.testlum.testing.model.global_config.AutoHealingMode;
 import com.knubisoft.testlum.testing.model.pages.ClassName;
 import com.knubisoft.testlum.testing.model.pages.CssSelector;

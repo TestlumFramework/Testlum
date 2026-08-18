@@ -1,7 +1,8 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.autohealing.HealingScenarioUpdater;
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealedLocators;
-import com.knubisoft.testlum.testing.framework.util.HealingScenarioUpdater.HealedLocator;
+import com.knubisoft.testlum.testing.framework.autohealing.HealingScenarioUpdater.HealedLocator;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;

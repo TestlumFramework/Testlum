@@ -1,4 +1,4 @@
-package com.knubisoft.testlum.testing.framework.util;
+package com.knubisoft.testlum.testing.framework.autohealing;
 
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealedLocators;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;

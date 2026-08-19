@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.starter;
 
 import com.knubisoft.testlum.log.Color;
+import com.knubisoft.testlum.starter.failure.StartupFailureReporter;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,8 @@ import java.util.function.Supplier;
  *   <li>{@code 0} - All tests passed successfully</li>
  *   <li>{@code 1} - One or more tests failed</li>
  *   <li>{@code 2} - No tests were found</li>
- *   <li>{@code 3} - Invalid configuration (missing arguments or files not found)</li>
+ *   <li>{@code 3} - Invalid configuration: missing arguments, files not found,
+ *       or a failure while the application context is being initialized</li>
  * </ul>
  *
  * @see TestResourceSettings
@@ -64,6 +66,9 @@ import java.util.function.Supplier;
 @Slf4j
 @PropertySource(name = "spring.banner.location", value = "classpath:banner.txt")
 public class TESTLUMStarter {
+
+    private static final String UNCAUGHT_FAILURE = "Testlum stopped with an unexpected failure";
+    private static final String STARTUP_FAILURE = "Testlum failed to start";
 
     /**
      * Main entry point for Testlum test execution.
@@ -86,6 +91,9 @@ public class TESTLUMStarter {
      * @throws IllegalArgumentException if required arguments (config file or path) are not provided
      */
     public static void main(final String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler(
+                (thread, throwable) -> StartupFailureReporter.report(UNCAUGHT_FAILURE, throwable));
+
         Optional<String> configFileName = Args.read(args, Args.Param.CONFIG_FILE);
         Optional<String> pathToTestResources = Args.read(args, Args.Param.PATH_TO_TEST_RESOURCES);
         Optional<String> scenarioScope = Args.read(args, Args.Param.PATH_TO_SPECIFIC_SCENARIOS);
@@ -94,10 +102,26 @@ public class TESTLUMStarter {
 
         TestResourceSettings.init(configFileName.get(), pathToTestResources.get(), scenarioScope);
 
-        new SpringApplicationBuilder(TestRunner.class)
-                .bannerMode(Banner.Mode.CONSOLE)
-                .web(WebApplicationType.NONE)
-                .run(args);
+        runTests(args);
+    }
+
+    /**
+     * Runs the test application and reports a startup failure in a readable form.
+     *
+     * @param args command line arguments passed to the Spring application
+     */
+    private static void runTests(final String[] args) {
+        try {
+            new SpringApplicationBuilder(TestRunner.class)
+                    .bannerMode(Banner.Mode.CONSOLE)
+                    .web(WebApplicationType.NONE)
+                    .run(args);
+        } catch (Exception e) {
+            if (!StartupFailureReporter.wasReported(e)) {
+                StartupFailureReporter.report(STARTUP_FAILURE, e);
+            }
+            System.exit(ExitCode.INVALID_CONFIGURATION.getExitCode());
+        }
     }
 
     /**
@@ -237,7 +261,8 @@ public class TESTLUMStarter {
      *   <li>{@link #TESTS_PASSED} (0) - All tests executed successfully</li>
      *   <li>{@link #TESTS_FAILED} (1) - One or more tests failed or encountered errors</li>
      *   <li>{@link #NO_TESTS_FOUND} (2) - No tests were discovered for execution</li>
-     *   <li>{@link #INVALID_CONFIGURATION} (3) - Configuration is invalid or files not found</li>
+     *   <li>{@link #INVALID_CONFIGURATION} (3) - Configuration is invalid, files not found,
+     *       or the application context failed to start</li>
      *   <li>{@link #TESTS_WERE_SKIPPED} (4) - Some tests were configured to run but failed to load and execute. </li>
      * </ul>
      */
@@ -255,7 +280,7 @@ public class TESTLUMStarter {
         NO_TESTS_FOUND(2, "No tests found", Color.ORANGE),
 
         /**
-         * Invalid configuration. Exit code: 3
+         * Invalid configuration or a failed startup. Exit code: 3
          */
         INVALID_CONFIGURATION(3, "Invalid configuration", Color.RED),
 
@@ -276,10 +301,11 @@ public class TESTLUMStarter {
      * @return the exit code corresponding to the test results
      */
     static @NotNull ExitCode getExitCode(final TestExecutionSummary summary) {
+        boolean hasFailures = !summary.getFailures().isEmpty();
         if (summary.getTestsFoundCount() == 0) {
-            return ExitCode.NO_TESTS_FOUND;
+            return hasFailures ? ExitCode.INVALID_CONFIGURATION : ExitCode.NO_TESTS_FOUND;
         }
-        if (summary.getTestsFailedCount() > 0) {
+        if (summary.getTestsFailedCount() > 0 || hasFailures) {
             return ExitCode.TESTS_FAILED;
         }
         if (summary.getTestsSkippedCount() > 0) {

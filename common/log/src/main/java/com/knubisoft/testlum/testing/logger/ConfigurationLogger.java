@@ -20,7 +20,8 @@ public class ConfigurationLogger {
     private final IntegrationConfigurationLogger integrationConfigurationLogger;
 
     public void logIntegrationConfiguration(final Map<String, Integrations> integrationsMap) {
-        DynamicTableBuilder table = TableBuilder.grid(LogMessage.INTEGRATION_CONFIG_TABLE_TITLE);
+        DynamicTableBuilder table = TableBuilder.grid(LogMessage.INTEGRATION_CONFIG_TABLE_TITLE)
+                .columnCount(IntegrationConfigurationLogger.COLUMN_COUNT);
         integrationsMap.forEach(
                 (environment, integrations) ->
                         this.integrationConfigurationLogger
@@ -32,7 +33,8 @@ public class ConfigurationLogger {
     }
 
     public void logUiConfiguration(final Map<String, UiConfig> uiConfigMap) {
-        DynamicTableBuilder table = TableBuilder.grid(LogMessage.UI_CONFIG_TABLE_TITLE);
+        DynamicTableBuilder table = TableBuilder.grid(LogMessage.UI_CONFIG_TABLE_TITLE)
+                .columnCount(UiConfigurationLogger.COLUMN_COUNT);
         uiConfigMap.forEach(
                 (environment, uiConfig) ->
                         this.uiConfigurationLogger.appendEnvironmentSections(table, environment, uiConfig)

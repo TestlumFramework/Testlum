@@ -13,8 +13,11 @@
     <logger name="com.clickhouse" level="ERROR"/>
     <logger name="org.apache.hc" level="ERROR"/>
     <logger name="org.apache.http" level="ERROR"/>
+    <logger name="org.mongodb.driver" level="ERROR"/>
     <logger name="org.mongodb.driver.cluster" level="ERROR"/>
     <logger name="org.mongodb.driver.connection" level="ERROR"/>
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+    <logger name="org.reflections" level="WARN"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>

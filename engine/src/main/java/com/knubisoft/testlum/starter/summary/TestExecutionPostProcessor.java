@@ -1,19 +1,14 @@
 package com.knubisoft.testlum.starter.summary;
 
 import com.knubisoft.testlum.log.Color;
-import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.log.table.DynamicTableBuilder;
 import com.knubisoft.testlum.log.table.TableBuilder;
-import com.knubisoft.testlum.testing.framework.constant.LogMessage;
+import com.knubisoft.testlum.starter.failure.StartupFailureReporter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.stereotype.Component;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 @Slf4j
 @Component
@@ -38,14 +33,11 @@ public class TestExecutionPostProcessor {
     }
 
     private void logFailures(final TestExecutionSummary summary) {
-        if (summary.getTestsFailedCount() == 0 || summary.getFailures().isEmpty()) {
-            return;
-        }
         for (TestExecutionSummary.Failure failure : summary.getFailures()) {
-            log.error(LogFormat.withRed(failure.getTestIdentifier().getDisplayName()));
-            log.error(LogFormat.withRed(failure.getException().getMessage()));
-            log.error(LogFormat.withRed(Arrays.toString(failure.getException().getStackTrace())));
-            log.error(LogFormat.withRed(LogMessage.LINE));
+            if (StartupFailureReporter.wasReported(failure.getException())) {
+                continue;
+            }
+            StartupFailureReporter.report(failure.getTestIdentifier().getDisplayName(), failure.getException());
         }
     }
 
@@ -54,19 +46,6 @@ public class TestExecutionPostProcessor {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(executionTimeInMs);
         long seconds = TimeUnit.MILLISECONDS.toSeconds(executionTimeInMs) % SECONDS_IN_MINUTE;
         return String.format("Test run finished after %dm %ds", minutes, seconds);
-    }
-
-    /**
-     * Converts a PrintWriter consumer output to a String.
-     *
-     * @param writer consumer that writes to a PrintWriter
-     * @return the written content as a string
-     */
-    private static String toString(final Consumer<PrintWriter> writer) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        writer.accept(printWriter);
-        return stringWriter.toString();
     }
 
 }

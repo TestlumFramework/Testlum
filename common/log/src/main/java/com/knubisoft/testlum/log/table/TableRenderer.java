@@ -11,8 +11,6 @@ import java.util.List;
 final class TableRenderer {
 
     private static final String NL = System.lineSeparator();
-    private static final int HEADER_OFFSET = 1;
-    private static final int TITLE_AND_HEADER_OFFSET = 2;
 
     private TableRenderer() {
     }
@@ -26,24 +24,31 @@ final class TableRenderer {
     }
 
     private static void validate(final TableSpec spec) {
-        if (spec.headers() == null || spec.headers().length == 0) {
+        if (spec.columnCount() <= 0) {
             throw new IllegalStateException("Table columns must be declared before build()");
         }
-        validateRowWidths(spec.headers().length, spec.rows());
+        validateRowWidths(spec.columnCount(), spec.rows());
     }
 
     private static AsciiTable constructTable(final TableSpec spec) {
         AsciiTable table = new AsciiTable();
         table.addRule();
-        addSingleSpan(table, textOf(spec.title()), spec.headers().length);
-        table.addRow((Object[]) spec.headers());
-        table.addRule();
+        addSingleSpan(table, textOf(spec.title()), spec.columnCount());
+        addHeaderRow(table, spec);
         for (Row row : spec.rows()) {
             table.addRow(row.cells());
             table.addRule();
         }
-        addSingleSpan(table, textOf(spec.footer()), spec.headers().length);
+        addSingleSpan(table, textOf(spec.footer()), spec.columnCount());
         return table;
+    }
+
+    private static void addHeaderRow(final AsciiTable table, final TableSpec spec) {
+        if (spec.headers() == null) {
+            return;
+        }
+        table.addRow((Object[]) spec.headers());
+        table.addRule();
     }
 
     private static String textOf(final Caption caption) {
@@ -70,12 +75,23 @@ final class TableRenderer {
     private static String surgical(final String body, final TableSpec spec) {
         String[] lines = body.split("\\R", -1);
         StringBuilder out = new StringBuilder();
-        int dataOffset = spec.title() != null ? TITLE_AND_HEADER_OFFSET : HEADER_OFFSET;
+        int dataOffset = computeDataOffset(spec);
         int segmentIdx = -1;
         for (int i = 0; i < lines.length; i++) {
             segmentIdx = appendLine(out, lines, i, spec, dataOffset, segmentIdx);
         }
         return out.toString();
+    }
+
+    private static int computeDataOffset(final TableSpec spec) {
+        int offset = 0;
+        if (spec.title() != null) {
+            offset++;
+        }
+        if (spec.headers() != null) {
+            offset++;
+        }
+        return offset;
     }
 
     private static String uniform(final String body, final Color color) {
@@ -117,7 +133,7 @@ final class TableRenderer {
                                   final TableSpec spec, final int dataOffset, final int segmentIdx) {
         boolean rule = isRule(lines[i]);
         int nextIdx = rule ? segmentIdx + 1 : segmentIdx;
-        Color effective = pickColor(spec, nextIdx - dataOffset, rule);
+        Color effective = pickColor(spec, nextIdx - dataOffset, dataOffset, rule);
         out.append(apply(lines[i], effective));
         if (i < lines.length - 1) {
             out.append(NL);
@@ -125,16 +141,18 @@ final class TableRenderer {
         return nextIdx;
     }
 
-    private static Color pickColor(final TableSpec spec, final int dataRowIdx, final boolean rule) {
+    private static Color pickColor(final TableSpec spec, final int dataRowIdx,
+                                   final int dataOffset, final boolean rule) {
         if (rule) {
             return spec.color();
         }
-        Color specific = resolveSpecificColor(spec, dataRowIdx);
+        Color specific = resolveSpecificColor(spec, dataRowIdx, dataOffset);
         return specific == null || specific == Color.NONE ? spec.color() : specific;
     }
 
-    private static Color resolveSpecificColor(final TableSpec spec, final int dataRowIdx) {
-        if (dataRowIdx == -TITLE_AND_HEADER_OFFSET && spec.title() != null) {
+    private static Color resolveSpecificColor(final TableSpec spec, final int dataRowIdx,
+                                              final int dataOffset) {
+        if (dataRowIdx == -dataOffset && spec.title() != null) {
             return spec.title().color();
         }
         if (dataRowIdx == spec.rows().size() && spec.footer() != null) {

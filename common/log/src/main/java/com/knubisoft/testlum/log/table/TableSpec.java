@@ -6,6 +6,7 @@ import java.util.List;
 
 record TableSpec(Caption title,
                  String[] headers,
+                 int columnCount,
                  List<Row> rows,
                  Caption footer,
                  Align align,

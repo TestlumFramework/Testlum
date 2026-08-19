@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 @ComponentScan(basePackageClasses = RootTest.class, basePackages = {"com.knubisoft.testlum.testing.*"})
 @Execution(ExecutionMode.CONCURRENT)
 @ContextConfiguration(classes = {RootTest.class})
-@TestPropertySource(properties = {"spring.main.banner-mode=off"})
+@TestPropertySource(properties = {"spring.main.banner-mode=off", "spring.test.print-condition-evaluation-report=false"})
 @ExtendWith({SpringExtension.class, InvalidScenarioCondition.class})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RootTest {

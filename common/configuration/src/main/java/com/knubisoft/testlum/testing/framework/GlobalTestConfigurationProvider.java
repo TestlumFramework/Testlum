@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,7 +85,8 @@ public class GlobalTestConfigurationProvider {
     private EnvToIntegrationMap collectIntegrations(final List<Environment> environments,
                                                     final Optional<VaultService> vaultService) {
         Map<String, Integrations> integrationsMap = environments.stream()
-                .collect(Collectors.toMap(Environment::getFolder, e -> initIntegration(e, vaultService)));
+                .collect(Collectors.toMap(Environment::getFolder, e -> initIntegration(e, vaultService),
+                        GlobalTestConfigurationProvider::rejectDuplicateEnvironment, LinkedHashMap::new));
         configurationLogger.logIntegrationConfiguration(integrationsMap);
         integrationsValidator.validate(integrationsMap);
         return new EnvToIntegrationMap(integrationsMap);
@@ -105,7 +107,8 @@ public class GlobalTestConfigurationProvider {
     private UIConfiguration collectUiConfigs(final List<Environment> environments,
                                              final Optional<VaultService> vaultService) {
         Map<String, UiConfig> uiConfigMap = environments.stream()
-                .collect(Collectors.toMap(Environment::getFolder, env -> initUiConfig(env, vaultService)));
+                .collect(Collectors.toMap(Environment::getFolder, env -> initUiConfig(env, vaultService),
+                        GlobalTestConfigurationProvider::rejectDuplicateEnvironment, LinkedHashMap::new));
         configurationLogger.logUiConfiguration(uiConfigMap);
         validator.validate(uiConfigMap);
         return new UIConfiguration(uiConfigMap);
@@ -125,6 +128,10 @@ public class GlobalTestConfigurationProvider {
 
     private <T> T injectFromVaultIfPresent(final Optional<VaultService> vaultService, final T t) {
         return vaultService.map(service -> injectionService.injectFromVault(service, t)).orElse(t);
+    }
+
+    private static <T> T rejectDuplicateEnvironment(final T first, final T second) {
+        throw new DefaultFrameworkException(ExceptionMessage.DUPLICATE_ENVIRONMENT_FOLDER);
     }
 
     private String getDefaultEnabledEnvironment(final List<Environment> environments) {

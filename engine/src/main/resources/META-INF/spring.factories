@@ -8,3 +8,6 @@ org.springframework.test.context.TestExecutionListener = \
 
 org.springframework.context.ApplicationContextInitializer = \
     com.knubisoft.testlum.testing.TestResourceInfrastructureInitializer
+
+org.springframework.context.ApplicationListener = \
+    com.knubisoft.testlum.starter.failure.StartupFailureListener

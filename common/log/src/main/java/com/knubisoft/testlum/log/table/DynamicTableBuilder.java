@@ -13,6 +13,7 @@ public final class DynamicTableBuilder {
     private Caption title;
     private Caption footer;
     private String[] headers;
+    private int columnCount;
     private Align align = Align.CENTER;
     private Color color = Color.NONE;
 
@@ -29,8 +30,35 @@ public final class DynamicTableBuilder {
     }
 
     public DynamicTableBuilder columns(final String... columnHeaders) {
+        this.requireColumnsNotDeclared();
+        if (columnHeaders == null || columnHeaders.length == 0) {
+            throw new IllegalArgumentException("Table column headers must not be empty");
+        }
         this.headers = columnHeaders;
+        this.columnCount = columnHeaders.length;
         return this;
+    }
+
+    public DynamicTableBuilder columnCount(final int count) {
+        this.requireColumnsNotDeclared();
+        if (count <= 0) {
+            throw new IllegalArgumentException("Table column count must be positive but was " + count);
+        }
+        this.columnCount = count;
+        return this;
+    }
+
+    public DynamicTableBuilder span(final String text) {
+        return this.span(Color.NONE, text);
+    }
+
+    public DynamicTableBuilder span(final Color spanColor, final String text) {
+        if (this.columnCount <= 0) {
+            throw new IllegalStateException("Table columns must be declared before a span row is added");
+        }
+        Object[] cells = new Object[this.columnCount];
+        cells[this.columnCount - 1] = text;
+        return this.row(spanColor, cells);
     }
 
     public DynamicTableBuilder row(final Object... cells) {
@@ -69,8 +97,14 @@ public final class DynamicTableBuilder {
     }
 
     public String build() {
-        return TableRenderer.render(new TableSpec(this.title, this.headers, this.rows,
-                this.footer, this.align, this.color));
+        return TableRenderer.render(new TableSpec(this.title, this.headers, this.columnCount,
+                this.rows, this.footer, this.align, this.color));
+    }
+
+    private void requireColumnsNotDeclared() {
+        if (this.columnCount > 0) {
+            throw new IllegalStateException("Table columns are already declared and cannot be redeclared");
+        }
     }
 
 }

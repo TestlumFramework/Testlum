@@ -19,6 +19,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class IntegrationConfigurationLogger {
 
+    public static final int COLUMN_COUNT = 3;
+
     private static final List<Method> CONTAINER_GETTERS = discoverContainerGetters();
 
     public void appendEnvironmentSections(final DynamicTableBuilder table,
@@ -76,7 +78,7 @@ public class IntegrationConfigurationLogger {
     }
 
     private void writeEnvironmentHeader(final DynamicTableBuilder table, final String environment) {
-        table.columns(null, null, String.format(LogMessage.INTEGRATION_CONFIG_TABLE_ENV_ROW, environment));
+        table.span(String.format(LogMessage.INTEGRATION_CONFIG_TABLE_ENV_ROW, environment));
         table.row(LogMessage.INTEGRATION_CONFIG_TABLE_NAME_HEADER,
                 LogMessage.INTEGRATION_CONFIG_TABLE_ALIAS_HEADER,
                 LogMessage.INTEGRATION_CONFIG_TABLE_ENABLED_HEADER);

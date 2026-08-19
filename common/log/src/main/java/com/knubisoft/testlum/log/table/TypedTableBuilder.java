@@ -53,7 +53,7 @@ public final class TypedTableBuilder<T> {
         List<Row> materialized = this.materializeRows(headers.length);
         Caption titleCaption = this.title == null ? null : new Caption(this.title, Color.NONE);
         Caption footerCaption = this.footer == null ? null : new Caption(this.footer, Color.NONE);
-        return TableRenderer.render(new TableSpec(titleCaption, headers, materialized,
+        return TableRenderer.render(new TableSpec(titleCaption, headers, headers.length, materialized,
                 footerCaption, this.align, this.color));
     }
 

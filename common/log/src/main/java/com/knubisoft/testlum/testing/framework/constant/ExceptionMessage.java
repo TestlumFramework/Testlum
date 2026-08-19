@@ -29,6 +29,8 @@ public class ExceptionMessage {
 
     public static final String NO_ENABLED_ENVIRONMENTS_FOUND =
             "No enabled environments found in configuration file";
+    public static final String DUPLICATE_ENVIRONMENT_FOLDER =
+            "Duplicate environment folder found in configuration file";
     public static final String NO_ENABLED_REPORT_GENERATORS_FOUND =
             LogFormat.withRed("At least one report generator must be enabled");
     public static final String STOP_IF_NON_PARSED_SCENARIO =

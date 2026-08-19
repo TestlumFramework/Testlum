@@ -21,13 +21,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UiConfigurationLogger {
 
+    public static final int COLUMN_COUNT = 4;
+
     public void appendEnvironmentSections(final DynamicTableBuilder table,
                                           final String environment,
                                           final UiConfig uiConfig) {
         if (!hasAnyUiSection(uiConfig)) {
             return;
         }
-        table.columns(null, null, null, String.format(LogMessage.UI_CONFIG_TABLE_ENV_ROW, environment));
+        table.span(String.format(LogMessage.UI_CONFIG_TABLE_ENV_ROW, environment));
         addWebConfiguration(table, uiConfig.getWeb());
         addMobileBrowserConfiguration(table, uiConfig.getMobilebrowser());
         addNativeConfiguration(table, uiConfig.getNative());
@@ -140,7 +142,7 @@ public class UiConfigurationLogger {
     }
 
     private void addSectionTitle(final DynamicTableBuilder table, final String title) {
-        table.row(Color.NONE, null, null, null, title);
+        table.span(title);
     }
 
     private <T> String joinValues(final List<T> items, final Function<? super T, String> getter) {

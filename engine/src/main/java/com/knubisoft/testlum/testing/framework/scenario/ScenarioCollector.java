@@ -1,14 +1,9 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
-import com.knubisoft.testlum.testing.model.global_config.Api;
-import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +20,8 @@ public class ScenarioCollector {
     private final ScenarioValidator scenarioValidator;
     private final XMLParsers xmlParsers;
     private final TestResourceSettings testResourceSettings;
-    private final IntegrationsUtil integrationUtil;
     private final GlobalVariationsProvider globalVariationsProvider;
-    private final Integrations integrations;
+    private final AuthCommandExpander authCommandExpander;
 
     public Result collect() {
         List<File> scenarios = new ArrayList<>();
@@ -77,69 +71,22 @@ public class ScenarioCollector {
 
     private Scenario convertXmlToScenario(final File xmlFile) {
         Scenario scenario = xmlParsers.forScenario().process(xmlFile);
-        Optional<String> variations = getScenarioVariations(xmlFile, scenario);
-        updateScenario(scenario, variations);
+        processScenarioVariations(xmlFile, scenario);
+        updateScenario(scenario);
         return scenario;
     }
 
-    private Optional<String> getScenarioVariations(final File xmlFile, final Scenario scenario) {
+    private void processScenarioVariations(final File xmlFile, final Scenario scenario) {
         if (Objects.nonNull(scenario.getSettings())
                 && Objects.nonNull(scenario.getSettings().getVariations())) {
             globalVariationsProvider.process(scenario, xmlFile);
-            return Optional.of(scenario.getSettings().getVariations());
-        } else {
-            return Optional.empty();
         }
     }
 
-    private void updateScenario(final Scenario scenario, final Optional<String> variationFileName) {
-        List<AbstractCommand> updatedCommands = updateCommands(scenario.getCommands(), variationFileName);
+    private void updateScenario(final Scenario scenario) {
+        List<AbstractCommand> updatedCommands = authCommandExpander.expand(scenario.getCommands());
         scenario.getCommands().clear();
         scenario.getCommands().addAll(updatedCommands);
-    }
-
-    private List<AbstractCommand> updateCommands(final List<AbstractCommand> commands,
-                                                 final Optional<String> variationFileName) {
-        List<AbstractCommand> updatedCommands = new ArrayList<>();
-        for (AbstractCommand command : commands) {
-            addAbstractCommand(updatedCommands, command, variationFileName);
-        }
-        return updatedCommands;
-    }
-
-    private void addAbstractCommand(final List<AbstractCommand> updatedCommand,
-                                    final AbstractCommand command,
-                                    final Optional<String> variationFileName) {
-        if (command instanceof Auth auth) {
-            addAuthCommands(updatedCommand, auth);
-        } else {
-            updatedCommand.add(command);
-        }
-    }
-
-    private void addAuthCommands(final List<AbstractCommand> updatedCommand, final Auth authCommand) {
-        Auth auth = new Auth();
-        auth.setComment(authCommand.getComment());
-        auth.setCredentials(authCommand.getCredentials());
-        auth.setApiAlias(authCommand.getApiAlias());
-        auth.setLoginEndpoint(authCommand.getLoginEndpoint());
-        updatedCommand.add(auth);
-        updatedCommand.addAll(authCommand.getCommands());
-        if (isAutoLogout(authCommand.getApiAlias())) {
-            Logout logout = new Logout();
-            logout.setAlias(authCommand.getApiAlias());
-            updatedCommand.add(logout);
-        }
-    }
-
-    private boolean isAutoLogout(final String alias) {
-        //todo move to interpreter
-        List<Api> apiList = integrations.getApis().getApi();
-        Api apiIntegration = integrationUtil.findApiForAlias(apiList, alias);
-        if (Objects.nonNull(apiIntegration.getAuth())) {
-            return apiIntegration.getAuth().isAutoLogout();
-        }
-        throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, apiIntegration.getAlias());
     }
 
     public static class Result extends ArrayList<MappingResult> {

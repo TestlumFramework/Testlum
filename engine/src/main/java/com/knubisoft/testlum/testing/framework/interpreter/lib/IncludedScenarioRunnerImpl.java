@@ -4,6 +4,8 @@ import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.scenario.AuthCommandExpander;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioValidator;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -34,6 +36,8 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
     private final ConfigUtil configUtil;
     private final LogUtil logUtil;
     private final InterpreterProvider interpreterProvider;
+    private final ScenarioValidator scenarioValidator;
+    private final AuthCommandExpander authCommandExpander;
 
     private final ThreadLocal<Deque<File>> includeStack = ThreadLocal.withInitial(ArrayDeque::new);
 
@@ -62,9 +66,9 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
     private void runIncludedScenario(final File includedFile,
                                      final InterpreterDependencies dependencies,
                                      final CommandResult result) {
-        Scenario includedScenario = xmlParsers.forScenario().process(includedFile);
+        Scenario includedScenario = xmlParsers.forScenario().process(includedFile, scenarioValidator);
         List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        for (AbstractCommand command : includedScenario.getCommands()) {
+        for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
             processEachCommand(command, dependencies, subCommandsResult);
         }
         resultUtil.setExecutionResultIfSubCommandsFailed(result);

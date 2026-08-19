@@ -56,6 +56,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -631,15 +632,46 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateIncludeAction(final Include include, final File xmlFile) {
-        if (StringUtils.isNotBlank(include.getScenario())) {
-            File includedScenarioFolder = new File(testResourceSettings.getScenariosFolder(),
-                    include.getScenario());
-            File includedFile = fileSearcher.searchFileFromDir(includedScenarioFolder,
-                    TestResourceSettings.SCENARIO_FILENAME);
-            if (includedFile.equals(xmlFile)) {
-                throw new DefaultFrameworkException(ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
-            }
+        resolveIncludePath(include.getScenario())
+                .ifPresent(scenarioPath -> validateIncludedScenarioExists(scenarioPath, xmlFile));
+    }
+
+    private void validateIncludedScenarioExists(final String scenarioPath, final File xmlFile) {
+        File includedScenarioFolder = new File(testResourceSettings.getScenariosFolder(), scenarioPath);
+        File includedFile = fileSearcher.searchFileFromDir(includedScenarioFolder,
+                TestResourceSettings.SCENARIO_FILENAME);
+        if (includedFile.equals(xmlFile)) {
+            throw new DefaultFrameworkException(ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
         }
+    }
+
+    /**
+     * Resolves the include path against the variations of the scenario being validated.
+     *
+     * <p>An empty result means the path cannot be resolved before execution, either because the
+     * scenario has no variations or because the variable is set at runtime. Such a path is checked
+     * by the include interpreter instead.</p>
+     *
+     * @param scenarioPath raw value of the scenario attribute
+     * @return the resolved path, or empty when it is unknown at validation time
+     */
+    private Optional<String> resolveIncludePath(final String scenarioPath) {
+        if (StringUtils.isBlank(scenarioPath)) {
+            return Optional.empty();
+        }
+        if (!containsVariable(scenarioPath.trim())) {
+            return Optional.of(scenarioPath);
+        }
+        String variationKey = extractFileNameFromVariationVariable(scenarioPath.trim());
+        return variationList.get().stream()
+                .filter(variationsMap -> variationsMap.containsKey(variationKey))
+                .map(variationsMap -> globalVariationsProvider.getValue(scenarioPath, variationsMap))
+                .findFirst();
+    }
+
+    private boolean containsVariable(final String value) {
+        return value.contains(DelimiterConstant.DOUBLE_OPEN_BRACE)
+                && value.contains(DelimiterConstant.DOUBLE_CLOSE_BRACE);
     }
 
     private void validateWebCommands(final Web command, final File xmlFile) {

@@ -1,14 +1,11 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.framework.xml.XMLParser;
-import com.knubisoft.testlum.testing.model.global_config.Api;
-import com.knubisoft.testlum.testing.model.global_config.Apis;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,11 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +29,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ScenarioCollector} verifying scenario collection,
- * XML parsing, command expansion (Auth/Include), and error handling.
+ * XML parsing and error handling. Auth expansion is covered by {@link AuthCommandExpanderTest}.
  */
 @ExtendWith(MockitoExtension.class)
 class ScenarioCollectorTest {
@@ -59,7 +53,7 @@ class ScenarioCollectorTest {
     void setUp() {
         collector = new ScenarioCollector(
                 scenarioValidator, xmlParsers, testResourceSettings,
-                integrationUtil, globalVariationsProvider, integrations);
+                globalVariationsProvider, new AuthCommandExpander(integrationUtil, integrations));
     }
 
     @Nested
@@ -270,109 +264,6 @@ class ScenarioCollectorTest {
             ScenarioCollector.Result result = collector.collect();
 
             assertEquals(2, result.size());
-        }
-    }
-
-    @Nested
-    class CommandExpansion {
-
-        @SuppressWarnings("unchecked")
-        @Test
-        void authCommandIsExpandedWithLogout() throws IOException, ReflectiveOperationException {
-            Auth auth = new Auth();
-            auth.setApiAlias("myApi");
-            auth.setComment("login");
-            auth.getCommands().add(mock(AbstractCommand.class));
-
-            Api api = mock(Api.class);
-            com.knubisoft.testlum.testing.model.global_config.Auth apiAuth =
-                    mock(com.knubisoft.testlum.testing.model.global_config.Auth.class);
-            when(api.getAuth()).thenReturn(apiAuth);
-            when(apiAuth.isAutoLogout()).thenReturn(true);
-
-            Apis apis = mock(Apis.class);
-            when(integrations.getApis()).thenReturn(apis);
-            when(apis.getApi()).thenReturn(List.of(api));
-            when(integrationUtil.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
-
-            // Use reflection to test addAuthCommands
-            Method addAuthCommands = ScenarioCollector.class.getDeclaredMethod(
-                    "addAuthCommands", List.class, Auth.class);
-            addAuthCommands.setAccessible(true);
-
-            List<AbstractCommand> updatedCommands = new ArrayList<>();
-            addAuthCommands.invoke(collector, updatedCommands, auth);
-
-            // Auth + inner commands + Logout
-            assertEquals(3, updatedCommands.size());
-            assertInstanceOf(Auth.class, updatedCommands.get(0));
-            assertInstanceOf(Logout.class, updatedCommands.get(2));
-        }
-
-        @SuppressWarnings("unchecked")
-        @Test
-        void authCommandWithNoAutoLogoutSkipsLogout() throws ReflectiveOperationException {
-            Auth auth = new Auth();
-            auth.setApiAlias("myApi");
-
-            Api api = mock(Api.class);
-            com.knubisoft.testlum.testing.model.global_config.Auth apiAuth =
-                    mock(com.knubisoft.testlum.testing.model.global_config.Auth.class);
-            when(api.getAuth()).thenReturn(apiAuth);
-            when(apiAuth.isAutoLogout()).thenReturn(false);
-
-            Apis apis = mock(Apis.class);
-            when(integrations.getApis()).thenReturn(apis);
-            when(apis.getApi()).thenReturn(List.of(api));
-            when(integrationUtil.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
-
-            Method addAuthCommands = ScenarioCollector.class.getDeclaredMethod(
-                    "addAuthCommands", List.class, Auth.class);
-            addAuthCommands.setAccessible(true);
-
-            List<AbstractCommand> updatedCommands = new ArrayList<>();
-            addAuthCommands.invoke(collector, updatedCommands, auth);
-
-            // Auth only (no inner commands, no logout)
-            assertEquals(1, updatedCommands.size());
-            assertInstanceOf(Auth.class, updatedCommands.get(0));
-        }
-
-        @Test
-        void isAutoLogoutThrowsWhenAuthNotConfigured() throws ReflectiveOperationException {
-            Api api = mock(Api.class);
-            when(api.getAuth()).thenReturn(null);
-            when(api.getAlias()).thenReturn("myApi");
-
-            Apis apis = mock(Apis.class);
-            when(integrations.getApis()).thenReturn(apis);
-            when(apis.getApi()).thenReturn(List.of(api));
-            when(integrationUtil.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
-
-            Method isAutoLogout = ScenarioCollector.class.getDeclaredMethod("isAutoLogout", String.class);
-            isAutoLogout.setAccessible(true);
-
-            try {
-                isAutoLogout.invoke(collector, "myApi");
-                fail("Expected DefaultFrameworkException");
-            } catch (java.lang.reflect.InvocationTargetException e) {
-                assertInstanceOf(DefaultFrameworkException.class, e.getCause());
-            }
-        }
-
-        @Test
-        void regularCommandIsAddedAsIs() throws ReflectiveOperationException {
-            AbstractCommand regularCmd = mock(AbstractCommand.class);
-
-            Method addAbstractCommand = ScenarioCollector.class.getDeclaredMethod(
-                    "addAbstractCommand", List.class, AbstractCommand.class, Optional.class);
-            addAbstractCommand.setAccessible(true);
-
-            List<AbstractCommand> result = new ArrayList<>();
-            addAbstractCommand.invoke(collector, result, regularCmd, Optional.empty());
-
-            assertEquals(1, result.size());
-            assertSame(regularCmd, result.get(0));
         }
     }
 

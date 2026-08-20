@@ -12,6 +12,7 @@ import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.InvalidScenarioCondition;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioStatusRegistry;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
@@ -126,22 +127,22 @@ public class RootTest {
         ConnectionManager connectionManager = ctx.getBean(ConnectionManager.class);
         connectionManager.closeConnections();
 
-        Map<String, String> warnings = InvalidScenarioCondition.getRegisteredWarning();
-        Map<String, String> errors = InvalidScenarioCondition.getRegisteredError();
+        Map<String, String> invalid = ScenarioStatusRegistry.getInvalid();
+        Map<String, String> skipped = ScenarioStatusRegistry.getSkipped();
 
         LogUtil logUtil = ctx.getBean(LogUtil.class);
-        logUtil.logInvalidScenariosSummary(warnings, errors);
+        logUtil.logInvalidScenariosSummary(invalid, skipped);
 
         GlobalScenarioStatCollector globalScenarioStatCollector = ctx.getBean(GlobalScenarioStatCollector.class);
         ReportGenerator reportGenerator = ctx.getBean(ReportGenerator.class);
         reportGenerator.generateReport(globalScenarioStatCollector);
 
-        logInvalidScenariosSummary(errors);
+        logInvalidScenariosSummary(invalid);
     }
 
-    private void logInvalidScenariosSummary(final Map<String, String> errors) {
-        if (!errors.isEmpty()) {
-            log.error(LogMessage.INVALID_SCENARIOS_SUMMARY, errors.size());
+    private void logInvalidScenariosSummary(final Map<String, String> invalid) {
+        if (!invalid.isEmpty()) {
+            log.error(LogMessage.INVALID_SCENARIOS_SUMMARY, invalid.size());
         }
     }
 

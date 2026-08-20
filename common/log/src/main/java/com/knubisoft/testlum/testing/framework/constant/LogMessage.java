@@ -174,10 +174,15 @@ public final class LogMessage {
             LogFormat.withOrange("Unable to find inline locator {} in {}. Healed value was not persisted");
 
     public static final String SKIPPED_SCENARIOS_TITLE = "Skipped scenarios (not configured to run)";
-    public static final String FAILED_SCENARIOS_TITLE = "Failed scenarios (expected to run but could not)";
+    public static final String INVALID_SCENARIOS_TITLE = "Invalid scenarios (expected to run but could not)";
     public static final String INVALID_SCENARIOS_SUMMARY = LogFormat.withRed(
             "{} scenario(s) were expected to run but failed to load. See the error table above for details."
     );
+
+    public static final String SCENARIO_SKIPPED_INACTIVE = "Scenario is not active (active=\"false\")";
+    public static final String SCENARIO_SKIPPED_ONLY_THIS = "Another scenario is marked with onlyThis=\"true\"";
+    public static final String SCENARIO_SKIPPED_TAGS_NOT_MATCH = "Scenario tags do not match the enabled tags";
+    public static final String SCENARIO_SKIPPED_WITHOUT_TAGS = "Scenario has no tags while tag filtering is enabled";
 
     public static final String UI_CONFIG_TABLE_TITLE = "UI Configuration";
     public static final String UI_CONFIG_TABLE_ENV_ROW = "Environment: %s";

@@ -80,16 +80,16 @@ public class LogUtil {
         log.warn(LogMessage.SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
     }
 
-    public void logInvalidScenariosSummary(final Map<String, String> warnings, final Map<String, String> errors) {
-        if (!errors.isEmpty()) {
-            log.error(constructInvalidScenarioTable(LogMessage.FAILED_SCENARIOS_TITLE, Color.RED, errors));
+    public void logInvalidScenariosSummary(final Map<String, String> invalid, final Map<String, String> skipped) {
+        if (!invalid.isEmpty()) {
+            log.error(constructScenarioStatusTable(LogMessage.INVALID_SCENARIOS_TITLE, Color.RED, invalid));
         }
-        if (!warnings.isEmpty()) {
-            log.warn(constructInvalidScenarioTable(LogMessage.SKIPPED_SCENARIOS_TITLE, Color.YELLOW, warnings));
+        if (!skipped.isEmpty()) {
+            log.warn(constructScenarioStatusTable(LogMessage.SKIPPED_SCENARIOS_TITLE, Color.YELLOW, skipped));
         }
     }
 
-    private String constructInvalidScenarioTable(final String title,
+    private String constructScenarioStatusTable(final String title,
                                                  final Color color,
                                                  final Map<String, String> entries) {
         DynamicTableBuilder tableBuilder = TableBuilder.grid(title)

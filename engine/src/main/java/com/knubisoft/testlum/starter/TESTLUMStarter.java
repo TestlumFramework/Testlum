@@ -2,6 +2,7 @@ package com.knubisoft.testlum.starter;
 
 import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.starter.failure.StartupFailureReporter;
+import com.knubisoft.testlum.starter.summary.ExecutionCounts;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -295,20 +296,25 @@ public class TESTLUMStarter {
     }
 
     /**
-     * Determines the appropriate exit code based on test execution summary.
+     * Determines the appropriate exit code based on the collected result counters.
      *
-     * @param summary the test execution summary
+     * <p>Scenarios that were deliberately configured not to run do not influence the exit code.
+     * Scenarios that were expected to run but could not - unparsable ones and those referencing a
+     * disabled integration - do, and are reported as {@link ExitCode#TESTS_WERE_SKIPPED}.</p>
+     *
+     * @param counts  the counters behind the final result table
+     * @param summary the test execution summary, used for launcher-level failures
      * @return the exit code corresponding to the test results
      */
-    static @NotNull ExitCode getExitCode(final TestExecutionSummary summary) {
+    static @NotNull ExitCode getExitCode(final ExecutionCounts counts, final TestExecutionSummary summary) {
         boolean hasFailures = !summary.getFailures().isEmpty();
-        if (summary.getTestsFoundCount() == 0) {
+        if (counts.found() == 0) {
             return hasFailures ? ExitCode.INVALID_CONFIGURATION : ExitCode.NO_TESTS_FOUND;
         }
-        if (summary.getTestsFailedCount() > 0 || hasFailures) {
+        if (counts.failed() > 0 || hasFailures) {
             return ExitCode.TESTS_FAILED;
         }
-        if (summary.getTestsSkippedCount() > 0) {
+        if (counts.invalid() > 0) {
             return ExitCode.TESTS_WERE_SKIPPED;
         }
         return ExitCode.TESTS_PASSED;

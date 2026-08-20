@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -39,13 +41,13 @@ public class ScenarioFilter {
     private void registerInvalidScenarios(final List<MappingResult> validScenarios) {
         validScenarios.stream()
                 .filter(e -> e.exception != null)
-                .forEach(e -> InvalidScenarioCondition.registerError(
+                .forEach(e -> ScenarioStatusRegistry.registerInvalid(
                         e.file, e.exception.getMessage()));
     }
 
     private void handleNonParsedScenarios(final List<MappingResult> nonParsed, final boolean originalEmpty) {
         if (!nonParsed.isEmpty()) {
-            nonParsed.forEach(entry -> InvalidScenarioCondition.registerWarning(
+            nonParsed.forEach(entry -> ScenarioStatusRegistry.registerInvalid(
                     entry.file, entry.exception.getMessage()));
             if (globalTestConfiguration.isStopIfInvalidScenario()) {
                 throw new DefaultFrameworkException(ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO);
@@ -58,16 +60,28 @@ public class ScenarioFilter {
     private List<MappingResult> filterValidScenarios(final List<MappingResult> validScenarios) {
         List<MappingResult> activeScenarios = filterIsActive(validScenarios);
         List<MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
-        return filterScenariosByTags(scenariosWithOnlyThisEnabled.isEmpty()
-                ? activeScenarios : scenariosWithOnlyThisEnabled);
+        if (scenariosWithOnlyThisEnabled.isEmpty()) {
+            return filterScenariosByTags(activeScenarios);
+        }
+        registerSkippedByOnlyThis(activeScenarios, scenariosWithOnlyThisEnabled);
+        return filterScenariosByTags(scenariosWithOnlyThisEnabled);
     }
 
     private List<MappingResult> filterIsActive(final List<MappingResult> original) {
-        return filterBy(original, e -> e.scenario.getSettings().isActive());
+        return filterBy(original, e -> e.scenario.getSettings().isActive(),
+                e -> ScenarioStatusRegistry.registerSkipped(e.file, LogMessage.SCENARIO_SKIPPED_INACTIVE));
     }
 
     private List<MappingResult> filterScenariosIfOnlyThis(final List<MappingResult> original) {
         return filterBy(original, e -> e.scenario.getSettings().isOnlyThis());
+    }
+
+    private void registerSkippedByOnlyThis(final List<MappingResult> activeScenarios,
+                                           final List<MappingResult> scenariosWithOnlyThisEnabled) {
+        activeScenarios.stream()
+                .filter(e -> !scenariosWithOnlyThisEnabled.contains(e))
+                .forEach(e -> ScenarioStatusRegistry.registerSkipped(
+                        e.file, LogMessage.SCENARIO_SKIPPED_ONLY_THIS));
     }
 
     private List<MappingResult> filterScenariosByTags(final List<MappingResult> activeScenarios) {
@@ -96,11 +110,16 @@ public class ScenarioFilter {
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
         if (entry.scenario.getSettings().getTags() == null) {
             logUtil.logScenarioWithoutTags(entry.file.getPath());
+            ScenarioStatusRegistry.registerSkipped(entry.file, LogMessage.SCENARIO_SKIPPED_WITHOUT_TAGS);
             return false;
         }
         List<String> scenarioTags =
                 Arrays.asList((entry.scenario.getSettings().getTags()).split(DelimiterConstant.COMMA));
-        return scenarioTags.stream().anyMatch(enabledTags::contains);
+        boolean matches = scenarioTags.stream().anyMatch(enabledTags::contains);
+        if (!matches) {
+            ScenarioStatusRegistry.registerSkipped(entry.file, LogMessage.SCENARIO_SKIPPED_TAGS_NOT_MATCH);
+        }
+        return matches;
     }
 
     private List<String> getEnabledTags(final List<TagValue> tags) {
@@ -117,5 +136,19 @@ public class ScenarioFilter {
     private List<MappingResult> filterBy(final List<MappingResult> scenarios,
                                          final Predicate<MappingResult> by) {
         return scenarios.stream().filter(by).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private List<MappingResult> filterBy(final List<MappingResult> scenarios,
+                                         final Predicate<MappingResult> by,
+                                         final Consumer<MappingResult> onRejected) {
+        List<MappingResult> accepted = new ArrayList<>(scenarios.size());
+        for (MappingResult scenario : scenarios) {
+            if (by.test(scenario)) {
+                accepted.add(scenario);
+            } else {
+                onRejected.accept(scenario);
+            }
+        }
+        return accepted;
     }
 }

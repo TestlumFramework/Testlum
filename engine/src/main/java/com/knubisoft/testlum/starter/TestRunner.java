@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.starter;
 
+import com.knubisoft.testlum.starter.summary.ExecutionCounts;
 import com.knubisoft.testlum.starter.summary.TestExecutionPostProcessor;
 import com.knubisoft.testlum.testing.RootTest;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
@@ -108,8 +109,9 @@ public class TestRunner implements CommandLineRunner {
      * @param summary the test execution summary containing results
      */
     private void formatMessageAndExitCode(final TestExecutionSummary summary) {
-        TESTLUMStarter.ExitCode exitCode = TESTLUMStarter.getExitCode(summary);
-        testExecutionPostProcessor.process(summary, exitCode.getLogColor(), exitCode.getMessage());
+        ExecutionCounts counts = ExecutionCounts.of(summary);
+        TESTLUMStarter.ExitCode exitCode = TESTLUMStarter.getExitCode(counts, summary);
+        testExecutionPostProcessor.process(summary, counts, exitCode.getLogColor(), exitCode.getMessage());
         System.exit(exitCode.getExitCode());
     }
 }

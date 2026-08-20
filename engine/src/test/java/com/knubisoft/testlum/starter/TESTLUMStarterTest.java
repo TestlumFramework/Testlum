@@ -1,10 +1,12 @@
 package com.knubisoft.testlum.starter;
 
+import com.knubisoft.testlum.starter.summary.ExecutionCounts;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -60,67 +62,80 @@ class TESTLUMStarterTest {
     @Nested
     class GetExitCode {
 
-        @Test
-        void returnsNoTestsFoundWhenZeroTestsFound() {
-            TestExecutionSummary summary = mock(TestExecutionSummary.class);
-            when(summary.getTestsFoundCount()).thenReturn(0L);
+        private TestExecutionSummary noLauncherFailures() {
+            return mock(TestExecutionSummary.class);
+        }
 
-            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(summary);
+        @Test
+        void returnsNoTestsFoundWhenNothingWasAccountedFor() {
+            ExecutionCounts counts = new ExecutionCounts(0, 0, 0, 0);
+
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(counts, noLauncherFailures());
 
             assertEquals(TESTLUMStarter.ExitCode.NO_TESTS_FOUND, result);
         }
 
         @Test
-        void returnsTestsFailedWhenFailuresExist() {
-            TestExecutionSummary summary = mock(TestExecutionSummary.class);
-            when(summary.getTestsFoundCount()).thenReturn(10L);
-            when(summary.getTestsFailedCount()).thenReturn(3L);
+        void returnsTestsFailedWhenRunsFailed() {
+            ExecutionCounts counts = new ExecutionCounts(0, 0, 7, 3);
 
-            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(summary);
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(counts, noLauncherFailures());
 
             assertEquals(TESTLUMStarter.ExitCode.TESTS_FAILED, result);
         }
 
         @Test
-        void returnsTestsPassedWhenAllTestsPass() {
-            TestExecutionSummary summary = mock(TestExecutionSummary.class);
-            when(summary.getTestsFoundCount()).thenReturn(10L);
-            when(summary.getTestsFailedCount()).thenReturn(0L);
+        void returnsTestsPassedWhenAllRunsPassed() {
+            ExecutionCounts counts = new ExecutionCounts(0, 0, 10, 0);
 
-            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(summary);
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(counts, noLauncherFailures());
 
             assertEquals(TESTLUMStarter.ExitCode.TESTS_PASSED, result);
         }
 
         @Test
-        void noTestsFoundTakesPriorityOverFailures() {
-            TestExecutionSummary summary = mock(TestExecutionSummary.class);
-            when(summary.getTestsFoundCount()).thenReturn(0L);
-            when(summary.getTestsFailedCount()).thenReturn(5L);
+        void returnsTestsWereSkippedWhenOnlyInvalidScenariosExist() {
+            ExecutionCounts counts = new ExecutionCounts(2, 0, 0, 0);
 
-            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(summary);
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(counts, noLauncherFailures());
 
-            assertEquals(TESTLUMStarter.ExitCode.NO_TESTS_FOUND, result);
+            assertEquals(TESTLUMStarter.ExitCode.TESTS_WERE_SKIPPED, result);
         }
 
         @Test
-        void returnsTestsPassedWhenOneTestPassed() {
-            TestExecutionSummary summary = mock(TestExecutionSummary.class);
-            when(summary.getTestsFoundCount()).thenReturn(1L);
-            when(summary.getTestsFailedCount()).thenReturn(0L);
+        void invalidScenariosDoNotHideFailedRuns() {
+            ExecutionCounts counts = new ExecutionCounts(2, 0, 0, 1);
 
-            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(summary);
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(counts, noLauncherFailures());
+
+            assertEquals(TESTLUMStarter.ExitCode.TESTS_FAILED, result);
+        }
+
+        @Test
+        void skippedScenariosDoNotAffectExitCode() {
+            ExecutionCounts counts = new ExecutionCounts(0, 5, 10, 0);
+
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(counts, noLauncherFailures());
 
             assertEquals(TESTLUMStarter.ExitCode.TESTS_PASSED, result);
         }
 
         @Test
-        void returnsTestsFailedWhenOneTestFailed() {
+        void returnsInvalidConfigurationWhenNothingRanAndLauncherFailed() {
             TestExecutionSummary summary = mock(TestExecutionSummary.class);
-            when(summary.getTestsFoundCount()).thenReturn(1L);
-            when(summary.getTestsFailedCount()).thenReturn(1L);
+            when(summary.getFailures()).thenReturn(List.of(mock(TestExecutionSummary.Failure.class)));
 
-            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(summary);
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(new ExecutionCounts(0, 0, 0, 0), summary);
+
+            assertEquals(TESTLUMStarter.ExitCode.INVALID_CONFIGURATION, result);
+        }
+
+        @Test
+        void returnsTestsFailedOnLauncherFailureEvenWithoutFailedRuns() {
+            TestExecutionSummary summary = mock(TestExecutionSummary.class);
+            when(summary.getFailures()).thenReturn(List.of(mock(TestExecutionSummary.Failure.class)));
+
+            TESTLUMStarter.ExitCode result = TESTLUMStarter.getExitCode(new ExecutionCounts(0, 0, 4, 0), summary);
 
             assertEquals(TESTLUMStarter.ExitCode.TESTS_FAILED, result);
         }

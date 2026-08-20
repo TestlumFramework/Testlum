@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -33,6 +34,7 @@ class ScenarioFilterTest {
         doNothing().when(logUtil).logNonParsedScenarioInfo(anyString(), anyString());
         doNothing().when(logUtil).logScenarioWithoutTags(anyString());
         filter = new ScenarioFilter(config, logUtil);
+        ScenarioStatusRegistry.clear();
 
         final RunScenariosByTag runByTag = new RunScenariosByTag();
         runByTag.setEnabled(false);
@@ -170,6 +172,97 @@ class ScenarioFilterTest {
         void emptyOriginalListThrows() {
             assertThrows(DefaultFrameworkException.class,
                     () -> filter.filterScenarios(new ArrayList<>()));
+        }
+    }
+
+    @Nested
+    class StatusRegistry {
+
+        @Test
+        void inactiveScenarioIsRegisteredAsSkipped() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, null));
+            input.add(validResult("b.xml", false, false, null));
+
+            filter.filterScenarios(input);
+
+            assertEquals(1, ScenarioStatusRegistry.getSkipped().size());
+            assertEquals(LogMessage.SCENARIO_SKIPPED_INACTIVE,
+                    ScenarioStatusRegistry.getSkipped().get("b.xml"));
+            assertTrue(ScenarioStatusRegistry.getInvalid().isEmpty());
+        }
+
+        @Test
+        void scenariosLosingToOnlyThisAreRegisteredAsSkipped() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, null));
+            input.add(validResult("b.xml", true, true, null));
+
+            filter.filterScenarios(input);
+
+            assertEquals(1, ScenarioStatusRegistry.getSkipped().size());
+            assertEquals(LogMessage.SCENARIO_SKIPPED_ONLY_THIS,
+                    ScenarioStatusRegistry.getSkipped().get("a.xml"));
+        }
+
+        @Test
+        void nothingIsRegisteredWhenOnlyThisIsAbsent() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, null));
+            input.add(validResult("b.xml", true, false, null));
+
+            filter.filterScenarios(input);
+
+            assertTrue(ScenarioStatusRegistry.getSkipped().isEmpty());
+        }
+
+        @Test
+        void nonMatchingAndMissingTagsAreRegisteredAsSkipped() {
+            final RunScenariosByTag runByTag = new RunScenariosByTag();
+            runByTag.setEnabled(true);
+            final TagValue tag = new TagValue();
+            tag.setName("smoke");
+            tag.setEnabled(true);
+            runByTag.getTag().add(tag);
+            when(config.getRunScenariosByTag()).thenReturn(runByTag);
+
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "smoke"));
+            input.add(validResult("b.xml", true, false, "regression"));
+            input.add(validResult("c.xml", true, false, null));
+
+            filter.filterScenarios(input);
+
+            assertEquals(2, ScenarioStatusRegistry.getSkipped().size());
+            assertEquals(LogMessage.SCENARIO_SKIPPED_TAGS_NOT_MATCH,
+                    ScenarioStatusRegistry.getSkipped().get("b.xml"));
+            assertEquals(LogMessage.SCENARIO_SKIPPED_WITHOUT_TAGS,
+                    ScenarioStatusRegistry.getSkipped().get("c.xml"));
+        }
+
+        @Test
+        void nonParsedScenarioIsRegisteredAsInvalid() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, null));
+            input.add(nonParsedResult("bad.xml"));
+
+            filter.filterScenarios(input);
+
+            assertEquals(1, ScenarioStatusRegistry.getInvalid().size());
+            assertEquals("parse error", ScenarioStatusRegistry.getInvalid().get("bad.xml"));
+            assertTrue(ScenarioStatusRegistry.getSkipped().isEmpty());
+        }
+
+        @Test
+        void scenarioCarryingAnExceptionIsRegisteredAsInvalid() {
+            final List<MappingResult> input = new ArrayList<>();
+            final MappingResult valid = validResult("a.xml", true, false, null);
+            input.add(new MappingResult(valid.file, valid.scenario, new RuntimeException("integration disabled")));
+
+            filter.filterScenarios(input);
+
+            assertEquals(1, ScenarioStatusRegistry.getInvalid().size());
+            assertEquals("integration disabled", ScenarioStatusRegistry.getInvalid().get("a.xml"));
         }
     }
 

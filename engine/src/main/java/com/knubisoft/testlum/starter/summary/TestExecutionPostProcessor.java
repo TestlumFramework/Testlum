@@ -16,18 +16,24 @@ public class TestExecutionPostProcessor {
 
     private static final int SECONDS_IN_MINUTE = 60;
 
-    public void process(final TestExecutionSummary summary, final Color logColor, final String message) {
-        this.logResultTable(summary, logColor, message);
+    public void process(final TestExecutionSummary summary,
+                        final ExecutionCounts counts,
+                        final Color logColor,
+                        final String message) {
+        this.logResultTable(summary, counts, logColor, message);
         this.logFailures(summary);
     }
 
-    private void logResultTable(final TestExecutionSummary summary, final Color logColor, final String message) {
+    private void logResultTable(final TestExecutionSummary summary,
+                                final ExecutionCounts counts,
+                                final Color logColor,
+                                final String message) {
         DynamicTableBuilder tableBuilder = TableBuilder.grid(message)
                 .titleColor(logColor)
                 .columns("Status", "Counts")
                 .footer(logColor, this.computeResultFooter(summary));
         for (TestExecutionResult result : TestExecutionResult.values()) {
-            tableBuilder.row(result.logColor(), result.status(), result.countIn(summary));
+            tableBuilder.row(result.logColor(), result.status(), result.countIn(counts));
         }
         log.info(tableBuilder.build());
     }

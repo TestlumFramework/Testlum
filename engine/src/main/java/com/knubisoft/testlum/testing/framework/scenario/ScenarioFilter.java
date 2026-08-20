@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.logger.ConfigurationLogger;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,8 +29,11 @@ public class ScenarioFilter {
 
     private final GlobalTestConfiguration globalTestConfiguration;
     private final LogUtil logUtil;
+    private final ConfigurationLogger configurationLogger;
 
     public List<MappingResult> filterScenarios(final List<MappingResult> original) {
+        configurationLogger.logTagConfiguration(globalTestConfiguration.getRunScenariosByTag(),
+                countScenariosByTag(original));
         List<MappingResult> nonParsedScenarios =
                 original.stream().filter(e -> e.scenario == null).toList();
         handleNonParsedScenarios(nonParsedScenarios, original.isEmpty());
@@ -120,6 +126,15 @@ public class ScenarioFilter {
             ScenarioStatusRegistry.registerSkipped(entry.file, LogMessage.SCENARIO_SKIPPED_TAGS_NOT_MATCH);
         }
         return matches;
+    }
+
+    private Map<String, Long> countScenariosByTag(final List<MappingResult> scenarios) {
+        return scenarios.stream()
+                .filter(entry -> entry.scenario != null)
+                .map(entry -> entry.scenario.getSettings().getTags())
+                .filter(Objects::nonNull)
+                .flatMap(tags -> Arrays.stream(tags.split(DelimiterConstant.COMMA)))
+                .collect(Collectors.groupingBy(tag -> tag, Collectors.counting()));
     }
 
     private List<String> getEnabledTags(final List<TagValue> tags) {

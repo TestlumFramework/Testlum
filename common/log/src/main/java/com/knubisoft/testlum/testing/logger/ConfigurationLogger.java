@@ -4,6 +4,7 @@ import com.knubisoft.testlum.log.table.DynamicTableBuilder;
 import com.knubisoft.testlum.log.table.TableBuilder;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ public class ConfigurationLogger {
 
     private final UiConfigurationLogger uiConfigurationLogger;
     private final IntegrationConfigurationLogger integrationConfigurationLogger;
+    private final TagConfigurationLogger tagConfigurationLogger;
 
     public void logIntegrationConfiguration(final Map<String, Integrations> integrationsMap) {
         DynamicTableBuilder table = TableBuilder.grid(LogMessage.INTEGRATION_CONFIG_TABLE_TITLE)
@@ -39,6 +41,23 @@ public class ConfigurationLogger {
                 (environment, uiConfig) ->
                         this.uiConfigurationLogger.appendEnvironmentSections(table, environment, uiConfig)
         );
+        if (!table.getRows().isEmpty()) {
+            log.info(table.build());
+        }
+    }
+
+    public void logTagConfiguration(final RunScenariosByTag runScenariosByTag,
+                                    final Map<String, Long> scenarioCountByTag) {
+        if (runScenariosByTag == null) {
+            return;
+        }
+        if (!runScenariosByTag.isEnabled()) {
+            log.info(LogMessage.TAG_FILTERING_DISABLED);
+            return;
+        }
+        DynamicTableBuilder table = TableBuilder.grid(LogMessage.TAG_CONFIG_TABLE_TITLE)
+                .columnCount(TagConfigurationLogger.COLUMN_COUNT);
+        this.tagConfigurationLogger.appendSections(table, runScenariosByTag, scenarioCountByTag);
         if (!table.getRows().isEmpty()) {
             log.info(table.build());
         }

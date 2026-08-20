@@ -2,15 +2,23 @@ package com.knubisoft.testlum.log.table;
 
 import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.log.LogFormat;
+import de.vandermeer.asciitable.AT_ColumnWidthCalculator;
 import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_FixedWidth;
 import de.vandermeer.asciitable.CWC_LongestLine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 final class TableRenderer {
 
     private static final String NL = System.lineSeparator();
+
+    private static final int MAX_TABLE_WIDTH = 120;
+
+    private static final int MIN_COLUMN_WIDTH = 5;
 
     private TableRenderer() {
     }
@@ -18,9 +26,98 @@ final class TableRenderer {
     static String render(final TableSpec spec) {
         validate(spec);
         AsciiTable table = constructTable(spec);
-        table.getRenderer().setCWC(new CWC_LongestLine());
+        table.getRenderer().setCWC(computeWidthCalculator(spec));
         table.setTextAlignment(spec.align().getAlignment());
         return colorize(NL.concat(table.render()), spec);
+    }
+
+    private static AT_ColumnWidthCalculator computeWidthCalculator(final TableSpec spec) {
+        int columnCount = spec.columnCount();
+        int budget = MAX_TABLE_WIDTH - (columnCount + 1);
+        if (budget < columnCount * MIN_COLUMN_WIDTH) {
+            return new CWC_LongestLine();
+        }
+        int[] natural = measureNaturalWidths(spec);
+        if (sum(natural) <= budget) {
+            return new CWC_LongestLine();
+        }
+        return toFixedWidth(shrinkToBudget(natural, budget));
+    }
+
+    private static CWC_FixedWidth toFixedWidth(final int[] widths) {
+        CWC_FixedWidth calculator = new CWC_FixedWidth();
+        for (int width : widths) {
+            calculator.add(width);
+        }
+        return calculator;
+    }
+
+    private static int[] measureNaturalWidths(final TableSpec spec) {
+        int[] widths = new int[spec.columnCount()];
+        for (Row row : spec.rows()) {
+            measureRow(widths, row.cells());
+        }
+        if (spec.headers() != null) {
+            measureRow(widths, spec.headers());
+        }
+        measureLastColumn(widths, textOf(spec.title()));
+        measureLastColumn(widths, textOf(spec.footer()));
+        return widths;
+    }
+
+    private static void measureRow(final int[] widths, final Object[] cells) {
+        for (int i = 0; i < cells.length && i < widths.length; i++) {
+            widths[i] = Math.max(widths[i], longestLine(cells[i]));
+        }
+    }
+
+    private static void measureLastColumn(final int[] widths, final String text) {
+        if (text == null) {
+            return;
+        }
+        int last = widths.length - 1;
+        widths[last] = Math.max(widths[last], longestLine(text));
+    }
+
+    private static int longestLine(final Object cell) {
+        if (cell == null) {
+            return 0;
+        }
+        int longest = 0;
+        for (String line : String.valueOf(cell).split("\\R", -1)) {
+            longest = Math.max(longest, line.length());
+        }
+        return longest;
+    }
+
+    private static int[] shrinkToBudget(final int[] natural, final int budget) {
+        int[] widths = new int[natural.length];
+        int remaining = budget;
+        int left = natural.length;
+        for (Integer index : narrowestFirst(natural)) {
+            int fair = remaining / left;
+            widths[index] = Math.max(MIN_COLUMN_WIDTH, Math.min(natural[index], fair));
+            remaining -= widths[index];
+            left--;
+        }
+        return widths;
+    }
+
+    private static Integer[] narrowestFirst(final int[] natural) {
+        Integer[] order = new Integer[natural.length];
+        for (int i = 0; i < natural.length; i++) {
+            order[i] = i;
+        }
+        Arrays.sort(order, Comparator.comparingInt(index -> natural[index]));
+        return order;
+    }
+
+    private static int sum(final int[] values) {
+        int total = 0;
+        for (int value : values) {
+            total += value;
+        }
+        return total;
     }
 
     private static void validate(final TableSpec spec) {

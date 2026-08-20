@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.logger.ConfigurationLogger;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
@@ -12,12 +13,15 @@ import com.knubisoft.testlum.testing.model.scenario.Settings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +29,7 @@ class ScenarioFilterTest {
 
     private GlobalTestConfiguration config;
     private LogUtil logUtil;
+    private ConfigurationLogger configurationLogger;
     private ScenarioFilter filter;
 
     @BeforeEach
@@ -33,7 +38,8 @@ class ScenarioFilterTest {
         logUtil = mock(LogUtil.class);
         doNothing().when(logUtil).logNonParsedScenarioInfo(anyString(), anyString());
         doNothing().when(logUtil).logScenarioWithoutTags(anyString());
-        filter = new ScenarioFilter(config, logUtil);
+        configurationLogger = mock(ConfigurationLogger.class);
+        filter = new ScenarioFilter(config, logUtil, configurationLogger);
         ScenarioStatusRegistry.clear();
 
         final RunScenariosByTag runByTag = new RunScenariosByTag();
@@ -263,6 +269,77 @@ class ScenarioFilterTest {
 
             assertEquals(1, ScenarioStatusRegistry.getInvalid().size());
             assertEquals("integration disabled", ScenarioStatusRegistry.getInvalid().get("a.xml"));
+        }
+    }
+
+    @Nested
+    class TagTable {
+
+        private Map<String, Long> capturedCounts() {
+            final ArgumentCaptor<Map<String, Long>> captor = ArgumentCaptor.forClass(Map.class);
+            verify(configurationLogger).logTagConfiguration(any(), captor.capture());
+            return captor.getValue();
+        }
+
+        @Test
+        void countsEveryParsedScenarioPerTag() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "smoke"));
+            input.add(validResult("b.xml", true, false, "smoke,regression"));
+
+            filter.filterScenarios(input);
+
+            assertEquals(Map.of("smoke", 2L, "regression", 1L), capturedCounts());
+        }
+
+        @Test
+        void countsInactiveScenariosToo() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "smoke"));
+            input.add(validResult("b.xml", false, false, "smoke"));
+
+            filter.filterScenarios(input);
+
+            assertEquals(Map.of("smoke", 2L), capturedCounts());
+        }
+
+        @Test
+        void skipsNonParsedScenariosAndScenariosWithoutTags() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "smoke"));
+            input.add(validResult("b.xml", true, false, null));
+            input.add(nonParsedResult("bad.xml"));
+
+            filter.filterScenarios(input);
+
+            assertEquals(Map.of("smoke", 1L), capturedCounts());
+        }
+
+        @Test
+        void doesNotTrimTagsSoTheTableMatchesTheFilter() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "smoke, regression"));
+
+            filter.filterScenarios(input);
+
+            assertEquals(Map.of("smoke", 1L, " regression", 1L), capturedCounts());
+        }
+
+        @Test
+        void isLoggedBeforeTagFilteringBlowsUp() {
+            final RunScenariosByTag runByTag = new RunScenariosByTag();
+            runByTag.setEnabled(true);
+            final TagValue tag = new TagValue();
+            tag.setName("smoke");
+            tag.setEnabled(true);
+            runByTag.getTag().add(tag);
+            when(config.getRunScenariosByTag()).thenReturn(runByTag);
+
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "regression"));
+
+            assertThrows(DefaultFrameworkException.class, () -> filter.filterScenarios(input));
+            assertEquals(Map.of("regression", 1L), capturedCounts());
         }
     }
 

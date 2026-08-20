@@ -206,6 +206,15 @@ public final class LogMessage {
     public static final String INTEGRATION_CONFIG_TABLE_ALIAS_HEADER = "Alias";
     public static final String INTEGRATION_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
 
+    public static final String TAG_CONFIG_TABLE_TITLE = "Tag Configuration";
+    public static final String TAG_CONFIG_TABLE_TAG_HEADER = "Tag";
+    public static final String TAG_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
+    public static final String TAG_CONFIG_TABLE_SCENARIOS_HEADER = "Scenarios";
+    public static final String TAG_CONFIG_TABLE_UNDECLARED_ROW = "Not declared in config";
+    public static final String TAG_CONFIG_TABLE_UNDECLARED_ENABLED_CELL = "-";
+    public static final String TAG_FILTERING_DISABLED =
+            LogFormat.withYellow("Tag filtering is disabled. All active scenarios will run");
+
     public static final String UI_ELEMENT_DISABLED_EXCEPTION_MESSAGE =
             "Element is disabled and cannot accept interactions. Check if the '%s' attribute is set on the element";
     public static final String UI_ELEMENT_IS_NOT_INTERACTABLE_EXCEPTION_MESSAGE =

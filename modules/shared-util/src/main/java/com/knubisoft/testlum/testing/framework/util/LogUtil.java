@@ -97,7 +97,7 @@ public class LogUtil {
         entries.forEach(tableBuilder::row);
         return tableBuilder
                 .color(color)
-                .align(Align.CENTER)
+                .align(Align.LEFT)
                 .build();
     }
 }

@@ -186,19 +186,20 @@ public final class LogMessage {
 
     public static final String UI_CONFIG_TABLE_TITLE = "UI Configuration";
     public static final String UI_CONFIG_TABLE_ENV_ROW = "Environment: %s";
-    public static final String UI_CONFIG_TABLE_WEB_ROW = "Web";
-    public static final String UI_CONFIG_TABLE_NATIVE_ROW = "Native";
-    public static final String UI_CONFIG_TABLE_MOBILE_BROWSER_ROW = "Mobile Browser";
-    public static final String UI_CONFIG_TABLE_BASE_URL_HEADER = "Base URL";
+    public static final String UI_CONFIG_TABLE_WEB_ROW = "Web (%s)";
+    public static final String UI_CONFIG_TABLE_NATIVE_ROW = "Native (%s)";
+    public static final String UI_CONFIG_TABLE_MOBILE_BROWSER_ROW = "Mobile Browser (%s)";
+    public static final String UI_CONFIG_TABLE_BASE_URL_ROW = "Base URL: %s";
+    public static final String UI_CONFIG_TABLE_CONNECTION_TYPE_ROW = "Connection type: %s";
+    public static final String UI_CONFIG_TABLE_ENABLED_DETAIL = "enabled";
+    public static final String UI_CONFIG_TABLE_DISABLED_DETAIL = "disabled";
+    public static final String UI_CONFIG_TABLE_BROWSER_HEADER = "Browser";
+    public static final String UI_CONFIG_TABLE_ALIAS_HEADER = "Alias";
+    public static final String UI_CONFIG_TABLE_PLATFORM_HEADER = "Platform";
+    public static final String UI_CONFIG_TABLE_DEVICE_ALIAS_HEADER = "Device Alias";
     public static final String UI_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
-    public static final String UI_CONFIG_TABLE_BROWSER_ALIAS_HEADER = "Aliases";
-    public static final String UI_CONFIG_TABLE_BROWSER_TYPE_HEADER = "Browser Types";
-    public static final String UI_CONFIG_TABLE_DEVICE_ALIAS_HEADER = "Device Aliases";
-    public static final String UI_CONFIG_TABLE_CONNECTION_TYPE_HEADER = "Connection Type";
-    public static final String UI_CONFIG_TABLE_NATIVE_PLATFORM_HEADER = "Platform";
     public static final String CONNECTION_APPIUM_SERVER = "Appium Server";
     public static final String CONNECTION_BROWSER_STACK = "BrowserStack";
-    public static final String EMPTY_DELIMITER = " ";
 
     public static final String INTEGRATION_CONFIG_TABLE_TITLE = "Integrations Configuration";
     public static final String INTEGRATION_CONFIG_TABLE_ENV_ROW = "Environment: %s";

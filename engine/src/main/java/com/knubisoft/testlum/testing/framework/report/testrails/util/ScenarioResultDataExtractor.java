@@ -61,7 +61,7 @@ public class ScenarioResultDataExtractor {
                     String testCase = testRails.getTestCaseId();
                     return enable
                             && (StringUtils.isEmpty(runId) || Integer.parseInt(runId) <= 0)
-                            && (NumberUtils.isParsable(testCase) && Integer.parseInt(testCase) > 0);
+                            && NumberUtils.isParsable(testCase) && Integer.parseInt(testCase) > 0;
                 })
                 .collect(Collectors.toList());
     }

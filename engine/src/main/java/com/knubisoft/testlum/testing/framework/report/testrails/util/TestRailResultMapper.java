@@ -41,7 +41,7 @@ public class TestRailResultMapper {
                 : String.format(TestRailConstants.COMMENT_PASSED_TEMPLATE, scenarioName);
     }
 
-    private  String sanitizeFailureMessage(final String cause) {
+    private String sanitizeFailureMessage(final String cause) {
         if (StringUtils.isBlank(cause)) {
             return "";
         }
@@ -56,7 +56,8 @@ public class TestRailResultMapper {
         return msg;
     }
 
-    public String durationOfExecution(long executionTime) {
+    // CHECKSTYLE:OFF
+    public String durationOfExecution(final long executionTime) {
         long totalSeconds = executionTime / 1000;
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
@@ -72,8 +73,8 @@ public class TestRailResultMapper {
         if (seconds > 0) {
             duration.append(seconds).append("s");
         }
-
         return duration.toString().trim();
     }
+    // CHECKSTYLE:ON
 
 }

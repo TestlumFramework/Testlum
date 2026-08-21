@@ -278,8 +278,6 @@ class NativeCompareImageExecutorTest {
             part.setLocator("elementLocator");
             image.setPart(part);
 
-            CommandResult result = new CommandResult();
-
             BufferedImage testImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
             File tempFile = File.createTempFile("test-image", ".png");
             tempFile.deleteOnExit();
@@ -287,6 +285,7 @@ class NativeCompareImageExecutorTest {
 
             when(fileSearcher.searchFileFromDir(any(), eq("expected.png"))).thenReturn(tempFile);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("elementLocator"), any(), result))
                     .thenReturn(mockElement);

@@ -10,7 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -32,19 +31,16 @@ public class TestRailConnectionService {
 
     public void validateConnection() {
         String url = endpoints.getFetchProjectsEndpoint();
-        HttpHeaders headers = authHeaders();
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
+        HttpEntity<Void> httpEntity = new HttpEntity<>(authHeaders());
         try {
             log.info(TestRailConstants.LOG_VALIDATE_CONNECTION, url);
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
             if (response.getStatusCode().is2xxSuccessful()) {
                 log.info(TestRailConstants.LOG_CONNECTION_SUCCESSFUL);
             } else {
-                log.warn(TestRailConstants.LOG_CONNECTION_FAILED, response.getStatusCode());
                 throw new DefaultFrameworkException(TestRailConstants.LOG_CONNECTION_FAILED, response.getStatusCode());
             }
         } catch (Exception e) {
-            log.error(TestRailConstants.LOG_CONNECTION_ERROR, e.getMessage(), e);
             throw new DefaultFrameworkException(TestRailConstants.LOG_CONNECTION_ERROR, e.getMessage(), e);
         }
     }

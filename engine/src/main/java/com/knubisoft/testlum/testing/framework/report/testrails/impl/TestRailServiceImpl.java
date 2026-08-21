@@ -27,7 +27,7 @@ public class TestRailServiceImpl implements TestRailService {
     private final LogUtil logUtil;
 
     @Override
-    public void generateTestRailReports(List<ScenarioResult> results) {
+    public void generateTestRailReports(final List<ScenarioResult> results) {
         testRailApiClient.validateConnection();
         List<ScenarioResult> testRailScenarios = scenarioResultDataExtractor
                 .collectScenarioWithTestRailIntegrations(results);
@@ -59,11 +59,10 @@ public class TestRailServiceImpl implements TestRailService {
         if (caseIds.isEmpty()) {
             return;
         }
-        Integer newTestRunId = testRailApiClient.createNewTestRailRun(caseIds);
-        if (newTestRunId != null) {
+        testRailApiClient.createNewTestRailRun(caseIds).ifPresent(newTestRunId -> {
             Map<Integer, List<ScenarioResult>> newGroup = Map.of(newTestRunId, scenariosWithoutRunId);
             sendGroupedResultsToApi(newGroup);
-        }
+        });
     }
 
     private void sendGroupedResultsToApi(final Map<Integer, List<ScenarioResult>> groupedResults) {

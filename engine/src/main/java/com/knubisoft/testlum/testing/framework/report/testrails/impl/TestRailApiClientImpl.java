@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -66,32 +67,37 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     }
 
     @Override
-    public Integer createNewTestRailRun(final List<Integer> caseIds) {
+    public Optional<Integer> createNewTestRailRun(final List<Integer> caseIds) {
         String url = connectionService.endpoints().getCreateTextRunEndpoint(testRails.getProjectId());
-        Run request = buildTestRunRequest(testRails, caseIds);
-        HttpHeaders headers = connectionService.buildHeaders();
-        HttpEntity<Run> entity = new HttpEntity<>(request, headers);
+        HttpEntity<Run> entity = buildTestRunHttpEntity(caseIds);
         try {
             log.info(TestRailConstants.LOG_CREATING_TEST_RUN, testRails.getDefaultRunName(), caseIds.size());
             ResponseEntity<Run> response = restTemplate.exchange(url, HttpMethod.POST, entity, Run.class);
-            Run body = response.getBody();
-            if (body != null && body.getId() != null) {
-                Integer id = body.getId();
-                log.info(TestRailConstants.LOG_TEST_RUN_CREATED, testRails.getDefaultRunName(), id);
-                return id;
-            }
+            return fetchIdFromResponse(response);
         } catch (Exception e) {
             log.error(TestRailConstants.LOG_TEST_RUN_CREATION_FAILED, testRails.getDefaultRunName(), e.getMessage(), e);
+            return Optional.empty();
         }
-        return null;
     }
 
-    public Run buildTestRunRequest(final TestRailReports testRails, final List<Integer> caseIds) {
-        return Run.builder()
+    private HttpEntity<Run> buildTestRunHttpEntity(final List<Integer> caseIds) {
+        Run request = Run.builder()
                 .name(testRails.getDefaultRunName())
                 .description(testRails.getDefaultRunDescription())
                 .includeAll(false)
                 .caseIds(caseIds).build();
+        HttpHeaders headers = connectionService.buildHeaders();
+        return new HttpEntity<>(request, headers);
+    }
+
+    private Optional<Integer> fetchIdFromResponse(final ResponseEntity<Run> response) {
+        Run body = response.getBody();
+        if (body != null && body.getId() != null) {
+            Integer id = body.getId();
+            log.info(TestRailConstants.LOG_TEST_RUN_CREATED, testRails.getDefaultRunName(), id);
+            return Optional.of(id);
+        }
+        return Optional.empty();
     }
 
     private boolean screenshotsEnabled() {

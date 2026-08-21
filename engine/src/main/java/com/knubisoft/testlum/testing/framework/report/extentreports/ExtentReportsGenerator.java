@@ -13,7 +13,6 @@ import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.report.extentreports.model.ResultForComparison;
 import com.knubisoft.testlum.testing.framework.report.testrails.TestRailService;
-import com.knubisoft.testlum.testing.framework.report.testrails.util.ScenarioResultDataExtractor;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;

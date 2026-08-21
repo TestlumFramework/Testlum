@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class FailureScreenshotCollector{
+public class FailureScreenshotCollector {
 
     public Map<Integer, String> getScreenshotsOfUnsuccessfulTests(final List<ScenarioResult> scenarioResults) {
         Map<Integer, String> caseIdAttachmentsMap = new HashMap<>();
@@ -20,10 +20,7 @@ public class FailureScreenshotCollector{
             if (screenshotOfLastUnsuccessfulCommand != null) {
                 String testCaseId = scenarioResult.getOverview().getTestRail().getTestCaseId();
                 if (NumberUtils.isParsable(testCaseId)) {
-                    caseIdAttachmentsMap.put(
-                            Integer.parseInt(testCaseId),
-                            screenshotOfLastUnsuccessfulCommand
-                    );
+                    caseIdAttachmentsMap.put(Integer.parseInt(testCaseId), screenshotOfLastUnsuccessfulCommand);
                 }
             }
         });
@@ -36,7 +33,7 @@ public class FailureScreenshotCollector{
         return result.isEmpty() ? null : result.get(result.size() - 1).getBase64Screenshot();
     }
 
-    private void collectUnsuccessfulCommandsRecursive(CommandResult command, List<CommandResult> result) {
+    private void collectUnsuccessfulCommandsRecursive(final CommandResult command, final List<CommandResult> result) {
         if (command == null) {
             return;
         }

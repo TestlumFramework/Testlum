@@ -22,7 +22,8 @@ public final class TestRailConstants {
     public static final String LOG_ERROR_RESPONSE = "Failed to send results to TestRail (Run ID: {}). Error: {}";
 
     public static final String LOG_VALIDATE_CONNECTION = "Validating TestRail connection: {}";
-    public static final String LOG_CONNECTION_SUCCESSFUL = "TestRail connection and authentication validated successfully";
+    public static final String LOG_CONNECTION_SUCCESSFUL =
+            "TestRail connection and authentication validated successfully";
     public static final String LOG_CONNECTION_FAILED = "TestRail connection failed: {}";
     public static final String LOG_CONNECTION_ERROR = "Error validating TestRail connection: {}";
     public static final String LOG_CREATING_TEST_RUN = "Creating Test Run: '{}', number of cases: {}";
@@ -30,14 +31,18 @@ public final class TestRailConstants {
     public static final String LOG_TEST_RUN_CREATION_FAILED = "Failed to create Test Run '{}': {}";
 
     public static final String LOG_FETCHING_TEST = "Fetching test data for Test ID: {}";
-    public static final String LOG_FETCHING_TEST_SUCCESS_RESPONSE = "TestRail response for fetching test data with Test ID {}: {}";
-    public static final String LOG_FETCHING_TEST_ERROR_RESPONSE = "Failed to get test data for Test ID: {}. Error: {}";
+    public static final String LOG_FETCHING_TEST_SUCCESS_RESPONSE =
+            "TestRail response for fetching test data with Test ID {}: {}";
+    public static final String LOG_FETCHING_TEST_ERROR_RESPONSE =
+            "Failed to get test data for Test ID: {}. Error: {}";
 
     public static final String ATTACHMENT_KEY = "attachment";
     public static final String ATTACHMENT_DEFAULT_FILENAME = "error_screenshot.jpg";
     public static final String LOG_SENDING_ATTACHMENT = "Sending attachment to TestRail Result ID: {}";
-    public static final String LOG_ATTACHMENT_SUCCESS_RESPONSE = "TestRail response for attachment for Result ID {}: {}";
-    public static final String LOG_ATTACHMENT_ERROR_RESPONSE = "Failed to send screenshot to TestRail (Result ID: {}). Error: {}";
+    public static final String LOG_ATTACHMENT_SUCCESS_RESPONSE =
+            "TestRail response for attachment for Result ID {}: {}";
+    public static final String LOG_ATTACHMENT_ERROR_RESPONSE =
+            "Failed to send screenshot to TestRail (Result ID: {}). Error: {}";
 
     public static final String COMMENT_PASSED_TEMPLATE = "Test case '%s' passed successfully.";
     public static final String COMMENT_FAILED_TEMPLATE = "Test case '%s' failed.\nFailure: %s";

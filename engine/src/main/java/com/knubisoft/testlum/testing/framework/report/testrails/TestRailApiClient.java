@@ -4,12 +4,14 @@ import com.knubisoft.testlum.testing.framework.report.testrails.model.ResultRequ
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface TestRailApiClient {
 
     void validateConnection();
 
-    void sendResultsInBatch(int runId, List<ResultRequestDto> results, Map<Integer, String> screenshotsOfUnsuccessfulTests);
+    void sendResultsInBatch(int runId, List<ResultRequestDto> results,
+                            Map<Integer, String> screenshotsOfUnsuccessfulTests);
 
-    Integer createNewTestRailRun(List<Integer> caseIds);
+    Optional<Integer> createNewTestRailRun(List<Integer> caseIds);
 }

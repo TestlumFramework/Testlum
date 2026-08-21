@@ -180,8 +180,6 @@ class SwipeNativeExecutorTest {
         void performsElementSwipeUp() {
             final AppiumDriver appiumDriver = mock(AppiumDriver.class);
 
-            CommandResult result = new CommandResult();
-
             SwipeElement swipeElement = new SwipeElement();
             swipeElement.setDirection(SwipeDirection.UP);
             swipeElement.setPercent(40);
@@ -190,6 +188,7 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
+            CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 300));
             when(uiUtil.findWebElement(any(), eq("scrollable-list"), any(), result)).thenReturn(element);
@@ -204,8 +203,6 @@ class SwipeNativeExecutorTest {
         void performsElementSwipeDown() {
             final AppiumDriver appiumDriver = mock(AppiumDriver.class);
 
-            CommandResult result = new CommandResult();
-
             SwipeElement swipeElement = new SwipeElement();
             swipeElement.setDirection(SwipeDirection.DOWN);
             swipeElement.setPercent(60);
@@ -214,6 +211,7 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
+            CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(150, 200));
             when(uiUtil.findWebElement(any(), eq("carousel"), any(), result)).thenReturn(element);
@@ -229,8 +227,6 @@ class SwipeNativeExecutorTest {
         void addsSwipeMetaData() {
             final AppiumDriver appiumDriver = mock(AppiumDriver.class);
 
-            CommandResult result = new CommandResult();
-
             SwipeElement swipeElement = new SwipeElement();
             swipeElement.setDirection(SwipeDirection.LEFT);
             swipeElement.setPercent(50);
@@ -239,6 +235,7 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
+            CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 100));
             when(uiUtil.findWebElement(any(), eq("swipe-el"), any(), result)).thenReturn(element);

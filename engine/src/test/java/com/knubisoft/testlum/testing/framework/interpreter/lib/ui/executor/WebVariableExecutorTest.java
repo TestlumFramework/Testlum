@@ -117,14 +117,13 @@ class WebVariableExecutorTest {
 
         @Test
         void getsDomWithLocator() {
-            CommandResult result = new CommandResult();
-
             WebVar webVar = new WebVar();
             webVar.setName("domVar");
             FromDom dom = new FromDom();
             dom.setLocator("main-content");
             webVar.setDom(dom);
 
+            CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getAttribute("outerHTML")).thenReturn("<div>content</div>");
             when(uiUtil.findWebElement(any(), eq("main-content"), any(), result)).thenReturn(element);
@@ -222,8 +221,6 @@ class WebVariableExecutorTest {
 
         @Test
         void getsElementAttributeValue() {
-            CommandResult result = new CommandResult();
-
             WebVar webVar = new WebVar();
             webVar.setName("attrVar");
             FromElement fromElement = new FromElement();
@@ -233,6 +230,7 @@ class WebVariableExecutorTest {
             fromElement.setAttribute(attr);
             webVar.setElement(fromElement);
 
+            CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(uiUtil.findWebElement(any(), eq("my-link"), any(), result)).thenReturn(element);
             when(uiUtil.getElementAttribute(eq(element), eq("href"), eq(driver))).thenReturn("/path/to");

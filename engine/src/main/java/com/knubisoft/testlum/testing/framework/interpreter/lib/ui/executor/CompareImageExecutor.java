@@ -50,18 +50,17 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     }
 
     @Override
-    public void execute(final Image image, final CommandResult result) {
+    public void execute(final Image image, final CommandResult r) {
         try {
             logUtil.logImageComparisonInfo(image);
-            resultUtil.addImageComparisonMetaData(image, result);
+            resultUtil.addImageComparisonMetaData(image, r);
             File scenarioFile = dependencies.getFile();
             BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
-            BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
-            List<Rectangle> excludeList = getExcludeList(
-                    image.getFullScreen(), expected, dependencies.getDriver(), result);
+            BufferedImage actual = getActualImage(dependencies.getDriver(), image, r);
+            List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver(), r);
             ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual, excludeList);
             imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                    image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+                    image.isHighlightDifference(), scenarioFile.getParentFile(), r);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }

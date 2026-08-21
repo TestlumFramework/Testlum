@@ -390,4 +390,8 @@ public class LogUtil {
     public void logScenarioWithoutTags(final String scenarioPath) {
         log.warn(LogMessage.SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
     }
+
+    public void logEmptyScenariosForTestRails() {
+        log.warn(LogMessage.EMPTY_SCENARIOS_FOR_TESTRAIL);
+    }
 }

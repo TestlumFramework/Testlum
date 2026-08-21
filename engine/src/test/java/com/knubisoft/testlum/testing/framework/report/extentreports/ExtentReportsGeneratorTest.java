@@ -3,11 +3,13 @@ package com.knubisoft.testlum.testing.framework.report.extentreports;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
+import com.knubisoft.testlum.testing.framework.report.testrails.TestRailService;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.testlum.testing.model.global_config.AppiumNativeCapabilities;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import com.knubisoft.testlum.testing.model.global_config.Platform;
@@ -42,12 +44,17 @@ class ExtentReportsGeneratorTest {
     private BrowserUtil browserUtil;
     @Mock
     private MobileUtil mobileUtil;
+    @Mock
+    private TestRailService testRailService;
+    @Mock
+    private GlobalTestConfiguration globalTestConfiguration;
 
     private ExtentReportsGenerator generator;
 
     @BeforeEach
     void setUp() {
-        generator = new ExtentReportsGenerator(extentReportsConfigurator, browserUtil, mobileUtil);
+        generator = new ExtentReportsGenerator(extentReportsConfigurator, browserUtil, mobileUtil,
+                testRailService, globalTestConfiguration);
     }
 
     @Nested

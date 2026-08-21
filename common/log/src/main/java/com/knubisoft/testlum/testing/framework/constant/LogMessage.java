@@ -173,6 +173,12 @@ public final class LogMessage {
     public static final String SCENARIO_LOCATOR_NOT_FOUND =
             LogFormat.withOrange("Unable to find inline locator {} in {}. Healed value was not persisted");
 
+    public static final String EMPTY_SCENARIOS_FOR_TESTRAIL = LogFormat.withYellow(LINE
+            + LogFormat.newLogLine()
+            + "There is not scenarios to push to TestRail."
+            + LogFormat.newLogLine()
+            + LINE);
+
     private LogMessage() {
         // nop
     }

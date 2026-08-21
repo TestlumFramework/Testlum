@@ -1,0 +1,102 @@
+package com.knubisoft.testlum.testing.framework.report.testrails.impl;
+
+import com.knubisoft.testlum.testing.framework.report.testrails.TestRailApiClient;
+import com.knubisoft.testlum.testing.framework.report.testrails.constant.TestRailConstants;
+import com.knubisoft.testlum.testing.framework.report.testrails.model.ResultRequestDto;
+import com.knubisoft.testlum.testing.framework.report.testrails.model.Run;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+@Slf4j
+public class TestRailApiClientImpl implements TestRailApiClient {
+
+    private final TestRailReports testRails;
+    private final TestRailAttachmentApiClient attachmentApiClient;
+    private final TestRailConnectionService connectionService;
+    private final RestTemplate restTemplate;
+
+    public TestRailApiClientImpl(final GlobalTestConfiguration globalTestConfiguration,
+                                 final TestRailAttachmentApiClient attachmentApiClient) {
+        this.testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
+        this.attachmentApiClient = attachmentApiClient;
+        this.restTemplate = new RestTemplate();
+        this.connectionService = new TestRailConnectionService(testRails, restTemplate);
+    }
+
+    @Override
+    public void validateConnection() {
+        connectionService.validateConnection();
+    }
+
+    @Override
+    public void sendResultsInBatch(final int runId, final List<ResultRequestDto> results,
+                                   final Map<Integer, String> screenshotsOfUnsuccessfulTests) {
+        String url = connectionService.endpoints().getAddResultsForCaseEndpoint(runId);
+        HttpEntity<Map<String, Object>> entity = prepareSendHttpRequest(results);
+        try {
+            log.info(TestRailConstants.LOG_SENDING_RESULTS, runId, results.size());
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+            log.info(TestRailConstants.LOG_SUCCESS_RESPONSE, runId, response.getBody());
+            if (screenshotsEnabled() && !screenshotsOfUnsuccessfulTests.isEmpty()) {
+                attachmentApiClient.attachScreenshotsForFailedScenarios(
+                        response.getBody(), screenshotsOfUnsuccessfulTests);
+            }
+        } catch (Exception e) {
+            log.error(TestRailConstants.LOG_ERROR_RESPONSE, runId, e.getMessage(), e);
+        }
+    }
+
+    private HttpEntity<Map<String, Object>> prepareSendHttpRequest(final List<ResultRequestDto> results) {
+        Map<String, Object> request = new HashMap<>();
+        request.put(TestRailConstants.RESULTS, results);
+        HttpHeaders headers = connectionService.buildHeaders();
+        return new HttpEntity<>(request, headers);
+    }
+
+    @Override
+    public Integer createNewTestRailRun(final List<Integer> caseIds) {
+        String url = connectionService.endpoints().getCreateTextRunEndpoint(testRails.getProjectId());
+        Run request = buildTestRunRequest(testRails, caseIds);
+        HttpHeaders headers = connectionService.buildHeaders();
+        HttpEntity<Run> entity = new HttpEntity<>(request, headers);
+        try {
+            log.info(TestRailConstants.LOG_CREATING_TEST_RUN, testRails.getDefaultRunName(), caseIds.size());
+            ResponseEntity<Run> response = restTemplate.exchange(url, HttpMethod.POST, entity, Run.class);
+            Run body = response.getBody();
+            if (body != null && body.getId() != null) {
+                Integer id = body.getId();
+                log.info(TestRailConstants.LOG_TEST_RUN_CREATED, testRails.getDefaultRunName(), id);
+                return id;
+            }
+        } catch (Exception e) {
+            log.error(TestRailConstants.LOG_TEST_RUN_CREATION_FAILED, testRails.getDefaultRunName(), e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public Run buildTestRunRequest(final TestRailReports testRails, final List<Integer> caseIds) {
+        return Run.builder()
+                .name(testRails.getDefaultRunName())
+                .description(testRails.getDefaultRunDescription())
+                .includeAll(false)
+                .caseIds(caseIds).build();
+    }
+
+    private boolean screenshotsEnabled() {
+        return testRails != null
+                && testRails.isEnabled()
+                && testRails.isAddScreenshotForFailure();
+    }
+}

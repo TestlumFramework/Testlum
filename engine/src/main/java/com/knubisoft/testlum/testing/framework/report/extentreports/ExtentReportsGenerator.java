@@ -12,12 +12,16 @@ import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollecto
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.report.extentreports.model.ResultForComparison;
+import com.knubisoft.testlum.testing.framework.report.testrails.TestRailService;
+import com.knubisoft.testlum.testing.framework.report.testrails.util.ScenarioResultDataExtractor;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.AbstractCapabilities;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
+import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +83,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private final ExtentReportsConfigurator extentReportsConfigurator;
     private final BrowserUtil browserUtil;
     private final MobileUtil mobileUtil;
+    private final TestRailService testRailService;
+    private final GlobalTestConfiguration globalTestConfiguration;
 
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
@@ -89,6 +95,16 @@ public class ExtentReportsGenerator implements ReportGenerator {
                 .sorted(Comparator.comparing(ScenarioResult::getId))
                 .forEach(scenarioExecutionResult -> addScenarioExecutionResult(extentReports, scenarioExecutionResult));
         extentReports.flush();
+
+        generateTestRailReportsIfRequired(globalScenarioStatCollector);
+    }
+
+    private void generateTestRailReportsIfRequired(final GlobalScenarioStatCollector globalScenarioStatCollector) {
+        TestRailReports testRailsReportsSettings = globalTestConfiguration.getReport()
+                .getExtentReports().getTestRailReports();
+        if (Objects.nonNull(testRailsReportsSettings) && testRailsReportsSettings.isEnabled()) {
+            testRailService.generateTestRailReports(globalScenarioStatCollector.getResults());
+        }
     }
 
     private void addScenarioExecutionResult(final ExtentReports extentReports, final ScenarioResult scenarioResult) {

@@ -56,16 +56,17 @@ class DragAndDropNativeExecutorTest {
             dnd.setToLocator("targetLocator");
             dnd.setToLocatorStrategy(LocatorStrategy.LOCATOR_ID);
 
+            CommandResult result = new CommandResult();
+
             WebElement sourceElement = mock(WebElement.class);
             WebElement targetElement = mock(WebElement.class);
             when(sourceElement.getLocation()).thenReturn(new Point(10, 20));
             when(targetElement.getLocation()).thenReturn(new Point(100, 200));
-            when(uiUtil.findWebElement(eq(deps), eq("sourceLocator"), any())).thenReturn(sourceElement);
-            when(uiUtil.findWebElement(eq(deps), eq("targetLocator"), any())).thenReturn(targetElement);
+            when(uiUtil.findWebElement(eq(deps), eq("sourceLocator"), any(), result)).thenReturn(sourceElement);
+            when(uiUtil.findWebElement(eq(deps), eq("targetLocator"), any(), result)).thenReturn(targetElement);
             when(uiUtil.buildSequence(any(Point.class), any(Point.class), anyInt()))
                     .thenReturn(mock(Sequence.class));
 
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(dnd, result));
             verify(driver).perform(any());
         }

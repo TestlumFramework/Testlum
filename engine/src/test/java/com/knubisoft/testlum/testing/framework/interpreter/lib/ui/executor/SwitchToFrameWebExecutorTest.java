@@ -67,7 +67,7 @@ class SwitchToFrameWebExecutorTest {
             frame.setLocator("iframe-main");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("iframe-main"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("iframe-main"), any(), result)).thenReturn(element);
 
             executor.execute(frame, result);
 

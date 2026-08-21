@@ -117,6 +117,8 @@ class WebVariableExecutorTest {
 
         @Test
         void getsDomWithLocator() {
+            CommandResult result = new CommandResult();
+
             WebVar webVar = new WebVar();
             webVar.setName("domVar");
             FromDom dom = new FromDom();
@@ -125,7 +127,7 @@ class WebVariableExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getAttribute("outerHTML")).thenReturn("<div>content</div>");
-            when(uiUtil.findWebElement(any(), eq("main-content"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("main-content"), any(), result)).thenReturn(element);
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
                 @SuppressWarnings("unchecked")
@@ -141,7 +143,6 @@ class WebVariableExecutorTest {
                 return null;
             });
 
-            CommandResult result = new CommandResult();
             executor.execute(webVar, result);
 
             assertEquals("<div>content</div>", scenarioContext.get("domVar"));
@@ -221,6 +222,8 @@ class WebVariableExecutorTest {
 
         @Test
         void getsElementAttributeValue() {
+            CommandResult result = new CommandResult();
+
             WebVar webVar = new WebVar();
             webVar.setName("attrVar");
             FromElement fromElement = new FromElement();
@@ -231,7 +234,7 @@ class WebVariableExecutorTest {
             webVar.setElement(fromElement);
 
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("my-link"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("my-link"), any(), result)).thenReturn(element);
             when(uiUtil.getElementAttribute(eq(element), eq("href"), eq(driver))).thenReturn("/path/to");
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
@@ -248,7 +251,6 @@ class WebVariableExecutorTest {
                 return null;
             });
 
-            CommandResult result = new CommandResult();
             executor.execute(webVar, result);
 
             assertEquals("/path/to", scenarioContext.get("attrVar"));
@@ -266,7 +268,7 @@ class WebVariableExecutorTest {
             CommandResult result = new CommandResult();
 
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("existing-el"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("existing-el"), any(), result)).thenReturn(element);
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
                 @SuppressWarnings("unchecked")
@@ -298,7 +300,7 @@ class WebVariableExecutorTest {
             webVar.setElement(fromElement);
             CommandResult result = new CommandResult();
 
-            when(uiUtil.findWebElement(any(), eq("missing-el"), any()))
+            when(uiUtil.findWebElement(any(), eq("missing-el"), any(), result))
                     .thenThrow(new DefaultFrameworkException("element not found"));
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {

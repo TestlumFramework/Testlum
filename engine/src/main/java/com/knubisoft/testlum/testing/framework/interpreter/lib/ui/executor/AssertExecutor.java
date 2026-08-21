@@ -70,16 +70,21 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
         logUtil.logAssertAttributeInfo(attribute);
         resultUtil.addAssertAttributeMetaData(attribute, result);
-        String actual = getActualValue(attribute);
-        String expected = attribute.getContent();
-        resultUtil.setExpectedActual(expected, actual, result);
-        executeComparison(actual, expected, result, attribute.isNegative());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        String actual;
+        try {
+            actual = getActualValue(attribute, result);
+            String expected = attribute.getContent();
+            resultUtil.setExpectedActual(expected, actual, result);
+            executeComparison(actual, expected, result, attribute.isNegative());
+        } catch (DefaultFrameworkException exception) {
+            onException(result, exception);
+            screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        }
     }
 
-    private String getActualValue(final AssertAttribute attribute) {
+    private String getActualValue(final AssertAttribute attribute, final CommandResult result) {
         WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
-                attribute.getLocatorStrategy());
+                attribute.getLocatorStrategy(), result);
         return uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
@@ -106,7 +111,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         String actual = dependencies.getDriver().getTitle();
         resultUtil.setExpectedActual(title.getContent(), actual, result);
         executeComparison(actual, title.getContent(), result, title.isNegative());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeAssertAlert(final AssertAlert alert, final CommandResult result) {
@@ -114,14 +119,14 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         String actual = dependencies.getDriver().switchTo().alert().getText();
         resultUtil.setExpectedActual(alert.getText(), actual, result);
         executeComparison(actual, alert.getText(), result, alert.isNegative());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeAssertPresent(final AssertPresent present, final CommandResult result) {
         try {
             logUtil.logAssertPresent(present);
             resultUtil.addAssertPresentMetadata(present, result);
-            uiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
+            uiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy(), result);
             if (present.isNegative()) {
                 Exception e = new DefaultFrameworkException(String.format(ASSERT_NOT_PRESENT, present.getLocator()));
                 onException(result, e);
@@ -137,8 +142,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private void executeAssertChecked(final AssertChecked checked, final CommandResult result) {
         logUtil.logAssertChecked(checked);
         resultUtil.addAssertCheckedMetadata(checked, result);
-        boolean isSelected =
-                uiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy()).isSelected();
+        boolean isSelected = uiUtil.findWebElement(
+                dependencies, checked.getLocator(), checked.getLocatorStrategy(), result).isSelected();
         if (checked.isNegative() && isSelected || !checked.isNegative() && !isSelected) {
             Exception e = new DefaultFrameworkException(String
                     .format(ASSERT_CHECKED, checked.getLocator()));

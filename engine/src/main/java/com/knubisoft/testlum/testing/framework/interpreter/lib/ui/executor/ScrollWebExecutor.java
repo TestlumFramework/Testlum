@@ -30,7 +30,7 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
         resultUtil.addScrollMetaData(scroll, result);
         logUtil.logScrollInfo(scroll);
         executeScrollScript(scroll, dependencies.getDriver());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {

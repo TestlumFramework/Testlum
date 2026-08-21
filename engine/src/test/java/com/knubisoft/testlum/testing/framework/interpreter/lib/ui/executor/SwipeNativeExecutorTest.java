@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.ScreenshotUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwipeDirection;
 import com.knubisoft.testlum.testing.model.scenario.SwipeElement;
@@ -34,6 +35,8 @@ class SwipeNativeExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private ResultUtil resultUtil;
     @Mock
@@ -177,6 +180,8 @@ class SwipeNativeExecutorTest {
         void performsElementSwipeUp() {
             final AppiumDriver appiumDriver = mock(AppiumDriver.class);
 
+            CommandResult result = new CommandResult();
+
             SwipeElement swipeElement = new SwipeElement();
             swipeElement.setDirection(SwipeDirection.UP);
             swipeElement.setPercent(40);
@@ -187,11 +192,10 @@ class SwipeNativeExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 300));
-            when(uiUtil.findWebElement(any(), eq("scrollable-list"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("scrollable-list"), any(), result)).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(swipeNative, result));
             verify(appiumDriver).perform(any());
         }
@@ -199,6 +203,8 @@ class SwipeNativeExecutorTest {
         @Test
         void performsElementSwipeDown() {
             final AppiumDriver appiumDriver = mock(AppiumDriver.class);
+
+            CommandResult result = new CommandResult();
 
             SwipeElement swipeElement = new SwipeElement();
             swipeElement.setDirection(SwipeDirection.DOWN);
@@ -210,11 +216,10 @@ class SwipeNativeExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(150, 200));
-            when(uiUtil.findWebElement(any(), eq("carousel"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("carousel"), any(), result)).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
-            CommandResult result = new CommandResult();
             executor.execute(swipeNative, result);
 
             verify(appiumDriver, times(2)).perform(any());
@@ -223,6 +228,8 @@ class SwipeNativeExecutorTest {
         @Test
         void addsSwipeMetaData() {
             final AppiumDriver appiumDriver = mock(AppiumDriver.class);
+
+            CommandResult result = new CommandResult();
 
             SwipeElement swipeElement = new SwipeElement();
             swipeElement.setDirection(SwipeDirection.LEFT);
@@ -234,16 +241,15 @@ class SwipeNativeExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 100));
-            when(uiUtil.findWebElement(any(), eq("swipe-el"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("swipe-el"), any(), result)).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
-            CommandResult result = new CommandResult();
             executor.execute(swipeNative, result);
 
             verify(resultUtil).addSwipeMetaData(eq(swipeNative), eq(result));
             verify(logUtil).logSwipeNativeInfo(eq(swipeNative));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 }

@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.FileSearcher;
-import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -20,13 +19,10 @@ import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import io.appium.java_client.AppiumDriver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.PointerInput;
@@ -34,16 +30,10 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
@@ -59,14 +49,12 @@ public class UiUtil {
     private static final String LOCALHOST = "localhost";
     private static final int MAX_PERCENTS_VALUE = 100;
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH-mm-ss");
 
     private final LocatorCollector locatorCollector;
     private final JavascriptUtil javascriptUtil;
     private final WebElementFinder webElementFinder;
     private final FileSearcher fileSearcher;
     private final EnvironmentLoader environmentLoader;
-    private final ImageCompressor imageCompressor;
     private final ConfigProvider configProvider;
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
@@ -80,9 +68,10 @@ public class UiUtil {
 
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
-                                     final LocatorStrategy locatorStrategy) {
+                                     final LocatorStrategy locatorStrategy,
+                                     final CommandResult result) {
         LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
-        return webElementFinder.find(locatorData, dependencies);
+        return webElementFinder.find(locatorData, dependencies, result);
     }
 
     // CHECKSTYLE:OFF
@@ -183,61 +172,6 @@ public class UiUtil {
         int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
                 .getElementAutowait().getSeconds();
         return new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(secondsToWait));
-    }
-
-    public void takeScreenshotAndSaveIfRequired(final CommandResult result, final ExecutorDependencies dependencies) {
-        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
-                .getTakeScreenshots().isEnabled();
-        if (isTakeScreenshots) {
-            File screenshot = takeScreenshot(dependencies.getDriver());
-            File screenshotsFolder = new File(dependencies.getFile().getParent(),
-                    TestResourceSettings.SCREENSHOT_FOLDER);
-            tryToCopyScreenshotFileToFolder(screenshot, screenshotsFolder, dependencies);
-            putScreenshotToResult(result, screenshot);
-        }
-    }
-
-    private void tryToCopyScreenshotFileToFolder(final File screenshot,
-                                                 final File screenshotsFolder,
-                                                 final ExecutorDependencies dependencies) {
-        try {
-            copyScreenshotFileToFolder(screenshot, screenshotsFolder, dependencies);
-        } catch (IOException e) {
-            throw new DefaultFrameworkException(e);
-        }
-    }
-
-
-    private void copyScreenshotFileToFolder(final File screenshot,
-                                            final File screenshotsFolder,
-                                            final ExecutorDependencies dependencies) throws IOException {
-        LocalTime dateTime = LocalTime.now();
-        String screenshotFileName = String.format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,
-                dateTime.format(TIME_FORMATTER),
-                dependencies.getPosition().get());
-        File newScreenshot = new File(screenshotsFolder.getPath(), screenshotFileName);
-        FileUtils.copyFile(screenshot, newScreenshot);
-    }
-
-    public File takeScreenshot(final WebDriver webDriver) {
-        return ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
-    }
-
-    public File takeScreenshot(final WebElement webElement) {
-        return webElement.getScreenshotAs(OutputType.FILE);
-    }
-
-    public void putScreenshotToResult(final CommandResult result, final File screenshot) {
-        final MultipartFile image = imageCompressor.compress(screenshot);
-        if (Objects.nonNull(image)) {
-            try {
-                byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
-                String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
-                result.setBase64Screenshot(encodedScreenshot);
-            } catch (IOException e) {
-                throw new DefaultFrameworkException(e);
-            }
-        }
     }
 
     public String getElementAttribute(final WebElement element, final String attributeName, final WebDriver driver) {

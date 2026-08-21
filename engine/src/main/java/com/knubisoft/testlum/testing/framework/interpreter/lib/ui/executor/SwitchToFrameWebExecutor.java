@@ -27,7 +27,7 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
         } else {
             switchToFrameByIndex(switchToFrame, result);
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
 
         logUtil.startUiCommandsInFrame();
         this.subCommandRunner.runCommands(switchToFrame.getClickOrInputOrAssert(), result, dependencies);
@@ -38,7 +38,8 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
     private void switchToFrameByLocator(final SwitchToFrame switchToFrame, final CommandResult result,
                                         final String locatorId) {
         result.put(ResultUtil.SWITCH_LOCATOR, locatorId);
-        WebElement element = uiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
+        WebElement element = uiUtil.findWebElement(dependencies, locatorId,
+                switchToFrame.getLocatorStrategy(), result);
         dependencies.getDriver().switchTo().frame(element);
     }
 

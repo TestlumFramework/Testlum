@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.ScreenshotUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Navigate;
 import com.knubisoft.testlum.testing.model.scenario.NavigateCommand;
@@ -27,6 +28,8 @@ class NavigateExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private WebDriver driver;
     @Mock
@@ -62,7 +65,7 @@ class NavigateExecutorTest {
             executor.execute(navigate, result);
 
             verify(navigation).back();
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
             assertEquals(NavigateCommand.BACK.value(), result.getMetadata().get(ResultUtil.NAVIGATE_TYPE));
         }
     }
@@ -134,7 +137,7 @@ class NavigateExecutorTest {
 
             executor.execute(navigate, result);
 
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 }

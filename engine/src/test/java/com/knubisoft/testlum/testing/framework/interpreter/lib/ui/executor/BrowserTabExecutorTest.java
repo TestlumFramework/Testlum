@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.ScreenshotUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.BrowserTab;
 import com.knubisoft.testlum.testing.model.scenario.CloseTab;
@@ -34,6 +35,8 @@ class BrowserTabExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private ResultUtil resultUtil;
     @Mock
@@ -90,7 +93,7 @@ class BrowserTabExecutorTest {
 
             verify(driver.switchTo()).newWindow(WindowType.TAB);
             verify(resultUtil).addOpenTabMetadata(any(), eq(result));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
 
         @Test

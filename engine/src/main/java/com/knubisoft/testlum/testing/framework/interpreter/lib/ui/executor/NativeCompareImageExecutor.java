@@ -43,7 +43,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
             resultUtil.addImageComparisonMetaData(image, result);
             File scenarioFile = dependencies.getFile();
             BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
-            BufferedImage actual = getActualImage(dependencies.getDriver(), image);
+            BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
             ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual);
             imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                     image.isHighlightDifference(), scenarioFile.getParentFile(), result);
@@ -53,10 +53,11 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
-                                         final NativeImage image) throws IOException {
+                                         final NativeImage image,
+                                         final CommandResult result) throws IOException {
         if (Objects.nonNull(image.getPart())) {
             WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                    image.getPart().getLocatorStrategy());
+                    image.getPart().getLocatorStrategy(), result);
             File screenshotFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
             BufferedImage fullImage = ImageIO.read(screenshotFile);
             Point point = webElement.getLocation();
@@ -64,7 +65,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
             int elementHeight = webElement.getSize().getHeight();
             return fullImage.getSubimage(point.getX(), point.getY(), elementWidth, elementHeight);
         }
-        BufferedImage fullScreen = ImageIO.read(uiUtil.takeScreenshot(webDriver));
+        BufferedImage fullScreen = ImageIO.read(screenshotUtil.takeScreenshot(webDriver));
         return cutStatusBar(image.getFullScreen(), fullScreen, webDriver);
     }
 

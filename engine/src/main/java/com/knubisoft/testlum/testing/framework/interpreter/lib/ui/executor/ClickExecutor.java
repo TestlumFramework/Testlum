@@ -20,9 +20,10 @@ public class ClickExecutor extends AbstractUiExecutor<Click> {
     @Override
     public void execute(final Click click, final CommandResult result) {
         result.put(ResultUtil.CLICK_LOCATOR, click.getLocator());
-        WebElement webElement = uiUtil.findWebElement(dependencies, click.getLocator(), click.getLocatorStrategy());
+        WebElement webElement = uiUtil.findWebElement(
+                dependencies, click.getLocator(), click.getLocatorStrategy(), result);
         uiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         clickWithMethod(click.getMethod(), webElement, result);
     }
 

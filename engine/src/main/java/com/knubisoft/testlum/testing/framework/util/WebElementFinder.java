@@ -2,11 +2,13 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.autohealing.LocatorAutohealer;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
+import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.global_config.AutoHealing;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import com.knubisoft.testlum.testing.model.pages.ClassName;
@@ -54,6 +56,7 @@ public final class WebElementFinder {
 
     private final EnvironmentLoader environmentLoader;
     private final ByService byService;
+    private final ScreenshotUtil screenshotUtil;
 
     private Map<Class<?>, ByType> searchByTypes;
 
@@ -71,24 +74,26 @@ public final class WebElementFinder {
                 Text.class, l -> byService.text(getLocatorsByType(l, Text.class)));
     }
 
-    public WebElement find(final LocatorData locatorData, final ExecutorDependencies dependencies) {
+    public WebElement find(final LocatorData locatorData, final ExecutorDependencies dependencies,
+                           final CommandResult result) {
         Set<org.openqa.selenium.By> bySet = new LinkedHashSet<>();
         locatorData.getLocator().getXpathOrIdOrClassName().forEach(obj -> {
             Class<?> clazz = obj.getClass();
             bySet.addAll(searchByTypes.get(clazz).apply(locatorData.getLocator()));
         });
-        return getElementFromLocatorList(bySet, dependencies, locatorData);
+        return getElementFromLocatorList(bySet, dependencies, locatorData, result);
     }
 
     private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet,
                                                  final ExecutorDependencies dependencies,
-                                                 final LocatorData locatorData) {
+                                                 final LocatorData locatorData,
+                                                 final CommandResult result) {
         waitForDomToComplete(dependencies);
 
         Optional<WebElement> optionalElement = findElement(bySet, dependencies.getDriver());
 
         return optionalElement.orElseGet(() ->
-                tryToFindElementIfNotFoundBeforeAfterAutoWait(bySet, dependencies, locatorData));
+                tryToFindElementIfNotFoundBeforeAfterAutoWait(bySet, dependencies, locatorData, result));
     }
 
     private Optional<WebElement> findElement(final Set<org.openqa.selenium.By> bySet, final WebDriver driver) {
@@ -109,17 +114,18 @@ public final class WebElementFinder {
     private WebElement tryToFindElementIfNotFoundBeforeAfterAutoWait(
             final Set<By> bySet,
             final ExecutorDependencies dependencies,
-            final LocatorData locatorData) {
+            final LocatorData locatorData,
+            final CommandResult result) {
 
         String locatorId = locatorData.getLocator().getLocatorId();
-        WebElement element = findElementWithAutoWait(bySet, dependencies, locatorId);
+        WebElement element = findElementWithAutoWait(bySet, dependencies, locatorId, result);
 
         if (element != null) {
             return element;
         }
 
         return findWithAutoHealing(dependencies, locatorData)
-                .orElseThrow(() -> unableToFindElementException(locatorId));
+                .orElseThrow(() -> unableToFindElementException(locatorId, dependencies, result));
     }
 
     private Optional<WebElement> findWithAutoHealing(
@@ -139,7 +145,8 @@ public final class WebElementFinder {
     private WebElement findElementWithAutoWait(
             final Set<By> bySet,
             final ExecutorDependencies dependencies,
-            final String locatorId) {
+            final String locatorId,
+            final CommandResult result) {
 
         int seconds = getAutowaitSeconds(locatorId);
         FluentWait<WebDriver> wait = buildFluentWait(dependencies.getDriver(), seconds)
@@ -150,11 +157,19 @@ public final class WebElementFinder {
         } catch (TimeoutException e) {
             return null;
         } catch (Exception e) {
-            throw unableToFindElementException(locatorId);
+            throw unableToFindElementException(locatorId, dependencies, result);
         }
     }
 
-    private DefaultFrameworkException unableToFindElementException(final String locatorId) {
+    private DefaultFrameworkException unableToFindElementException(final String locatorId,
+                                                                   final ExecutorDependencies dependencies,
+                                                                   final CommandResult result) {
+        ConfigProvider configProvider = dependencies.getContext().getBean(ConfigProvider.class);
+        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
+                .getTakeScreenshots().isEnabled();
+        if (isTakeScreenshots) {
+            screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        }
         return new DefaultFrameworkException(
                 String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
     }

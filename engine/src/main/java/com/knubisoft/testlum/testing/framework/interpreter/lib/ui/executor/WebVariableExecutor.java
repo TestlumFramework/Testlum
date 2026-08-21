@@ -73,7 +73,7 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
     private String getPresentValue(final ElementPresent present, final String varName, final CommandResult r) {
         String value;
         try {
-            uiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
+            uiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy(), r);
             value = String.valueOf(true);
         } catch (DefaultFrameworkException e) {
             value = String.valueOf(false);
@@ -85,7 +85,7 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
 
     private String getAttributeValue(final ElementAttribute attribute, final String varName, final CommandResult r) {
         WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
-                attribute.getLocatorStrategy());
+                attribute.getLocatorStrategy(), r);
         String value = uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
         resultUtil.addVariableMetaData(ResultUtil.ELEMENT_ATTRIBUTE, varName,
                 ResultUtil.LOCATOR_FORM, attribute.getLocator(), value, r);
@@ -95,7 +95,8 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
     private String getDomResult(final WebVar webVar, final CommandResult result) {
         String locatorId = webVar.getDom().getLocator();
         if (StringUtils.isNotBlank(locatorId)) {
-            String valueResult = uiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy())
+            String valueResult =
+                    uiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy(), result)
                     .getAttribute("outerHTML");
             resultUtil.addVariableMetaData(ResultUtil.HTML_DOM, webVar.getName(),
                     ResultUtil.LOCATOR_FORM, locatorId, valueResult, result);

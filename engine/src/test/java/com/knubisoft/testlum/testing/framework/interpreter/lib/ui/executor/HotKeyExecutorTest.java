@@ -157,12 +157,12 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("input-field"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), result)).thenReturn(element);
 
             executor.execute(hotKey, result);
 
             assertNotNull(result.getSubCommandsResult());
-            verify(uiUtil).findWebElement(any(), eq("input-field"), any());
+            verify(uiUtil).findWebElement(any(), eq("input-field"), any(), result);
         }
 
         @Test
@@ -197,11 +197,11 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("text-area"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("text-area"), any(), result)).thenReturn(element);
 
             executor.execute(hotKey, result);
 
-            verify(uiUtil).findWebElement(any(), eq("text-area"), any());
+            verify(uiUtil).findWebElement(any(), eq("text-area"), any(), result);
         }
 
         @Test

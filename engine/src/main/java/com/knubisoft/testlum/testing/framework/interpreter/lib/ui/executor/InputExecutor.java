@@ -21,13 +21,14 @@ public class InputExecutor extends AbstractUiExecutor<Input> {
     @Override
     public void execute(final Input input, final CommandResult result) {
         result.put(ResultUtil.INPUT_LOCATOR, input.getLocator());
-        WebElement webElement = uiUtil.findWebElement(dependencies, input.getLocator(), input.getLocatorStrategy());
+        WebElement webElement = uiUtil.findWebElement(dependencies, input.getLocator(),
+                input.getLocatorStrategy(), result);
         uiUtil.waitForElementVisibility(dependencies, webElement);
         uiUtil.highlightElementIfRequired(input.isHighlight(), webElement, dependencies.getDriver());
         String value = uiUtil.resolveSendKeysType(input.getValue(), webElement, dependencies.getFile());
         result.put(ResultUtil.INPUT_VALUE, value);
         log.info(LogMessage.VALUE_LOG, value);
         webElement.sendKeys(value);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

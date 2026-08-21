@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ScreenshotUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Refresh;
 import io.appium.java_client.AppiumDriver;
@@ -25,6 +26,8 @@ class RefreshExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private AppiumDriver appiumDriver;
     @Mock
@@ -61,7 +64,7 @@ class RefreshExecutorTest {
 
             executor.execute(refresh, result);
 
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 }

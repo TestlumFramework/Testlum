@@ -14,6 +14,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
 
     protected final ExecutorDependencies dependencies;
     protected final UiUtil uiUtil;
+    protected final ScreenshotUtil screenshotUtil;
     protected final ResultUtil resultUtil;
     protected final JavascriptUtil javascriptUtil;
     protected final ImageComparisonUtil imageComparisonUtil;
@@ -29,6 +30,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     public AbstractUiExecutor(final ExecutorDependencies dependencies) {
         this.dependencies = dependencies;
         this.uiUtil = dependencies.getContext().getBean(UiUtil.class);
+        this.screenshotUtil = dependencies.getContext().getBean(ScreenshotUtil.class);
         this.resultUtil = dependencies.getContext().getBean(ResultUtil.class);
         this.javascriptUtil = dependencies.getContext().getBean(JavascriptUtil.class);
         this.imageComparisonUtil = dependencies.getContext().getBean(ImageComparisonUtil.class);

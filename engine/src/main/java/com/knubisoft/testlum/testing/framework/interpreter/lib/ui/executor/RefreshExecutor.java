@@ -33,6 +33,6 @@ public class RefreshExecutor extends AbstractUiExecutor<Refresh> {
                 uiUtil.buildSequence(start, new Point(start.x, DEFAULT_REFRESH_VALUE), ACTION_DURATION);
         driver.perform(Collections.singletonList(preRefreshAction));
         driver.perform(Collections.singletonList(refreshAction));
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

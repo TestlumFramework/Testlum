@@ -33,13 +33,13 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
     public void execute(final SwipeNative swipeNative, final CommandResult result) {
         resultUtil.addSwipeMetaData(swipeNative, result);
         logUtil.logSwipeNativeInfo(swipeNative);
-        performSwipe(swipeNative);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        performSwipe(swipeNative, result);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private void performSwipe(final SwipeNative swipeNative) {
+    private void performSwipe(final SwipeNative swipeNative, final CommandResult result) {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
-        Swipe swipe = createSwipe(swipeNative, driver);
+        Swipe swipe = createSwipe(swipeNative, driver, result);
 
         for (int i = 0; i < swipe.getQuantity(); i++) {
             driver.perform(Collections.singletonList(swipe.getSequence()));
@@ -47,20 +47,21 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         }
     }
 
-    private Swipe createSwipe(final SwipeNative swipeNative, final AppiumDriver driver) {
+    private Swipe createSwipe(final SwipeNative swipeNative, final AppiumDriver driver, final CommandResult result) {
         if (swipeNative.getElement() != null) {
-            return buildSwipe(swipeNative.getElement(), driver);
+            return buildSwipe(swipeNative.getElement(), driver, result);
         }
         return buildSwipe(swipeNative.getPage(), driver);
     }
 
-    private Swipe buildSwipe(final SwipeElement swipeElement, final AppiumDriver driver) {
+    private Swipe buildSwipe(final SwipeElement swipeElement, final AppiumDriver driver, final CommandResult result) {
         return buildSwipe(
                 swipeElement.getPercent(),
                 swipeElement.getDirection(),
                 uiUtil.findWebElement(dependencies,
                         swipeElement.getLocator(),
-                        swipeElement.getLocatorStrategy()).getLocation(),
+                        swipeElement.getLocatorStrategy(),
+                        result).getLocation(),
                 driver.manage().window().getSize(),
                 swipeElement.getQuantity()
         );

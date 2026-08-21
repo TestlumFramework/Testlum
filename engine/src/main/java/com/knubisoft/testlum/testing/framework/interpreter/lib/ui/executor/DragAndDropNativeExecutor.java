@@ -24,16 +24,16 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
     public void execute(final DragAndDropNative dragAndDropNative, final CommandResult result) {
         logUtil.logDragAndDropNativeInfo(dragAndDropNative);
         resultUtil.addDragAndDropNativeMetaDada(dragAndDropNative, result);
-        performDragAndDrop(dragAndDropNative);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        performDragAndDrop(dragAndDropNative, result);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private void performDragAndDrop(final DragAndDropNative dragAndDropNative) {
+    private void performDragAndDrop(final DragAndDropNative dragAndDropNative, final CommandResult result) {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
         Point source = uiUtil.findWebElement(dependencies, dragAndDropNative.getFromLocator(),
-                dragAndDropNative.getFromLocatorStrategy()).getLocation();
+                dragAndDropNative.getFromLocatorStrategy(), result).getLocation();
         Point target = uiUtil.findWebElement(dependencies, dragAndDropNative.getToLocator(),
-                dragAndDropNative.getToLocatorStrategy()).getLocation();
+                dragAndDropNative.getToLocatorStrategy(), result).getLocation();
         Sequence dragAndDrop = uiUtil.buildSequence(source, target, ACTION_DURATION);
         driver.perform(Collections.singletonList(dragAndDrop));
     }

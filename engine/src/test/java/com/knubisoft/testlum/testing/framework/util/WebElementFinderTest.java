@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
+import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.global_config.BrowserSettings;
 import com.knubisoft.testlum.testing.model.global_config.ElementAutowait;
 import com.knubisoft.testlum.testing.model.global_config.Web;
@@ -320,7 +321,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, r);
             assertNotNull(result);
             assertEquals(mockElement, result);
         }
@@ -354,7 +356,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, r);
             assertEquals(mockElement, result);
         }
 
@@ -379,7 +382,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, r);
             assertEquals(mockElement, result);
         }
 
@@ -402,7 +406,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, r);
             assertEquals(mockElement, result);
             verifyNoInteractions(environmentLoader);
         }
@@ -436,7 +441,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, r);
             assertEquals(mockElement, result);
             verify(mockDriver, times(1)).findElement(expectedBy);
         }
@@ -467,7 +473,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, r);
             assertEquals(mockElement, result);
         }
     }
@@ -497,7 +504,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            webElementFinder.find(new LocatorData(null, locator), deps, r);
             verifyNoInteractions(environmentLoader);
         }
 
@@ -521,7 +529,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            webElementFinder.find(new LocatorData(null, locator), deps);
+            CommandResult r = new CommandResult();
+            webElementFinder.find(new LocatorData(null, locator), deps, r);
             verify(environmentLoader).getCurrentEnvWebSettings();
         }
     }
@@ -554,8 +563,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
+            CommandResult r = new CommandResult();
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps, r));
             assertTrue(ex.getMessage().contains("testLocator"));
         }
 
@@ -579,8 +589,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
+            CommandResult r = new CommandResult();
             assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps, r));
         }
     }
 
@@ -610,8 +621,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
+            CommandResult r = new CommandResult();
             assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps, r));
         }
     }
 }

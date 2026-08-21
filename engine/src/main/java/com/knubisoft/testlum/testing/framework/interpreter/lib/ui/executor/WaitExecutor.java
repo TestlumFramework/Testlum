@@ -39,6 +39,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
         log.info(LogMessage.WAIT_INFO_LOG, time, uiWait.getUnit());
         TimeUnit timeUnit = waitUtil.getTimeUnit(uiWait.getUnit());
         resultUtil.addWaitMetaData(time, timeUnit, result);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         wait(uiWait, time, timeUnit, result);
     }
 
@@ -63,7 +64,8 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
                                           final CommandResult result) {
         Duration duration = Duration.ofSeconds(seconds);
         WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), duration);
-        WebElement element = uiUtil.findWebElement(dependencies, command.getLocator(), command.getLocatorStrategy());
+        WebElement element = uiUtil.findWebElement(dependencies, command.getLocator(),
+                command.getLocatorStrategy(), result);
         log.info(LogMessage.LOCATOR_LOG, command.getLocator());
         result.put(ResultUtil.LOCATOR_ID, command.getLocator());
         if (command instanceof Visible) {

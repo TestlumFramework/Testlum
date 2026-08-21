@@ -57,10 +57,19 @@ public class UiLogUtil {
         text.add(DelimiterConstant.EMPTY);
         text.add(String.format(LogMessage.SCENARIO_NUMBER_AND_PATH_LOG,
                 scenarioArguments.getFile().getAbsolutePath()));
+        text.add(formatEnvironment(scenarioArguments.getEnvironment()));
         addOverviewInfo(text, scenarioArguments.getScenario().getOverview());
         addUiInfoIfPresent(text, scenarioArguments);
         addExceptionIfPresent(text, exception);
         text.info();
+    }
+
+    private String formatEnvironment(final String environment) {
+        if (StringUtils.isNotBlank(environment)) {
+            return String.format(LogMessage.ENVIRONMENT_LOG, environment);
+        } else {
+            return null;
+        }
     }
 
     private void addOverviewInfo(final ColoredText text, final Overview overview) {

@@ -91,6 +91,7 @@ public final class LogMessage {
     public static final String UNABLE_TO_FIND_ELEMENT_BY_LOCATOR =
             "No such element: The element not found using any of the provided locators. "
                     + "Please verify the locator - %s!";
+    public static final String ENVIRONMENT_LOG = "Environment: %s";
     public static final String VARIATION_LOG = "Variation - %s";
     public static final String BROWSER_NAME_LOG = "Browser: %s";
     public static final String NATIVE_LOG = "Native device: %s";

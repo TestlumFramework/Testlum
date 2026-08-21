@@ -64,6 +64,12 @@ class LogMessageTest {
         }
 
         @Test
+        void environmentLogCanBeFormatted() {
+            assertTrue(LogMessage.ENVIRONMENT_LOG.contains("%s"));
+            assertEquals("Environment: prod", String.format(LogMessage.ENVIRONMENT_LOG, "prod"));
+        }
+
+        @Test
         void invalidScenarioLogContainsRed() {
             assertTrue(LogMessage.INVALID_SCENARIO_LOG.contains(Color.RED.getCode()));
         }

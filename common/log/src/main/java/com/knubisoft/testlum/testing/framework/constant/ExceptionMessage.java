@@ -192,4 +192,5 @@ public class ExceptionMessage {
             + "Please ensure the value strictly follows the pattern.";
     public static final String POOR_DATETIME_INFORMATION = "Parsed value '%s' with format '%s' "
             + "lacks enough information (Date or Time) to build a result.";
+    public static final String XSD_FILE_NOT_READABLE = "Cannot read %s. %s";
 }

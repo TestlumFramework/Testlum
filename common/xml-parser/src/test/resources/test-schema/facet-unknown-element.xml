@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://test.knubisoft.com/facet-item">
+    <mysql comment="Get all active users"/>
+</scenario>

@@ -1,28 +1,26 @@
 package com.knubisoft.testlum.testing.framework.xml;
 
-import com.google.common.collect.Multimap;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 
+import java.io.File;
+import java.util.List;
+
+@Getter
 public class XSDException extends RuntimeException {
 
-    private static final String XSDISSUE_TO_STRING =
-            "XSDIssue{message='%s', lineNumber=%d, columnNumber=%d, path=%s}";
+    private final transient List<XsdIssue> issues;
 
-    public XSDException(final Multimap<String, XSDIssue> errors) {
-        super(errors.toString());
+    private final String file;
+
+    public XSDException(final File file, final List<XsdIssue> issues) {
+        super(XsdIssueFormatter.format(issues));
+        this.file = file.getPath();
+        this.issues = List.copyOf(issues);
     }
 
-    @RequiredArgsConstructor
-    public static class XSDIssue {
-
-        public final String message;
-        public final int lineNumber;
-        public final int columnNumber;
-        public final String path;
-
-        @Override
-        public String toString() {
-            return String.format(XSDISSUE_TO_STRING, message, lineNumber, columnNumber, path);
-        }
+    public XSDException(final File file, final String message, final Throwable cause) {
+        super(message, cause);
+        this.file = file.getPath();
+        this.issues = List.of();
     }
 }

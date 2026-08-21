@@ -1,8 +1,7 @@
 package com.knubisoft.testlum.testing.framework.xml;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import lombok.Getter;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.xml.sax.ErrorHandler;
@@ -14,65 +13,69 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-@Getter
 @Slf4j
 public final class XSDValidator {
 
     public static void validateBySchema(final File file, final Schema schema) {
-        Multimap<String, XSDException.XSDIssue> errors = ArrayListMultimap.create();
+        List<XsdIssue> issues = new ArrayList<>();
 
         Validator validator = schema.newValidator();
-        validator.setErrorHandler(new ErrorHandlerImpl(errors, file));
+        validator.setErrorHandler(new ErrorHandlerImpl(issues));
 
-        tryToValidate(file, validator);
+        tryToValidate(file, validator, issues);
 
-        if (!errors.isEmpty()) {
-            throw new XSDException(errors);
+        logWarnings(file, issues);
+        if (hasBlockingIssues(issues)) {
+            throw new XSDException(file, issues);
         }
     }
 
-    private static void tryToValidate(final File file, final Validator validator) {
+    private static void tryToValidate(final File file,
+                                      final Validator validator,
+                                      final List<XsdIssue> issues) {
         try {
             validator.validate(new StreamSource(file));
         } catch (SAXException | IOException e) {
-            throw new RuntimeException(e);
+            if (hasBlockingIssues(issues)) {
+                throw new XSDException(file, issues);
+            }
+            throw new XSDException(file,
+                    String.format(ExceptionMessage.XSD_FILE_NOT_READABLE, file.getName(), e.getMessage()), e);
         }
     }
 
-    private static void collect(final Multimap<String, XSDException.XSDIssue> map,
-                                final String level,
-                                final SAXParseException e,
-                                final File file) {
-        map.put(level, new XSDException.XSDIssue(e.getMessage(),
-                e.getLineNumber(),
-                e.getColumnNumber(),
-                file.getAbsolutePath()));
+    private static void logWarnings(final File file, final List<XsdIssue> issues) {
+        issues.stream()
+                .filter(issue -> !issue.blocksValidation())
+                .forEach(issue -> log.warn(LogMessage.XSD_SCHEMA_WARNING_LOG,
+                        file.getName(), issue.line(), issue.messageWithoutCode()));
+    }
+
+    private static boolean hasBlockingIssues(final List<XsdIssue> issues) {
+        return issues.stream().anyMatch(XsdIssue::blocksValidation);
     }
 
     @RequiredArgsConstructor
     private static class ErrorHandlerImpl implements ErrorHandler {
-        private static final String WARN_LEVEL = "WARNING";
-        private static final String ERROR_LEVEL = "ERROR";
-        private static final String FATAL_ERR_LEVEL = "FATAL_ERROR";
 
-        private final Multimap<String, XSDException.XSDIssue> errors;
-        private final File file;
+        private final List<XsdIssue> issues;
 
         @Override
         public void warning(final SAXParseException e) {
-            collect(errors, WARN_LEVEL, e, file);
+            issues.add(XsdIssue.of(XsdSeverity.WARNING, e));
         }
 
         @Override
         public void error(final SAXParseException e) {
-            collect(errors, ERROR_LEVEL, e, file);
+            issues.add(XsdIssue.of(XsdSeverity.ERROR, e));
         }
 
         @Override
         public void fatalError(final SAXParseException e) {
-            collect(errors, FATAL_ERR_LEVEL, e, file);
+            issues.add(XsdIssue.of(XsdSeverity.FATAL, e));
         }
     }
 }
-

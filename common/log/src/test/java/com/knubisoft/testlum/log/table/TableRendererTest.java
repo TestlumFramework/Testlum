@@ -187,4 +187,56 @@ class TableRendererTest {
             assertTrue(widestLine(rendered) <= MAX_TABLE_WIDTH);
         }
     }
+
+    /**
+     * AsciiTable collapses every whitespace run of a string cell into a single space, so a cell that needs to
+     * stay multiline is handed over as a {@link MultilineCell}. These cover the wiring that makes that happen.
+     */
+    @Nested
+    class MultilineCells {
+
+        private static final String REASON = "line 16  <postgres comment=\"Get all\">\n"
+                + "   x  'comment' is too short: 7 characters, minimum is 10\n"
+                + "  ->  Describe what the command does";
+
+        @Test
+        void lineBreaksSurviveRendering() {
+            List<String> lines = plainLines(reasonTable(REASON));
+            assertTrue(lines.stream().anyMatch(line -> line.contains("line 16  <postgres")));
+            assertTrue(lines.stream().anyMatch(line -> line.contains("'comment' is too short")));
+            assertTrue(lines.stream().anyMatch(line -> line.contains("Describe what the command does")));
+        }
+
+        @Test
+        void theFrameStaysIntact() {
+            List<String> lines = plainLines(reasonTable(REASON));
+            assertTrue(lines.stream().allMatch(line -> line.length() <= MAX_TABLE_WIDTH));
+            assertEquals(1, lines.stream().map(String::length).distinct().count(),
+                    "every rendered line must be exactly as wide as the table");
+        }
+
+        @Test
+        void blankLinesBetweenBlocksArePreserved() {
+            String rendered = reasonTable("first block\n\nsecond block");
+            List<String> lines = plainLines(rendered);
+            int first = indexOfLineContaining(lines, "first block");
+            int second = indexOfLineContaining(lines, "second block");
+            assertEquals(2, second - first, "a blank line must sit between the two blocks");
+        }
+
+        @Test
+        void aSingleLineCellIsUnaffected() {
+            List<String> lines = plainLines(reasonTable("just one line"));
+            assertEquals(1, lines.stream().filter(line -> line.contains("just one line")).count());
+        }
+
+        private int indexOfLineContaining(final List<String> lines, final String token) {
+            for (int i = 0; i < lines.size(); i++) {
+                if (lines.get(i).contains(token)) {
+                    return i;
+                }
+            }
+            throw new AssertionError("No line contains: " + token);
+        }
+    }
 }

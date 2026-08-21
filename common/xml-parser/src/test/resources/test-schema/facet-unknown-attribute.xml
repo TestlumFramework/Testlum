@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://test.knubisoft.com/facet-item">
+    <postgres comment="Get all active users" unknownAttr="x">
+        <query>select 1</query>
+    </postgres>
+</scenario>

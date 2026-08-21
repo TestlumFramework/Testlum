@@ -133,11 +133,21 @@ final class TableRenderer {
         addSingleSpan(table, textOf(spec.title()), spec.columnCount());
         addHeaderRow(table, spec);
         for (Row row : spec.rows()) {
-            table.addRow(row.cells());
+            table.addRow(keepLineBreaks(row.cells()));
             table.addRule();
         }
         addSingleSpan(table, textOf(spec.footer()), spec.columnCount());
         return table;
+    }
+
+    private static Object[] keepLineBreaks(final Object[] cells) {
+        Object[] wrapped = new Object[cells.length];
+        for (int i = 0; i < cells.length; i++) {
+            wrapped[i] = MultilineCell.needsVerbatimLayout(cells[i])
+                    ? new MultilineCell(String.valueOf(cells[i]))
+                    : cells[i];
+        }
+        return wrapped;
     }
 
     private static void addHeaderRow(final AsciiTable table, final TableSpec spec) {

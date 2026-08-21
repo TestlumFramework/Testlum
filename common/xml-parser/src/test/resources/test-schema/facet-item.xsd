@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://test.knubisoft.com/facet-item"
+           targetNamespace="http://test.knubisoft.com/facet-item"
+           elementFormDefault="qualified">
+
+    <xs:element name="scenario" type="tns:ScenarioType"/>
+
+    <xs:complexType name="ScenarioType">
+        <xs:sequence>
+            <xs:element name="postgres" type="tns:PostgresType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PostgresType">
+        <xs:sequence>
+            <xs:element name="query" type="xs:string" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="comment" type="tns:stringMin10" use="required"/>
+        <xs:attribute name="alias" type="tns:aliasPattern"/>
+        <xs:attribute name="threshold" type="tns:positiveIntegerMin1"/>
+        <xs:attribute name="strategy" type="tns:locatorStrategy"/>
+    </xs:complexType>
+
+    <xs:simpleType name="stringMin10">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="10"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="aliasPattern">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z_\-/\d]+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveIntegerMin1">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="locatorStrategy">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="locatorId"/>
+            <xs:enumeration value="xpath"/>
+            <xs:enumeration value="id"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

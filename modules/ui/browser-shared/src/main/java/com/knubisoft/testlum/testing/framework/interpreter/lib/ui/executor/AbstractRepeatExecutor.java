@@ -1,7 +1,9 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -13,10 +15,20 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 @Slf4j
 public abstract class AbstractRepeatExecutor<T extends AbstractUiCommand>
         extends AbstractUiExecutor<T> {
+
+    private static final String COMMAND_REPEAT_FINISHED_LOG =
+            LogFormat.withYellow("------- Repeat is finished -------");
+    private static final String COMMAND_REPEAT_WITH_INDEX_RUN_LOG =
+            LogFormat.withCyan("------- Repeat Run %d/%d -------");
+    private static final String COMMAND_REPEAT_WITH_VARIATION_RUN_LOG =
+            LogFormat.withCyan("------- Repeat Variation %d/%d: %s -------");
 
     private final SubCommandRunner repeatCommandsRunner;
     private final GlobalVariations globalVariations;
@@ -37,6 +49,7 @@ public abstract class AbstractRepeatExecutor<T extends AbstractUiCommand>
     public void execute(final T repeat, final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
+        validateRepeatType(repeat);
         if (StringUtils.isNotBlank(getVariations(repeat))) {
             runRepeatWithVariations(repeat, result, subCommandsResult);
         } else {
@@ -51,15 +64,17 @@ public abstract class AbstractRepeatExecutor<T extends AbstractUiCommand>
         log.info(LogFormat.table("Variations", getVariations(repeat)));
         result.put("Variations", getVariations(repeat));
         List<AbstractUiCommand> commands = getCommands(repeat);
-        List<AbstractUiCommand> injectedCommand =
-                globalVariations.getVariations(getVariations(repeat)).stream()
-                .flatMap(variation -> commands.stream()
-                        .map(command -> scenarioInjectionUtil
-                                .injectObjectVariation(command, variation,
-                                        dependencies.getScenarioContext())))
-                .toList();
-        this.repeatCommandsRunner.runCommands(
-                injectedCommand, dependencies, result, subCommandsResult);
+        List<Map<String, String>> variations = globalVariations.getVariations(getVariations(repeat));
+        for (int i = 0; i < variations.size(); i++) {
+            Map<String, String> variationMap = variations.get(i);
+            log.info(format(COMMAND_REPEAT_WITH_VARIATION_RUN_LOG, i + 1, variations.size(), variationMap.toString()));
+            List<AbstractUiCommand> injectedCommand = commands.stream()
+                    .map(command -> scenarioInjectionUtil.injectObjectVariation(
+                            command, variationMap, dependencies.getScenarioContext()))
+                    .toList();
+            this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+        }
+
     }
 
     private void runSimpleRepeat(final T repeat,
@@ -68,8 +83,17 @@ public abstract class AbstractRepeatExecutor<T extends AbstractUiCommand>
         log.info(LogFormat.table("Times", String.valueOf(getTimes(repeat))));
         result.put("Times", getTimes(repeat));
         for (int i = 0; i < getTimes(repeat); i++) {
+            log.info(format(COMMAND_REPEAT_WITH_INDEX_RUN_LOG, i + 1, getTimes(repeat)));
             this.repeatCommandsRunner.runCommands(
                     getCommands(repeat), dependencies, result, subCommandsResult);
+        }
+    }
+
+    private void validateRepeatType(T repeat) {
+        Integer times = getTimes(repeat);
+        String variations = getVariations(repeat);
+        if (times == null && StringUtils.isBlank(variations)) {
+            throw new DefaultFrameworkException(ExceptionMessage.REPEAT_TYPE_IS_NOT_PROVIDED);
         }
     }
 }

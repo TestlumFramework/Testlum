@@ -1,6 +1,8 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -43,6 +45,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     protected void acceptImpl(final Repeat repeat, final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
+        validateRepeatType(repeat);
         if (StringUtils.isNotBlank(repeat.getVariations())) {
             runRepeatWithVariations(repeat, result, subCommandsResult);
         } else {
@@ -85,5 +88,13 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         String asJson = jacksonService.writeValueToCopiedString(t);
         String injected = globalVariations.getValue(asJson, variation, dependencies.getScenarioContext());
         return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
+    }
+
+    private void validateRepeatType(Repeat repeat) {
+        Integer times = repeat.getTimes();
+        String variations = repeat.getVariations();
+        if (times == null && StringUtils.isBlank(variations)) {
+            throw new DefaultFrameworkException(ExceptionMessage.REPEAT_TYPE_IS_NOT_PROVIDED);
+        }
     }
 }

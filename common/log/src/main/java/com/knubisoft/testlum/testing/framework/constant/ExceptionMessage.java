@@ -193,4 +193,7 @@ public class ExceptionMessage {
     public static final String POOR_DATETIME_INFORMATION = "Parsed value '%s' with format '%s' "
             + "lacks enough information (Date or Time) to build a result.";
     public static final String XSD_FILE_NOT_READABLE = "Cannot read %s. %s";
+    public static final String REPEAT_TYPE_IS_NOT_PROVIDED = """
+            <repeat> must specify either 'times' or 'variations'.
+            Use 'times' to run the commands a fixed number of times, or 'variations' to run them once per variation""";
 }

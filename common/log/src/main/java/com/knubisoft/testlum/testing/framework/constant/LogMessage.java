@@ -161,8 +161,6 @@ public final class LogMessage {
             LogFormat.withGreen("Successfully connected to {}");
     public static final String CONNECTION_ATTEMPT_FAILED =
             LogFormat.withOrange("Attempt {} failed for {} with error: {}");
-    public static final String CONNECTION_ATTEMPT_RETRYING =
-            "Retrying to connect to {} in {}ms";
     public static final String CONNECTION_COMPLETELY_FAILED =
             LogFormat.withRed("Max attempts reached for {}. Failed to obtain connection with cause {}");
     public static final String START_HEAL_LOG =
@@ -199,6 +197,9 @@ public final class LogMessage {
     public static final String UI_CONFIG_TABLE_PLATFORM_HEADER = "Platform";
     public static final String UI_CONFIG_TABLE_DEVICE_ALIAS_HEADER = "Device Alias";
     public static final String UI_CONFIG_TABLE_ENABLED_HEADER = "Enabled";
+    public static final String WEB_DRIVER_QUIT_FAILED =
+            LogFormat.withOrange("Failed to quit WebDriver: {}");
+
     public static final String CONNECTION_APPIUM_SERVER = "Appium Server";
     public static final String CONNECTION_BROWSER_STACK = "BrowserStack";
 

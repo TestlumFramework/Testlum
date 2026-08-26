@@ -4,7 +4,10 @@ import com.knubisoft.testlum.testing.framework.UIConfiguration;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.util.DriverFailureContext;
+import com.knubisoft.testlum.testing.framework.util.DriverFailureDiagnostic;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
+import com.knubisoft.testlum.testing.framework.util.UiDriverKind;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
@@ -23,29 +26,49 @@ public class MobileBrowserDriverFactory {
 
     private final SeleniumDriverUtil seleniumDriverUtil;
     private final UIConfiguration uiConfigs;
+    private final DriverFailureDiagnostic driverFailureDiagnostic;
+    private final DriverFailureContextProvider failureContextProvider;
 
     public WebDriver createDriver(final MobilebrowserDevice mobileDevice) {
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        seleniumDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
-        setCommonCapabilities(mobileDevice, desiredCapabilities);
-        setPlatformCapabilities(mobileDevice, desiredCapabilities);
-        return getMobilebrowserWebDriver(desiredCapabilities, uiConfigs);
+        UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
+        String serverUrl = resolveServerUrl(mobileDevice, uiConfig);
+        try {
+            DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+            seleniumDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
+            setCommonCapabilities(mobileDevice, desiredCapabilities);
+            setPlatformCapabilities(mobileDevice, desiredCapabilities);
+            return getMobilebrowserWebDriver(uiConfig, serverUrl, desiredCapabilities);
+        } catch (Exception e) {
+            throw driverFailureDiagnostic.describe(e, failureContext(mobileDevice, uiConfig, serverUrl));
+        }
     }
 
-    private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities,
-                                                final UIConfiguration uiConfigs) {
+    private String resolveServerUrl(final MobilebrowserDevice mobileDevice, final UiConfig uiConfig) {
         try {
-            UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
-            String serverUrl = seleniumDriverUtil.getMobileBrowserConnectionUrl(uiConfig);
-            Mobilebrowser settings = uiConfig.getMobilebrowser();
-            int secondsToWait = settings.getElementAutowait().getSeconds();
-            WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
-            driver.get(settings.getBaseUrl());
-            return driver;
-        } catch (MalformedURLException e) {
-            throw new DefaultFrameworkException(e);
+            return seleniumDriverUtil.getMobileBrowserConnectionUrl(uiConfig);
+        } catch (Exception e) {
+            throw driverFailureDiagnostic.describe(e, failureContext(mobileDevice, uiConfig, null));
         }
+    }
+
+    private DriverFailureContext failureContext(final MobilebrowserDevice mobileDevice,
+                                                final UiConfig uiConfig,
+                                                final String serverUrl) {
+        Mobilebrowser settings = uiConfig.getMobilebrowser();
+        ConnectionType connection = Objects.nonNull(settings) ? settings.getConnection() : null;
+        return failureContextProvider.forDevice(UiDriverKind.MOBILEBROWSER, mobileDevice, connection, serverUrl);
+    }
+
+    private WebDriver getMobilebrowserWebDriver(final UiConfig uiConfig,
+                                                final String serverUrl,
+                                                final DesiredCapabilities desiredCapabilities)
+            throws MalformedURLException {
+        Mobilebrowser settings = uiConfig.getMobilebrowser();
+        int secondsToWait = settings.getElementAutowait().getSeconds();
+        WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
+        driver.get(settings.getBaseUrl());
+        return driver;
     }
 
     private void setCommonCapabilities(final MobilebrowserDevice mobileDevice,

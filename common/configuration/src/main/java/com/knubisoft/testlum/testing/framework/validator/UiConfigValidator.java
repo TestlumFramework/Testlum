@@ -1,26 +1,10 @@
 package com.knubisoft.testlum.testing.framework.validator;
 
-import com.knubisoft.testlum.testing.framework.FileSearcher;
-import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.testlum.testing.model.global_config.AbstractDevice;
-import com.knubisoft.testlum.testing.model.global_config.AppiumCapabilities;
-import com.knubisoft.testlum.testing.model.global_config.AppiumNativeCapabilities;
-import com.knubisoft.testlum.testing.model.global_config.BrowserStackCapabilities;
-import com.knubisoft.testlum.testing.model.global_config.BrowserStackLogin;
-import com.knubisoft.testlum.testing.model.global_config.ConnectionType;
-import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
-import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
-import com.knubisoft.testlum.testing.model.global_config.Native;
-import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
-import com.knubisoft.testlum.testing.model.global_config.UiConfig;
-import com.knubisoft.testlum.testing.model.global_config.Web;
-import org.apache.commons.lang3.StringUtils;
+import com.knubisoft.testlum.testing.model.global_config.*;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,12 +23,10 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
     private final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> uiConfigMethodMap;
     private final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap;
     private final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> connectionMethodMap;
-    private final TestResourceSettings settings;
-    private final FileSearcher fileSearcher;
+    private final UiConfigPathResolver configPathResolver;
 
-    public UiConfigValidator(final TestResourceSettings settings, final FileSearcher fileSearcher) {
-        this.settings = settings;
-        this.fileSearcher = fileSearcher;
+    public UiConfigValidator(final UiConfigPathResolver configPathResolver) {
+        this.configPathResolver = configPathResolver;
 
         this.uiConfigMethodMap = Map.of(WEB, Collections.singletonMap(c -> Objects.nonNull(c.getWeb())
                 && c.getWeb().isEnabled(), UiConfig::getWeb), NATIVE,
@@ -444,9 +426,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
     }
 
     private String getConfigPath(final String envName) {
-        return fileSearcher.searchFileFromEnvFolder(envName, TestResourceSettings.UI_CONFIG_FILENAME)
-                .map(File::getPath).orElse(settings.getEnvConfigFolder().getPath())
-                .replace(settings.getTestResourcesFolder().getPath(), StringUtils.EMPTY);
+        return configPathResolver.resolve(envName);
     }
 
     private interface UiConfigPredicate extends Predicate<UiConfig> { }

@@ -10,20 +10,9 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
+import com.knubisoft.testlum.testing.framework.util.DriverFailureDiagnostic;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
-import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.testlum.testing.model.global_config.BrowserInDocker;
-import com.knubisoft.testlum.testing.model.global_config.BrowserOptionsArguments;
-import com.knubisoft.testlum.testing.model.global_config.BrowserStackWeb;
-import com.knubisoft.testlum.testing.model.global_config.Capabilities;
-import com.knubisoft.testlum.testing.model.global_config.Chrome;
-import com.knubisoft.testlum.testing.model.global_config.Edge;
-import com.knubisoft.testlum.testing.model.global_config.Firefox;
-import com.knubisoft.testlum.testing.model.global_config.LocalBrowser;
-import com.knubisoft.testlum.testing.model.global_config.RemoteBrowser;
-import com.knubisoft.testlum.testing.model.global_config.Safari;
-import com.knubisoft.testlum.testing.model.global_config.ScreenRecording;
-import com.knubisoft.testlum.testing.model.global_config.Web;
+import com.knubisoft.testlum.testing.model.global_config.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
@@ -66,6 +55,8 @@ public class WebDriverFactory {
     private final EnvironmentLoader environmentLoader;
     private final BrowserUtil browserUtil;
     private final UIConfiguration uiConfigs;
+    private final DriverFailureDiagnostic driverFailureDiagnostic;
+    private final DriverFailureContextProvider failureContextProvider;
 
     private final Map<BrowserPredicate, WebDriverFunction> driverInitializerMap = Map.of(
             browser -> browser instanceof Chrome, (b, path) -> new ChromeDriverInitializer(path).init((Chrome) b),
@@ -86,18 +77,22 @@ public class WebDriverFactory {
     }
 
     private WebDriver initializeDriver(final AbstractBrowser browser, final Path downloadPath) {
-        return driverInitializerMap.entrySet().stream()
-                .filter(function -> function.getKey().test(browser))
-                .findFirst()
-                .map(function -> function.getValue().apply(browser, downloadPath))
-                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND));
+        try {
+            return driverInitializerMap.entrySet().stream()
+                    .filter(function -> function.getKey().test(browser))
+                    .findFirst()
+                    .map(function -> function.getValue().apply(browser, downloadPath))
+                    .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND));
+        } catch (Exception e) {
+            throw driverFailureDiagnostic.describeForRetry(e, failureContextProvider.forWeb(browser));
+        }
     }
 
     private void safeQuitDriver(final WebDriver driver) {
         try {
             driver.quit();
         } catch (final Exception e) {
-            throw new DefaultFrameworkException("Failed to quit WebDriver: ".concat(e.getMessage()));
+            log.warn(LogMessage.WEB_DRIVER_QUIT_FAILED, e.getMessage());
         }
     }
 
@@ -107,10 +102,7 @@ public class WebDriverFactory {
                 safeInitWebdriverWithTimeouts(browser, webDriver);
             } catch (Exception e) {
                 log.error("Failed to initialize driver or reach base URL within {}s", MAX_TIMEOUT_SECONDS);
-                if (webDriver != null) {
-                    webDriver.quit();
-                }
-                throw new DefaultFrameworkException(e.getMessage());
+                throw driverFailureDiagnostic.describeForRetry(e, failureContextProvider.forWeb(browser));
             }
         };
     }
@@ -163,12 +155,8 @@ public class WebDriverFactory {
         ClientConfig config = ClientConfig.defaultConfig()
                 .connectionTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS))
                 .readTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
-        try {
-            return RemoteWebDriver.builder().address(toURL(url))
-                    .oneOf(browserOptions).config(config).build();
-        } catch (Exception e) {
-            throw new DefaultFrameworkException("Unable to connect to remote browser with cause:" + e.getMessage());
-        }
+        return RemoteWebDriver.builder().address(toURL(url))
+                .oneOf(browserOptions).config(config).build();
     }
 
     private URL toURL(final String url) {

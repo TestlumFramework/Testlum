@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.connection;
 
 import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.exception.FormattedFailure;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,9 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
                 return tryConnect(integrationName, attempt, maxAttempts, connector, healthCheck, integrationCloser);
             } catch (Exception e) {
                 lastException = e;
+                if (isNotRetryable(e)) {
+                    break;
+                }
                 handleAttemptFailure(integrationName, attempt, maxAttempts, e);
             }
         }
@@ -62,6 +66,11 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
         }
     }
 
+    private boolean isNotRetryable(final Exception failure) {
+        FormattedFailure formatted = FormattedFailure.findIn(failure);
+        return formatted != null && !formatted.isRetryable();
+    }
+
     private void handleAttemptFailure(final String integrationName, final int attempt,
                                       final int max, final Exception e) {
         log.warn(CONNECTION_ATTEMPT_FAILED, attempt, integrationName, e.getMessage());
@@ -73,10 +82,15 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
 
     private RuntimeException handleFinalFailure(final String integrationName,
                                                 final Exception lastException) {
+        FormattedFailure formatted = FormattedFailure.findIn(lastException);
+        if (formatted != null && lastException instanceof RuntimeException failure) {
+            log.error(LogFormat.withRed(formatted.describe()));
+            return failure;
+        }
         String msg = lastException != null ? lastException.getMessage() : "Unknown error";
         log.error(CONNECTION_COMPLETELY_FAILED, integrationName, msg);
         String error = String.format("Failed to obtain connection for %s with cause: %s", integrationName, msg);
-        return new IntegrationFailureException(error);
+        return new IntegrationFailureException(error, lastException);
     }
 
     void sleep() {

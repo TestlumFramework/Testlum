@@ -4,7 +4,10 @@ import com.knubisoft.testlum.testing.framework.UIConfiguration;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.util.DriverFailureContext;
+import com.knubisoft.testlum.testing.framework.util.DriverFailureDiagnostic;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
+import com.knubisoft.testlum.testing.framework.util.UiDriverKind;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
@@ -27,17 +30,41 @@ public class NativeDriverFactory {
 
     private final SeleniumDriverUtil seleniumDriverUtil;
     private final UIConfiguration uiConfigs;
+    private final DriverFailureDiagnostic driverFailureDiagnostic;
+    private final DriverFailureContextProvider failureContextProvider;
 
     public WebDriver createDriver(final NativeDevice nativeDevice) {
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        seleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
-        return getNativeWebDriver(nativeDevice, desiredCapabilities);
+        UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
+        String serverUrl = resolveServerUrl(nativeDevice, uiConfig);
+        try {
+            DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+            seleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
+            return getNativeWebDriver(nativeDevice, uiConfig, serverUrl, desiredCapabilities);
+        } catch (Exception e) {
+            throw driverFailureDiagnostic.describe(e, failureContext(nativeDevice, uiConfig, serverUrl));
+        }
+    }
+
+    private String resolveServerUrl(final NativeDevice nativeDevice, final UiConfig uiConfig) {
+        try {
+            return seleniumDriverUtil.getNativeConnectionUrl(uiConfig);
+        } catch (Exception e) {
+            throw driverFailureDiagnostic.describe(e, failureContext(nativeDevice, uiConfig, null));
+        }
+    }
+
+    private DriverFailureContext failureContext(final NativeDevice nativeDevice,
+                                                final UiConfig uiConfig,
+                                                final String serverUrl) {
+        Native settings = uiConfig.getNative();
+        ConnectionType connection = Objects.nonNull(settings) ? settings.getConnection() : null;
+        return failureContextProvider.forDevice(UiDriverKind.NATIVE, nativeDevice, connection, serverUrl);
     }
 
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
+                                            final UiConfig uiConfig,
+                                            final String serverUrl,
                                             final DesiredCapabilities desiredCapabilities) {
-        UiConfig uiConfig = uiConfigs.get(EnvManager.currentEnv());
-        String serverUrl = seleniumDriverUtil.getNativeConnectionUrl(uiConfig);
         AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, desiredCapabilities);
         int secondsToWait = uiConfig.getNative().getElementAutowait().getSeconds();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));

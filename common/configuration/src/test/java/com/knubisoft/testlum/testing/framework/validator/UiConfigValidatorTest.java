@@ -34,7 +34,7 @@ class UiConfigValidatorTest {
         when(settings.getTestResourcesFolder()).thenReturn(new File("/test"));
         when(fileSearcher.searchFileFromEnvFolder(anyString(), anyString()))
                 .thenReturn(Optional.of(new File("/test/ui.xml")));
-        validator = new UiConfigValidator(settings, fileSearcher);
+        validator = new UiConfigValidator(new UiConfigPathResolver(settings, fileSearcher));
     }
 
     @Nested

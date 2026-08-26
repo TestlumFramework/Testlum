@@ -2,6 +2,7 @@ package com.knubisoft.testlum.starter.failure;
 
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
+import com.knubisoft.testlum.testing.framework.exception.FormattedFailure;
 import com.knubisoft.testlum.testing.framework.xml.XSDException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,24 +38,30 @@ public final class StartupFailureReporter {
     }
 
     private static String constructReport(final String headline, final Throwable failure) {
+        FormattedFailure formatted = FormattedFailure.findIn(failure);
         Throwable rootCause = rootCauseOf(failure);
         String newLine = System.lineSeparator();
         return newLine + LogMessage.LINE + newLine
                 + headline + newLine
-                + describe(rootCause) + newLine
-                + stacktraceOf(failure, rootCause)
+               + describe(formatted, rootCause) + newLine
+               + stacktraceOf(formatted, failure, rootCause)
                 + LogMessage.LINE;
     }
 
-    private static String stacktraceOf(final Throwable failure, final Throwable rootCause) {
-        if (rootCause instanceof XSDException) {
+    private static String stacktraceOf(final FormattedFailure formatted,
+                                       final Throwable failure,
+                                       final Throwable rootCause) {
+        if (formatted != null || rootCause instanceof XSDException) {
             return StringUtils.EMPTY;
         }
         String newLine = System.lineSeparator();
         return newLine + ADDITIONAL_INFO + newLine + toString(failure::printStackTrace);
     }
 
-    private static String describe(final Throwable rootCause) {
+    private static String describe(final FormattedFailure formatted, final Throwable rootCause) {
+        if (formatted != null) {
+            return formatted.describe();
+        }
         if (rootCause instanceof XSDException schemaFailure) {
             return schemaFailure.getFile() + System.lineSeparator() + schemaFailure.getMessage();
         }

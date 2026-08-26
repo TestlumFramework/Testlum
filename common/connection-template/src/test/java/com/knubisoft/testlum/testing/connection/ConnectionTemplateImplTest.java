@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.connection;
 
+import com.knubisoft.testlum.testing.framework.exception.DriverCreationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -150,6 +151,91 @@ class ConnectionTemplateImplTest {
                             client -> { }));
 
             assertTrue(exception.getMessage().contains("brokenDB"));
+        }
+    }
+
+    @Nested
+    class FormattedFailureHandling {
+        @Test
+        void stopsRetryingWhenFailureIsNotRetryable() {
+            AtomicInteger attempts = new AtomicInteger(0);
+
+            DriverCreationException exception = assertThrows(
+                    DriverCreationException.class,
+                    () -> template.executeWithRetry(
+                            "chrome",
+                            3,
+                            () -> {
+                                attempts.incrementAndGet();
+                                throw new DriverCreationException("bad credentials", false, null);
+                            },
+                            client -> {
+                            },
+                            client -> {
+                            }));
+
+            assertEquals(1, attempts.get());
+            assertEquals("bad credentials", exception.describe());
+        }
+
+        @Test
+        void keepsRetryingWhenFailureIsRetryable() {
+            AtomicInteger attempts = new AtomicInteger(0);
+
+            assertThrows(DriverCreationException.class,
+                    () -> template.executeWithRetry(
+                            "chrome",
+                            3,
+                            () -> {
+                                attempts.incrementAndGet();
+                                throw new DriverCreationException("server is down", true, null);
+                            },
+                            client -> {
+                            },
+                            client -> {
+                            }));
+
+            assertEquals(3, attempts.get());
+        }
+
+        @Test
+        void rethrowsFormattedFailureWithoutWrappingIt() {
+            DriverCreationException original = new DriverCreationException("formatted block", false, null);
+
+            RuntimeException thrown = assertThrows(
+                    RuntimeException.class,
+                    () -> template.executeWithRetry(
+                            "chrome",
+                            1,
+                            () -> {
+                                throw original;
+                            },
+                            client -> {
+                            },
+                            client -> {
+                            }));
+
+            assertSame(original, thrown);
+        }
+
+        @Test
+        void keepsCauseWhenWrappingPlainFailure() {
+            RuntimeException cause = new RuntimeException("boom");
+
+            IntegrationFailureException exception = assertThrows(
+                    IntegrationFailureException.class,
+                    () -> template.executeWithRetry(
+                            "redis",
+                            1,
+                            () -> {
+                                throw cause;
+                            },
+                            client -> {
+                            },
+                            client -> {
+                            }));
+
+            assertSame(cause, exception.getCause());
         }
     }
 

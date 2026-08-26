@@ -212,8 +212,10 @@ class DriverFailureDiagnosticTest {
 
         @Test
         void stillExplainsARealActivityFailure() {
-            String description = describe(new RuntimeException("Activity name '.Main' used to start the app "
-                                                               + "doesn't exist or cannot be launched"), mobileContext(APPIUM_URL));
+            RuntimeException failure = new RuntimeException(
+                    "Activity name '.Main' used to start the app doesn't exist or cannot be launched");
+
+            String description = describe(failure, mobileContext(APPIUM_URL));
 
             assertTrue(description.contains("<appActivity>"));
         }

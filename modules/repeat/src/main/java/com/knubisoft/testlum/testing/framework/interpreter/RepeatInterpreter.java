@@ -90,7 +90,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         return jacksonService.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 
-    private void validateRepeatType(Repeat repeat) {
+    private void validateRepeatType(final Repeat repeat) {
         Integer times = repeat.getTimes();
         String variations = repeat.getVariations();
         if (times == null && StringUtils.isBlank(variations)) {

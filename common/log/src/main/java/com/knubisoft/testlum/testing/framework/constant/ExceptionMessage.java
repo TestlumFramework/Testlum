@@ -137,6 +137,8 @@ public class ExceptionMessage {
     public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
     public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
     public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
+    public static final String VARIATION_ROW_COLUMNS_MISMATCH = "Variations file %s declares %d columns (%s), "
+                                                                + "but line %d has %d. Every row must contain the same number of comma separated values as the header";
     public static final String ENV_VARIABLE_NOT_FOUND = "No such environmental variable as <%s>";
 
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";

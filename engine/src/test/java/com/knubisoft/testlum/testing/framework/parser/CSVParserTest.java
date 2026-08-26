@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.parser;
 
 import com.knubisoft.testlum.testing.framework.FileSearcher;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,8 +16,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,6 +74,42 @@ class CSVParserTest {
         List<Map<String, String>> result = csvParser.parseVariations("header-only.csv");
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void parseVariationsFailsWhenRowHasFewerColumnsThanHeader() throws IOException {
+        File csvFile = createCsvFile("broken.csv",
+                "email,name\nBohdan\nk@gmail.com,Kate");
+        when(fileSearcher.searchFileFromDataFolder("broken.csv")).thenReturn(csvFile);
+
+        DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                () -> csvParser.parseVariations("broken.csv"));
+
+        assertTrue(exception.getMessage().contains("broken.csv"));
+        assertTrue(exception.getMessage().contains("declares 2 columns (email, name)"));
+        assertTrue(exception.getMessage().contains("line 2 has 1"));
+    }
+
+    @Test
+    void parseVariationsFailsWhenRowHasMoreColumnsThanHeader() throws IOException {
+        File csvFile = createCsvFile("extra.csv", "email,name\nk@gmail.com,Kate,extra");
+        when(fileSearcher.searchFileFromDataFolder("extra.csv")).thenReturn(csvFile);
+
+        DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                () -> csvParser.parseVariations("extra.csv"));
+
+        assertTrue(exception.getMessage().contains("line 2 has 3"));
+    }
+
+    @Test
+    void parseVariationsIgnoresTrailingEmptyLines() throws IOException {
+        File csvFile = createCsvFile("trailing.csv", "name,age\nAlice,30\n\n");
+        when(fileSearcher.searchFileFromDataFolder("trailing.csv")).thenReturn(csvFile);
+
+        List<Map<String, String>> result = csvParser.parseVariations("trailing.csv");
+
+        assertEquals(1, result.size());
+        assertEquals("Alice", result.get(0).get("name"));
     }
 
     private File createCsvFile(final String fileName, final String content) throws IOException {

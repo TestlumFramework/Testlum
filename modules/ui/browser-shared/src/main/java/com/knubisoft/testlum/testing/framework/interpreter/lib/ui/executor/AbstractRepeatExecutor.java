@@ -89,7 +89,7 @@ public abstract class AbstractRepeatExecutor<T extends AbstractUiCommand>
         }
     }
 
-    private void validateRepeatType(T repeat) {
+    private void validateRepeatType(final T repeat) {
         Integer times = getTimes(repeat);
         String variations = getVariations(repeat);
         if (times == null && StringUtils.isBlank(variations)) {

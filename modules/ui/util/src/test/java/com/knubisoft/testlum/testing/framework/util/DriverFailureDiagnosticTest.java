@@ -198,6 +198,27 @@ class DriverFailureDiagnosticTest {
         }
 
         @Test
+        void doesNotMistakeCapabilityNamesForFailurePhrases() {
+            RuntimeException failure = new RuntimeException(
+                    "Connection error (POST http://127.0.0.1:4723/session)\n"
+                    + "Capabilities {appium:appActivity: .MainActivity, appium:appPackage: com.example.app}",
+                    new ClosedChannelException());
+
+            String description = describe(failure, mobileContext(APPIUM_URL));
+
+            assertFalse(description.contains("<appActivity>"));
+            assertTrue(description.contains("Server at " + APPIUM_URL + " did not respond"));
+        }
+
+        @Test
+        void stillExplainsARealActivityFailure() {
+            String description = describe(new RuntimeException("Activity name '.Main' used to start the app "
+                                                               + "doesn't exist or cannot be launched"), mobileContext(APPIUM_URL));
+
+            assertTrue(description.contains("<appActivity>"));
+        }
+
+        @Test
         void explainsRejectedBrowserStackCredentialsWithoutRetrying() {
             DriverCreationException exception = diagnostic.describeForRetry(
                     new RuntimeException("Response code 401. Message: Authorization required"),

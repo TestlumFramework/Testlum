@@ -60,14 +60,13 @@ public enum DriverFailureHint {
     APP_NOT_FOUND(
             (failure, message) -> message.contains("does not exist or is not accessible")
                                   || message.contains("could not find app")
-                                  || message.contains("the application at")
-                                  || message.contains("app file"),
+                                  || message.contains("the application at"),
             false, false,
             context -> String.format(DriverFailureMessage.APP_NOT_FOUND, context.getConfigPath())),
 
     APP_ACTIVITY_NOT_STARTED(
-            (failure, message) -> message.contains("appactivity")
-                                  || message.contains("activity used to start the app doesn't exist")
+            (failure, message) -> message.contains("used to start the app doesn't exist")
+                                  || message.contains("consider passing appwaitactivity")
                                   || message.contains("never started"),
             false, false,
             context -> String.format(DriverFailureMessage.APP_ACTIVITY_NOT_STARTED, context.getConfigPath())),

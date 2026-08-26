@@ -49,8 +49,9 @@ public class DriverFailureDiagnostic {
         List<Throwable> chain = chainOf(failure);
         log.debug(DriverFailureMessage.RAW_FAILURE_DEBUG, context.getAlias(), failure);
 
-        Optional<DriverFailureHint> hint = DriverFailureHint.resolve(chain, joinedMessage(chain), context);
-        String description = buildDescription(context, causeOf(chain), hintTextOf(hint, context));
+        List<String> messages = cleanMessagesOf(chain);
+        Optional<DriverFailureHint> hint = DriverFailureHint.resolve(chain, join(messages), context);
+        String description = buildDescription(context, causeOf(chain, messages), hintTextOf(hint, context));
         return new DriverCreationException(description, hint.map(DriverFailureHint::isRetryable).orElse(true), failure);
     }
 
@@ -157,31 +158,37 @@ public class DriverFailureDiagnostic {
         return false;
     }
 
-    private String causeOf(final List<Throwable> chain) {
+    private List<String> cleanMessagesOf(final List<Throwable> chain) {
+        List<String> messages = new ArrayList<>();
+        for (int index = 0; index < chain.size(); index++) {
+            Throwable deeper = index + 1 < chain.size() ? chain.get(index + 1) : null;
+            messages.add(messageOf(chain.get(index), deeper));
+        }
+        return messages;
+    }
+
+    private String causeOf(final List<Throwable> chain, final List<String> messages) {
         Throwable rootCause = chain.get(chain.size() - 1);
-        String message = deepestMessage(chain);
+        String message = deepestMessage(messages);
         if (StringUtils.isBlank(message)) {
             return rootCause.getClass().getSimpleName();
         }
-        return StringUtils.isBlank(messageOf(rootCause, null))
+        return StringUtils.isBlank(messages.get(messages.size() - 1))
                 ? rootCause.getClass().getSimpleName() + TYPE_SEPARATOR + message
                 : message;
     }
 
-    private String deepestMessage(final List<Throwable> chain) {
-        for (int index = chain.size() - 1; index >= 0; index--) {
-            Throwable deeper = index + 1 < chain.size() ? chain.get(index + 1) : null;
-            String message = messageOf(chain.get(index), deeper);
-            if (StringUtils.isNotBlank(message)) {
-                return message;
+    private String deepestMessage(final List<String> messages) {
+        for (int index = messages.size() - 1; index >= 0; index--) {
+            if (StringUtils.isNotBlank(messages.get(index))) {
+                return messages.get(index);
             }
         }
         return StringUtils.EMPTY;
     }
 
-    private String joinedMessage(final List<Throwable> chain) {
-        return chain.stream()
-                .map(failure -> StringUtils.defaultString(failure.getMessage()))
+    private String join(final List<String> messages) {
+        return messages.stream()
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.joining(MESSAGE_JOINER));
     }

@@ -27,20 +27,22 @@ class DriverFailureDiagnosticTest {
             "'Command '/Users/admin/Library/Android/sdk/platform-tools/adb -P 5037 -s emulator-5554 "
             + "shell am start -W -n com.instagram.android/com.instagram.android";
 
-    private static final String ADB_TIMEOUT_FAILURE = APPIUM_PREFIX + ADB_COMMAND
-                                                      + ".activity.MainTabActivity -S -a android.intent.action.MAIN -c "
-                                                      + "android.intent.category.LAUNCHER -f 0x10200000' timed out after 20000ms'. Try to increase "
-                                                      + "the 20000ms adb execution timeout represented by 'adbExecTimeout' capability";
+    private static final String ADB_TIMEOUT_FAILURE =
+            APPIUM_PREFIX + ADB_COMMAND
+            + ".activity.MainTabActivity -S -a android.intent.action.MAIN -c "
+            + "android.intent.category.LAUNCHER -f 0x10200000' timed out after 20000ms'. Try to increase "
+            + "the 20000ms adb execution timeout represented by 'adbExecTimeout' capability";
 
-    private static final String MISSING_ACTIVITY_FAILURE = APPIUM_PREFIX + ADB_COMMAND
-                                                           + ".NonExistingActivity -S -a android.intent.action.MAIN -c "
-                                                           + "android.intent.category.LAUNCHER -f 0x10200000' exited with code 1'; Command output: "
-                                                           + "Stopping: com.instagram.android\n"
-                                                           + "Starting: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] "
-                                                           + "flg=0x10200000 cmp=com.instagram.android/.NonExistingActivity }\n"
-                                                           + "Error type 3\n"
-                                                           + "Error: Activity class {com.instagram.android/com.instagram.android.NonExistingActivity} "
-                                                           + "does not exist.";
+    private static final String MISSING_ACTIVITY_FAILURE =
+            APPIUM_PREFIX + ADB_COMMAND
+            + ".NonExistingActivity -S -a android.intent.action.MAIN -c "
+            + "android.intent.category.LAUNCHER -f 0x10200000' exited with code 1'; Command output: "
+            + "Stopping: com.instagram.android\n"
+            + "Starting: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] "
+            + "flg=0x10200000 cmp=com.instagram.android/.NonExistingActivity }\n"
+            + "Error type 3\n"
+            + "Error: Activity class {com.instagram.android/com.instagram.android.NonExistingActivity} "
+            + "does not exist.";
 
     private final DriverFailureDiagnostic diagnostic = new DriverFailureDiagnostic();
 

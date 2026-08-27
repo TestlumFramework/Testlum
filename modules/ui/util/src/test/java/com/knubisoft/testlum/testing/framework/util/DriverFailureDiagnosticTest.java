@@ -163,6 +163,26 @@ class DriverFailureDiagnosticTest {
         }
 
         @Test
+        void keepsAResponseCodeThatIsPartOfTheMessage() {
+            String description = describe(
+                    new RuntimeException("WWW-Authenticate header missing for response code 401"),
+                    mobileContext(APPIUM_URL));
+
+            assertTrue(description.contains("WWW-Authenticate header missing for response code 401"));
+        }
+
+        @Test
+        void stillStripsAResponseCodeThatStandsAsItsOwnSentence() {
+            String description = describe(
+                    new RuntimeException("Could not start a new session. Response code 401. "
+                                         + "Message: Authorization required"),
+                    mobileContext(APPIUM_URL));
+
+            assertTrue(description.contains("Cause      : Message: Authorization required"));
+            assertFalse(description.contains("Response code 401"));
+        }
+
+        @Test
         void unwrapsToTheRootCause() {
             RuntimeException failure = new RuntimeException("wrapper", new ConnectException("Connection refused"));
 

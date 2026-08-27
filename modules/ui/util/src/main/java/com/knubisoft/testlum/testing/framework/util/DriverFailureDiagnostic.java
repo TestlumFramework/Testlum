@@ -35,7 +35,7 @@ public class DriverFailureDiagnostic {
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
     private static final Pattern[] BOILERPLATE = {
             Pattern.compile("Could not start a new session\\.?", Pattern.CASE_INSENSITIVE),
-            Pattern.compile("Response code \\d+\\.?", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("(?<![a-zA-Z] )Response code \\d+\\.?", Pattern.CASE_INSENSITIVE),
             Pattern.compile("Message: An unknown server-side error occurred while processing the command\\.?",
                     Pattern.CASE_INSENSITIVE),
             Pattern.compile("Consider checking the driver's troubleshooting documentation\\.?",

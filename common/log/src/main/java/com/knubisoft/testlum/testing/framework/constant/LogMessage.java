@@ -228,6 +228,16 @@ public final class LogMessage {
             "Element has zero dimensions and cannot be interacted with";
     public static final String XSD_SCHEMA_WARNING_LOG = "Schema warning in {} at line {}: {}";
 
+    public static final String UNRESOLVED_INCLUDE_PATH_LOG = LogFormat.withYellow(
+            "Include path <{}> of scenario <{}> cannot be resolved before execution. "
+            + "UI steps inside it are ignored, so the required driver may not be created");
+    public static final String UNREADABLE_INCLUDE_LOG = LogFormat.withYellow(
+            "Included scenario <{}> referenced from <{}> cannot be read: {}. "
+            + "UI steps inside it are ignored, so the required driver may not be created");
+    public static final String UNREADABLE_VARIATIONS_LOG = LogFormat.withYellow(
+            "Variations <{}> of scenario <{}> cannot be read: {}. "
+            + "Include paths that depend on them are not resolved");
+
     private LogMessage() {
         // nop
     }

@@ -7,7 +7,9 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
+import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
+import com.knubisoft.testlum.testing.framework.xml.XMLParsers;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
@@ -22,11 +24,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link TestSetCollector} verifying test set collection,
@@ -50,11 +56,18 @@ class TestSetCollectorTest {
     private GlobalVariationsProvider globalVariationsProvider;
     @Mock
     private JacksonService jacksonService;
+    @Mock
+    private XMLParsers xmlParsers;
+    @Mock
+    private FileSearcher fileSearcher;
 
+    private ScenarioStepReader scenarioStepReader;
     private TestSetCollector testSetCollector;
 
     @BeforeEach
     void setUp() {
+        scenarioStepReader = new ScenarioStepReader(
+                xmlParsers, fileSearcher, testResourceSettings, globalVariationsProvider);
         when(browserUtil.filterDefaultEnabledBrowsers()).thenReturn(Collections.emptyList());
         when(mobileUtil.filterDefaultEnabledMobileBrowserDevices()).thenReturn(Collections.emptyList());
         when(mobileUtil.filterDefaultEnabledNativeDevices()).thenReturn(Collections.emptyList());
@@ -65,7 +78,7 @@ class TestSetCollectorTest {
 
         testSetCollector = new TestSetCollector(
                 scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                testResourceSettings, globalVariationsProvider, environments, jacksonService);
+                testResourceSettings, globalVariationsProvider, environments, jacksonService, scenarioStepReader);
     }
 
     @Nested
@@ -160,14 +173,15 @@ class TestSetCollectorTest {
 
             testSetCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, List.of(env), jacksonService);
+                    testResourceSettings, globalVariationsProvider, List.of(env), jacksonService,
+                    scenarioStepReader);
 
-            // Scenario with web command
+            // Scenario with isWebPresent command
             Scenario scenario = createScenarioWithSettings();
             scenario.getCommands().add(new Web());
 
             MappingResult mr = new MappingResult(
-                    new File("/scenarios/web-test/scenario.xml"), scenario, null);
+                    new File("/scenarios/isWebPresent-test/scenario.xml"), scenario, null);
             ScenarioCollector.Result collectorResult = new ScenarioCollector.Result();
             collectorResult.add(mr);
 
@@ -198,7 +212,8 @@ class TestSetCollectorTest {
 
             testSetCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, List.of(dev, staging), jacksonService);
+                    testResourceSettings, globalVariationsProvider, List.of(dev, staging), jacksonService,
+                    scenarioStepReader);
 
             ScenarioCollector.Result collectorResult = new ScenarioCollector.Result();
             MappingResult mr = new MappingResult(
@@ -255,7 +270,8 @@ class TestSetCollectorTest {
 
             TestSetCollector emptyEnvCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, Collections.emptyList(), jacksonService);
+                    testResourceSettings, globalVariationsProvider, Collections.emptyList(), jacksonService,
+                    scenarioStepReader);
 
             assertThrows(DefaultFrameworkException.class, emptyEnvCollector::collect);
         }
@@ -268,7 +284,8 @@ class TestSetCollectorTest {
 
             TestSetCollector nullEnvCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, null, jacksonService);
+                    testResourceSettings, globalVariationsProvider, null, jacksonService,
+                    scenarioStepReader);
 
             assertThrows(DefaultFrameworkException.class, nullEnvCollector::collect);
         }

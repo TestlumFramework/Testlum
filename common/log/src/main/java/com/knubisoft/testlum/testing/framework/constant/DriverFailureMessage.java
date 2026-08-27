@@ -45,6 +45,15 @@ public class DriverFailureMessage {
             "The application started but the expected activity never appeared. "
             + "Verify <appPackage> and <appActivity> in %s";
 
+    public static final String APP_ACTIVITY_NOT_FOUND =
+            "The activity declared in <appActivity> does not exist in the installed application. "
+            + "Check the value in %s; run 'adb shell dumpsys package <appPackage>' to list the "
+            + "activities the app actually declares";
+    public static final String ADB_EXEC_TIMEOUT =
+            "The adb command did not finish in time. The device or emulator may be slow or busy. "
+            + "Raise the limit with <capability name=\"appium:adbExecTimeout\" value=\"60000\"/> in %s, "
+            + "or check that the device responds to 'adb devices'";
+
     public static final String BROWSER_VERSION_MISMATCH =
             "The driver does not match the installed browser. Either update the browser or pin a matching "
             + "<driverVersion> (local browser) / <browserVersion> (docker, remote, BrowserStack) in %s";

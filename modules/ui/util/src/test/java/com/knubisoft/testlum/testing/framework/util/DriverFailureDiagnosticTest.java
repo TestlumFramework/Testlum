@@ -4,8 +4,10 @@ import com.knubisoft.testlum.testing.framework.exception.DriverCreationException
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.nio.channels.ClosedChannelException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,6 +16,31 @@ class DriverFailureDiagnosticTest {
 
     private static final String APPIUM_URL = "http://127.0.0.1:4723";
     private static final String CONFIG_PATH = "/dev/ui.xml";
+
+    private static final String APPIUM_PREFIX =
+            "Could not start a new session. Response code 500. Message: An unknown server-side error "
+            + "occurred while processing the command. Original error: Cannot start the "
+            + "'com.instagram.android' application. Consider checking the driver's troubleshooting "
+            + "documentation. Original error: Error executing adbExec. Original error: ";
+
+    private static final String ADB_COMMAND =
+            "'Command '/Users/admin/Library/Android/sdk/platform-tools/adb -P 5037 -s emulator-5554 "
+            + "shell am start -W -n com.instagram.android/com.instagram.android";
+
+    private static final String ADB_TIMEOUT_FAILURE = APPIUM_PREFIX + ADB_COMMAND
+                                                      + ".activity.MainTabActivity -S -a android.intent.action.MAIN -c "
+                                                      + "android.intent.category.LAUNCHER -f 0x10200000' timed out after 20000ms'. Try to increase "
+                                                      + "the 20000ms adb execution timeout represented by 'adbExecTimeout' capability";
+
+    private static final String MISSING_ACTIVITY_FAILURE = APPIUM_PREFIX + ADB_COMMAND
+                                                           + ".NonExistingActivity -S -a android.intent.action.MAIN -c "
+                                                           + "android.intent.category.LAUNCHER -f 0x10200000' exited with code 1'; Command output: "
+                                                           + "Stopping: com.instagram.android\n"
+                                                           + "Starting: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] "
+                                                           + "flg=0x10200000 cmp=com.instagram.android/.NonExistingActivity }\n"
+                                                           + "Error type 3\n"
+                                                           + "Error: Activity class {com.instagram.android/com.instagram.android.NonExistingActivity} "
+                                                           + "does not exist.";
 
     private final DriverFailureDiagnostic diagnostic = new DriverFailureDiagnostic();
 
@@ -37,6 +64,18 @@ class DriverFailureDiagnosticTest {
                 .env("dev")
                 .configPath(CONFIG_PATH)
                 .connectionName("local browser")
+                .build();
+    }
+
+    private DriverFailureContext dockerContext() {
+        return DriverFailureContext.builder()
+                .kind(UiDriverKind.WEB)
+                .alias("main")
+                .qualifier("Chrome")
+                .env("dev")
+                .configPath(CONFIG_PATH)
+                .connectionName("browser in docker")
+                .inDocker(true)
                 .build();
     }
 
@@ -271,6 +310,105 @@ class DriverFailureDiagnosticTest {
 
             assertTrue(exception.describe().contains("Check the <mobilebrowser> device configuration"));
             assertTrue(exception.isRetryable());
+        }
+    }
+
+    @Nested
+    class AppiumCauses {
+        @Test
+        void reducesAnAdbTimeoutToASingleReadableLine() {
+            String description = describe(new RuntimeException(ADB_TIMEOUT_FAILURE), mobileContext(APPIUM_URL));
+
+            assertTrue(description.contains("Cause      : Could not start 'com.instagram.android': "
+                                            + "adb command timed out after 20000ms"));
+            assertTrue(description.contains("appium:adbExecTimeout"));
+            assertFalse(description.contains("platform-tools/adb"));
+        }
+
+        @Test
+        void reducesAMissingActivityToTheLineThatExplainsIt() {
+            String description = describe(new RuntimeException(MISSING_ACTIVITY_FAILURE), mobileContext(APPIUM_URL));
+
+            assertTrue(description.contains("Cause      : Activity class {com.instagram.android/"
+                                            + "com.instagram.android.NonExistingActivity} does not exist"));
+            assertTrue(description.contains("dumpsys package <appPackage>"));
+            assertFalse(description.contains("Error type 3"));
+        }
+
+        @Test
+        void doesNotMistakeAMissingActivityForAnAdbTimeout() {
+            String description = describe(new RuntimeException(MISSING_ACTIVITY_FAILURE), mobileContext(APPIUM_URL));
+
+            assertFalse(description.contains("adbExecTimeout"));
+            assertFalse(description.contains("timed out"));
+        }
+
+        @Test
+        void doesNotMistakeAnAdbTimeoutForAMissingActivity() {
+            String description = describe(new RuntimeException(ADB_TIMEOUT_FAILURE), mobileContext(APPIUM_URL));
+
+            assertFalse(description.contains("dumpsys package"));
+            assertFalse(description.contains("does not exist"));
+        }
+
+        @Test
+        void neitherFailureIsRetried() {
+            assertFalse(diagnostic.describeForRetry(
+                    new RuntimeException(ADB_TIMEOUT_FAILURE), mobileContext(APPIUM_URL)).isRetryable());
+            assertFalse(diagnostic.describeForRetry(
+                    new RuntimeException(MISSING_ACTIVITY_FAILURE), mobileContext(APPIUM_URL)).isRetryable());
+        }
+
+        @Test
+        void namesTheExceptionTypeWhenNothingCouldExplainTheFailure() {
+            String description = describe(new FileNotFoundException("No such file or directory"), webContext());
+
+            assertTrue(description.contains("Cause      : FileNotFoundException: No such file or directory"));
+        }
+
+        @Test
+        void keepsAnExplainedCauseFreeOfTheExceptionType() {
+            String description = describe(new ConnectException("Connection refused"), mobileContext(APPIUM_URL));
+
+            assertTrue(description.contains("Cause      : Connection refused"));
+            assertFalse(description.contains("ConnectException: Connection refused"));
+        }
+
+        @Test
+        void dropsAppiumBoilerplateFromAnUnexplainedFailure() {
+            String description = describe(new RuntimeException(
+                            "Could not start a new session. Response code 500. Message: An unknown server-side "
+                            + "error occurred while processing the command. Original error: something odd"),
+                    mobileContext(APPIUM_URL));
+
+            assertTrue(description.contains("Cause      : RuntimeException: something odd"));
+        }
+    }
+
+    @Nested
+    class DockerCauses {
+
+        private RuntimeException daemonDown() {
+            SocketException cause = new SocketException("No such file or directory");
+            return new RuntimeException(cause.toString(), cause);
+        }
+
+        @Test
+        void explainsAnUnreachableDockerDaemonWithoutRetrying() {
+            DriverCreationException exception = diagnostic.describeForRetry(daemonDown(), dockerContext());
+
+            assertTrue(exception.describe().contains(
+                    "Cause      : Docker daemon is not reachable: No such file or directory"));
+            assertTrue(exception.describe().contains("Start Docker"));
+            assertFalse(exception.isRetryable());
+        }
+
+        @Test
+        void doesNotBlameDockerWhenTheBrowserDoesNotRunInDocker() {
+            String description = describe(daemonDown(), webContext());
+
+            assertFalse(description.contains("Start Docker"));
+            assertTrue(description.contains("Cause      : SocketException: No such file or directory"));
         }
     }
 

@@ -35,6 +35,7 @@ public class DriverFailureContextProvider {
         return baseContext(UiDriverKind.WEB, browser.getAlias(), browser.getClass().getSimpleName())
                 .connectionName(Objects.nonNull(browserType) ? browserType.getTypeName() : null)
                 .serverUrl(quietly(() -> webServerUrl(browser, browserType)))
+                .inDocker(BrowserUtil.BrowserType.IN_DOCKER == browserType)
                 .build();
     }
 

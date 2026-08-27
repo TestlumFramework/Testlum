@@ -4,7 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.model.scenario.Input;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -59,7 +59,7 @@ class InputExecutorTest {
             input.setValue("testUser");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("username"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("username"), any(), eq(ElementChecks.FOR_WRITING)))
                     .thenReturn(element);
             when(uiUtil.resolveSendKeysType(eq("testUser"), eq(element), eq(scenarioFile)))
                     .thenReturn("testUser");

@@ -10,7 +10,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
@@ -80,7 +80,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     private String getActualValue(final AssertAttribute attribute) {
         WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
-                attribute.getLocatorStrategy(), new VisibilityCheck());
+                attribute.getLocatorStrategy(), ElementChecks.FOR_READING);
         return uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
@@ -140,7 +140,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         resultUtil.addAssertCheckedMetadata(checked, result);
         boolean isSelected =
                 uiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy(),
-                        new VisibilityCheck()).isSelected();
+                        ElementChecks.FOR_READING).isSelected();
         if (checked.isNegative() && isSelected || !checked.isNegative() && !isSelected) {
             Exception e = new DefaultFrameworkException(String
                     .format(ASSERT_CHECKED, checked.getLocator()));

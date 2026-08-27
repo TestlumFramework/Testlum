@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.util.*;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -409,7 +409,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(true);
 
             CommandResult result = new CommandResult();
@@ -430,7 +430,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(false);
 
             CommandResult result = new CommandResult();
@@ -451,7 +451,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(false);
 
             CommandResult result = new CommandResult();
@@ -472,7 +472,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(true);
 
             CommandResult result = new CommandResult();
@@ -499,7 +499,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("expected");
 
@@ -523,7 +523,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("actual-different");
 
@@ -547,7 +547,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("different");
 
@@ -571,7 +571,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("same");
 

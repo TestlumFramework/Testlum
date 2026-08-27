@@ -4,7 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -33,7 +33,7 @@ public class HoverExecutor extends AbstractUiExecutor<Hover> {
 
     private void executeHoverCommand(final Actions actions, final Hover hover) {
         WebElement webElement = uiUtil.findWebElement(dependencies, hover.getLocator(), hover.getLocatorStrategy(),
-                new VisibilityCheck());
+                ElementChecks.FOR_READING);
         performMovement(actions, webElement);
     }
 

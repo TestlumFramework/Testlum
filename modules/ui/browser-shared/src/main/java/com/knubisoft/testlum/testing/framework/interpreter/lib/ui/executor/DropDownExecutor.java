@@ -8,17 +8,12 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.check.EnabledCheck;
-import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
-import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
-import com.knubisoft.testlum.testing.model.scenario.AllValues;
-import com.knubisoft.testlum.testing.model.scenario.DropDown;
-import com.knubisoft.testlum.testing.model.scenario.OneValue;
-import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
-import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
-import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
 import java.util.Collections;
@@ -26,10 +21,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ONE_VALUE_TEMPLATE;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -46,7 +41,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         String locatorId = dropDown.getLocator();
         result.put(ResultUtil.DROP_DOWN_LOCATOR, locatorId);
         WebElement dropDownElement = uiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy(),
-                new VisibilityCheck(), new InteractabilityCheck(), new EnabledCheck());
+                ElementChecks.FOR_INTERACTION);
         if (dropDownElement.getTagName().equals("select")) {
             processSelectDropDown(dropDown, result, dropDownElement);
         } else {

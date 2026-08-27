@@ -7,16 +7,9 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
-import com.knubisoft.testlum.testing.model.scenario.ElementAttribute;
-import com.knubisoft.testlum.testing.model.scenario.ElementPresent;
-import com.knubisoft.testlum.testing.model.scenario.FromConstant;
-import com.knubisoft.testlum.testing.model.scenario.FromCookie;
-import com.knubisoft.testlum.testing.model.scenario.FromDom;
-import com.knubisoft.testlum.testing.model.scenario.FromElement;
-import com.knubisoft.testlum.testing.model.scenario.FromUrl;
-import com.knubisoft.testlum.testing.model.scenario.WebVar;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,7 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class WebVariableExecutorTest {
@@ -126,7 +120,7 @@ class WebVariableExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getAttribute("outerHTML")).thenReturn("<div>content</div>");
-            when(uiUtil.findWebElement(any(), eq("main-content"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("main-content"), any(), eq(ElementChecks.FOR_READING)))
                     .thenReturn(element);
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
@@ -233,7 +227,7 @@ class WebVariableExecutorTest {
             webVar.setElement(fromElement);
 
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("my-link"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("my-link"), any(), eq(ElementChecks.FOR_READING)))
                     .thenReturn(element);
             when(uiUtil.getElementAttribute(eq(element), eq("href"), eq(driver))).thenReturn("/path/to");
 

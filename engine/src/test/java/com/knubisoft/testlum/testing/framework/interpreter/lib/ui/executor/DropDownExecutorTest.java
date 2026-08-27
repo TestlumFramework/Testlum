@@ -5,13 +5,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
-import com.knubisoft.testlum.testing.model.scenario.AllValues;
-import com.knubisoft.testlum.testing.model.scenario.DropDown;
-import com.knubisoft.testlum.testing.model.scenario.OneValue;
-import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
-import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
-import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,9 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DropDownExecutorTest {
@@ -88,7 +81,7 @@ class DropDownExecutorTest {
 
             WebElement selectElement = mock(WebElement.class);
             when(selectElement.getTagName()).thenReturn("select");
-            when(uiUtil.findWebElement(any(), eq("idx-select"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("idx-select"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(selectElement);
 
             // The Select constructor checks that the element is a <select>, we need to mock it
@@ -114,7 +107,7 @@ class DropDownExecutorTest {
 
             WebElement selectElement = mock(WebElement.class);
             when(selectElement.getTagName()).thenReturn("select");
-            when(uiUtil.findWebElement(any(), eq("val-select"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("val-select"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(selectElement);
 
             CommandResult result = new CommandResult();
@@ -138,7 +131,7 @@ class DropDownExecutorTest {
 
             WebElement selectElement = mock(WebElement.class);
             when(selectElement.getTagName()).thenReturn("select");
-            when(uiUtil.findWebElement(any(), eq("deselect-dd"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("deselect-dd"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(selectElement);
 
             CommandResult result = new CommandResult();
@@ -162,7 +155,7 @@ class DropDownExecutorTest {
 
             WebElement selectElement = mock(WebElement.class);
             when(selectElement.getTagName()).thenReturn("select");
-            when(uiUtil.findWebElement(any(), eq("deselect-idx"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("deselect-idx"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(selectElement);
 
             CommandResult result = new CommandResult();
@@ -186,7 +179,7 @@ class DropDownExecutorTest {
 
             WebElement selectElement = mock(WebElement.class);
             when(selectElement.getTagName()).thenReturn("select");
-            when(uiUtil.findWebElement(any(), eq("deselect-val"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("deselect-val"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(selectElement);
 
             CommandResult result = new CommandResult();
@@ -214,7 +207,7 @@ class DropDownExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("custom-dd"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("custom-dd"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(dropDown, result));
@@ -232,7 +225,7 @@ class DropDownExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("custom-dd-val"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("custom-dd-val"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(dropDown, result));
@@ -250,7 +243,7 @@ class DropDownExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("custom-dd-text"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("custom-dd-text"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             WebElement parentElement = mock(WebElement.class);
@@ -277,7 +270,7 @@ class DropDownExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("custom-multi"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("custom-multi"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             WebElement parent1 = mock(WebElement.class);
@@ -308,7 +301,7 @@ class DropDownExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("custom-fail"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("custom-fail"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             WebElement parent = mock(WebElement.class);
@@ -333,7 +326,7 @@ class DropDownExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("custom-dd"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("custom-dd"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(dropDown, result));
@@ -349,7 +342,7 @@ class DropDownExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("span");
-            when(uiUtil.findWebElement(any(), eq("custom-all-sel"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("custom-all-sel"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(dropDown, result));
@@ -365,7 +358,7 @@ class DropDownExecutorTest {
 
             WebElement selectElement = mock(WebElement.class);
             when(selectElement.getTagName()).thenReturn("select");
-            when(uiUtil.findWebElement(any(), eq("deselect-all"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("deselect-all"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(selectElement);
 
             CommandResult result = new CommandResult();
@@ -387,7 +380,7 @@ class DropDownExecutorTest {
 
             WebElement selectElement = mock(WebElement.class);
             when(selectElement.getTagName()).thenReturn("select");
-            when(uiUtil.findWebElement(any(), eq("select-all"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("select-all"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(selectElement);
 
             CommandResult result = new CommandResult();
@@ -415,7 +408,7 @@ class DropDownExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("my-dd"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("my-dd"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             WebElement parentElement = mock(WebElement.class);
@@ -440,7 +433,7 @@ class DropDownExecutorTest {
 
             WebElement element = mock(WebElement.class);
             when(element.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("meta-dd"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("meta-dd"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             WebElement parent = mock(WebElement.class);

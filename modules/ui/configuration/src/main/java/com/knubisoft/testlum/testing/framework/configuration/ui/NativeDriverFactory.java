@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.ui;
 
 import com.knubisoft.testlum.testing.framework.UIConfiguration;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.DriverFailureContext;
@@ -13,6 +14,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -20,12 +22,11 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class NativeDriverFactory {
 
     private final SeleniumDriverUtil seleniumDriverUtil;
@@ -139,13 +140,11 @@ public class NativeDriverFactory {
         }
     }
 
+    @Deprecated
     private void setGooglePlayStoreCredentials(final DesiredCapabilities desiredCapabilities,
                                                final GooglePlayLogin googlePlayLogin) {
         if (Objects.nonNull(googlePlayLogin)) {
-            Map<String, String> map = new HashMap<>();
-            map.put("username", googlePlayLogin.getEmail());
-            map.put("password", googlePlayLogin.getPassword());
-            desiredCapabilities.setCapability("browserstack.appStoreConfiguration", map);
+            log.warn(LogMessage.DEPRECATED_GOOGLE_LOGIN);
         }
     }
 }

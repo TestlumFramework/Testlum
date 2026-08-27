@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +31,15 @@ public class DriverFailureDiagnostic {
     private static final String SCHEME_SEPARATOR = "://";
     private static final String TYPE_SEPARATOR = ": ";
     private static final String MESSAGE_JOINER = " | ";
+    private static final String ORIGINAL_ERROR = "Original error:";
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+    private static final Pattern[] BOILERPLATE = {
+            Pattern.compile("Could not start a new session\\.?", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("Response code \\d+\\.?", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("Message: An unknown server-side error occurred while processing the command\\.?",
+                    Pattern.CASE_INSENSITIVE),
+            Pattern.compile("Consider checking the driver's troubleshooting documentation\\.?",
+                    Pattern.CASE_INSENSITIVE)};
 
     public DriverCreationException describe(final Throwable failure, final DriverFailureContext context) {
         DriverCreationException described = build(failure, context);
@@ -50,8 +60,11 @@ public class DriverFailureDiagnostic {
         log.debug(DriverFailureMessage.RAW_FAILURE_DEBUG, context.getAlias(), failure);
 
         List<String> messages = cleanMessagesOf(chain);
-        Optional<DriverFailureHint> hint = DriverFailureHint.resolve(chain, join(messages), context);
-        String description = buildDescription(context, causeOf(chain, messages), hintTextOf(hint, context));
+        String joined = join(messages);
+        Optional<DriverFailureHint> hint = DriverFailureHint.resolve(chain, joined, context);
+        String cause = hint.flatMap(matched -> matched.getCauseRule().apply(joined))
+                .orElseGet(() -> causeOf(chain, messages, hint.isPresent()));
+        String description = buildDescription(context, cause, hintTextOf(hint, context));
         return new DriverCreationException(description, hint.map(DriverFailureHint::isRetryable).orElse(true), failure);
     }
 
@@ -167,15 +180,31 @@ public class DriverFailureDiagnostic {
         return messages;
     }
 
-    private String causeOf(final List<Throwable> chain, final List<String> messages) {
-        Throwable rootCause = chain.get(chain.size() - 1);
-        String message = deepestMessage(messages);
+    private String causeOf(final List<Throwable> chain, final List<String> messages, final boolean explained) {
+        String typeName = chain.get(chain.size() - 1).getClass().getSimpleName();
+        String message = shorten(deepestMessage(messages));
         if (StringUtils.isBlank(message)) {
-            return rootCause.getClass().getSimpleName();
+            return typeName;
         }
-        return StringUtils.isBlank(messages.get(messages.size() - 1))
-                ? rootCause.getClass().getSimpleName() + TYPE_SEPARATOR + message
-                : message;
+        boolean rootCauseIsSilent = StringUtils.isBlank(messages.get(messages.size() - 1));
+        return rootCauseIsSilent || !explained ? typeName + TYPE_SEPARATOR + message : message;
+    }
+
+    private String shorten(final String message) {
+        if (StringUtils.isBlank(message)) {
+            return message;
+        }
+        String shortened = lastOriginalError(message);
+        for (Pattern boilerplate : BOILERPLATE) {
+            shortened = boilerplate.matcher(shortened).replaceAll(StringUtils.SPACE);
+        }
+        shortened = WHITESPACE.matcher(shortened).replaceAll(StringUtils.SPACE).trim();
+        return StringUtils.isBlank(shortened) ? message : shortened;
+    }
+
+    private String lastOriginalError(final String message) {
+        int index = message.lastIndexOf(ORIGINAL_ERROR);
+        return index < 0 ? message : message.substring(index + ORIGINAL_ERROR.length()).trim();
     }
 
     private String deepestMessage(final List<String> messages) {

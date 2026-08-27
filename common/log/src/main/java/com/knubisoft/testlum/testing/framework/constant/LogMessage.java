@@ -238,6 +238,12 @@ public final class LogMessage {
             "Variations <{}> of scenario <{}> cannot be read: {}. "
             + "Include paths that depend on them are not resolved");
 
+    public static final String DEPRECATED_GOOGLE_LOGIN = LogFormat.withYellow("""
+            Support for logging in to the Google Play Store using the capability has been deprecated
+            Current Recommendation: You must manually automate the Google login process within your test
+            scenarios rather than relying on this functionality."""
+    );
+
     private LogMessage() {
         // nop
     }

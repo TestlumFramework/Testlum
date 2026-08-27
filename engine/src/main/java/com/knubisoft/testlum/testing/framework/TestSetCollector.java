@@ -21,9 +21,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Collections.singletonList;
 
 @Component
 public class TestSetCollector {
@@ -82,9 +87,9 @@ public class TestSetCollector {
     private Stream<Arguments> createArguments(final MappingResult entry,
                                               final Map<File, Scenario> parsedScenarios) {
         final ScenarioStepReader.Result s = scenarioStepReader.scan(entry.scenario, entry.file, parsedScenarios);
-        List<String> webBrowsersAliases = s.isWebPresent() ? browsers : Collections.singletonList(null);
-        List<String> mobileBrowsersAliases = s.isMobileBrowserPresent() ? this.mobileBrowsers : Collections.singletonList(null);
-        List<String> nativeAliases = s.isNativePresent() ? nativeDevices : Collections.singletonList(null);
+        List<String> webBrowsersAliases = s.isWebPresent() ? browsers : singletonList(null);
+        List<String> mobileBrowsersAliases = s.isMobileBrowserPresent() ? mobileBrowsers : singletonList(null);
+        List<String> nativeAliases = s.isNativePresent() ? nativeDevices : singletonList(null);
         if (!s.isWebPresent() && !s.isMobileBrowserPresent() && !s.isNativePresent()) {
             return getArgumentsWithoutUiSteps(entry);
         }

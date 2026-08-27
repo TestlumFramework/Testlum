@@ -14,4 +14,5 @@ public class DriverFailureContext {
     private final String configPath;
     private final String connectionName;
     private final String serverUrl;
+    private final boolean inDocker;
 }

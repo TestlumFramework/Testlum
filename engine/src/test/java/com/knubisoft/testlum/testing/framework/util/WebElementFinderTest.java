@@ -1,33 +1,25 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
+import com.knubisoft.testlum.testing.framework.autohealing.AutoHealer;
+import com.knubisoft.testlum.testing.framework.autohealing.AutoHealerFactory;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
-import com.knubisoft.testlum.testing.framework.util.check.ElementCheckChain;
+import com.knubisoft.testlum.testing.framework.util.check.ElementCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.framework.util.check.PageLoadCheck;
-import com.knubisoft.testlum.testing.model.global_config.BrowserSettings;
-import com.knubisoft.testlum.testing.model.global_config.ElementAutowait;
-import com.knubisoft.testlum.testing.model.global_config.Native;
-import com.knubisoft.testlum.testing.model.global_config.Web;
-import com.knubisoft.testlum.testing.model.pages.ClassName;
-import com.knubisoft.testlum.testing.model.pages.CssSelector;
-import com.knubisoft.testlum.testing.model.pages.Id;
-import com.knubisoft.testlum.testing.model.pages.Locator;
-import com.knubisoft.testlum.testing.model.pages.Text;
-import com.knubisoft.testlum.testing.model.pages.Xpath;
+import com.knubisoft.testlum.testing.model.global_config.*;
+import com.knubisoft.testlum.testing.model.pages.*;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 
 import java.util.List;
 import java.util.Map;
@@ -51,7 +43,7 @@ class WebElementFinderTest {
     private PageLoadCheck pageLoadCheck;
 
     @Mock
-    private ElementCheckChain elementCheckChain;
+    private AutoHealerFactory autoHealerFactory;
 
     @InjectMocks
     private WebElementFinder webElementFinder;
@@ -335,7 +327,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             assertNotNull(result);
             assertEquals(mockElement, result);
         }
@@ -368,7 +360,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             assertEquals(mockElement, result);
         }
 
@@ -392,7 +384,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             assertEquals(mockElement, result);
         }
 
@@ -415,7 +407,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             assertEquals(mockElement, result);
             verify(pageLoadCheck).waitUntilDomReady(deps);
         }
@@ -448,7 +440,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             assertEquals(mockElement, result);
             verify(mockDriver, times(1)).findElement(expectedBy);
         }
@@ -478,7 +470,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps);
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             assertEquals(mockElement, result);
         }
     }
@@ -508,7 +500,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            webElementFinder.find(new LocatorData(null, locator), deps);
+            webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             verify(pageLoadCheck).waitUntilDomReady(deps);
         }
 
@@ -531,7 +523,7 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            webElementFinder.find(new LocatorData(null, locator), deps);
+            webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
             verify(pageLoadCheck).waitUntilDomReady(deps);
         }
     }
@@ -564,7 +556,7 @@ class WebElementFinderTest {
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE));
             assertTrue(ex.getMessage().contains("testLocator"));
         }
 
@@ -589,7 +581,7 @@ class WebElementFinderTest {
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
             assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE));
         }
     }
 
@@ -620,7 +612,276 @@ class WebElementFinderTest {
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
             assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps));
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE));
+        }
+    }
+
+    // ================================================================
+    // Element checks: polling, diagnostics, auto healing, NATIVE
+    // ================================================================
+
+    @Nested
+    class ElementChecksIntegration {
+
+        private Locator locator(final String locatorId, final String xpathValue) {
+            Locator locator = new Locator();
+            locator.setLocatorId(locatorId);
+            Xpath xpath = new Xpath();
+            xpath.setValue(xpathValue);
+            locator.getXpathOrIdOrClassName().add(xpath);
+            return locator;
+        }
+
+        private void stubAutoHealingEnabled() {
+            Web web = mock(Web.class);
+            AutoHealing autoHealing = mock(AutoHealing.class);
+            lenient().when(environmentLoader.getCurrentEnvWebSettings()).thenReturn(Optional.of(web));
+            lenient().when(web.getAutoHealing()).thenReturn(autoHealing);
+            lenient().when(autoHealing.isEnabled()).thenReturn(true);
+        }
+
+        @Test
+        void failedCheckKeepsPollingInsteadOfFailingImmediately() {
+            webElementFinder.init();
+            final Locator locator = locator("hiddenBtn", "//button");
+            By by = By.xpath("//button");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(false);
+            JsWebDriver driver = createJsDriver();
+            when(driver.findElement(by)).thenReturn(element);
+            stubWebSettings(2);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.WEB).build();
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps,
+                            ElementChecks.FOR_READING));
+            verify(driver, atLeast(2)).findElement(by);
+        }
+
+        @Test
+        void elementThatBecomesValidOnLaterPollIsReturned() {
+            webElementFinder.init();
+            final Locator locator = locator("lateBtn", "//button");
+            By by = By.xpath("//button");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(false, true);
+            when(element.getSize()).thenReturn(new Dimension(10, 10));
+            JsWebDriver driver = createJsDriver();
+            when(driver.findElement(by)).thenReturn(element);
+            stubWebSettings(5);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.WEB).build();
+
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
+                    ElementChecks.FOR_READING);
+            assertEquals(element, result);
+        }
+
+        @Test
+        void timeoutCausedByFailedCheckReportsTheCheckReason() {
+            webElementFinder.init();
+            final Locator locator = locator("zeroSizeBtn", "//button");
+            By by = By.xpath("//button");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(true);
+            when(element.getSize()).thenReturn(new Dimension(0, 0));
+            JsWebDriver driver = createJsDriver();
+            when(driver.findElement(by)).thenReturn(element);
+            stubWebSettings(1);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.WEB).build();
+
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps,
+                            ElementChecks.FOR_READING));
+            assertTrue(ex.getMessage().contains("zeroSizeBtn"));
+            assertTrue(ex.getMessage().contains(LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE));
+        }
+
+        @Test
+        void timeoutCausedByFailedCheckDoesNotTriggerAutoHealing() {
+            webElementFinder.init();
+            stubAutoHealingEnabled();
+            final Locator locator = locator("coveredBtn", "//button");
+            By by = By.xpath("//button");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(false);
+            JsWebDriver driver = createJsDriver();
+            when(driver.findElement(by)).thenReturn(element);
+            stubWebSettings(1);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.WEB).build();
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps,
+                            ElementChecks.FOR_READING));
+            verifyNoInteractions(autoHealerFactory);
+        }
+
+        @Test
+        void missingElementTriggersAutoHealingAndValidatesTheHealedElement() {
+            webElementFinder.init();
+            stubAutoHealingEnabled();
+            final Locator locator = locator("brokenLocator", "//gone");
+            By by = By.xpath("//gone");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            JsWebDriver driver = createJsDriver();
+            when(driver.findElement(by)).thenThrow(new NoSuchElementException("not found"));
+            stubWebSettings(1);
+
+            WebElement healed = mock(WebElement.class);
+            when(healed.isDisplayed()).thenReturn(true);
+            when(healed.getSize()).thenReturn(new Dimension(10, 10));
+            AutoHealer autoHealer = mock(AutoHealer.class);
+            when(autoHealer.heal(locator)).thenReturn(Optional.of(healed));
+            when(autoHealerFactory.create(any())).thenReturn(autoHealer);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.WEB).build();
+
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
+                    ElementChecks.FOR_READING);
+            assertEquals(healed, result);
+            verify(healed).isDisplayed();
+        }
+
+        @Test
+        void healedElementThatFailsAcheckIsRejected() {
+            webElementFinder.init();
+            stubAutoHealingEnabled();
+            final Locator locator = locator("brokenLocator", "//gone");
+            By by = By.xpath("//gone");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            JsWebDriver driver = createJsDriver();
+            when(driver.findElement(by)).thenThrow(new NoSuchElementException("not found"));
+            stubWebSettings(1);
+
+            WebElement healed = mock(WebElement.class);
+            when(healed.isDisplayed()).thenReturn(false);
+            AutoHealer autoHealer = mock(AutoHealer.class);
+            when(autoHealer.heal(locator)).thenReturn(Optional.of(healed));
+            when(autoHealerFactory.create(any())).thenReturn(autoHealer);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.WEB).build();
+
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps,
+                            ElementChecks.FOR_READING));
+            assertTrue(ex.getMessage().contains(LogMessage.UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE));
+        }
+
+        @Test
+        void nativeTypeSkipsTheJavascriptBasedCheck() {
+            webElementFinder.init();
+            final Locator locator = locator("nativeBtn", "//button");
+            By by = By.xpath("//button");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(true);
+            when(element.getSize()).thenReturn(new Dimension(10, 10));
+            when(element.isEnabled()).thenReturn(true);
+            // A plain WebDriver mock is not a JavascriptExecutor: if the JS based check were not
+            // skipped for NATIVE, the cast inside it would blow up instead of returning the element.
+            WebDriver driver = mock(WebDriver.class);
+            when(driver.findElement(by)).thenReturn(element);
+            stubNativeSettings(5);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.NATIVE).build();
+
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
+                    ElementChecks.FOR_INTERACTION);
+            assertEquals(element, result);
+        }
+
+        @Test
+        void readOnlyFieldIsReportedInsteadOfFailingInsideTheDriver() {
+            webElementFinder.init();
+            stubAutoHealingEnabled();
+            final Locator locator = locator("lockedField", "//input");
+            By by = By.xpath("//input");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(true);
+            when(element.getSize()).thenReturn(new Dimension(120, 30));
+            when(element.isEnabled()).thenReturn(true);
+            when(element.getAttribute("aria-disabled")).thenReturn(null);
+            when(element.getAttribute("readonly")).thenReturn("true");
+            JsWebDriver driver = createJsDriver();
+            when(driver.findElement(by)).thenReturn(element);
+            when(driver.executeScript(anyString(), any())).thenReturn(Boolean.TRUE);
+            stubWebSettings(1);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.WEB).build();
+
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> webElementFinder.find(new LocatorData(null, locator), deps,
+                            ElementChecks.FOR_WRITING));
+            assertTrue(ex.getMessage().contains("lockedField"));
+            assertTrue(ex.getMessage().contains("read-only"));
+            verifyNoInteractions(autoHealerFactory);
+        }
+
+        @Test
+        void nativeTypeSkipsTheReadOnlyCheck() {
+            webElementFinder.init();
+            final Locator locator = locator("nativeField", "//input");
+            By by = By.xpath("//input");
+            when(byService.xpath(anyList())).thenReturn(List.of(by));
+
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(true);
+            when(element.getSize()).thenReturn(new Dimension(120, 30));
+            when(element.isEnabled()).thenReturn(true);
+            when(element.getAttribute("aria-disabled")).thenReturn(null);
+            WebDriver driver = mock(WebDriver.class);
+            when(driver.findElement(by)).thenReturn(element);
+            stubNativeSettings(5);
+
+            ExecutorDependencies deps = ExecutorDependencies.builder()
+                    .driver(driver).uiType(UiType.NATIVE).build();
+
+            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
+                    ElementChecks.FOR_WRITING);
+            assertEquals(element, result);
+            verify(element, never()).getAttribute("readonly");
+        }
+
+        @Test
+        void checkSetsAreOrderedByEnumDeclaration() {
+            assertEquals(List.of(ElementCheck.VISIBILITY,
+                            ElementCheck.SCROLLED_INTO_VIEW_AND_INTERACTABLE,
+                            ElementCheck.ENABLED),
+                    List.copyOf(ElementChecks.FOR_INTERACTION));
+            assertEquals(List.of(ElementCheck.VISIBILITY,
+                            ElementCheck.SCROLLED_INTO_VIEW_AND_INTERACTABLE,
+                            ElementCheck.ENABLED,
+                            ElementCheck.EDITABLE),
+                    List.copyOf(ElementChecks.FOR_WRITING));
+            assertEquals(List.of(ElementCheck.VISIBILITY,
+                            ElementCheck.SCROLLED_INTO_VIEW_AND_INTERACTABLE),
+                    List.copyOf(ElementChecks.FOR_POSITIONING));
+            assertEquals(List.of(ElementCheck.VISIBILITY), List.copyOf(ElementChecks.FOR_READING));
+            assertTrue(ElementChecks.NONE.isEmpty());
         }
     }
 }

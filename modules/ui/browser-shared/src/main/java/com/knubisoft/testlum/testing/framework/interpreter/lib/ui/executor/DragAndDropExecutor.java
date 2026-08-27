@@ -7,8 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
-import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.InvalidArgumentException;
@@ -38,14 +37,14 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         uiLogUtil.logDragAndDropInfo(dragAndDrop);
         resultUtil.addDragAndDropMetaDada(dragAndDrop, result);
         WebElement target = uiUtil.findWebElement(dependencies, dragAndDrop.getToLocator(),
-                dragAndDrop.getToLocatorStrategy(), new VisibilityCheck(), new InteractabilityCheck());
+                dragAndDrop.getToLocatorStrategy(), ElementChecks.FOR_POSITIONING);
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
             File source = fileSearcher.searchFileFromDir(
                     dependencies.getFile().getParentFile(), dragAndDrop.getFileName());
             dropFile(target, source);
         } else {
             dropElement(target, uiUtil.findWebElement(dependencies, dragAndDrop.getFromLocator(),
-                    dragAndDrop.getToLocatorStrategy(), new VisibilityCheck(), new InteractabilityCheck()));
+                    dragAndDrop.getToLocatorStrategy(), ElementChecks.FOR_POSITIONING));
         }
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }

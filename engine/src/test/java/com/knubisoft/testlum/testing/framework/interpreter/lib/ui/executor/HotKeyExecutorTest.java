@@ -4,20 +4,11 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiLogUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
-import com.knubisoft.testlum.testing.model.scenario.BackSpace;
-import com.knubisoft.testlum.testing.model.scenario.Copy;
-import com.knubisoft.testlum.testing.model.scenario.Cut;
-import com.knubisoft.testlum.testing.model.scenario.Enter;
-import com.knubisoft.testlum.testing.model.scenario.Escape;
-import com.knubisoft.testlum.testing.model.scenario.Highlight;
-import com.knubisoft.testlum.testing.model.scenario.HotKey;
-import com.knubisoft.testlum.testing.model.scenario.Paste;
-import com.knubisoft.testlum.testing.model.scenario.Space;
-import com.knubisoft.testlum.testing.model.scenario.Tab;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,12 +23,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -162,13 +149,13 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("input-field"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             executor.execute(hotKey, result);
 
             assertNotNull(result.getSubCommandsResult());
-            verify(uiUtil).findWebElement(any(), eq("input-field"), any(), any(AbstractElementCheck[].class));
+            verify(uiUtil).findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION));
         }
 
         @Test
@@ -203,12 +190,12 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("text-area"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("text-area"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             executor.execute(hotKey, result);
 
-            verify(uiUtil).findWebElement(any(), eq("text-area"), any(), any(AbstractElementCheck[].class));
+            verify(uiUtil).findWebElement(any(), eq("text-area"), any(), eq(ElementChecks.FOR_INTERACTION));
         }
 
         @Test

@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.model.scenario.Click;
 import com.knubisoft.testlum.testing.model.scenario.ClickMethod;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +61,7 @@ class ClickExecutorTest {
             click.setMethod(null);
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("btn-submit"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("btn-submit"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             executor.execute(click, result);
@@ -78,7 +78,7 @@ class ClickExecutorTest {
             click.setMethod(ClickMethod.SELENIUM);
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("btn-ok"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("btn-ok"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             executor.execute(click, result);
@@ -97,7 +97,7 @@ class ClickExecutorTest {
             click.setMethod(ClickMethod.JS);
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("btn-js"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("btn-js"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             executor.execute(click, result);
@@ -115,7 +115,7 @@ class ClickExecutorTest {
             click.setLocator("my-locator");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("my-locator"), any(), any(AbstractElementCheck[].class)))
+            when(uiUtil.findWebElement(any(), eq("my-locator"), any(), eq(ElementChecks.FOR_INTERACTION)))
                     .thenReturn(element);
 
             executor.execute(click, result);

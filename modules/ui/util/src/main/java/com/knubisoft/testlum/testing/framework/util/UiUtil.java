@@ -4,31 +4,24 @@ import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.FileSearcher;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.JavascriptConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorCollector;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.pages.ClassName;
-import com.knubisoft.testlum.testing.model.pages.CssSelector;
-import com.knubisoft.testlum.testing.model.pages.Id;
-import com.knubisoft.testlum.testing.model.pages.Locator;
-import com.knubisoft.testlum.testing.model.pages.Text;
-import com.knubisoft.testlum.testing.model.pages.Xpath;
+import com.knubisoft.testlum.testing.framework.util.check.ElementCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
+import com.knubisoft.testlum.testing.model.pages.*;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import io.appium.java_client.AppiumDriver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -44,11 +37,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
-
-import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
-import com.knubisoft.testlum.testing.framework.constant.JavascriptConstant;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
 
 @Slf4j
 @Component
@@ -82,14 +72,13 @@ public class UiUtil {
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
-        LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
-        return webElementFinder.find(locatorData, dependencies);
+        return findWebElement(dependencies, locatorId, locatorStrategy, ElementChecks.NONE);
     }
 
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy,
-                                     final AbstractElementCheck... checks) {
+                                     final Set<ElementCheck> checks) {
         LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
         return webElementFinder.find(locatorData, dependencies, checks);
     }

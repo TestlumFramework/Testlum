@@ -7,30 +7,23 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
-import com.knubisoft.testlum.testing.framework.util.check.ElementCheckChain;
+import com.knubisoft.testlum.testing.framework.util.check.ElementCheck;
 import com.knubisoft.testlum.testing.framework.util.check.PageLoadCheck;
 import com.knubisoft.testlum.testing.model.global_config.AutoHealing;
 import com.knubisoft.testlum.testing.model.global_config.Web;
-import com.knubisoft.testlum.testing.model.pages.ClassName;
-import com.knubisoft.testlum.testing.model.pages.CssSelector;
-import com.knubisoft.testlum.testing.model.pages.Id;
-import com.knubisoft.testlum.testing.model.pages.Locator;
-import com.knubisoft.testlum.testing.model.pages.Text;
-import com.knubisoft.testlum.testing.model.pages.Xpath;
+import com.knubisoft.testlum.testing.model.pages.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +42,6 @@ public final class WebElementFinder {
     private final EnvironmentLoader environmentLoader;
     private final ByService byService;
     private final PageLoadCheck pageLoadCheck;
-    private final ElementCheckChain elementCheckChain;
 
     private Map<Class<?>, ByType> searchByTypes;
 
@@ -68,34 +60,42 @@ public final class WebElementFinder {
     }
 
     public WebElement find(final LocatorData locatorData, final ExecutorDependencies dependencies,
-                           final AbstractElementCheck... checks) {
+                           final Set<ElementCheck> checks) {
         this.pageLoadCheck.waitUntilDomReady(dependencies);
         Set<By> bySet = this.constructLocatorSet(locatorData);
+        FindAttempt attempt = new FindAttempt(dependencies, checks, new AtomicReference<>());
         try {
-            return this.findByLocators(dependencies, bySet, checks);
-        } catch (Exception e) {
-            return this.findWithAutoHealing(dependencies, locatorData)
-                    .orElseThrow(() -> this.unableToFindElementException(locatorData.getLocator().getLocatorId()));
+            return this.findByLocators(attempt, bySet);
+        } catch (TimeoutException e) {
+            return this.recoverFromTimeout(attempt, locatorData);
         }
     }
 
-    private WebElement findByLocators(final ExecutorDependencies executorDependencies,
-                                      final Set<org.openqa.selenium.By> bySet,
-                                      final AbstractElementCheck... checks) {
-        int waitTimeSeconds = this.deriveAutoWaitTime(executorDependencies);
-        List<By> byList = new ArrayList<>(bySet);
-
-        return new FluentWait<>(executorDependencies.getDriver())
-                .withTimeout(Duration.ofSeconds(waitTimeSeconds))
-                .pollingEvery(Duration.ofSeconds(1))
-                .until(driver -> tryFindByAny(driver, byList, checks));
+    private WebElement recoverFromTimeout(final FindAttempt attempt, final LocatorData locatorData) {
+        String locatorId = locatorData.getLocator().getLocatorId();
+        String checkFailure = attempt.lastCheckFailure().get();
+        if (checkFailure != null) {
+            throw new DefaultFrameworkException(
+                    String.format(LogMessage.ELEMENT_FOUND_BUT_CHECK_FAILED, locatorId, checkFailure));
+        }
+        return this.findWithAutoHealing(attempt, locatorData)
+                .orElseThrow(() -> this.unableToFindElementException(locatorId));
     }
 
-    private WebElement tryFindByAny(final WebDriver driver, final List<By> byList,
-                                    final AbstractElementCheck... checks) {
+    private WebElement findByLocators(final FindAttempt attempt, final Set<By> bySet) {
+        int waitTimeSeconds = this.deriveAutoWaitTime(attempt.dependencies());
+        List<By> byList = new ArrayList<>(bySet);
+
+        return new FluentWait<>(attempt.dependencies().getDriver())
+                .withTimeout(Duration.ofSeconds(waitTimeSeconds))
+                .pollingEvery(Duration.ofSeconds(1))
+                .until(driver -> tryFindByAny(attempt, driver, byList));
+    }
+
+    private WebElement tryFindByAny(final FindAttempt attempt, final WebDriver driver, final List<By> byList) {
         List<String> failedMessages = new ArrayList<>();
         for (int i = 0; i < byList.size(); i++) {
-            WebElement element = tryFindElement(driver, byList.get(i), failedMessages, i, checks);
+            WebElement element = tryFindElement(attempt, driver, byList.get(i), failedMessages, i);
             if (element != null) {
                 return element;
             }
@@ -103,12 +103,11 @@ public final class WebElementFinder {
         return null;
     }
 
-    private WebElement tryFindElement(final WebDriver driver, final By by,
-                                      final List<String> failedMessages, final int index,
-                                      final AbstractElementCheck... checks) {
+    private WebElement tryFindElement(final FindAttempt attempt, final WebDriver driver, final By by,
+                                      final List<String> failedMessages, final int index) {
         try {
             WebElement element = driver.findElement(by);
-            elementCheckChain.verify(driver, element, checks);
+            runChecks(attempt, element);
             logFindResult(failedMessages, by, index);
             return element;
         } catch (NoSuchElementException e) {
@@ -116,7 +115,16 @@ public final class WebElementFinder {
                     LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE, extractLocatorValue(by)));
             return null;
         } catch (DefaultFrameworkException e) {
+            attempt.lastCheckFailure().set(e.getMessage());
             return null;
+        }
+    }
+
+    private void runChecks(final FindAttempt attempt, final WebElement element) {
+        for (ElementCheck check : attempt.checks()) {
+            if (check.supports(attempt.dependencies().getUiType())) {
+                check.check(attempt.dependencies(), element);
+            }
         }
     }
 
@@ -127,22 +135,21 @@ public final class WebElementFinder {
         }
     }
 
-    private Optional<WebElement> findWithAutoHealing(
-            final ExecutorDependencies dependencies,
-            final LocatorData locatorData) {
-
+    private Optional<WebElement> findWithAutoHealing(final FindAttempt attempt, final LocatorData locatorData) {
         return getEnabledAutoHealing()
-                .map(autoHealing -> tryToHealElement(dependencies, locatorData, autoHealing));
+                .map(autoHealing -> tryToHealElement(attempt, locatorData, autoHealing));
     }
 
-    private WebElement tryToHealElement(final ExecutorDependencies dependencies, final LocatorData locatorData,
+    private WebElement tryToHealElement(final FindAttempt attempt, final LocatorData locatorData,
                                         final AutoHealing autoHealing) {
         log.warn(LogMessage.START_HEAL_LOG);
+        ExecutorDependencies dependencies = attempt.dependencies();
         AutoHealer autoHealer = autoHealerFactory.create(dependencies);
         Locator locator = locatorData.getLocator();
         WebElement healedElement = autoHealer.heal(locator)
                 .orElseThrow(() -> new DefaultFrameworkException(
                         String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locator.getLocatorId())));
+        runChecks(attempt, healedElement);
         logHealResult(autoHealer, healedElement, autoHealing, dependencies, locatorData);
         return healedElement;
     }
@@ -192,7 +199,7 @@ public final class WebElementFinder {
                 .collect(Collectors.groupingBy(Object::getClass));
     }
 
-    public String extractLocatorValue(final org.openqa.selenium.By by) {
+    public String extractLocatorValue(final By by) {
         String locator = by.toString().substring(LOCATOR_PREFIX_LENGTH);
         Matcher matcher = LOCATOR_VALUE_PATTERN.matcher(locator);
 
@@ -217,6 +224,11 @@ public final class WebElementFinder {
                 String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
     }
 
-    private interface ByType extends Function<Locator, List<org.openqa.selenium.By>> {
+    private interface ByType extends Function<Locator, List<By>> {
+    }
+
+    private record FindAttempt(ExecutorDependencies dependencies,
+                               Set<ElementCheck> checks,
+                               AtomicReference<String> lastCheckFailure) {
     }
 }

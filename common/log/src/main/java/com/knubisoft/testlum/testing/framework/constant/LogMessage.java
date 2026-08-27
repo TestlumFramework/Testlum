@@ -91,6 +91,8 @@ public final class LogMessage {
     public static final String UNABLE_TO_FIND_ELEMENT_BY_LOCATOR =
             "No such element: The element not found using any of the provided locators. "
                     + "Please verify the locator - %s!";
+    public static final String ELEMENT_FOUND_BUT_CHECK_FAILED =
+            "Element was found by locator '%s' but did not pass validation. %s";
     public static final String ENVIRONMENT_LOG = "Environment: %s";
     public static final String VARIATION_LOG = "Variation - %s";
     public static final String BROWSER_NAME_LOG = "Browser: %s";
@@ -220,6 +222,8 @@ public final class LogMessage {
 
     public static final String UI_ELEMENT_DISABLED_EXCEPTION_MESSAGE =
             "Element is disabled and cannot accept interactions. Check if the '%s' attribute is set on the element";
+    public static final String UI_ELEMENT_READONLY_EXCEPTION_MESSAGE =
+            "Element is read-only and cannot accept input. Check if the '%s' attribute is set on the element";
     public static final String UI_ELEMENT_IS_NOT_INTERACTABLE_EXCEPTION_MESSAGE =
             "Element is not interactable: it is covered by another element such as an overlay, modal, or tooltip";
     public static final String UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE =

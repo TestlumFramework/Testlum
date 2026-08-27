@@ -12,14 +12,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.check.InteractabilityCheck;
-import com.knubisoft.testlum.testing.framework.util.check.VisibilityCheck;
-import com.knubisoft.testlum.testing.model.scenario.ByArea;
-import com.knubisoft.testlum.testing.model.scenario.ByLocator;
-import com.knubisoft.testlum.testing.model.scenario.Exclude;
-import com.knubisoft.testlum.testing.model.scenario.Image;
-import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
-import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,14 +77,14 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private BufferedImage getImageFromPicture(final Image image, final CommandResult result) throws IOException {
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
                 image.getPicture().getLocatorStrategy(),
-                new VisibilityCheck(), new InteractabilityCheck());
+                ElementChecks.FOR_POSITIONING);
         return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
     }
 
     private BufferedImage getImageFromPart(final Image image) throws IOException {
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                 image.getPart().getLocatorStrategy(),
-                new VisibilityCheck(), new InteractabilityCheck());
+                ElementChecks.FOR_POSITIONING);
         return ImageIO.read(uiUtil.takeScreenshot(webElement));
     }
 
@@ -143,7 +137,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private Rectangle getElementArea(final String locatorId, final Scale scale, final LocatorStrategy locatorStrategy) {
         org.openqa.selenium.Rectangle seleniumRectangle =
                 uiUtil.findWebElement(dependencies, locatorId, locatorStrategy,
-                        new VisibilityCheck(), new InteractabilityCheck()).getRect();
+                        ElementChecks.FOR_POSITIONING).getRect();
         double x = seleniumRectangle.getX() * scale.getScaleX();
         double y = seleniumRectangle.getY() * scale.getScaleY();
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();

@@ -8,7 +8,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.*;
-import com.knubisoft.testlum.testing.framework.util.check.AbstractElementCheck;
+import com.knubisoft.testlum.testing.framework.util.check.ElementChecks;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Part;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
@@ -169,7 +169,7 @@ class CompareImageExecutorTest {
 
             WebElement partElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("partLocator"), any(),
-                    any(AbstractElementCheck[].class))).thenReturn(partElement);
+                    eq(ElementChecks.FOR_POSITIONING))).thenReturn(partElement);
 
             File partScreenshot = File.createTempFile("part-screenshot", ".png");
             partScreenshot.deleteOnExit();

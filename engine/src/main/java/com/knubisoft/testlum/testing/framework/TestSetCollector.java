@@ -21,11 +21,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -40,6 +37,7 @@ public class TestSetCollector {
     private final GlobalVariationsProvider globalVariationsProvider;
     private final List<Environment> environments;
     private final JacksonService jacksonService;
+    private final ScenarioStepReader scenarioStepReader;
 
     public TestSetCollector(final ScenarioCollector scenarioCollector,
                             final ScenarioFilter scenarioFilter,
@@ -48,7 +46,8 @@ public class TestSetCollector {
                             final TestResourceSettings testResourceSettings,
                             final GlobalVariationsProvider globalVariationsProvider,
                             final List<Environment> environments,
-                            final JacksonService jacksonService) {
+                            final JacksonService jacksonService,
+                            final ScenarioStepReader scenarioStepReader) {
         this.scenarioCollector = scenarioCollector;
         this.scenarioFilter = scenarioFilter;
         this.browsers = browserUtil.filterDefaultEnabledBrowsers().stream()
@@ -61,29 +60,38 @@ public class TestSetCollector {
         this.globalVariationsProvider = globalVariationsProvider;
         this.environments = environments;
         this.jacksonService = jacksonService;
+        this.scenarioStepReader = scenarioStepReader;
     }
 
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = scenarioCollector.collect();
         List<MappingResult> validScenarios = scenarioFilter.filterScenarios(result);
         List<String> executionEnvironments = resolveExecutionEnvironments();
+        Map<File, Scenario> parsedScenarios = indexParsedScenarios(result);
         return validScenarios.stream()
-                .flatMap(this::createArguments)
+                .flatMap(entry -> createArguments(entry, parsedScenarios))
                 .flatMap(arguments -> expandByEnvironment(arguments, executionEnvironments));
     }
 
-    private Stream<Arguments> createArguments(final MappingResult entry) {
-        final ScenarioStepReader s = new ScenarioStepReader(entry.scenario);
-        List<String> effectiveBrowsers = s.isWeb() ? browsers : Collections.singletonList(null);
-        List<String> effectiveMobile = s.isMobileBrowser() ? mobileBrowsers : Collections.singletonList(null);
-        List<String> effectiveNative = s.isNatives() ? nativeDevices : Collections.singletonList(null);
-        if (!s.isWeb() && !s.isMobileBrowser() && !s.isNatives()) {
+    private Map<File, Scenario> indexParsedScenarios(final ScenarioCollector.Result result) {
+        return result.stream()
+                .filter(entry -> Objects.nonNull(entry.scenario))
+                .collect(Collectors.toMap(entry -> entry.file, entry -> entry.scenario, (first, second) -> first));
+    }
+
+    private Stream<Arguments> createArguments(final MappingResult entry,
+                                              final Map<File, Scenario> parsedScenarios) {
+        final ScenarioStepReader.Result s = scenarioStepReader.scan(entry.scenario, entry.file, parsedScenarios);
+        List<String> webBrowsersAliases = s.isWebPresent() ? browsers : Collections.singletonList(null);
+        List<String> mobileBrowsersAliases = s.isMobileBrowserPresent() ? this.mobileBrowsers : Collections.singletonList(null);
+        List<String> nativeAliases = s.isNativePresent() ? nativeDevices : Collections.singletonList(null);
+        if (!s.isWebPresent() && !s.isMobileBrowserPresent() && !s.isNativePresent()) {
             return getArgumentsWithoutUiSteps(entry);
         }
-        return effectiveNative.stream().flatMap(nd ->
-                effectiveMobile.stream().flatMap(mb ->
-                        effectiveBrowsers.stream().flatMap(br ->
-                                getArgumentsWithUiSteps(entry, br, mb, nd))));
+        return nativeAliases.stream().flatMap(nativeAlias ->
+                mobileBrowsersAliases.stream().flatMap(mobileBrowserAlias ->
+                        webBrowsersAliases.stream().flatMap(webBrowserAlias ->
+                                getArgumentsWithUiSteps(entry, webBrowserAlias, mobileBrowserAlias, nativeAlias))));
     }
 
     private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry) {
@@ -99,30 +107,30 @@ public class TestSetCollector {
     }
 
     private Stream<Arguments> getArgumentsWithUiSteps(final MappingResult entry,
-                                                      final String browserAlias,
+                                                      final String webBrowserAlias,
                                                       final String mobileBrowserAlias,
                                                       final String nativeAlias) {
         if (variationsExist(entry)) {
             return getVariationList(entry).stream().map(variations ->
-                    getArgumentsWithUiSteps(entry, browserAlias, mobileBrowserAlias, nativeAlias, variations));
+                    getArgumentsWithUiSteps(entry, webBrowserAlias, mobileBrowserAlias, nativeAlias, variations));
         } else {
             return Stream.of(
-                    getArgumentsWithUiSteps(entry, browserAlias, mobileBrowserAlias, nativeAlias, new HashMap<>()));
+                    getArgumentsWithUiSteps(entry, webBrowserAlias, mobileBrowserAlias, nativeAlias, new HashMap<>()));
         }
     }
 
     private Arguments getArgumentsWithUiSteps(final MappingResult entry,
-                                              final String browserAlias,
+                                              final String webBrowserAlias,
                                               final String mobileBrowserAlias,
                                               final String nativeAlias,
                                               final Map<String, String> variations) {
         ScenarioArguments scenarioArguments = buildScenarioArguments(
-                entry, browserAlias, mobileBrowserAlias, nativeAlias, variations);
+                entry, webBrowserAlias, mobileBrowserAlias, nativeAlias, variations);
         return convertToNamedArguments(scenarioArguments);
     }
 
     private ScenarioArguments buildScenarioArguments(final MappingResult entry,
-                                                     final String browserAlias,
+                                                     final String webBrowserAlias,
                                                      final String mobileBrowserAlias,
                                                      final String nativeAlias,
                                                      final Map<String, String> variations) {
@@ -131,7 +139,7 @@ public class TestSetCollector {
                 .file(entry.file)
                 .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
-                .browser(browserAlias)
+                .browser(webBrowserAlias)
                 .mobileBrowserDevice(mobileBrowserAlias)
                 .nativeDevice(nativeAlias)
                 .variations(variations)

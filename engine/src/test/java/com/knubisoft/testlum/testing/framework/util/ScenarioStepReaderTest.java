@@ -21,7 +21,31 @@ import static org.mockito.Mockito.*;
 
 class ScenarioStepReaderTest {
 
-    private Scenario createScenarioWithCommands(final AbstractCommand... commands) {
+    private static final String VARIATIONS_FILE = "variations.csv";
+
+    private final File scenariosFolder = new File("scenarios");
+    private final File rootFile = new File(scenariosFolder, "root/scenario.xml");
+    private final Map<File, Scenario> parsedScenarios = new HashMap<>();
+
+    private XMLParser<Scenario> scenarioParser;
+    private FileSearcher fileSearcher;
+    private GlobalVariationsProvider globalVariationsProvider;
+    private ScenarioStepReader reader;
+
+    @SuppressWarnings("unchecked")
+    @BeforeEach
+    void setUp() {
+        scenarioParser = mock(XMLParser.class);
+        XMLParsers xmlParsers = mock(XMLParsers.class);
+        when(xmlParsers.forScenario()).thenReturn(scenarioParser);
+        fileSearcher = mock(FileSearcher.class);
+        TestResourceSettings testResourceSettings = mock(TestResourceSettings.class);
+        when(testResourceSettings.getScenariosFolder()).thenReturn(scenariosFolder);
+        globalVariationsProvider = mock(GlobalVariationsProvider.class);
+        reader = new ScenarioStepReader(xmlParsers, fileSearcher, testResourceSettings, globalVariationsProvider);
+    }
+
+    private Scenario scenario(final AbstractCommand... commands) {
         Scenario scenario = mock(Scenario.class);
         when(scenario.getCommands()).thenReturn(Arrays.asList(commands));
         return scenario;

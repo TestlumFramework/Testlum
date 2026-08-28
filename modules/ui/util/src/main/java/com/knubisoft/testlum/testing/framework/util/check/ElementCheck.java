@@ -8,13 +8,6 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
-/**
- * Validations applied to a web element right after it was located.
- * <p>
- * The declaration order of the constants is the execution order: sets of checks are kept as
- * {@link java.util.EnumSet}, which iterates in natural order. Reordering the constants silently
- * reorders every check set, so keep the order intentional.
- */
 public enum ElementCheck {
 
     VISIBILITY {
@@ -30,14 +23,6 @@ public enum ElementCheck {
         }
     },
 
-    /**
-     * Not a pure check: it scrolls the element to the center of the viewport before sampling the
-     * point under it. The scroll and the sampling are a single {@code executeScript} on purpose and
-     * must not be split - without the scroll {@code elementFromPoint} returns null for everything
-     * below the fold, which would be reported as a false "covered by an overlay".
-     * <p>
-     * Not applicable to {@link UiType#NATIVE}: there is no DOM there.
-     */
     SCROLLED_INTO_VIEW_AND_INTERACTABLE {
         @Override
         public boolean supports(final UiType uiType) {
@@ -68,13 +53,6 @@ public enum ElementCheck {
         }
     },
 
-    /**
-     * The element accepts input. A read-only field is not disabled - it is enabled, displayed and not
-     * covered - so every other check passes it and the driver then rejects the write itself.
-     * <p>
-     * Not applicable to {@link UiType#NATIVE}: there is no read-only attribute in Appium, and asking
-     * for one is at best null and at worst an unsupported command.
-     */
     EDITABLE {
         @Override
         public boolean supports(final UiType uiType) {
@@ -104,28 +82,14 @@ public enum ElementCheck {
             + "var r = e.getBoundingClientRect();"
             + "return e.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));";
 
-    /**
-     * Reads an attribute that may be either a boolean HTML attribute or a plain "true"/"false" one.
-     * Selenium normalises {@code readonly} through the DOM property and answers "true" or null, but
-     * other drivers answer "" or the attribute name itself - all of which {@code parseBoolean} would
-     * quietly read as false.
-     */
     private static boolean isFlagSet(final WebElement element, final String attribute) {
         String value = element.getAttribute(attribute);
         return value != null && !Boolean.FALSE.toString().equalsIgnoreCase(value);
     }
 
-    /**
-     * Whether this check is meaningful for the given UI type. Checks that are not supported are
-     * skipped instead of failing.
-     */
     public boolean supports(final UiType uiType) {
         return true;
     }
 
-    /**
-     * Validates the element and throws {@link DefaultFrameworkException} with a user facing message
-     * when it does not pass.
-     */
     public abstract void check(ExecutorDependencies dependencies, WebElement element);
 }

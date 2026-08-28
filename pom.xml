@@ -70,7 +70,7 @@
         <spring-kafka.version>4.0.4</spring-kafka.version>
         <postgresql.driver.version>42.7.10</postgresql.driver.version>
         <oracle.database.ojdbc11>23.26.1.0.0</oracle.database.ojdbc11>
-        <maria.driver.version>3.5.7</maria.driver.version>
+        <maria.driver.version>3.5.9</maria.driver.version>
         <com.clickhouse.version>0.9.8</com.clickhouse.version>
         <sendgrid-java.version>4.10.3</sendgrid-java.version>
         <selenium-java.version>4.41.0</selenium-java.version>

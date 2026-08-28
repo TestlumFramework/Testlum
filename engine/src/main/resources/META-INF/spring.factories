@@ -7,7 +7,7 @@ org.springframework.test.context.TestExecutionListener = \
 	org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener
 
 org.springframework.context.ApplicationContextInitializer = \
-    com.knubisoft.testlum.testing.TestResourceInfrastructureInitializer
+    com.testlum.testing.TestResourceInfrastructureInitializer
 
 org.springframework.context.ApplicationListener = \
-    com.knubisoft.testlum.starter.failure.StartupFailureListener
+    com.testlum.starter.failure.StartupFailureListener

@@ -1,0 +1,128 @@
+package com.testlum.testing.framework.auth;
+
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import com.testlum.log.LogFormat;
+import com.testlum.testing.framework.FileSearcher;
+import com.testlum.testing.framework.constant.DelimiterConstant;
+import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.util.IntegrationsProvider;
+import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.scenario.Auth;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClient;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+
+@Slf4j
+public class JwtAuth extends AbstractAuthStrategy {
+
+    private static final String INVALID_CREDENTIALS_LOG = LogFormat.table("Invalid credentials");
+    private static final String SERVER_BAD_GATEWAY_RESPONSE_LOG = LogFormat.table("Server is shutdown");
+    private static final String SERVER_ERROR_RESPONSE_LOG = LogFormat.table("Request failed");
+
+    private final IntegrationsProvider integrationsProvider;
+    private final List<Api> apiList;
+    private final FileSearcher fileSearcher;
+
+    public JwtAuth(final InterpreterDependencies dependencies) {
+        super(dependencies);
+        this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
+        this.apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
+        this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
+    }
+
+    @Override
+    public void authenticate(final Auth auth, final CommandResult result) {
+        logAuthInfo(auth);
+        String token = getJwtToken(auth);
+        result.put(AUTHENTICATION_TYPE, AuthorizationConstant.HEADER_JWT);
+        login(token, AuthorizationConstant.HEADER_BEARER);
+    }
+
+    private String getJwtToken(final Auth auth) {
+        String body = prepareBody(auth);
+        HttpHeaders headers = getHeaders();
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
+        String response = doRequest(auth, request);
+        if (StringUtils.isNotBlank(response)) {
+            return getTokenFromResponse(auth, response);
+        }
+        return DelimiterConstant.EMPTY;
+    }
+
+    private String getTokenFromResponse(final Auth auth, final String response) {
+        DocumentContext context = JsonPath.parse(response);
+        Api apiIntegration = integrationsProvider.findApiForAlias(apiList, auth.getApiAlias());
+        return context.read(StringUtils.isNotBlank(apiIntegration.getAuth().getTokenName())
+                ? apiIntegration.getAuth().getTokenName() : AuthorizationConstant.CONTENT_KEY_TOKEN);
+    }
+
+    private String prepareBody(final Auth auth) {
+        return getCredentialsFromFile(auth.getCredentials());
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.ALL));
+        return headers;
+    }
+
+    private String doRequest(final Auth auth, final HttpEntity<String> request) {
+        RestClient restClient = RestClient.create();
+        try {
+            return restClient.post()
+                    .uri(getFullApiUrl(auth))
+                    .headers(h -> h.addAll(request.getHeaders()))
+                    .body(request.getBody())
+                    .retrieve()
+                    .body(String.class);
+        } catch (HttpClientErrorException exception) {
+            logResponseStatusError(exception);
+        }
+        return DelimiterConstant.EMPTY;
+    }
+
+    private String getFullApiUrl(final Auth auth) {
+        Api apiIntegration = integrationsProvider.findApiForAlias(apiList, auth.getApiAlias());
+        return apiIntegration.getUrl() + auth.getLoginEndpoint();
+    }
+
+    private String getCredentialsFromFile(final String fileName) {
+        try {
+            return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    private void logAuthInfo(final Auth auth) {
+        log.info(ALIAS_LOG, auth.getApiAlias());
+        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(CREDENTIALS_LOG, auth.getCredentials());
+    }
+
+    private void logResponseStatusError(final HttpClientErrorException exception) {
+        int code = exception.getStatusCode().value();
+        if (HttpStatus.NOT_FOUND.value() == code) {
+            log.info(INVALID_CREDENTIALS_LOG, code);
+        } else if (HttpStatus.BAD_GATEWAY.value() == code) {
+            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, code);
+        } else {
+            log.info(SERVER_ERROR_RESPONSE_LOG, code);
+        }
+    }
+}

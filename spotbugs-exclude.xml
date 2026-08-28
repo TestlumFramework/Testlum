@@ -2,7 +2,7 @@
 <FindBugsFilter>
     <!-- Exclude generated model classes -->
     <Match>
-        <Package name="~com\.knubisoft\.testlum\.testing\.model\..*"/>
+        <Package name="~com\.testlum\.testing\.model\..*"/>
     </Match>
 
     <!-- Exclude test classes -->

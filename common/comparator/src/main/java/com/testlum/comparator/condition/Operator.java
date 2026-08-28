@@ -1,0 +1,29 @@
+package com.testlum.comparator.condition;
+
+import com.testlum.comparator.exception.MatchException;
+import com.testlum.comparator.util.LogMessage;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
+@Getter
+@RequiredArgsConstructor
+public enum Operator {
+    MORE_THEN(">", Pattern.compile("^(>)[a-zA-Z0-9-.:/ ]*$")),
+    LESS_THEN("<", Pattern.compile("^(<)[<a-zA-Z0-9-:/ ]*$")),
+    MORE_THEN_OR_EQUAL(">=", Pattern.compile("^(>=)[a-zA-Z0-9-.:/ ]*$")),
+    LESS_THEN_OR_EQUAL("<=", Pattern.compile("^(<=)[a-zA-Z0-9-.:/ ]*$"));
+
+    private final String operatorSign;
+    private final Pattern pattern;
+
+    public static Operator getOperatorFromExpression(final String expression) {
+        return Arrays.stream(Operator.values())
+                .filter(o -> o.getPattern().matcher(expression).matches())
+                .findFirst()
+                .orElseThrow(() -> new MatchException(String.format(LogMessage.WRONG_OPERATOR, expression)));
+    }
+
+}

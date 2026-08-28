@@ -1,0 +1,64 @@
+package com.testlum.testing.framework.util;
+
+import com.github.romankh3.image.comparison.ImageComparison;
+import com.github.romankh3.image.comparison.model.ImageComparisonResult;
+import com.github.romankh3.image.comparison.model.Rectangle;
+import com.testlum.testing.model.scenario.Image;
+import com.testlum.testing.model.scenario.*;
+import org.springframework.stereotype.Service;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.Objects;
+
+@Service
+public class ImageComparator {
+
+    private static final double MAX_PERCENT = 100;
+    private static final int OPACITY_PERCENT = 50;
+
+    public ImageComparisonResult compare(final Image image,
+                                         final BufferedImage expectedImage,
+                                         final BufferedImage actualImage,
+                                         final List<Rectangle> excludes) {
+        return getImageComparisonResult(image.getFullScreen(), image.getPart(), expectedImage, actualImage, excludes);
+    }
+
+    public ImageComparisonResult compare(final MobileImage image,
+                                         final BufferedImage expectedImage,
+                                         final BufferedImage actualImage) {
+        return getImageComparisonResult(image.getFullScreen(), image.getPart(), expectedImage, actualImage, List.of());
+    }
+
+    public ImageComparisonResult compare(final NativeImage image,
+                                         final BufferedImage expectedImage,
+                                         final BufferedImage actualImage) {
+        return getImageComparisonResult(image.getFullScreen(), image.getPart(), expectedImage, actualImage, List.of());
+    }
+
+    private ImageComparisonResult getImageComparisonResult(final FullScreen fullScreen,
+                                                           final Part part,
+                                                           final BufferedImage expectedImage,
+                                                           final BufferedImage actualImage,
+                                                           final List<Rectangle> excludedElements) {
+        ImageComparison imageComparison = new ImageComparison(expectedImage, actualImage);
+        if (!excludedElements.isEmpty()) {
+            setExcludedElements(excludedElements, imageComparison);
+        }
+        if (Objects.nonNull(fullScreen) && Objects.nonNull(fullScreen.getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - fullScreen.getPercentage());
+        } else if (Objects.nonNull(part) && Objects.nonNull(part.getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - part.getPercentage());
+        }
+        return imageComparison.compareImages();
+    }
+
+    private void setExcludedElements(final List<Rectangle> excludedElements,
+                                     final ImageComparison imageComparison) {
+        imageComparison.setExcludedAreas(excludedElements);
+        imageComparison.setDrawExcludedRectangles(true);
+        imageComparison.setExcludedRectangleFilling(true, OPACITY_PERCENT);
+        imageComparison.setExcludedRectangleColor(Color.ORANGE);
+    }
+}

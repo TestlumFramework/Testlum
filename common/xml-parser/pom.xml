@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.knubisoft</groupId>
+        <groupId>com.testlum</groupId>
         <artifactId>common</artifactId>
-        <version>1.1.0</version>
+        <version>2.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -30,12 +30,12 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-models</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-log</artifactId>
         </dependency>
 

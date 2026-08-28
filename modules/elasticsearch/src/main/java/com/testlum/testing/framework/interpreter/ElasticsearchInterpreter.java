@@ -1,0 +1,217 @@
+package com.testlum.testing.framework.interpreter;
+
+import com.testlum.log.LogFormat;
+import com.testlum.testing.framework.env.AliasEnv;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
+import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
+import com.testlum.testing.framework.interpreter.lib.http.HttpValidator;
+import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
+import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.model.scenario.Body;
+import com.testlum.testing.model.scenario.ElasticSearchRequest;
+import com.testlum.testing.model.scenario.ElasticSearchRequestWithBody;
+import com.testlum.testing.model.scenario.ElasticSearchResponse;
+import com.testlum.testing.model.scenario.Elasticsearch;
+import com.testlum.testing.model.scenario.Header;
+import com.testlum.testing.model.scenario.Param;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpMethod;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+
+@Slf4j
+@InterpreterForClass(Elasticsearch.class)
+public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch> {
+
+    private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
+    private static final String BODY_LOG = LogFormat.table("Body");
+
+    private static final int MAX_CONTENT_LENGTH = 25 * 1024;
+
+    private static final String ENDPOINT = "Endpoint";
+    private static final String HTTP_METHOD = "HTTP method";
+    @Autowired(required = false)
+    @Qualifier("restClient")
+    private Map<AliasEnv, RestClient> restClient;
+
+    private final HttpUtil httpUtil;
+
+    public ElasticsearchInterpreter(final InterpreterDependencies dependencies) {
+        super(dependencies);
+        this.httpUtil = dependencies.getContext().getBean(HttpUtil.class);
+    }
+
+    @Override
+    protected void acceptImpl(final Elasticsearch o, final CommandResult result) {
+        Elasticsearch elasticsearch = injectCommand(o);
+        ensureAlias(elasticsearch::getAlias, elasticsearch::setAlias);
+        HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = httpUtil.getESHttpMethodMetadata(elasticsearch);
+        ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
+        HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
+        Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), result);
+        ElasticSearchResponse expected = elasticSearchRequest.getResponse();
+        compare(expected, actual, result);
+    }
+
+    private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
+        HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
+        httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
+        validateHeadersIfExists(expected, actual, httpValidator);
+        validateBodyIfFile(expected, actual, httpValidator, result);
+        httpValidator.rethrowOnErrors();
+    }
+
+    private void validateBodyIfFile(final ElasticSearchResponse expectedResponse,
+                                    final Response actual,
+                                    final HttpValidator httpValidator,
+                                    final CommandResult result) {
+        String expectedBody = getContentIfFile(expectedResponse.getFile());
+        if (StringUtils.isNotBlank(expectedBody)) {
+            try {
+                String actualBody = Objects.nonNull(actual.getEntity())
+                        ? EntityUtils.toString(actual.getEntity()) : null;
+                setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
+                result.setActual(stringPrettifier.asJsonResult(actualBody));
+                result.setExpected(stringPrettifier.asJsonResult(expectedBody));
+                httpValidator.validateBody(expectedBody, actualBody);
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
+            }
+        }
+    }
+
+    private void validateHeadersIfExists(final ElasticSearchResponse expected,
+                                         final Response actual,
+                                         final HttpValidator httpValidator) {
+        if (!expected.getHeader().isEmpty()) {
+            Map<String, String> actualHeaderMap = Arrays.stream(actual.getHeaders())
+                    .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+
+            Map<String, String> expectedHeaderMap = expected.getHeader().stream()
+                    .collect(Collectors.toMap(Header::getName, Header::getData));
+
+            httpValidator.validateHeaders(expectedHeaderMap, actualHeaderMap);
+        }
+    }
+
+    private Response getActual(final ElasticSearchRequest elasticSearchRequest,
+                               final HttpMethod httpMethod,
+                               final String alias,
+                               final CommandResult result) {
+        String endpoint = elasticSearchRequest.getEndpoint();
+        Map<String, String> headers = getHeaders(elasticSearchRequest);
+        logHttpInfo(alias, httpMethod.name(), endpoint);
+        addElasticsearchMetaData(alias, httpMethod.name(), headers, endpoint, result);
+        Request request = buildRequest(elasticSearchRequest, httpMethod, endpoint, headers);
+        try {
+            return restClient.get(new AliasEnv(alias, dependencies.getEnvironment())).performRequest(request);
+        } catch (ResponseException responseException) {
+            logException(responseException);
+            return responseException.getResponse();
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    private Request buildRequest(final ElasticSearchRequest elasticSearchRequest,
+                                 final HttpMethod httpMethod,
+                                 final String endpoint,
+                                 final Map<String, String> headers) {
+        Request request = new Request(httpMethod.name(), endpoint);
+        setRequestOptions(headers, request);
+
+        Map<String, String> params = getParams(elasticSearchRequest);
+        request.addParameters(params);
+
+        ContentType contentType = httpUtil.computeContentType(headers);
+        HttpEntity body = getBody(elasticSearchRequest, contentType);
+        logBodyContent(body);
+        request.setEntity(body);
+        return request;
+    }
+
+    private void setRequestOptions(final Map<String, String> headers, final Request request) {
+        RequestOptions.Builder requestOptionsBuilder = RequestOptions.DEFAULT.toBuilder();
+        for (Map.Entry<String, String> entryHeaderMap : headers.entrySet()) {
+            requestOptionsBuilder.addHeader(entryHeaderMap.getKey(), entryHeaderMap.getValue());
+        }
+        request.setOptions(requestOptionsBuilder);
+    }
+
+    private Map<String, String> getHeaders(final ElasticSearchRequest elasticSearchRequest) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        for (Header header : elasticSearchRequest.getHeader()) {
+            headers.put(header.getName(), header.getData());
+        }
+        return headers;
+    }
+
+    private Map<String, String> getParams(final ElasticSearchRequest request) {
+        return request.getParam().stream()
+                .collect(Collectors.toMap(Param::getName, Param::getData));
+    }
+
+    private HttpEntity getBody(final ElasticSearchRequest request, final ContentType contentType) {
+        if (!(request instanceof ElasticSearchRequestWithBody requestWithBody)) {
+            return null;
+        }
+        Body body = requestWithBody.getBody();
+        return httpUtil.extractBody(body, contentType, this, dependencies);
+    }
+
+    private void logHttpInfo(final String alias, final String method, final String endpoint) {
+        log.info(ALIAS_LOG, alias);
+        log.info(HTTP_METHOD_LOG, method);
+        log.info(ENDPOINT_LOG, endpoint);
+    }
+
+    private void logBodyContent(final HttpEntity body) {
+        if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
+            try {
+                String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
+                if (StringUtils.isNotBlank(stringBody)) {
+                    log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(stringBody))
+                            .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+                }
+            } catch (IOException e) {
+                throw new DefaultFrameworkException(e);
+            }
+        }
+    }
+
+    public void addElasticsearchMetaData(final String alias,
+                                         final String httpMethodName,
+                                         final Map<String, String> headers,
+                                         final String endpoint,
+                                         final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(ENDPOINT, endpoint);
+        result.put(HTTP_METHOD, httpMethodName);
+        if (!headers.isEmpty()) {
+            addHeadersMetaData(headers, result);
+        }
+    }
+
+}

@@ -1,0 +1,143 @@
+package com.testlum.testing.framework;
+
+import com.testlum.testing.framework.constant.ExceptionMessage;
+import com.testlum.testing.framework.constant.LogMessage;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.util.InjectionService;
+import com.testlum.testing.framework.validator.IntegrationsValidator;
+import com.testlum.testing.framework.validator.UiConfigValidator;
+import com.testlum.testing.framework.vault.VaultService;
+import com.testlum.testing.framework.xml.XMLParsers;
+import com.testlum.testing.logger.ConfigurationLogger;
+import com.testlum.testing.model.global_config.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Getter
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class GlobalTestConfigurationProvider {
+
+    private final TestResourceSettings testResourceSettings;
+    private final FileSearcher fileSearcher;
+    private final XMLParsers xmlParsers;
+    private final UiConfigValidator validator;
+    private final IntegrationsValidator integrationsValidator;
+    private final InjectionService injectionService;
+    private final ConfigurationLogger configurationLogger;
+
+    @Bean
+    public GlobalTestConfiguration globalTestConfiguration() {
+        return xmlParsers.forGlobalTestConfiguration().process(testResourceSettings.getConfigFile());
+    }
+
+    @Bean
+    public VaultService vaultService(final GlobalTestConfiguration globalTestConfiguration) {
+        Vault vault = globalTestConfiguration.getVault();
+        return vault == null ? null : new VaultService(globalTestConfiguration);
+    }
+
+    @Bean
+    public List<Environment> getEnvironments(final GlobalTestConfiguration globalTestConfiguration) {
+        return filterEnabledEnvironments(globalTestConfiguration);
+    }
+
+    @Bean
+    public EnvToIntegrationMap getIntegrations(final List<Environment> environments,
+                                               final Optional<VaultService> vaultService) {
+        return collectIntegrations(environments, vaultService);
+    }
+
+    @Bean("uiConfig")
+    public UIConfiguration getUiConfigs(final List<Environment> environments,
+                                        final Optional<VaultService> vaultService) {
+        return collectUiConfigs(environments, vaultService);
+    }
+
+    @Bean
+    public Integrations getDefaultIntegrations(final EnvToIntegrationMap integrations,
+                                               final List<Environment> environments) {
+        return integrations.get(getDefaultEnabledEnvironment(environments));
+    }
+
+    @Bean
+    public UiConfig getDefaultUiConfigs(@Qualifier("uiConfig") final UIConfiguration uiConfigs,
+                                        final List<Environment> environments) {
+        return uiConfigs.get(getDefaultEnabledEnvironment(environments));
+    }
+
+    private List<Environment> filterEnabledEnvironments(final GlobalTestConfiguration globalTestConfiguration) {
+        return globalTestConfiguration.getEnvironments().getEnv().stream()
+                .filter(Environment::isEnabled).toList();
+    }
+
+    private EnvToIntegrationMap collectIntegrations(final List<Environment> environments,
+                                                    final Optional<VaultService> vaultService) {
+        Map<String, Integrations> integrationsMap = environments.stream()
+                .collect(Collectors.toMap(Environment::getFolder, e -> initIntegration(e, vaultService),
+                        GlobalTestConfigurationProvider::rejectDuplicateEnvironment, LinkedHashMap::new));
+        configurationLogger.logIntegrationConfiguration(integrationsMap);
+        integrationsValidator.validate(integrationsMap);
+        return new EnvToIntegrationMap(integrationsMap);
+    }
+
+    private Integrations initIntegration(final Environment env, final Optional<VaultService> vaultService) {
+        return fileSearcher
+                .searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
+                .map(configFile -> xmlParsers.forIntegrations().process(configFile))
+                .map(e -> injectFromVaultIfPresent(vaultService, e))
+                .map(injectionService::injectFromSystem)
+                .orElseGet(() -> {
+                    log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
+                    return new Integrations();
+                });
+    }
+
+    private UIConfiguration collectUiConfigs(final List<Environment> environments,
+                                             final Optional<VaultService> vaultService) {
+        Map<String, UiConfig> uiConfigMap = environments.stream()
+                .collect(Collectors.toMap(Environment::getFolder, env -> initUiConfig(env, vaultService),
+                        GlobalTestConfigurationProvider::rejectDuplicateEnvironment, LinkedHashMap::new));
+        configurationLogger.logUiConfiguration(uiConfigMap);
+        validator.validate(uiConfigMap);
+        return new UIConfiguration(uiConfigMap);
+    }
+
+    private UiConfig initUiConfig(final Environment env,
+                                  final Optional<VaultService> vaultService) {
+        return fileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
+                .map(configFile -> xmlParsers.forUiConfig().process(configFile))
+                .map(e -> injectFromVaultIfPresent(vaultService, e))
+                .map(injectionService::injectFromSystem)
+                .orElseGet(() -> {
+                    log.warn(LogMessage.DISABLED_CONFIGURATION, UiConfig.class.getSimpleName());
+                    return new UiConfig();
+                });
+    }
+
+    private <T> T injectFromVaultIfPresent(final Optional<VaultService> vaultService, final T t) {
+        return vaultService.map(service -> injectionService.injectFromVault(service, t)).orElse(t);
+    }
+
+    private static <T> T rejectDuplicateEnvironment(final T first, final T second) {
+        throw new DefaultFrameworkException(ExceptionMessage.DUPLICATE_ENVIRONMENT_FOLDER);
+    }
+
+    private String getDefaultEnabledEnvironment(final List<Environment> environments) {
+        if (environments.isEmpty()) {
+            throw new DefaultFrameworkException(ExceptionMessage.NO_ENABLED_ENVIRONMENTS_FOUND);
+        }
+        return environments.get(0).getFolder();
+    }
+}

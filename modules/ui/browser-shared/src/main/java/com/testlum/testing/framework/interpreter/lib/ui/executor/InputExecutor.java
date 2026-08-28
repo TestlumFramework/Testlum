@@ -1,0 +1,34 @@
+package com.testlum.testing.framework.interpreter.lib.ui.executor;
+
+import com.testlum.testing.framework.constant.LogMessage;
+import com.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
+import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
+import com.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.util.ResultUtil;
+import com.testlum.testing.framework.util.check.ElementChecks;
+import com.testlum.testing.model.scenario.Input;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.WebElement;
+
+@Slf4j
+@ExecutorForClass(Input.class)
+public class InputExecutor extends AbstractUiExecutor<Input> {
+
+    public InputExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
+    }
+
+    @Override
+    public void execute(final Input input, final CommandResult result) {
+        result.put(ResultUtil.INPUT_LOCATOR, input.getLocator());
+        WebElement webElement = uiUtil.findWebElement(dependencies, input.getLocator(), input.getLocatorStrategy(),
+                ElementChecks.FOR_WRITING);
+        uiUtil.highlightElementIfRequired(input.isHighlight(), webElement, dependencies.getDriver());
+        String value = uiUtil.resolveSendKeysType(input.getValue(), webElement, dependencies.getFile());
+        result.put(ResultUtil.INPUT_VALUE, value);
+        log.info(LogMessage.VALUE_LOG, value);
+        webElement.sendKeys(value);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+}

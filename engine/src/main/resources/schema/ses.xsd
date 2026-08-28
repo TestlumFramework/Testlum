@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.testlum.com/testing/model/scenario"
           xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
-          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          targetNamespace="http://www.testlum.com/testing/model/scenario"
           elementFormDefault="qualified" jaxb:version="3.0">
 
     <x:include schemaLocation="shared.xsd"/>

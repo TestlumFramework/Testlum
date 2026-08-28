@@ -1,0 +1,52 @@
+package com.testlum.testing.framework.interpreter.lib;
+
+import com.google.common.base.Suppliers;
+import com.testlum.testing.framework.constant.ExceptionMessage;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.model.scenario.AbstractCommand;
+import org.reflections.Reflections;
+import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Modifier;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+@Service
+public class InterpreterScanner {
+
+    private static final String PACKAGE_TO_SCAN = "com.testlum.testing.framework.interpreter";
+
+    private final Supplier<CommandToInterpreterClassMap> cache =
+            Suppliers.memoize(this::collectAvailableInterpreters);
+
+    private CommandToInterpreterClassMap collectAvailableInterpreters() {
+        CommandToInterpreterClassMap map = new CommandToInterpreterClassMap();
+        for (Class<AbstractInterpreter<? extends AbstractCommand>> interpreter : scan()) {
+            addInterpreterToMapIfExists(map, interpreter);
+        }
+        return map;
+    }
+
+    private void addInterpreterToMapIfExists(final CommandToInterpreterClassMap map,
+                                             final Class<AbstractInterpreter<? extends AbstractCommand>> interpreter) {
+        InterpreterForClass interpreterForClass = interpreter.getAnnotation(InterpreterForClass.class);
+        if (Objects.isNull(interpreterForClass)) {
+            throw new DefaultFrameworkException(ExceptionMessage.NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS, interpreter);
+        }
+        map.put(interpreterForClass.value(), interpreter);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<Class<AbstractInterpreter<? extends AbstractCommand>>> scan() {
+        return new Reflections(PACKAGE_TO_SCAN).getSubTypesOf(AbstractInterpreter.class).stream()
+                .map(e -> (Class<AbstractInterpreter<? extends AbstractCommand>>) e)
+                .filter(e -> !Modifier.isAbstract(e.getModifiers()))
+                .collect(Collectors.toSet());
+    }
+
+    public CommandToInterpreterClassMap getInterpreters() {
+        return cache.get();
+    }
+}

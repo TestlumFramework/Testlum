@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.knubisoft</groupId>
+        <groupId>com.testlum</groupId>
         <artifactId>testlum</artifactId>
-        <version>1.1.0</version>
+        <version>2.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -42,17 +42,17 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>connection-template</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-condition</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>xml-parser</artifactId>
         </dependency>
 
@@ -382,194 +382,194 @@
         <!--    GENERAL    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-migrate</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-repeat</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-assert</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-conditional</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-include</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-wait</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-ai</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-shell</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-variable</artifactId>
         </dependency>
 
         <!--    DATABASES    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-postgres</artifactId>
         </dependency>
 
         <!--    SQL_DATABASE    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-sqlDatabase</artifactId>
         </dependency>
 
         <!--    API    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-http</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-websocket</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-auth</artifactId>
         </dependency>
 
         <!--    TESTLUM UI PLUGINS    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-ui-configuration</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-ui-executor</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-browser-shared</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-mysql</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-clickhouse</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-oracle</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-mongo</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-dynamo</artifactId>
         </dependency>
 
         <!--    QUEUES    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-kafka</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-rabbit</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-sqs</artifactId>
         </dependency>
 
         <!--    CACHE AND STORAGE    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-redis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-s3</artifactId>
         </dependency>
 
         <!--    MESSAGES AND MAILING    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-sendgrid</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-ses</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-smtp</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-twilio</artifactId>
         </dependency>
 
         <!--    API    -->
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-elasticsearch</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-graphql</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-lambda</artifactId>
         </dependency>
 
@@ -587,12 +587,12 @@
 
         <!--    TESTLUM UI PLUGINS    -->
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-native</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-mobilebrowser</artifactId>
         </dependency>
 
@@ -602,12 +602,12 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-log</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-comparator</artifactId>
         </dependency>
 

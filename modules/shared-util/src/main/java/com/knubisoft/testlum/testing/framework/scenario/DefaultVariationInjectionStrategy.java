@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.regex.Matcher;
@@ -20,6 +21,12 @@ public class DefaultVariationInjectionStrategy implements ScenarioContextVariati
     public String injectVariationsValues(final String scenarioStepAsString,
                                          final ScenarioContext scenarioContext,
                                          final boolean escapeSpelQuotes) {
+        if (null == scenarioStepAsString) {
+            return null;
+        }
+        if (StringUtils.isBlank(scenarioStepAsString)) {
+            return "";
+        }
         Matcher m = ROUTE_PATTERN.matcher(scenarioStepAsString);
         String formatted = scenarioStepAsString;
         while (m.find()) {

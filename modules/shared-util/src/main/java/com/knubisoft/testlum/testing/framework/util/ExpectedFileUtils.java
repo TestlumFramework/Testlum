@@ -22,7 +22,7 @@ public class ExpectedFileUtils {
 
     public String resolveActualNameBasedOnExpectedFileName(final String expectedFileName,
                                                            final int position) {
-        if (expectedFileName.matches(EXPECTED_FROM_VARIATIONS_STEP_FILE_REGEX)) {
+        if (expectedFileName != null && expectedFileName.matches(EXPECTED_FROM_VARIATIONS_STEP_FILE_REGEX)) {
             Matcher matcher = EXPECTED_STEP_NUMBER_PATTERN.matcher(expectedFileName);
             if (matcher.find()) {
                 String variationStepNumber = matcher.group(1);

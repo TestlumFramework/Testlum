@@ -104,9 +104,9 @@ class StringPrettifierTest {
 
         @Test
         void longStringGetsTruncated() {
-            final String longString = "a".repeat(200);
+            final String longString = "a".repeat(600);
             final String result = prettifier.cut(longString);
-            assertEquals(150, result.length());
+            assertEquals(500, result.length());
         }
 
         @Test

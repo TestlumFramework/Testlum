@@ -72,14 +72,17 @@ class CompareBuilderTest {
         @Test
         void mismatchThrowsComparisonException() {
             builder.withExpected("{\"a\":1}")
-                    .withActual("{\"a\":2}");
+                    .withActual("{\"a\":2}")
+                    .withExpectedFileName("{\"a\":3}");
+
             assertThrows(ComparisonException.class, () -> builder.exec());
         }
 
         @Test
         void mismatchSavesActualToFile() {
             builder.withExpected("{\"a\":1}")
-                    .withActual("{\"a\":2}");
+                    .withActual("{\"a\":2}")
+                    .withExpectedFileName("{\"a\":3}");
             try {
                 builder.exec();
             } catch (ComparisonException ignored) {
@@ -118,6 +121,7 @@ class CompareBuilderTest {
         void strictModeRejectsExtraFields() {
             builder.withExpected("{\"a\":1}")
                     .withActual("{\"a\":1,\"b\":2}")
+                    .withExpectedFileName("{\"a\":1,\"b\":2}")
                     .withMode(true);
             assertThrows(ComparisonException.class, () -> builder.exec());
         }

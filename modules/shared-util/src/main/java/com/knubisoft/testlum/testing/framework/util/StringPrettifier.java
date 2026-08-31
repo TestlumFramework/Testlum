@@ -54,6 +54,9 @@ public class StringPrettifier {
     }
 
     public String asJsonResult(final Map<String, String> pairs) {
+        if (pairs == null || pairs.isEmpty()) {
+            return DelimiterConstant.EMPTY;
+        }
         return jacksonService.writeValueAsStringWithDefaultPrettyPrinter(pairs);
     }
 }

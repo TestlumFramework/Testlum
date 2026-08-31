@@ -52,13 +52,13 @@ class HttpValidatorTest {
         @Test
         void mismatchedCodeSavesActual() {
             validator.validateCode(200, 500);
-            verify(interpreter).save("500");
+            verify(interpreter).save("500", anyString());
         }
 
         @Test
         void matchingCodesDoNotSave() {
             validator.validateCode(200, 200);
-            verify(interpreter, never()).save(anyString());
+            verify(interpreter, never()).save(anyString(), anyString());
         }
 
         @Test
@@ -149,7 +149,7 @@ class HttpValidatorTest {
             actual.put("X-Custom", "actual-val");
             when(interpreter.toString(any())).thenReturn("formatted");
             validator.validateHeaders(expected, actual);
-            verify(interpreter).save("formatted");
+            verify(interpreter).save("formatted", anyString());
         }
     }
 

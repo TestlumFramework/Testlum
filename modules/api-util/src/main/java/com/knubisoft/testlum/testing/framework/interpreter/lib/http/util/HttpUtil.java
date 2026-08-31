@@ -171,13 +171,13 @@ public final class HttpUtil {
         return new UrlEncodedFormEntity(paramList, StandardCharsets.UTF_8);
     }
 
-    public void fillHeadersMap(final List<com.knubisoft.testlum.testing.model.scenario.Header> headerList,
+    public void fillHeadersMap(final List<Header> headerList,
                                final Map<String, String> headers,
                                final InterpreterDependencies.Authorization authorization) {
         if (Objects.nonNull(authorization) && !authorization.getHeaders().isEmpty()) {
             headers.putAll(authorization.getHeaders());
         }
-        for (com.knubisoft.testlum.testing.model.scenario.Header header : headerList) {
+        for (Header header : headerList) {
             headers.put(header.getName(), header.getData());
         }
     }
@@ -194,11 +194,8 @@ public final class HttpUtil {
         String[] endpointParts = endpoint.split("\\?", 2);
         String urlPartBeforeQuotationMark = endpointParts[0];
         String[] queryParamPairs = endpointParts[1].split("&");
-
-        String postProcessedQueryParams = Arrays.stream(queryParamPairs)
-                .filter(pair -> !isAbsentParam(pair))
-                .map(this::expandCsvArrayParam)
-                .collect(Collectors.joining("&"));
+        String postProcessedQueryParams = Arrays.stream(queryParamPairs).filter(pair -> !isAbsentParam(pair))
+                .map(this::expandCsvArrayParam).collect(Collectors.joining("&"));
         if (postProcessedQueryParams.isEmpty()) {
             return endpoint.substring(0, endpoint.indexOf("?"));
         }
@@ -206,7 +203,7 @@ public final class HttpUtil {
         return urlPartBeforeQuotationMark.concat("?").concat(sanitizedUrlWithoutQuotesAndSpaces);
     }
 
-    private String expandCsvArrayParam(String queryParamPair) {
+    private String expandCsvArrayParam(final String queryParamPair) {
         if (!queryParamPair.contains(",")) {
             return queryParamPair;
         }
@@ -217,16 +214,16 @@ public final class HttpUtil {
                 .collect(Collectors.joining("&"));
     }
 
-    private boolean isAbsentParam(String pair) {
+    private boolean isAbsentParam(final String pair) {
         return pair.contains(ABSENT_PARAMETER_VARIATION_KEYWORD);
     }
 
-    private String sanitizeQueryParams(String postProcessedQueryParams) {
+    private String sanitizeQueryParams(final String postProcessedQueryParams) {
         return postProcessedQueryParams.replaceAll("\"", "")
                 .replaceAll("\\s", "");
     }
 
-    public List<com.knubisoft.testlum.testing.model.scenario.Header> sanitizeHeadersForAbsentKeyword(final HttpInfo httpInfo) {
+    public List<Header> sanitizeHeadersForAbsentKeyword(final HttpInfo httpInfo) {
         return httpInfo.getHeader().stream()
                 .filter(header -> !header.getData().trim().equals(ABSENT_PARAMETER_VARIATION_KEYWORD))
                 .toList();

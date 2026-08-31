@@ -81,8 +81,8 @@ abstract class AbstractDatabaseInterpreterTest {
         when(jacksonService.readCopiedValue(anyString(), eq(TestDbCommand.class))).thenReturn(command);
         when(storageOperation.apply(any(ListSource.class), eq(alias))).thenReturn(opResult);
         when(jacksonService.writeValueAsString(any())).thenReturn(serialized);
-        when(stringPrettifier.asJsonResult(anyString())).thenAnswer(inv -> (String) inv.getArgument(0));
-        when(stringPrettifier.asJsonResult(isNull())).thenReturn("");
+        when(stringPrettifier.asJsonResult(anyString())).thenAnswer(inv -> inv.getArgument(0));
+        when(stringPrettifier.asJsonResult((String) isNull())).thenReturn("");
         when(stringPrettifier.prettify(anyString())).thenReturn("{}");
     }
 
@@ -119,8 +119,8 @@ abstract class AbstractDatabaseInterpreterTest {
             StorageOperationResult opResult = new StorageOperationResult("ok");
             when(storageOperation.apply(any(ListSource.class), eq("DEFAULT"))).thenReturn(opResult);
             when(jacksonService.writeValueAsString(any())).thenReturn("\"ok\"");
-            when(stringPrettifier.asJsonResult(anyString())).thenAnswer(inv -> (String) inv.getArgument(0));
-            when(stringPrettifier.asJsonResult(isNull())).thenReturn("");
+            when(stringPrettifier.asJsonResult(anyString())).thenAnswer(inv -> inv.getArgument(0));
+            when(stringPrettifier.asJsonResult((String) isNull())).thenReturn("");
             when(stringPrettifier.prettify(anyString())).thenReturn("{}");
 
             interpreter.apply(injectedCommand, result);

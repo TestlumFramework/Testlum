@@ -11,45 +11,64 @@ public class PlaceholderNormalizer {
      * @param currentRawJsonText passed json as String
      * @return replaced String with values if any
      */
-    public String replacePlaceholdersWithoutQuotesWithRawMark(String currentRawJsonText) {
+    public String replacePlaceholdersWithoutQuotesWithRawMark(final String currentRawJsonText) {
         return currentRawJsonText.replaceAll(PLACEHOLDERS_WITHOUT_QUOTES_PATTERN, RAW_STRING_WRAPPER);
 
     }
 
-    public String denormalize(String scenarioPlaceholder, String ejectedJson, String valueForPlaceholder) {
+    public String denormalize(final String scenarioPlaceholder,
+                              final String ejectedJson,
+                              final String valueForPlaceholder) {
         String[] csvArray = valueForPlaceholder.split(",");
-        var rawPlaceholder = "__RAW__" + scenarioPlaceholder + "__RAW__";
+        String valueForReplacement = valueForPlaceholder;
+        String ejectedJsonNotFinal;
+        String rawPlaceholder = "__RAW__" + scenarioPlaceholder + "__RAW__";
         if (ejectedJson.contains(rawPlaceholder)) {
             return denormalizeRawContent(valueForPlaceholder, rawPlaceholder, ejectedJson);
         } else if (csvArray.length > 1) {
-            valueForPlaceholder = valueForPlaceholder.substring(1, valueForPlaceholder.length() - 1);
+            valueForReplacement = valueForPlaceholder.substring(1, valueForPlaceholder.length() - 1);
         }
-        ejectedJson = ejectedJson.replace(scenarioPlaceholder, valueForPlaceholder);
+        ejectedJsonNotFinal = ejectedJson.replace(scenarioPlaceholder, valueForReplacement);
 
-        return ejectedJson;
+        return ejectedJsonNotFinal;
     }
 
-    private String denormalizeRawContent(String valueForPlaceholder, String rawPlaceholder, String ejectedJson) {
+    private String denormalizeRawContent(final String valueForPlaceholder,
+                                         final String rawPlaceholder,
+                                         final String ejectedJson) {
         String[] split = valueForPlaceholder.split(",");
+        String notFinalEjectedJson;
         boolean shouldCutOuterQuotes;
         if (split.length > 1) {
             shouldCutOuterQuotes = checkIfSanitizeNeeded(split[0]);
         } else {
             shouldCutOuterQuotes = checkIfSanitizeNeeded(valueForPlaceholder);
         }
-        if (shouldCutOuterQuotes) {
-            ejectedJson = ejectedJson.replace("\"" + rawPlaceholder + "\"", valueForPlaceholder);
-        } else {
-            ejectedJson = ejectedJson.replace(rawPlaceholder, valueForPlaceholder);
-        }
-        return ejectedJson;
+        notFinalEjectedJson = getNotFinalEjectedJson(valueForPlaceholder,
+                rawPlaceholder,
+                ejectedJson,
+                shouldCutOuterQuotes);
+        return notFinalEjectedJson;
     }
 
-    private static boolean checkIfSanitizeNeeded(String valueForPlaceholder) {
-        if (valueForPlaceholder == null || valueForPlaceholder.equals("null")) {
+    private static String getNotFinalEjectedJson(final String valueForPlaceholder,
+                                                 final String rawPlaceholder,
+                                                 final String ejectedJson,
+                                                 final boolean shouldCutOuterQuotes) {
+        String notFinalEjectedJson;
+        if (shouldCutOuterQuotes) {
+            notFinalEjectedJson = ejectedJson.replace("\"" + rawPlaceholder + "\"", valueForPlaceholder);
+        } else {
+            notFinalEjectedJson = ejectedJson.replace(rawPlaceholder, valueForPlaceholder);
+        }
+        return notFinalEjectedJson;
+    }
+
+    private static boolean checkIfSanitizeNeeded(final String valueForPlaceholder) {
+        if (valueForPlaceholder == null || "null".equals(valueForPlaceholder)) {
             return true;
         }
-        if (valueForPlaceholder.equals("true") || valueForPlaceholder.equals("false")) {
+        if ("true".equals(valueForPlaceholder) || "false".equals(valueForPlaceholder)) {
             return true;
         }
         try {

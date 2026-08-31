@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -129,8 +131,10 @@ class StringPrettifierTest {
         @Test
         void blankReturnsEmpty() {
             assertEquals("", prettifier.asJsonResult(""));
-            assertEquals("", prettifier.asJsonResult(null));
+            assertEquals("", prettifier.asJsonResult((String) null));
             assertEquals("", prettifier.asJsonResult("   "));
+            assertEquals("", prettifier.asJsonResult(Map.of()));
+
         }
 
         @Test

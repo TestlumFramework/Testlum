@@ -86,7 +86,9 @@ public class ScenarioContext {
         String injectedScenarioStep = scenarioStepAsString;
         for (ScenarioContextVariationInjectionStrategy variationInjectionStrategy : variationInjectionStrategies) {
             if (variationInjectionStrategy.isApplicable(injectedScenarioStep)) {
-                injectedScenarioStep = variationInjectionStrategy.injectVariationsValues(injectedScenarioStep, this, escapeSpelQuotes);
+                injectedScenarioStep = variationInjectionStrategy.injectVariationsValues(injectedScenarioStep,
+                        this,
+                        escapeSpelQuotes);
             }
         }
         return injectedScenarioStep;
@@ -95,5 +97,4 @@ public class ScenarioContext {
     public String injectSpel(final String original) {
         return new DefaultVariationInjectionStrategy().injectVariationsValues(original, this, true);
     }
-
 }

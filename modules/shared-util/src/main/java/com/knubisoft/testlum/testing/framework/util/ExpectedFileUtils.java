@@ -7,7 +7,9 @@ import java.util.regex.Pattern;
 
 /**
  * This class servers as a  filter to check if expected file comes from variations csv table.
- * <p>Usually position from {@link com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies} is used to create expected file, but there we get position from expected file by regex and apply to newly created actual file name
+ * <p>Usually position from {@link com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies}
+ * is used to create expected file, but there we get position from expected file by regex and apply
+ * to newly created actual file name
  *
  *
  */

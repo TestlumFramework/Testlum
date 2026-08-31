@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
  *
  * <h2>Placeholder Syntax</h2>
  * <ul>
- *   <li>{@code "field": "{{fieldName}}"}      — quoted placeholder for string values</li>
- *   <li>{@code "field": {{fieldName}}}         — unquoted placeholder for non-string values (numbers, booleans, arrays)</li>
- *   <li>{@code "items": [{{items[]}}]}         — array placeholder for injecting array elements</li>
+ *   <li>{@code "field": "{{fieldName}}"}  — quoted placeholder for string values</li>
+ *   <li>{@code "field": {{fieldName}}}    — unquoted placeholder for non-string values (numbers, booleans, arrays)</li>
+ *   <li>{@code "items": [{{items[]}}]}    — array placeholder for injecting array elements</li>
  * </ul>
  *
  * <h2>Parent Markers</h2>
@@ -54,23 +54,40 @@ import java.util.regex.Pattern;
  */
 public class JsonVariationInjectionStrategy implements ScenarioContextVariationInjectionStrategy {
 
-    /** Matches the {@code "raw": "..."} field in the scenario step JSON envelope. */
+    /**
+     * Matches the {@code "raw": "..."} field in the scenario step JSON envelope.
+     */
     private static final String RAW_NODE_IN_BODY_REGEXP = "(\"raw\"\\s*:\\s*\")(?:[^\"\\\\]|\\\\.)*(\")";
     private static final Pattern RAW_PATTERN = Pattern.compile(RAW_NODE_IN_BODY_REGEXP);
 
-    /** Matches any {@code {{...}}} placeholder. */
+    /**
+     * Matches any {@code {{...}}} placeholder.
+     */
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
-    private static final String ABSENT_MARKER = "$absent";
-    private static final String NULL_MARKER = "$null";
-    private static final String EMPTY_MARKER = "$empty";
-    private static final String EXISTS_MARKER = "$exists";
+    private static final PlaceholderNormalizer PLACEHOLDER_NORMALIZER = new PlaceholderNormalizer();
 
-    private static final PlaceholderNormalizer placeholderNormalizer = new PlaceholderNormalizer();
-
-    private static final ObjectMapper objectMapper = new ObjectMapper()
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+
+    private enum ParentMarker {
+        ABSENT("$absent"),
+        NULL("$null"),
+        EMPTY("$empty"),
+        EXISTS("$exists");
+
+        private final String token;
+
+        ParentMarker(final String token) {
+            this.token = token;
+        }
+
+        String token() {
+            return token;
+        }
+    }
+
 
     /**
      * Cached between {@link #isApplicable} and {@link #injectVariationsValues}.
@@ -93,24 +110,28 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
      */
     @Override
     public boolean isApplicable(final String scenarioStepAsString) {
-        boolean isApplicableStrategy = false;
         try {
-            JsonNode jsonNode = objectMapper.readValue(scenarioStepAsString, JsonNode.class);
+            JsonNode jsonNode = OBJECT_MAPPER.readValue(scenarioStepAsString, JsonNode.class);
             for (String method : List.of("post", "put", "patch")) {
-                if (jsonNode.get(method) != null) {
-                    JsonNode jsonBodyNode = jsonNode.get(method).get("body");
-                    if (jsonBodyNode == null) {
-                        continue;
-                    }
-                    isApplicableStrategy = checkIfPlaceholdersExistsInJsonBody(jsonBodyNode.get("raw"));
-                    return isApplicableStrategy;
+                JsonNode rawBody = findRawBodyForMethod(jsonNode, method);
+                if (rawBody != null) {
+                    return checkIfPlaceholdersExistsInJsonBody(rawBody);
                 }
             }
         } catch (Exception e) {
-            return isApplicableStrategy;
+            return false;
         }
-        return isApplicableStrategy;
+        return false;
     }
+
+    private JsonNode findRawBodyForMethod(final JsonNode root, final String method) {
+        JsonNode methodNode = root.get(method);
+        if (methodNode == null || methodNode.get("body") == null) {
+            return null;
+        }
+        return methodNode.get("body").get("raw");
+    }
+
 
     /**
      * Checks whether the raw JSON body node contains any {@code {{...}}} placeholders.
@@ -159,41 +180,53 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
                                          final ScenarioContext scenarioContext,
                                          final boolean escapeSpelQuotes) {
         Map<String, String> parentMarkers = collectMarkedJsonPairs(scenarioContext.getContextMap());
-
         String jsonWithRawPlaceholdersIfAny =
-                placeholderNormalizer.replacePlaceholdersWithoutQuotesWithRawMark(currentRawJson.asText());
-        JsonNode root = objectMapper.readTree(jsonWithRawPlaceholdersIfAny);
-
+                PLACEHOLDER_NORMALIZER.replacePlaceholdersWithoutQuotesWithRawMark(currentRawJson.asText());
+        JsonNode root = OBJECT_MAPPER.readTree(jsonWithRawPlaceholdersIfAny);
         JsonNode preProcessedJsonNode;
-        if (root.isObject()) {
-            preProcessedJsonNode = applyMarkers((ObjectNode) root, parentMarkers);
-        } else if (root instanceof ArrayNode) {
-            preProcessedJsonNode = applyMarkersToRootArray(root, parentMarkers);
-        } else {
-            preProcessedJsonNode = root;
-        }
-
-        String ejectedJson = objectMapper.writeValueAsString(preProcessedJsonNode);
-        Matcher m = ROUTE_PATTERN.matcher(ejectedJson);
-        while (m.find()) {
-            String scenarioPlaceholder = m.group(0);
-            String csvColumnName = m.group(1);
-            String valueForPlaceholder = scenarioContext.get(csvColumnName);
-
-            int lastPathDelimiter = csvColumnName.lastIndexOf(".");
-            String parent = lastPathDelimiter > 0 ? csvColumnName.substring(0, lastPathDelimiter) : null;
-            String parentMarker = parentMarkers.get(parent);
-
-            // Skip if parent was already mutated to null/empty/absent — only inject for $exists or no marker
-            if (parentMarker == null || parentMarker.contains(EXISTS_MARKER)) {
-                valueForPlaceholder = resolveNestedPlaceholders(valueForPlaceholder, scenarioContext);
-                ejectedJson = placeholderNormalizer.denormalize(scenarioPlaceholder, ejectedJson, valueForPlaceholder);
-            }
-        }
-
+        preProcessedJsonNode = processNodeAsPerMarkerWord(root, parentMarkers);
+        String ejectedJson = OBJECT_MAPPER.writeValueAsString(preProcessedJsonNode);
+        ejectedJson = denormalizeProcessedJson(scenarioContext, ejectedJson, parentMarkers);
         String bodyReplacementJson = StringEscapeUtils.escapeJson(ejectedJson);
         Matcher matcher = RAW_PATTERN.matcher(scenarioStepAsString);
         return matcher.replaceFirst("$1" + Matcher.quoteReplacement(bodyReplacementJson) + "$2");
+    }
+
+    private String denormalizeProcessedJson(final ScenarioContext scenarioContext,
+                                            final String ejectedJson,
+                                            final Map<String, String> parentMarkers) {
+        String result = ejectedJson;
+        Matcher m = ROUTE_PATTERN.matcher(ejectedJson);
+        while (m.find()) {
+            result = substitutePlaceholderIfNotSuppressed(m, result, scenarioContext, parentMarkers);
+        }
+        return result;
+    }
+
+    private String substitutePlaceholderIfNotSuppressed(final Matcher m,
+                                                        final String json,
+                                                        final ScenarioContext scenarioContext,
+                                                        final Map<String, String> parentMarkers) {
+        String scenarioPlaceholder = m.group(0);
+        String csvColumnName = m.group(1);
+        int lastPathDelimiter = csvColumnName.lastIndexOf(".");
+        String parent = lastPathDelimiter > 0 ? csvColumnName.substring(0, lastPathDelimiter) : null;
+        String parentMarker = parentMarkers.get(parent);
+        if (parentMarker != null && !parentMarker.contains(ParentMarker.EXISTS.token())) {
+            return json;
+        }
+        String value = resolveNestedPlaceholders(scenarioContext.get(csvColumnName), scenarioContext);
+        return PLACEHOLDER_NORMALIZER.denormalize(scenarioPlaceholder, json, value);
+    }
+
+    private JsonNode processNodeAsPerMarkerWord(final JsonNode root, final Map<String, String> parentMarkers) {
+        if (root.isObject()) {
+            return applyMarkers((ObjectNode) root, parentMarkers);
+        }
+        if (root instanceof ArrayNode) {
+            return applyMarkersToRootArray(root, parentMarkers);
+        }
+        return root;
     }
 
     /**
@@ -208,34 +241,47 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
         for (Map.Entry<String, String> entry : parentMarkers.entrySet()) {
             String path = entry.getKey();
             String marker = entry.getValue();
-            if (marker.contains(NULL_MARKER)) {
-                if (isIndexedArrayPath(path)) {
-                    applyToArrayElement(jsonNode, path, (arr, idx) -> arr.set(idx, JsonNodeFactory.instance.nullNode()));
-                } else if (isArrayPath(path)) {
-                    setAtPath(jsonNode, path, null, true);
-                } else {
-                    setAtPath(jsonNode, path, null, false);
-                }
-            } else if (marker.contains(EMPTY_MARKER)) {
-                if (isArrayPath(path)) {
-                    setAtPath(jsonNode, path, objectMapper.createArrayNode(), true);
-                } else if (isIndexedArrayPath(path)) {
-                    applyToArrayElement(jsonNode, path, (arr, idx) -> {
-                        JsonNode current = arr.get(idx);
-                        arr.set(idx, current.isArray() ? objectMapper.createArrayNode() : objectMapper.createObjectNode());
-                    });
-                } else {
-                    setAtPath(jsonNode, path, objectMapper.createObjectNode(), false);
-                }
-            } else if (marker.contains(ABSENT_MARKER)) {
-                if (isIndexedArrayPath(path)) {
-                    applyToArrayElement(jsonNode, path, ArrayNode::remove);
-                } else {
-                    removeAtPath(jsonNode, path);
-                }
+            if (marker.contains(ParentMarker.NULL.token())) {
+                applyNullMarker(jsonNode, path);
+            } else if (marker.contains(ParentMarker.EMPTY.token())) {
+                applyEmptyMarker(jsonNode, path);
+            } else if (marker.contains(ParentMarker.ABSENT.token())) {
+                applyAbsentMarker(jsonNode, path);
             }
         }
         return jsonNode;
+    }
+
+    private void applyNullMarker(final ObjectNode jsonNode, final String path) {
+        if (isIndexedArrayPath(path)) {
+            applyToArrayElement(jsonNode, path, (arr, idx) ->
+                    arr.set(idx, JsonNodeFactory.instance.nullNode()));
+        } else {
+            setAtPath(jsonNode, path, null, isArrayPath(path));
+        }
+    }
+
+    private void applyEmptyMarker(final ObjectNode jsonNode, final String path) {
+        if (isIndexedArrayPath(path)) {
+            applyToArrayElement(jsonNode, path, (arr, idx) -> {
+                JsonNode current = arr.get(idx);
+                arr.set(idx, current.isArray()
+                        ? OBJECT_MAPPER.createArrayNode()
+                        : OBJECT_MAPPER.createObjectNode());
+            });
+        } else if (isArrayPath(path)) {
+            setAtPath(jsonNode, path, OBJECT_MAPPER.createArrayNode(), true);
+        } else {
+            setAtPath(jsonNode, path, OBJECT_MAPPER.createObjectNode(), false);
+        }
+    }
+
+    private void applyAbsentMarker(final ObjectNode jsonNode, final String path) {
+        if (isIndexedArrayPath(path)) {
+            applyToArrayElement(jsonNode, path, ArrayNode::remove);
+        } else {
+            removeAtPath(jsonNode, path);
+        }
     }
 
     /**
@@ -252,52 +298,15 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
      */
     private JsonNode applyMarkersToRootArray(final JsonNode root, final Map<String, String> parentMarkers) {
         for (String marker : parentMarkers.values()) {
-            if (marker.contains(NULL_MARKER)) {
+            if (marker.contains(ParentMarker.NULL.token())) {
                 return JsonNodeFactory.instance.nullNode();
-            } else if (marker.contains(EMPTY_MARKER)) {
-                return objectMapper.createArrayNode();
+            } else if (marker.contains(ParentMarker.EMPTY.token())) {
+                return OBJECT_MAPPER.createArrayNode();
             }
         }
         return root;
     }
 
-    /**
-     * Navigates to the parent node for a dot-separated path.
-     * Handles three segment types:
-     * <ul>
-     *   <li>{@code field}    — plain object field, descend into child</li>
-     *   <li>{@code field[]}  — array field; strip {@code []} and descend into the array node</li>
-     *   <li>{@code field[n]} — indexed; get array by name, then element at index n</li>
-     * </ul>
-     * Returns {@code null} if any intermediate node is missing.
-     *
-     * @param root      the root JSON node to start traversal from
-     * @param pathParts the dot-split segments of the full path
-     * @return the parent node of the last path segment, or {@code null} if unreachable
-     */
-    private JsonNode navigateToParent(final JsonNode root, final String[] pathParts) {
-        JsonNode current = root;
-        for (int i = 0; i < pathParts.length - 1; i++) {
-            String part = pathParts[i];
-            if (part.endsWith("[]")) {
-                current = current.get(part.substring(0, part.length() - 2));
-            } else if (part.matches(".*\\[\\d+]")) {
-                String arrayName = part.replaceAll("\\[\\d+]$", "");
-                int index = Integer.parseInt(part.replaceAll(".*\\[(\\d+)]$", "$1"));
-                current = current.get(arrayName);
-                if (current == null) {
-                    return null;
-                }
-                current = current.get(index);
-            } else {
-                current = current.get(part);
-            }
-            if (current == null) {
-                return null;
-            }
-        }
-        return current;
-    }
 
     /**
      * Sets or nulls the node at the given dot-separated path.
@@ -317,36 +326,87 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
                            final JsonNode valueToSet,
                            final boolean isArrayTarget) {
         String[] parts = path.trim().split("\\.");
-        JsonNode parent = navigateToParent(root, parts);
-        if (parent == null) {
+        ObjectNode parentObj = (ObjectNode) navigateToParent(root, parts);
+        if (parentObj == null) {
             return;
         }
-        ObjectNode parentObj = (ObjectNode) parent;
         String lastKey = parts[parts.length - 1].trim();
+        if (isArrayTarget && lastKey.matches("^\\w+\\[\\d+]$")) {
+            setIndexedArrayElement(parentObj, lastKey, valueToSet);
+            return;
+        }
+        setField(parentObj, stripArrayBracketsIfNeeded(lastKey, isArrayTarget), valueToSet);
+    }
 
-        if (isArrayTarget) {
-            if (lastKey.endsWith("[]")) {
-                lastKey = lastKey.substring(0, lastKey.length() - 2);
-            } else if (lastKey.matches("^\\w+\\[\\d+]$")) {
-                String nodeKey = lastKey.replaceAll("\\[\\d+]", "");
-                int idx = Integer.parseInt(lastKey.replaceAll("[a-zA-Z\\[\\]]", ""));
-                ArrayNode arrayNode = (ArrayNode) parent.get(nodeKey);
-                if (valueToSet == null) {
-                    arrayNode.setNull(idx);
-                } else {
-                    arrayNode.remove(idx);
-                    arrayNode.set(idx, valueToSet);
-                }
-                parentObj.set(nodeKey, arrayNode);
-                return;
+    private String stripArrayBracketsIfNeeded(final String lastKey, final boolean isArrayTarget) {
+        return isArrayTarget && lastKey.endsWith("[]")
+                ? lastKey.substring(0, lastKey.length() - 2)
+                : lastKey;
+    }
+
+    private void setField(final ObjectNode parentObj, final String key, final JsonNode valueToSet) {
+        if (valueToSet == null) {
+            parentObj.putNull(key);
+        } else {
+            parentObj.set(key, valueToSet);
+        }
+    }
+
+    private void setIndexedArrayElement(final ObjectNode parentObj,
+                                        final String indexedKey,
+                                        final JsonNode valueToSet) {
+        String nodeKey = indexedKey.replaceAll("\\[\\d+]", "");
+        int idx = Integer.parseInt(indexedKey.replaceAll("[a-zA-Z\\[\\]]", ""));
+        ArrayNode arrayNode = (ArrayNode) parentObj.get(nodeKey);
+        if (valueToSet == null) {
+            arrayNode.setNull(idx);
+        } else {
+            arrayNode.remove(idx);
+            arrayNode.set(idx, valueToSet);
+        }
+        parentObj.set(nodeKey, arrayNode);
+    }
+
+    /**
+     * Navigates to the parent node for a dot-separated path.
+     * Handles three segment types:
+     * <ul>
+     *   <li>{@code field}    — plain object field, descend into child</li>
+     *   <li>{@code field[]}  — array field; strip {@code []} and descend into the array node</li>
+     *   <li>{@code field[n]} — indexed; get array by name, then element at index n</li>
+     * </ul>
+     * Returns {@code null} if any intermediate node is missing.
+     *
+     * @param root      the root JSON node to start traversal from
+     * @param pathParts the dot-split segments of the full path
+     * @return the parent node of the last path segment, or {@code null} if unreachable
+     */
+    private JsonNode navigateToParent(final JsonNode root, final String[] pathParts) {
+        JsonNode current = root;
+        for (int i = 0; i < pathParts.length - 1; i++) {
+            current = descendOneSegment(current, pathParts[i]);
+            if (current == null) {
+                return null;
             }
         }
+        return current;
+    }
 
-        if (valueToSet == null) {
-            parentObj.putNull(lastKey);
-        } else {
-            parentObj.set(lastKey, valueToSet);
+    /**
+     * Descends one path segment. Handles plain fields, {@code field[]} array fields,
+     * and {@code field[n]} indexed elements. Returns {@code null} if the target is missing.
+     */
+    private JsonNode descendOneSegment(final JsonNode current, final String part) {
+        if (part.endsWith("[]")) {
+            return current.get(part.substring(0, part.length() - 2));
         }
+        if (part.matches(".*\\[\\d+]")) {
+            String arrayName = part.replaceAll("\\[\\d+]$", "");
+            int index = Integer.parseInt(part.replaceAll(".*\\[(\\d+)]$", "$1"));
+            JsonNode arrayNode = current.get(arrayName);
+            return arrayNode == null ? null : arrayNode.get(index);
+        }
+        return current.get(part);
     }
 
     /**
@@ -360,22 +420,24 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
      */
     private void removeAtPath(final JsonNode root, final String path) {
         String[] parts = path.trim().split("\\.");
-        JsonNode parent = navigateToParent(root, parts);
-        if (parent == null) {
+        ObjectNode parentObj = (ObjectNode) navigateToParent(root, parts);
+        if (parentObj == null) {
             return;
         }
-        ObjectNode parentObj = (ObjectNode) parent;
         String lastKey = parts[parts.length - 1];
-
         if (lastKey.endsWith("[]")) {
             parentObj.remove(lastKey.substring(0, lastKey.length() - 2));
         } else if (lastKey.matches("^\\w+\\[\\d+]$")) {
-            String nodeKey = lastKey.replaceAll("\\[\\d+]", "");
-            int idx = Integer.parseInt(lastKey.replaceAll("[a-zA-Z\\[\\]]", ""));
-            ((ArrayNode) parentObj.get(nodeKey)).remove(idx);
+            removeIndexedArrayElement(parentObj, lastKey);
         } else {
             parentObj.remove(lastKey);
         }
+    }
+
+    private void removeIndexedArrayElement(final ObjectNode parentObj, final String indexedKey) {
+        String nodeKey = indexedKey.replaceAll("\\[\\d+]", "");
+        int idx = Integer.parseInt(indexedKey.replaceAll("[a-zA-Z\\[\\]]", ""));
+        ((ArrayNode) parentObj.get(nodeKey)).remove(idx);
     }
 
     /**
@@ -415,12 +477,16 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
         void apply(ArrayNode array, int index);
     }
 
-    /** Path ends with {@code []} — targets an array field as a whole. */
+    /**
+     * Path ends with {@code []} — targets an array field as a whole.
+     */
     private boolean isArrayPath(final String path) {
         return path.endsWith("[]");
     }
 
-    /** Path ends with {@code [n]} — targets a specific element within an array. */
+    /**
+     * Path ends with {@code [n]} — targets a specific element within an array.
+     */
     private boolean isIndexedArrayPath(final String path) {
         return path.matches(".*\\[\\d+]$");
     }
@@ -432,7 +498,7 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
      * and substituted from the scenario context.</p>
      *
      * @param valueForPlaceholder the raw CSV value, which may itself contain {@code {{...}}} references
-     * @param scenarioContext      the context from which nested placeholder values are resolved
+     * @param scenarioContext     the context from which nested placeholder values are resolved
      * @return the value with all nested placeholders substituted
      */
     private String resolveNestedPlaceholders(final String valueForPlaceholder,
@@ -454,7 +520,7 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
      *
      * @param contextMap the full context map from the scenario (CSV column → value)
      * @return a map containing only marker entries ({@code $exists}, {@code $null},
-     *         {@code $empty}, {@code $absent})
+     * {@code $empty}, {@code $absent})
      */
     private static Map<String, String> collectMarkedJsonPairs(final Map<String, String> contextMap) {
         Map<String, String> parentMarkers = new LinkedHashMap<>();
@@ -473,9 +539,9 @@ public class JsonVariationInjectionStrategy implements ScenarioContextVariationI
      * @return {@code true} for {@code $exists}, {@code $null}, {@code $empty}, or {@code $absent}
      */
     private static boolean isMarker(final String value) {
-        return value.startsWith(EXISTS_MARKER)
-                || value.startsWith(NULL_MARKER)
-                || value.startsWith(EMPTY_MARKER)
-                || value.startsWith(ABSENT_MARKER);
+        return value.startsWith(ParentMarker.EXISTS.token())
+                || value.startsWith(ParentMarker.NULL.token())
+                || value.startsWith(ParentMarker.EMPTY.token())
+                || value.startsWith(ParentMarker.ABSENT.token());
     }
 }

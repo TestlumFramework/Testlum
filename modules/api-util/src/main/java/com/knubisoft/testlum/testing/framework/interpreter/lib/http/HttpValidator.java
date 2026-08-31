@@ -19,16 +19,18 @@ public final class HttpValidator {
 
     private final List<String> result = new ArrayList<>();
     private final AbstractInterpreter<?> interpreter;
-    private StringPrettifier prettifier;
+    private final StringPrettifier prettifier;
     private String expectedFileName;
 
-    public HttpValidator(AbstractInterpreter<?> interpreter, StringPrettifier stringPrettifier, String expectedFileName) {
+    public HttpValidator(final AbstractInterpreter<?> interpreter,
+                         final StringPrettifier stringPrettifier,
+                         final String expectedFileName) {
         this.interpreter = interpreter;
         this.prettifier = stringPrettifier;
         this.expectedFileName = expectedFileName;
     }
 
-    public HttpValidator(AbstractInterpreter<?> interpreter, StringPrettifier stringPrettifier) {
+    public HttpValidator(final AbstractInterpreter<?> interpreter, final StringPrettifier stringPrettifier) {
         this.interpreter = interpreter;
         this.prettifier = stringPrettifier;
     }

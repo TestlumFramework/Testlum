@@ -190,7 +190,7 @@ abstract class AbstractInterpreterTest {
             when(stringPrettifier.prettifyToSave(anyString())).thenAnswer(inv -> inv.getArgument(0));
             dependencies.getPosition().set(1);
 
-            interpreter.save("content");
+            interpreter.save("content", "expected_1.json");
 
             File saved = new File(tempDir, "action_1_actual.json");
             assertTrue(saved.exists());

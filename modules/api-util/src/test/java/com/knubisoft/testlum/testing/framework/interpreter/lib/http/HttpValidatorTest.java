@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.*;
 
 class HttpValidatorTest {
@@ -52,7 +53,7 @@ class HttpValidatorTest {
         @Test
         void mismatchedCodeSavesActual() {
             validator.validateCode(200, 500);
-            verify(interpreter).save("500", anyString());
+            verify(interpreter).save(eq("500"), nullable(String.class));
         }
 
         @Test
@@ -149,7 +150,7 @@ class HttpValidatorTest {
             actual.put("X-Custom", "actual-val");
             when(interpreter.toString(any())).thenReturn("formatted");
             validator.validateHeaders(expected, actual);
-            verify(interpreter).save("formatted", anyString());
+            verify(interpreter).save(eq("formatted"), nullable(String.class));
         }
     }
 
@@ -162,6 +163,7 @@ class HttpValidatorTest {
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
             when(builder.withMode(true)).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
 
             validator.validateBody("expected", "actual");
             assertDoesNotThrow(() -> validator.rethrowOnErrors());
@@ -174,6 +176,7 @@ class HttpValidatorTest {
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
             when(builder.withMode(false)).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
 
             validator.validateBody("exp", "act", false);
             verify(builder).withMode(false);
@@ -186,6 +189,7 @@ class HttpValidatorTest {
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
             when(builder.withMode(true)).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
 
             validator.validateBody("exp", "act", true);
             verify(builder).withMode(true);
@@ -197,6 +201,7 @@ class HttpValidatorTest {
             when(interpreter.newCompare()).thenReturn(builder);
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
             when(builder.withMode(true)).thenReturn(builder);
 
             validator.validateBody("expected", "actual");
@@ -210,6 +215,7 @@ class HttpValidatorTest {
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
             when(builder.withMode(true)).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
 
             validator.validateBody("expected", "actual");
             verify(builder).exec();
@@ -225,6 +231,7 @@ class HttpValidatorTest {
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
             when(builder.withMode(true)).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
             Mockito.doThrow(new ComparisonException("mismatch"))
                     .when(builder).exec();
 
@@ -240,6 +247,7 @@ class HttpValidatorTest {
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
             when(builder.withMode(false)).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
             Mockito.doThrow(new ComparisonException("mismatch"))
                     .when(builder).exec();
 
@@ -287,6 +295,8 @@ class HttpValidatorTest {
             when(builder.withExpected(anyString())).thenReturn(builder);
             when(builder.withActual(anyString())).thenReturn(builder);
             when(builder.withMode(true)).thenReturn(builder);
+            when(builder.withExpectedFileName(nullable(String.class))).thenReturn(builder);
+
             Mockito.doThrow(new ComparisonException("mismatch"))
                     .when(builder).exec();
             validator.validateBody("expected", "actual");

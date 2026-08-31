@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class DefaultVariationInjectionStrategy implements ScenarioContextVariationInjectionStrategy {
 
-    static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
+    private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
     @Override

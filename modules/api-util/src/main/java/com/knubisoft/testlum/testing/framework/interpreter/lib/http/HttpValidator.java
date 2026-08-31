@@ -78,7 +78,7 @@ public final class HttpValidator {
                     .withExpected(expectedBody)
                     .withActual(actualBody)
                     .withMode(isStrict)
-                    .withExpectedFileName(expectedFileName)
+                    .withExpectedFileName(this.expectedFileName)
                     .exec();
         } catch (ComparisonException e) {
             result.add(String.format(HTTP_BODY_EXPECTED_BUT_WAS,

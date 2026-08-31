@@ -32,6 +32,7 @@ import java.util.List;
  *         &lt;element name="tab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}browserTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
+ *         &lt;element name="ai" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiAskAi"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -63,7 +64,8 @@ public class WebView
         @XmlElement(name = "hover", type = Hover.class),
         @XmlElement(name = "tab", type = BrowserTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
-        @XmlElement(name = "var", type = NativeVar.class)
+        @XmlElement(name = "var", type = NativeVar.class),
+        @XmlElement(name = "ai", type = UiAi.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -100,6 +102,7 @@ public class WebView
      * {@link BrowserTab }
      * {@link SwitchToFrame }
      * {@link NativeVar }
+     * {@link UiAi }
      * 
      * 
      */

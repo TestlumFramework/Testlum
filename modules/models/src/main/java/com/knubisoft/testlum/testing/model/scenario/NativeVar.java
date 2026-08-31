@@ -36,6 +36,7 @@ import jakarta.xml.bind.annotation.XmlType;
     "expression",
     "sql",
     "generate",
+    "date",
     "element"
 })
 public class NativeVar
@@ -48,6 +49,7 @@ public class NativeVar
     protected FromExpression expression;
     protected FromSQL sql;
     protected FromRandomGenerate generate;
+    protected FromDate date;
     protected FromElement element;
     @XmlAttribute(name = "name", required = true)
     protected String name;
@@ -194,6 +196,30 @@ public class NativeVar
      */
     public void setGenerate(FromRandomGenerate value) {
         this.generate = value;
+    }
+
+    /**
+     * Gets the value of the date property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromDate }
+     *     
+     */
+    public FromDate getDate() {
+        return date;
+    }
+
+    /**
+     * Sets the value of the date property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromDate }
+     *     
+     */
+    public void setDate(FromDate value) {
+        this.date = value;
     }
 
     /**

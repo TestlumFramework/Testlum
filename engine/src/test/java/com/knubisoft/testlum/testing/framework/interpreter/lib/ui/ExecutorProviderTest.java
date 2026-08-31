@@ -184,7 +184,7 @@ class ExecutorProviderTest {
      */
     public static class BadExecutor extends AbstractUiExecutor<TestUiCommand> {
         BadExecutor() {
-            super(null, null, null, null, null, null, null, null, null, null, null, null);
+            super(null, null, null, null, null, null, null, null, null, null, null, null, null);
         }
 
         @Override

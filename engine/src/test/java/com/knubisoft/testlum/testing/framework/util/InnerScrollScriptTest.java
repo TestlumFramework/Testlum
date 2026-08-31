@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.model.pages.*;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollDirection;
@@ -26,6 +27,8 @@ class InnerScrollScriptTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private LocatorData locatorData;
+    @Mock
     private Locator locator;
 
     private InnerScrollScript innerScrollScript;
@@ -42,7 +45,8 @@ class InnerScrollScriptTest {
         void scrollDownByPixel() {
             CssSelector css = new CssSelector();
             css.setValue(".container");
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(List.of(css));
             final Scroll scroll = createScroll(300, ScrollDirection.DOWN, ScrollMeasure.PIXEL);
@@ -57,7 +61,8 @@ class InnerScrollScriptTest {
         void scrollUpByPixel() {
             CssSelector css = new CssSelector();
             css.setValue(".panel");
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(List.of(css));
             final Scroll scroll = createScroll(200, ScrollDirection.UP, ScrollMeasure.PIXEL);
@@ -72,7 +77,8 @@ class InnerScrollScriptTest {
         void scrollDownByPercent() {
             CssSelector css = new CssSelector();
             css.setValue(".list");
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(List.of(css));
             when(uiUtil.calculatePercentageValue(50)).thenReturn(0.5f);
@@ -93,7 +99,8 @@ class InnerScrollScriptTest {
         void scrollDownByPixel() {
             Id id = new Id();
             id.setValue("main-content");
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(null);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(Id.class)))
@@ -110,7 +117,8 @@ class InnerScrollScriptTest {
         void scrollUpByPercent() {
             Id id = new Id();
             id.setValue("sidebar");
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(null);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(Id.class)))
@@ -133,7 +141,8 @@ class InnerScrollScriptTest {
         void scrollDownByPixel() {
             Xpath xpath = new Xpath();
             xpath.setValue("//div[@id='content']");
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(null);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(Id.class)))
@@ -162,7 +171,8 @@ class InnerScrollScriptTest {
             css1.setValue(".item-1");
             CssSelector css2 = new CssSelector();
             css2.setValue(".item-2");
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(List.of(css1, css2));
             final Scroll scroll = createScroll(100, ScrollDirection.DOWN, ScrollMeasure.PIXEL);
@@ -180,7 +190,8 @@ class InnerScrollScriptTest {
 
         @Test
         void throwsExceptionWhenNoLocatorTypeMatches() {
-            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locator);
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
                     .thenReturn(null);
             when(webElementFinder.getLocatorsByType(eq(locator), eq(Id.class)))

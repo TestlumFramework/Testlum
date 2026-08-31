@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
+import com.knubisoft.testlum.testing.model.global_config.Ai;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
@@ -52,12 +53,17 @@ public class IntegrationsUtil {
 
     private Map<IntegrationsPredicate, IntegrationListMethod> createConfigToIntegratonMap() {
         Map<IntegrationsPredicate, IntegrationListMethod> map = new LinkedHashMap<>();
+        registerAiIntegrations(map);
         registerApiIntegrations(map);
         registerDatabaseIntegrations(map);
         registerMessagingIntegrations(map);
         registerCloudIntegrations(map);
         registerNotificationIntegrations(map);
         return Collections.unmodifiableMap(map);
+    }
+
+    private void registerAiIntegrations(final Map<IntegrationsPredicate, IntegrationListMethod> map) {
+        map.put(c -> c.equals(Ai.class), i -> i.getAiIntegration().getAi());
     }
 
     private void registerApiIntegrations(final Map<IntegrationsPredicate, IntegrationListMethod> map) {

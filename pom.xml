@@ -6,7 +6,7 @@
 
     <groupId>com.knubisoft</groupId>
     <artifactId>testlum</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
     <packaging>pom</packaging>
 
     <description>
@@ -144,6 +144,7 @@
         <log4j-api.version>2.25.3</log4j-api.version>
         <log4j-core.version>2.25.3</log4j-core.version>
         <log4j-iostreams.version>2.25.3</log4j-iostreams.version>
+        <langchain4j-open-api.version>1.10.0</langchain4j-open-api.version>
 
         <junit-platform-launcher.version>6.0.3</junit-platform-launcher.version>
         <mockito.version>5.18.0</mockito.version>
@@ -403,6 +404,11 @@
             <dependency>
                 <groupId>com.knubisoft</groupId>
                 <artifactId>exception</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ai-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -1271,6 +1277,12 @@
             </dependency>
 
             <dependency>
+                <groupId>tools.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-xml</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
                 <version>${org.apache.httpcomponents.client5.version}</version>
@@ -1371,6 +1383,18 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>${apache.commons.text.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-open-ai</artifactId>
+                <version>${langchain4j-open-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j</artifactId>
+                <version>${langchain4j-open-api.version}</version>
             </dependency>
 
         </dependencies>

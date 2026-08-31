@@ -9,6 +9,7 @@
     <x:complexType name="web">
         <x:sequence>
             <x:element name="baseUrl" type="tns:urlWeb"/>
+            <x:element name="autoHealing" type="tns:autoHealing"/>
             <x:element name="browserSettings" type="tns:browserSettings"/>
         </x:sequence>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
@@ -42,6 +43,7 @@
         <x:attribute name="maximizedBrowserWindow" type="x:boolean" use="required"/>
         <x:attribute name="browserWindowSize" type="tns:windowSize"/>
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+        <x:attribute name="keepDownloadedFiles" type="x:boolean" default="false"/>
     </x:complexType>
 
     <x:complexType name="browserType">

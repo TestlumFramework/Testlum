@@ -19,6 +19,7 @@ import com.knubisoft.testlum.testing.model.scenario.GraphqlGet;
 import com.knubisoft.testlum.testing.model.scenario.GraphqlPost;
 import com.knubisoft.testlum.testing.model.scenario.Header;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.Mode;
 import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.Getter;
@@ -182,7 +183,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                 : getContentIfFile(expected.getFile());
         result.setActual(stringPrettifier.asJsonResult(actualBody));
         result.setExpected(stringPrettifier.asJsonResult(body));
-        httpValidator.validateBody(body, actualBody);
+        httpValidator.validateBody(body, actualBody, Mode.STRICT.equals(expected.getMode()));
     }
 
     private void validateHeaders(final Response expected,

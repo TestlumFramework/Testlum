@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -72,12 +71,5 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
         } catch (Exception e) {
             log.error("Failed to execute truncate file '{}': {}", fileName, e.getMessage(), e);
         }
-    }
-
-    private List<String> splitSqlStatements(final String sql) {
-        return Arrays.stream(sql.split(";\\s*(\\r?\\n)?"))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
     }
 }

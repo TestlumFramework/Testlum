@@ -13,7 +13,7 @@
 #   3) Path to resources  - Path to test resources: -p=<path> or --path=<path>
 #
 # Example:
-#   ./run-docker testlum:1.0.2 -c=config.xml -p=/user/folder/resources
+#   ./run-docker testlum:1.1.0 -c=config.xml -p=/user/folder/resources
 # =============================================================================
 
 # Validation patterns
@@ -145,7 +145,7 @@ function print_usage() {
     echo "       Format: -p=<path> or --path=<path>"
     echo ""
     echo "Example:"
-    echo "  ./run-docker testlum:1.0.2 -c=config.xml -p=/user/folder/resources"
+    echo "  ./run-docker testlum:1.1.0 -c=config.xml -p=/user/folder/resources"
 }
 
 main

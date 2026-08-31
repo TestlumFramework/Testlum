@@ -17,6 +17,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;all&gt;
+ *         &lt;element name="aiIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}aiIntegration" minOccurs="0"/&gt;
  *         &lt;element name="apis" type="{http://www.knubisoft.com/testlum/testing/model/global-config}apis" minOccurs="0"/&gt;
  *         &lt;element name="websockets" type="{http://www.knubisoft.com/testlum/testing/model/global-config}websockets" minOccurs="0"/&gt;
  *         &lt;element name="graphqlIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}graphqlIntegration" minOccurs="0"/&gt;
@@ -53,6 +54,7 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "integrations")
 public class Integrations {
 
+    protected AiIntegration aiIntegration;
     protected Apis apis;
     protected Websockets websockets;
     protected GraphqlIntegration graphqlIntegration;
@@ -74,6 +76,30 @@ public class Integrations {
     protected SmtpIntegration smtpIntegration;
     protected TwilioIntegration twilioIntegration;
     protected SqlDatabaseIntegration sqlDatabaseIntegration;
+
+    /**
+     * Gets the value of the aiIntegration property.
+     *
+     * @return
+     *     possible object is
+     *     {@link AiIntegration }
+     *
+     */
+    public AiIntegration getAiIntegration() {
+        return aiIntegration;
+    }
+
+    /**
+     * Sets the value of the aiIntegration property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link AiIntegration }
+     *
+     */
+    public void setAiIntegration(AiIntegration value) {
+        this.aiIntegration = value;
+    }
 
     /**
      * Gets the value of the apis property.

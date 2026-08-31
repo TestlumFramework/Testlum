@@ -23,7 +23,7 @@ on:
       run_mobile_native:
         description: "Do need to run mobile and native tests"
         required: false
-        default: true
+        default: false
         type: boolean
 
       config_file:
@@ -68,7 +68,7 @@ jobs:
 
           run_mobile_native="${{ inputs.run_mobile_native }}"
           if [[ -z "$run_mobile_native" ]]; then
-            run_mobile_native="true"
+            run_mobile_native="false"
           fi
           
           config_file="${{ inputs.config_file }}"
@@ -107,7 +107,6 @@ jobs:
         with:
           working_directory: testlum-tests
           browserstack_access_key: ${{ secrets.BROWSERSTACK_KEY }}
-          browserstack_local_identifier: GitHubAction-${{ github.run_id }}
           enable_browserstack: true
 
       - name: Install xmlstarlet
@@ -169,5 +168,4 @@ jobs:
         with:
           working_directory: testlum-tests
           browserstack_access_key: ${{ secrets.BROWSERSTACK_KEY }}
-          browserstack_local_identifier: GitHubAction-${{ github.run_id }}
           enable_browserstack: true

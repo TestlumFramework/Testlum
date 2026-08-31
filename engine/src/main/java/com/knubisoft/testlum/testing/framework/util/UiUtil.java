@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorCollector;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.pages.ClassName;
 import com.knubisoft.testlum.testing.model.pages.CssSelector;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
@@ -79,18 +81,21 @@ public class UiUtil {
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
-        Locator locator = getLocatorByStrategy(locatorId, locatorStrategy);
-        return webElementFinder.find(locator, dependencies);
+        LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
+        return webElementFinder.find(locatorData, dependencies);
     }
 
-    public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
+    // CHECKSTYLE:OFF
+    public LocatorData getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
         if (locatorStrategy == LocatorStrategy.LOCATOR_ID) {
             return locatorCollector.getLocator(locatorId);
         }
         Locator locator = new Locator();
         locator.setLocatorId(locatorId);
         addLocatorElement(locator, locatorId, locatorStrategy);
-        return locator;
+        LocatorData locatorData = new LocatorData();
+        locatorData.setLocator(locator);
+        return locatorData;
     }
 
     private void addLocatorElement(final Locator locator, final String locatorId,
@@ -282,6 +287,20 @@ public class UiUtil {
         }
         return environmentLoader.getWebSettings(env).get().getBaseUrl() + path;
     }
+
+    public void waitForMatSelectToClose(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+    }
+
+    public void waitForMatSelectToOpen(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+    }
+
+    public void waitForElementPresence(final ExecutorDependencies dependencies, final By locator) {
+        WebDriverWait wait = getWebDriverWait(dependencies);
+        wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
 
     public String getBasePageURL(final String currentPageURL) {
         try {

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
-
 @Slf4j
 @InterpreterForClass(Var.class)
 public class VariableInterpreter extends AbstractInterpreter<Var> {
@@ -34,7 +33,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 variable -> Objects.nonNull(variable.getConstant()), this::getConstantResult,
                 variable -> Objects.nonNull(variable.getExpression()), this::getExpressionResult,
                 variable -> Objects.nonNull(variable.getPath()), this::getPathResult,
-                variable -> Objects.nonNull(variable.getGenerate()), this::getRandomGenerateResult);
+                variable -> Objects.nonNull(variable.getGenerate()), this::getRandomGenerateResult,
+                variable -> Objects.nonNull(variable.getDate()), this::getDateResult);
     }
 
     @Override
@@ -90,6 +90,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getRandomGenerateResult(final Var var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
+    }
+
+    private String getDateResult(final Var var, final CommandResult result) {
+        return variableHelper.getDateResult(var.getDate(), var.getName(), result);
     }
 
     private void logVarInfo(final String name, final String value) {

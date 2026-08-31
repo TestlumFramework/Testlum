@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
@@ -47,6 +48,8 @@ class TestSetCollectorTest {
     private TestResourceSettings testResourceSettings;
     @Mock
     private GlobalVariationsProvider globalVariationsProvider;
+    @Mock
+    private JacksonService jacksonService;
 
     private TestSetCollector testSetCollector;
 
@@ -62,7 +65,7 @@ class TestSetCollectorTest {
 
         testSetCollector = new TestSetCollector(
                 scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                testResourceSettings, globalVariationsProvider, environments);
+                testResourceSettings, globalVariationsProvider, environments, jacksonService);
     }
 
     @Nested
@@ -157,7 +160,7 @@ class TestSetCollectorTest {
 
             testSetCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, List.of(env));
+                    testResourceSettings, globalVariationsProvider, List.of(env), jacksonService);
 
             // Scenario with web command
             Scenario scenario = createScenarioWithSettings();
@@ -195,7 +198,7 @@ class TestSetCollectorTest {
 
             testSetCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, List.of(dev, staging));
+                    testResourceSettings, globalVariationsProvider, List.of(dev, staging), jacksonService);
 
             ScenarioCollector.Result collectorResult = new ScenarioCollector.Result();
             MappingResult mr = new MappingResult(
@@ -252,7 +255,7 @@ class TestSetCollectorTest {
 
             TestSetCollector emptyEnvCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, Collections.emptyList());
+                    testResourceSettings, globalVariationsProvider, Collections.emptyList(), jacksonService);
 
             assertThrows(DefaultFrameworkException.class, emptyEnvCollector::collect);
         }
@@ -265,7 +268,7 @@ class TestSetCollectorTest {
 
             TestSetCollector nullEnvCollector = new TestSetCollector(
                     scenarioCollector, scenarioFilter, browserUtil, mobileUtil,
-                    testResourceSettings, globalVariationsProvider, null);
+                    testResourceSettings, globalVariationsProvider, null, jacksonService);
 
             assertThrows(DefaultFrameworkException.class, nullEnvCollector::collect);
         }

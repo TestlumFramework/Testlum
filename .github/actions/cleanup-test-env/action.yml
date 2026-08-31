@@ -9,10 +9,6 @@ inputs:
   browserstack_access_key:
     description: BrowserStack access key for local testing.
     required: true
-  browserstack_local_identifier:
-    description: BrowserStack local identifier.
-    required: false
-    default: random
   enable_browserstack:
     description: Whether BrowserStackLocal should be stopped.
     required: false
@@ -51,5 +47,4 @@ runs:
 
         "${bs_dir}/BrowserStackLocal" \
           --key "${{ inputs.browserstack_access_key }}" \
-          --local-identifier "${{ inputs.browserstack_local_identifier }}" \
           --daemon stop || true

@@ -18,7 +18,12 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.LF;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @Slf4j
 public abstract class AbstractSqlExecutor {
@@ -31,7 +36,15 @@ public abstract class AbstractSqlExecutor {
     private static final String TRUNCATE = "TRUNCATE";
     private static final String DROP = "DROP";
     private static final String SET = "SET";
+    private static final String DO = "DO";
+    private static final String CALL = "CALL";
     private static final String COUNT = "count";
+
+    private static final Pattern STATEMENT = Pattern.compile(
+            ";\\s*(?:(?:/\\*.*?\\*/)|(?:--.*?$))*\\s*(?=(?i)"
+                    + "(?:insert\\s+into|update|delete|create|alter|drop|with|do)\\b)",
+            Pattern.DOTALL | Pattern.MULTILINE
+    );
 
     protected final JdbcTemplate template;
 
@@ -57,19 +70,58 @@ public abstract class AbstractSqlExecutor {
     }
 
     private QueryResult<Object> executeQuery(final String query) {
-        QueryResult<Object> queryResult =
-                new QueryResult<>(query.replaceAll(StringUtils.LF, StringUtils.EMPTY)
-                        .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, StringUtils.SPACE)
-                        .trim());
+        QueryResult<Object> queryResult = createCleanedQueryResult(query);
 
+        List<String> statements = splitSqlStatements(query);
+
+        Object result;
+        if (shouldExecuteAsSingleQuery(statements)) {
+            result = executeSingleStatement(queryResult.getQuery());
+        } else {
+            result = executeStatementBatch(statements);
+        }
+
+        queryResult.setContent(result);
+        return queryResult;
+    }
+
+    private QueryResult<Object> createCleanedQueryResult(final String query) {
+        String cleanedQuery = query.replaceAll(LF, EMPTY)
+                .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
+                .trim();
+        return new QueryResult<>(cleanedQuery);
+    }
+
+    private boolean shouldExecuteAsSingleQuery(final List<String> statements) {
+        return statements.size() <= 1;
+    }
+
+    private Object executeStatementBatch(final List<String> statements) {
+        Object lastResult = null;
+        for (String statement : statements) {
+            lastResult = executeSingleStatement(statement);
+        }
+        return lastResult;
+    }
+
+    private Object executeSingleStatement(final String statement) {
         try {
-            Object result = executeAppropriateQuery(queryResult.getQuery());
-            queryResult.setContent(result);
+            return executeAppropriateQuery(statement);
         } catch (InvalidDataAccessResourceUsageException e) {
-            logSqlException(e, queryResult.getQuery());
+            logSqlException(e, statement);
             throw e;
         }
-        return queryResult;
+    }
+
+    protected List<String> splitSqlStatements(final String script) {
+        if (script == null || script.isBlank()) {
+            return List.of();
+        }
+        final String source = script.replace("\uFEFF", "");
+        return STATEMENT.splitAsStream(source)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
     }
 
     public void logSqlException(final Exception ex, final String query) {
@@ -87,7 +139,7 @@ public abstract class AbstractSqlExecutor {
     private Object executeAppropriateQuery(final String query) {
         if (checkMatchQuery(query, INSERT, UPDATE, DELETE)) {
             return executeDMLQuery(query);
-        } else if (checkMatchQuery(query, ALTER, CREATE, TRUNCATE, DROP, SET)) {
+        } else if (checkMatchQuery(query, ALTER, CREATE, TRUNCATE, DROP, SET, DO, CALL)) {
             return executeDDLQuery(query);
         }
         return executeDQLQuery(query);

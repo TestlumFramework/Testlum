@@ -1,7 +1,11 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -15,6 +19,7 @@ import jakarta.xml.bind.annotation.*;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="baseUrl" type="{http://www.knubisoft.com/testlum/testing/model/global-config}urlWeb"/&gt;
+ *         &lt;element name="autoHealing" type="{http://www.knubisoft.com/testlum/testing/model/global-config}autoHealing"/&gt;
  *         &lt;element name="browserSettings" type="{http://www.knubisoft.com/testlum/testing/model/global-config}browserSettings"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
@@ -28,12 +33,15 @@ import jakarta.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "web", propOrder = {
     "baseUrl",
+    "autoHealing",
     "browserSettings"
 })
 public class Web {
 
     @XmlElement(required = true)
     protected String baseUrl;
+    @XmlElement(required = true)
+    protected AutoHealing autoHealing;
     @XmlElement(required = true)
     protected BrowserSettings browserSettings;
     @XmlAttribute(name = "enabled", required = true)
@@ -61,6 +69,30 @@ public class Web {
      */
     public void setBaseUrl(String value) {
         this.baseUrl = value;
+    }
+
+    /**
+     * Gets the value of the autoHealing property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link AutoHealing }
+     *     
+     */
+    public AutoHealing getAutoHealing() {
+        return autoHealing;
+    }
+
+    /**
+     * Sets the value of the autoHealing property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link AutoHealing }
+     *     
+     */
+    public void setAutoHealing(AutoHealing value) {
+        this.autoHealing = value;
     }
 
     /**

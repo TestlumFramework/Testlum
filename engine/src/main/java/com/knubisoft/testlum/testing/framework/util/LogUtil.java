@@ -16,7 +16,6 @@ import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
@@ -269,7 +268,7 @@ public class LogUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             log.info(LogMessage.IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(Exclude::getLocator)
+                    .map(ImageComparisonUtil::addExcludedMetaData)
                     .collect(Collectors.joining(DelimiterConstant.COMMA + DelimiterConstant.SPACE))));
         }
     }

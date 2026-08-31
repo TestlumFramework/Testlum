@@ -26,6 +26,7 @@
                     <x:element name="var" type="tns:nativeVar"/>
                     <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="repeat" type="tns:nativeRepeat"/>
+                    <x:element name="ai" type="tns:uiAi"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -50,6 +51,7 @@
                     <x:element name="tab" type="tns:browserTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="var" type="tns:nativeVar"/>
+                    <x:element name="ai" type="tns:uiAi"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -73,6 +75,7 @@
                     <x:element name="var" type="tns:nativeVar"/>
                     <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="repeat" type="tns:nativeRepeat"/>
+                    <x:element name="ai" type="tns:uiAi"/>
                 </x:choice>
                 <x:attribute name="times" type="tns:positiveIntegerMin1"/>
                 <x:attribute name="variations" type="tns:csv"/>

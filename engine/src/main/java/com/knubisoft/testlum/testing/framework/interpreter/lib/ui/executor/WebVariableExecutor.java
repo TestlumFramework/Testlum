@@ -13,6 +13,7 @@ import com.knubisoft.testlum.testing.model.scenario.ElementPresent;
 import com.knubisoft.testlum.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
 
@@ -37,6 +38,7 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
         map.put(var -> Objects.nonNull(var.getDom()), this::getDomResult);
         map.put(var -> Objects.nonNull(var.getCookie()), this::getWebCookiesResult);
         map.put(var -> Objects.nonNull(var.getUrl()), this::getUrlResult);
+        map.put(var -> Objects.nonNull(var.getAlert()), this::getAlertResult);
         addCommonVarMethods(map);
         return map;
     }
@@ -48,6 +50,7 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
         map.put(var -> Objects.nonNull(var.getFile()), (v, r) -> getFileResult(v, r, v.getFile()));
         map.put(var -> Objects.nonNull(var.getSql()), (v, r) -> getSQLResult(v, r, v.getSql()));
         map.put(var -> Objects.nonNull(var.getGenerate()), (v, r) -> getRandomGenerateResult(v, r, v.getGenerate()));
+        map.put(var -> Objects.nonNull(var.getDate()), (v, r) -> getDateResult(v, r, v.getDate()));
     }
 
     @Override
@@ -118,5 +121,10 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
         String valueResult = dependencies.getDriver().getCurrentUrl();
         resultUtil.addVariableMetaData(ResultUtil.URL, var.getName(), ResultUtil.NO_EXPRESSION, valueResult, result);
         return valueResult;
+    }
+
+    private String getAlertResult(final WebVar var, final CommandResult result) {
+        Alert browserAlert = dependencies.getDriver().switchTo().alert();
+        return variableHelper.getAlertResult(var.getAlert(), var.getName(), browserAlert, result);
     }
 }

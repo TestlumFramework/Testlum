@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScenarioContext {
 
@@ -15,6 +17,7 @@ public class ScenarioContext {
     private static final String NO_VALUES_FOUND_IN_CONTEXT =
             "Unable to find any value in scenario context. Available keys: %s";
 
+    private static final Pattern CONDITION_NAME_PATTERN = Pattern.compile("\\b([A-Za-z_][A-Za-z0-9_]*)\\b");
     @Getter
     private final Map<String, String> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
@@ -66,13 +69,11 @@ public class ScenarioContext {
     }
 
     public String getCondition(final String condition) {
-        String injectedCondition = condition;
-        for (Map.Entry<String, Boolean> entry : conditionMap.entrySet()) {
-            if (injectedCondition.contains(entry.getKey())) {
-                injectedCondition = injectedCondition.replace(entry.getKey(), String.valueOf(entry.getValue()));
-            }
+        Boolean exact = conditionMap.get(condition.trim());
+        if (exact != null) {
+            return Boolean.toString(exact);
         }
-        return injectedCondition;
+        return substituteIdentifiers(condition);
     }
 
     public String inject(final String original) {
@@ -96,5 +97,15 @@ public class ScenarioContext {
 
     public String injectSpel(final String original) {
         return new DefaultVariationInjectionStrategy().injectVariationsValues(original, this, true);
+    }
+
+    private String substituteIdentifiers(final String expression) {
+        return CONDITION_NAME_PATTERN.matcher(expression).replaceAll(matchResult -> {
+            String conditionName = matchResult.group(1);
+            String replacement = conditionMap.containsKey(conditionName)
+                    ? String.valueOf(conditionMap.get(conditionName))
+                    : conditionName;
+            return Matcher.quoteReplacement(replacement);
+        });
     }
 }

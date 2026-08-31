@@ -14,7 +14,7 @@ import jakarta.xml.bind.annotation.XmlType;
  * &lt;complexType name="testRail"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="enable" type="{http://www.w3.org/2001/XMLSchema}boolean" use="required" /&gt;
+ *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" use="required" /&gt;
  *       &lt;attribute name="testCaseId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" use="required" /&gt;
  *       &lt;attribute name="testRailRunId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" use="optional" /&gt;
  *     &lt;/restriction&gt;
@@ -28,35 +28,35 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlType(name = "testRail")
 public class TestRail {
 
-    @XmlAttribute(name = "enable", required = true)
-    protected Boolean enable;
+    @XmlAttribute(name = "enabled", required = true)
+    protected Boolean enabled;
     @XmlAttribute(name = "testCaseId", required = true)
     protected String testCaseId;
     @XmlAttribute(name = "testRailRunId")
     protected String testRailRunId;
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the enabled property.
      *
      * @return
      *     possible object is
      *     {@link Boolean }
      *
      */
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the enabled property.
      *
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *
      */
-    public void setEnable(Boolean value) {
-        this.enable = value;
+    public void setEnabled(Boolean value) {
+        this.enabled = value;
     }
 
     /**

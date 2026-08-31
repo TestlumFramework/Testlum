@@ -29,7 +29,7 @@
     </x:simpleType>
 
     <x:complexType name="testRail">
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
         <x:attribute name="testCaseId" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="testRailRunId" type="tns:nonEmptyString" use="optional"/>
     </x:complexType>

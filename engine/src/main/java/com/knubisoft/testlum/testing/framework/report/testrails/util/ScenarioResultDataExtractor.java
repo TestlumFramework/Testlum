@@ -21,7 +21,7 @@ public class ScenarioResultDataExtractor {
 
     public List<ScenarioResult> collectScenarioWithTestRailIntegrations(final List<ScenarioResult> allScenarioResults) {
         return allScenarioResults.stream()
-                .filter(scenarioResult -> scenarioResult.getOverview().getTestRail().isEnable())
+                .filter(scenarioResult -> scenarioResult.getOverview().getTestRail().isEnabled())
                 .collect(Collectors.toList());
     }
 
@@ -44,7 +44,7 @@ public class ScenarioResultDataExtractor {
     private Map<Integer, List<ScenarioResult>> getAllScenarioWithRunId(final List<ScenarioResult> scenarioResults) {
         return scenarioResults.stream()
                 .filter(scenarioResult -> {
-                    boolean enable = scenarioResult.getOverview().getTestRail().isEnable();
+                    boolean enable = scenarioResult.getOverview().getTestRail().isEnabled();
                     String runId = scenarioResult.getOverview().getTestRail().getTestRailRunId();
                     return enable && parseId(runId, RUN_ID_ATTR) && Integer.parseInt(runId) > 0;
                 })
@@ -56,7 +56,7 @@ public class ScenarioResultDataExtractor {
         return scenarioResults.stream()
                 .filter(scenarioResult -> {
                     var testRails = scenarioResult.getOverview().getTestRail();
-                    boolean enable = testRails.isEnable();
+                    boolean enable = testRails.isEnabled();
                     String runId = testRails.getTestRailRunId();
                     String testCase = testRails.getTestCaseId();
                     return enable

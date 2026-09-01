@@ -65,7 +65,7 @@ public class TestRailConnectionService {
         return endpoints;
     }
 
-    public static class ApiEndpoints {
+    private static class ApiEndpoints {
 
         private static final String API_SUFFIX = "index.php?/api/v2/";
 

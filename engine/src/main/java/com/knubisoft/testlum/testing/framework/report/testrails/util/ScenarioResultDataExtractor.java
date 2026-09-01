@@ -43,13 +43,15 @@ public class ScenarioResultDataExtractor {
 
     private Map<Integer, List<ScenarioResult>> getAllScenarioWithRunId(final List<ScenarioResult> scenarioResults) {
         return scenarioResults.stream()
-                .filter(scenarioResult -> {
-                    boolean enable = scenarioResult.getOverview().getTestRail().isEnabled();
-                    String runId = scenarioResult.getOverview().getTestRail().getTestRailRunId();
-                    return enable && parseId(runId, RUN_ID_ATTR) && Integer.parseInt(runId) > 0;
-                })
+                .filter(this::isRunIdValid)
                 .collect(Collectors.groupingBy(scenarioResult ->
                         Integer.parseInt(scenarioResult.getOverview().getTestRail().getTestRailRunId())));
+    }
+
+    private boolean isRunIdValid(final ScenarioResult scenarioResult) {
+        boolean enable = scenarioResult.getOverview().getTestRail().isEnabled();
+        String runId = scenarioResult.getOverview().getTestRail().getTestRailRunId();
+        return enable && parseId(runId, RUN_ID_ATTR) && Integer.parseInt(runId) > 0;
     }
 
     private List<ScenarioResult> getAllScenarioWithoutRunId(final List<ScenarioResult> scenarioResults) {

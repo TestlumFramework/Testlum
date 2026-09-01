@@ -31,9 +31,10 @@ public class TestRailAttachmentApiClient {
     private final RestTemplate restTemplate;
 
     public TestRailAttachmentApiClient(final GlobalTestConfiguration globalTestConfiguration,
-                                       final TestRailResponseJsonDeserializer jsonDeserializer) {
+                                       final TestRailResponseJsonDeserializer jsonDeserializer,
+                                       final RestTemplate restTemplate) {
         TestRailReports testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
         this.jsonDeserializer = jsonDeserializer;
         this.connectionService = new TestRailConnectionService(testRails, restTemplate);
     }

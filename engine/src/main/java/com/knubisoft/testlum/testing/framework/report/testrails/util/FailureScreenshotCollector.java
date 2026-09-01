@@ -29,7 +29,8 @@ public class FailureScreenshotCollector {
 
     private String getScreenshotOfLastUnsuccessfulCommand(final ScenarioResult scenarioResult) {
         List<CommandResult> result = new ArrayList<>();
-        scenarioResult.getCommands().forEach(c -> collectUnsuccessfulCommandsRecursive(c, result));
+        scenarioResult.getCommands().forEach(commend ->
+                collectUnsuccessfulCommandsRecursive(commend, result));
         return result.isEmpty() ? null : result.get(result.size() - 1).getBase64Screenshot();
     }
 

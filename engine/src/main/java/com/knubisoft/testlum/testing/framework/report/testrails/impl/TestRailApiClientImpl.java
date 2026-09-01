@@ -29,10 +29,11 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     private final RestTemplate restTemplate;
 
     public TestRailApiClientImpl(final GlobalTestConfiguration globalTestConfiguration,
-                                 final TestRailAttachmentApiClient attachmentApiClient) {
+                                 final TestRailAttachmentApiClient attachmentApiClient,
+                                 final RestTemplate restTemplate) {
         this.testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
         this.attachmentApiClient = attachmentApiClient;
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = restTemplate;
         this.connectionService = new TestRailConnectionService(testRails, restTemplate);
     }
 

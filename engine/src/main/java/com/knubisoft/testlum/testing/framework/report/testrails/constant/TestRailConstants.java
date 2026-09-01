@@ -1,8 +1,5 @@
 package com.knubisoft.testlum.testing.framework.report.testrails.constant;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
 public final class TestRailConstants {
 
     public static final String ID_FIELD = "id";

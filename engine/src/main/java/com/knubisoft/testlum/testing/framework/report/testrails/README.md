@@ -94,7 +94,7 @@ This will send the result of the test to the **existing run (ID=1)** and associa
         <x:element name="username" type="tns:nonEmptyString"/>
         <x:element name="apiKey" type="tns:nonEmptyString"/>
         <x:element name="url" type="tns:nonEmptyString"/>
-        <x:element name="projectId" type="tns:nonEmptyString" minOccurs="0"/>
+        <x:element name="projectId" type="tns:nonEmptyString"/>
         <x:element name="defaultRunName" type="tns:nonEmptyString" minOccurs="0"/>
         <x:element name="defaultRunDescription" type="tns:nonEmptyString" minOccurs="0"/>
     </x:sequence>

@@ -103,8 +103,9 @@ class NativeVariableExecutorTest {
             fromElement.setPresent(present);
             var.setElement(fromElement);
 
+            CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("native-button"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("native-button"), any(), result)).thenReturn(element);
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
                 @SuppressWarnings("unchecked")
@@ -121,7 +122,6 @@ class NativeVariableExecutorTest {
             });
             doNothing().when(logUtil).logVarInfo(anyString(), anyString());
 
-            CommandResult result = new CommandResult();
             executor.execute(var, result);
 
             assertEquals("true", scenarioContext.get("elemPresent"));
@@ -137,7 +137,8 @@ class NativeVariableExecutorTest {
             fromElement.setPresent(present);
             var.setElement(fromElement);
 
-            when(uiUtil.findWebElement(any(), eq("missing-native-btn"), any()))
+            CommandResult result = new CommandResult();
+            when(uiUtil.findWebElement(any(), eq("missing-native-btn"), any(), result))
                     .thenThrow(new DefaultFrameworkException("not found"));
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
@@ -155,7 +156,6 @@ class NativeVariableExecutorTest {
             });
             doNothing().when(logUtil).logVarInfo(anyString(), anyString());
 
-            CommandResult result = new CommandResult();
             executor.execute(var, result);
 
             assertEquals("false", scenarioContext.get("elemAbsent"));

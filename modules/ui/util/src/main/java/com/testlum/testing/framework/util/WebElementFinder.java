@@ -3,10 +3,12 @@ package com.testlum.testing.framework.util;
 import com.testlum.testing.framework.EnvironmentLoader;
 import com.testlum.testing.framework.autohealing.AutoHealer;
 import com.testlum.testing.framework.autohealing.AutoHealerFactory;
+import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.locator.LocatorData;
+import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.check.ElementCheck;
 import com.testlum.testing.framework.util.check.PageLoadCheck;
 import com.testlum.testing.model.global_config.AutoHealing;
@@ -42,6 +44,7 @@ public final class WebElementFinder {
     private final EnvironmentLoader environmentLoader;
     private final ByService byService;
     private final PageLoadCheck pageLoadCheck;
+    private final ScreenshotUtil screenshotUtil;
 
     private Map<Class<?>, ByType> searchByTypes;
 
@@ -60,18 +63,19 @@ public final class WebElementFinder {
     }
 
     public WebElement find(final LocatorData locatorData, final ExecutorDependencies dependencies,
-                           final Set<ElementCheck> checks) {
+                           final Set<ElementCheck> checks, final CommandResult result) {
         this.pageLoadCheck.waitUntilDomReady(dependencies);
         Set<By> bySet = this.constructLocatorSet(locatorData);
         FindAttempt attempt = new FindAttempt(dependencies, checks, new AtomicReference<>());
         try {
             return this.findByLocators(attempt, bySet);
         } catch (TimeoutException e) {
-            return this.recoverFromTimeout(attempt, locatorData);
+            return this.recoverFromTimeout(attempt, locatorData, dependencies, result);
         }
     }
 
-    private WebElement recoverFromTimeout(final FindAttempt attempt, final LocatorData locatorData) {
+    private WebElement recoverFromTimeout(final FindAttempt attempt, final LocatorData locatorData,
+                                          final ExecutorDependencies dependencies, final CommandResult result) {
         String locatorId = locatorData.getLocator().getLocatorId();
         String checkFailure = attempt.lastCheckFailure().get();
         if (checkFailure != null) {
@@ -79,7 +83,7 @@ public final class WebElementFinder {
                     String.format(LogMessage.ELEMENT_FOUND_BUT_CHECK_FAILED, locatorId, checkFailure));
         }
         return this.findWithAutoHealing(attempt, locatorData)
-                .orElseThrow(() -> this.unableToFindElementException(locatorId));
+                .orElseThrow(() -> this.unableToFindElementException(locatorId, dependencies, result));
     }
 
     private WebElement findByLocators(final FindAttempt attempt, final Set<By> bySet) {
@@ -219,7 +223,15 @@ public final class WebElementFinder {
         return bySet;
     }
 
-    private DefaultFrameworkException unableToFindElementException(final String locatorId) {
+    private DefaultFrameworkException unableToFindElementException(final String locatorId,
+                                                                   final ExecutorDependencies dependencies,
+                                                                   final CommandResult result) {
+        ConfigProvider configProvider = dependencies.getContext().getBean(ConfigProvider.class);
+        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
+                .getTakeScreenshots().isEnabled();
+        if (isTakeScreenshots) {
+            screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        }
         return new DefaultFrameworkException(
                 String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
     }

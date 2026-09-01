@@ -65,7 +65,7 @@ public class TestRailConnectionService {
         return endpoints;
     }
 
-    private static class ApiEndpoints {
+    public static class ApiEndpoints {
 
         private static final String API_SUFFIX = "index.php?/api/v2/";
 
@@ -77,7 +77,7 @@ public class TestRailConnectionService {
 
         private final TestRailReports testRails;
 
-        public ApiEndpoints(final TestRailReports testRails) {
+        private ApiEndpoints(final TestRailReports testRails) {
             this.testRails = testRails;
         }
 

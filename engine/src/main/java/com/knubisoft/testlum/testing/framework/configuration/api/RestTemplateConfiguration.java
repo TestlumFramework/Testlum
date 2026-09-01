@@ -8,11 +8,14 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestTemplateConfiguration {
 
+    private static final int CONNECT_TIMEOUT = 5000;
+    private static final int READ_TIMEOUT = 10000;
+
     @Bean
     public RestTemplate restTemplateFactory() {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(5000);
-        requestFactory.setReadTimeout(10000);
+        requestFactory.setConnectTimeout(CONNECT_TIMEOUT);
+        requestFactory.setReadTimeout(READ_TIMEOUT);
         return new RestTemplate(requestFactory);
     }
 

@@ -4,6 +4,7 @@ import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.JavascriptUtil;
 import com.testlum.testing.framework.util.ResultUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.model.scenario.ScrollTo;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,8 @@ class ScrollToWebExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private JavascriptUtil javascriptUtil;
     @Mock
@@ -56,12 +59,12 @@ class ScrollToWebExecutorTest {
             scrollTo.setLocator("footer-section");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("footer-section"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("footer-section"), any(), result)).thenReturn(element);
 
             executor.execute(scrollTo, result);
 
             verify(javascriptUtil).executeJsScript(anyString(), eq(driver), eq(element));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
             assertEquals("footer-section", result.getMetadata().get(ResultUtil.SCROLL_LOCATOR));
         }
     }

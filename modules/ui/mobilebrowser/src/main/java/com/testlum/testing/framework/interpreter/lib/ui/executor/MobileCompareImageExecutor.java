@@ -61,24 +61,25 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
             return getImageFromPicture(image, result);
         }
         if (Objects.nonNull(image.getPart())) {
-            return getImageFromPart(webDriver, image);
+            return getImageFromPart(webDriver, image, result);
         }
-        return ImageIO.read(uiUtil.takeScreenshot(webDriver));
+        return ImageIO.read(screenshotUtil.takeScreenshot(webDriver));
     }
 
     private BufferedImage getImageFromPicture(final MobileImage image, final CommandResult result) throws IOException {
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
-                image.getPicture().getLocatorStrategy());
+                image.getPicture().getLocatorStrategy(), result);
         return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
     }
 
-    private BufferedImage getImageFromPart(final WebDriver webDriver, final MobileImage image) throws IOException {
+    private BufferedImage getImageFromPart(final WebDriver webDriver, final MobileImage image,
+                                           final CommandResult result) throws IOException {
         if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
             throw new DefaultFrameworkException(ExceptionMessage.IOS_NOT_SUPPORT_PART_COMMAND);
         }
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                image.getPart().getLocatorStrategy());
-        return ImageIO.read(uiUtil.takeScreenshot(webElement));
+                image.getPart().getLocatorStrategy(), result);
+        return ImageIO.read(screenshotUtil.takeScreenshot(webElement));
     }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,

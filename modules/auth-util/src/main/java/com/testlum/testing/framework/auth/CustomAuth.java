@@ -36,12 +36,14 @@ public class CustomAuth extends AbstractAuthStrategy {
     private final IntegrationsProvider integrationsProvider;
     private final List<Api> apiList;
     private final FileSearcher fileSearcher;
+    private final RestTemplate restTemplate;
 
     public CustomAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
         this.apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
+        this.restTemplate = dependencies.getContext().getBean(RestTemplate.class);
     }
 
     @Override
@@ -55,7 +57,7 @@ public class CustomAuth extends AbstractAuthStrategy {
     private String getCustomToken(final Auth auth) {
         final String body = getCredentialsFromFile(auth.getCredentials());
         final HttpEntity<String> request = new HttpEntity<>(body, getHeaders());
-        final String response = new RestTemplate().postForObject(getFullApiUrl(auth), request, String.class);
+        final String response = restTemplate.postForObject(getFullApiUrl(auth), request, String.class);
         if (StringUtils.isBlank(response)) {
             return DelimiterConstant.EMPTY;
         }

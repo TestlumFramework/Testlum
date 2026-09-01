@@ -3,6 +3,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.ResultUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.framework.util.check.ElementChecks;
 import com.testlum.testing.model.scenario.Clear;
@@ -26,6 +27,8 @@ class ClearExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private WebDriver driver;
     @Mock
@@ -53,14 +56,14 @@ class ClearExecutorTest {
             clear.setLocator("input-field");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_WRITING)))
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_WRITING), result))
                     .thenReturn(element);
 
             executor.execute(clear, result);
 
             verify(uiUtil).highlightElementIfRequired(anyBoolean(), eq(element), eq(driver));
             verify(element).clear();
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
             assertEquals("input-field", result.getMetadata().get(ResultUtil.CLEAR_LOCATOR));
         }
     }

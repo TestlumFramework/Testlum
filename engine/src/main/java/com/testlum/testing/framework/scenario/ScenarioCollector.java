@@ -1,16 +1,18 @@
 package com.testlum.testing.framework.scenario;
 
 import com.testlum.testing.framework.TestResourceSettings;
-import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLParsers;
-import com.testlum.testing.model.scenario.*;
+import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -59,21 +61,14 @@ public class ScenarioCollector {
     private void applyXml(final File xmlFile, final Result result) {
         Scenario scenario = null;
         try {
-            scenario = convertXmlToScenario(xmlFile);
+            scenario = xmlParsers.forScenario().process(xmlFile);
+            processScenarioVariations(xmlFile, scenario);
+            updateScenario(scenario);
             scenarioValidator.validate(scenario, xmlFile);
             result.add(new MappingResult(xmlFile, scenario, null));
-        } catch (IntegrationDisabledException e) {
-            result.add(new MappingResult(xmlFile, scenario, e));
         } catch (Exception e) {
-            result.add(new MappingResult(xmlFile, null, e));
+            result.add(new MappingResult(xmlFile, scenario, e));
         }
-    }
-
-    private Scenario convertXmlToScenario(final File xmlFile) {
-        Scenario scenario = xmlParsers.forScenario().process(xmlFile);
-        processScenarioVariations(xmlFile, scenario);
-        updateScenario(scenario);
-        return scenario;
     }
 
     private void processScenarioVariations(final File xmlFile, final Scenario scenario) {

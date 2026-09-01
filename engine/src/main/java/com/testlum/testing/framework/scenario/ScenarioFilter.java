@@ -4,6 +4,7 @@ import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.logger.ConfigurationLogger;
@@ -13,12 +14,7 @@ import com.testlum.testing.model.global_config.TagValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -39,13 +35,26 @@ public class ScenarioFilter {
         handleNonParsedScenarios(nonParsedScenarios, original.isEmpty());
         List<MappingResult> originalWithoutNonParsed = new ArrayList<>(original);
         originalWithoutNonParsed.removeAll(nonParsedScenarios);
-        List<MappingResult> validScenarios = filterValidScenarios(originalWithoutNonParsed);
-        registerInvalidScenarios(validScenarios);
-        return validScenarios;
+        List<MappingResult> selectedScenarios = filterValidScenarios(originalWithoutNonParsed);
+        return handleInvalidScenarios(selectedScenarios);
     }
 
-    private void registerInvalidScenarios(final List<MappingResult> validScenarios) {
-        validScenarios.stream()
+    private List<MappingResult> handleInvalidScenarios(final List<MappingResult> selectedScenarios) {
+        registerInvalidScenarios(selectedScenarios);
+        List<MappingResult> runnableScenarios = filterBy(selectedScenarios,
+                e -> e.exception == null || e.exception instanceof IntegrationDisabledException);
+        if (runnableScenarios.size() < selectedScenarios.size()
+            && globalTestConfiguration.isStopIfInvalidScenario()) {
+            throw new DefaultFrameworkException(ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO);
+        }
+        if (runnableScenarios.isEmpty() && !selectedScenarios.isEmpty()) {
+            throw new DefaultFrameworkException(ExceptionMessage.VALID_SCENARIOS_NOT_FOUND);
+        }
+        return runnableScenarios;
+    }
+
+    private void registerInvalidScenarios(final List<MappingResult> selectedScenarios) {
+        selectedScenarios.stream()
                 .filter(e -> e.exception != null)
                 .forEach(e -> ScenarioStatusRegistry.registerInvalid(
                         e.file, e.exception.getMessage()));

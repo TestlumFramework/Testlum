@@ -2,6 +2,7 @@ package com.testlum.testing.framework.scenario;
 
 import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.logger.ConfigurationLogger;
@@ -60,6 +61,15 @@ class ScenarioFilterTest {
 
     private MappingResult nonParsedResult(final String fileName) {
         return new MappingResult(new File(fileName), null, new RuntimeException("parse error"));
+    }
+
+    private MappingResult invalidResult(final String fileName, final String tags) {
+        return invalidResult(fileName, tags, new RuntimeException("validation failed"));
+    }
+
+    private MappingResult invalidResult(final String fileName, final String tags, final Exception exception) {
+        final MappingResult parsed = validResult(fileName, true, false, tags);
+        return new MappingResult(parsed.file, parsed.scenario, exception);
     }
 
     @Nested
@@ -142,6 +152,17 @@ class ScenarioFilterTest {
         }
 
         @Test
+        void invalidScenarioParticipatesInTagFiltering() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", "regression"));
+            input.add(validResult("b.xml", true, false, "smoke"));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(1, result.size());
+            assertEquals("b.xml", result.get(0).file.getName());
+        }
+
+        @Test
         void scenarioWithNullTagsIsExcluded() {
             final List<MappingResult> input = new ArrayList<>();
             input.add(validResult("a.xml", true, false, null));
@@ -178,6 +199,71 @@ class ScenarioFilterTest {
         void emptyOriginalListThrows() {
             assertThrows(DefaultFrameworkException.class,
                     () -> filter.filterScenarios(new ArrayList<>()));
+        }
+    }
+
+    @Nested
+    class InvalidScenarios {
+        @Test
+        void invalidScenarioIsExcludedFromRun() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", null));
+            input.add(validResult("b.xml", true, false, null));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(1, result.size());
+            assertEquals("b.xml", result.get(0).file.getName());
+        }
+
+        @Test
+        void integrationDisabledScenarioStaysInRun() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", null, new IntegrationDisabledException("disabled")));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(1, result.size());
+            assertEquals("a.xml", result.get(0).file.getName());
+        }
+
+        @Test
+        void allSelectedScenariosInvalidThrows() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", null));
+
+            assertThrows(DefaultFrameworkException.class, () -> filter.filterScenarios(input));
+            assertEquals("validation failed", ScenarioStatusRegistry.getInvalid().get("a.xml"));
+        }
+
+        @Test
+        void stopIfInvalidScenarioThrowsForSelectedInvalid() {
+            when(config.isStopIfInvalidScenario()).thenReturn(true);
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", null));
+            input.add(validResult("b.xml", true, false, null));
+
+            assertThrows(DefaultFrameworkException.class, () -> filter.filterScenarios(input));
+        }
+
+        @Test
+        void stopIfInvalidScenarioIgnoresFilteredOutInvalid() {
+            when(config.isStopIfInvalidScenario()).thenReturn(true);
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", null));
+            input.add(validResult("b.xml", true, true, null));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(1, result.size());
+            assertEquals("b.xml", result.get(0).file.getName());
+        }
+
+        @Test
+        void stopIfInvalidScenarioIgnoresIntegrationDisabled() {
+            when(config.isStopIfInvalidScenario()).thenReturn(true);
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", null, new IntegrationDisabledException("disabled")));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(1, result.size());
         }
     }
 
@@ -262,13 +348,61 @@ class ScenarioFilterTest {
         @Test
         void scenarioCarryingAnExceptionIsRegisteredAsInvalid() {
             final List<MappingResult> input = new ArrayList<>();
-            final MappingResult valid = validResult("a.xml", true, false, null);
-            input.add(new MappingResult(valid.file, valid.scenario, new RuntimeException("integration disabled")));
+            input.add(invalidResult("a.xml", null, new RuntimeException("integration disabled")));
+            input.add(validResult("b.xml", true, false, null));
 
             filter.filterScenarios(input);
 
             assertEquals(1, ScenarioStatusRegistry.getInvalid().size());
             assertEquals("integration disabled", ScenarioStatusRegistry.getInvalid().get("a.xml"));
+        }
+
+        @Test
+        void invalidScenarioFilteredOutByTagsIsSkippedNotInvalid() {
+            final RunScenariosByTag runByTag = new RunScenariosByTag();
+            runByTag.setEnabled(true);
+            final TagValue tag = new TagValue();
+            tag.setName("smoke");
+            tag.setEnabled(true);
+            runByTag.getTag().add(tag);
+            when(config.getRunScenariosByTag()).thenReturn(runByTag);
+
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", "regression"));
+            input.add(validResult("b.xml", true, false, "smoke"));
+
+            filter.filterScenarios(input);
+
+            assertTrue(ScenarioStatusRegistry.getInvalid().isEmpty());
+            assertEquals(LogMessage.SCENARIO_SKIPPED_TAGS_NOT_MATCH,
+                    ScenarioStatusRegistry.getSkipped().get("a.xml"));
+        }
+
+        @Test
+        void invalidScenarioSkippedByOnlyThisIsNotRegisteredAsInvalid() {
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(invalidResult("a.xml", null));
+            input.add(validResult("b.xml", true, true, null));
+
+            filter.filterScenarios(input);
+
+            assertTrue(ScenarioStatusRegistry.getInvalid().isEmpty());
+            assertEquals(LogMessage.SCENARIO_SKIPPED_ONLY_THIS,
+                    ScenarioStatusRegistry.getSkipped().get("a.xml"));
+        }
+
+        @Test
+        void inactiveInvalidScenarioIsNotRegisteredAsInvalid() {
+            final List<MappingResult> input = new ArrayList<>();
+            final MappingResult parsed = validResult("a.xml", false, false, null);
+            input.add(new MappingResult(parsed.file, parsed.scenario, new RuntimeException("validation failed")));
+            input.add(validResult("b.xml", true, false, null));
+
+            filter.filterScenarios(input);
+
+            assertTrue(ScenarioStatusRegistry.getInvalid().isEmpty());
+            assertEquals(LogMessage.SCENARIO_SKIPPED_INACTIVE,
+                    ScenarioStatusRegistry.getSkipped().get("a.xml"));
         }
     }
 

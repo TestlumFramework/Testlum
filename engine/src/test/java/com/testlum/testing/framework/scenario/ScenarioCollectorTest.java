@@ -4,10 +4,11 @@ import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.framework.util.IntegrationsUtil;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
-import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.framework.xml.XMLParser;
+import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.model.global_config.Integrations;
-import com.testlum.testing.model.scenario.*;
+import com.testlum.testing.model.scenario.Scenario;
+import com.testlum.testing.model.scenario.Settings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -238,6 +239,63 @@ class ScenarioCollectorTest {
             assertEquals(1, result.size());
             assertNull(result.get(0).scenario);
             assertNotNull(result.get(0).exception);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void collectKeepsScenarioWhenValidationFails() throws IOException {
+            Path scenarioDir = tempDir.resolve("invalid");
+            Files.createDirectories(scenarioDir);
+            Files.writeString(scenarioDir.resolve("scenario.xml"), "<scenario/>");
+
+            when(testResourceSettings.getScenarioScopeFolder()).thenReturn(Optional.empty());
+            when(testResourceSettings.getTestResourcesFolder()).thenReturn(tempDir.toFile());
+
+            XMLParser<Scenario> parser = mock(XMLParser.class);
+            when(xmlParsers.forScenario()).thenReturn(parser);
+
+            Scenario scenario = new Scenario();
+            Settings settings = new Settings();
+            settings.setTags("smoke");
+            scenario.setSettings(settings);
+            when(parser.process(any(File.class))).thenReturn(scenario);
+            doThrow(new RuntimeException("validation failed"))
+                    .when(scenarioValidator).validate(any(), any());
+
+            ScenarioCollector.Result result = collector.collect();
+
+            assertEquals(1, result.size());
+            assertNotNull(result.get(0).scenario);
+            assertEquals("smoke", result.get(0).scenario.getSettings().getTags());
+            assertEquals("validation failed", result.get(0).exception.getMessage());
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void collectKeepsScenarioWhenVariationsFail() throws IOException {
+            Path scenarioDir = tempDir.resolve("variations");
+            Files.createDirectories(scenarioDir);
+            Files.writeString(scenarioDir.resolve("scenario.xml"), "<scenario/>");
+
+            when(testResourceSettings.getScenarioScopeFolder()).thenReturn(Optional.empty());
+            when(testResourceSettings.getTestResourcesFolder()).thenReturn(tempDir.toFile());
+
+            XMLParser<Scenario> parser = mock(XMLParser.class);
+            when(xmlParsers.forScenario()).thenReturn(parser);
+
+            Scenario scenario = new Scenario();
+            Settings settings = new Settings();
+            settings.setVariations("missing.csv");
+            scenario.setSettings(settings);
+            when(parser.process(any(File.class))).thenReturn(scenario);
+            doThrow(new RuntimeException("variations not found"))
+                    .when(globalVariationsProvider).process(any(Scenario.class), any(File.class));
+
+            ScenarioCollector.Result result = collector.collect();
+
+            assertEquals(1, result.size());
+            assertNotNull(result.get(0).scenario);
+            assertEquals("variations not found", result.get(0).exception.getMessage());
         }
 
         @SuppressWarnings("unchecked")

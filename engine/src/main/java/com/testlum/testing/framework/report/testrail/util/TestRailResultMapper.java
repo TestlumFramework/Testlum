@@ -6,6 +6,9 @@ import com.testlum.testing.framework.report.testrail.model.ResultRequestDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Component
@@ -45,35 +48,29 @@ public class TestRailResultMapper {
         if (StringUtils.isBlank(cause)) {
             return "";
         }
-        String msg = cause.replace('\r', '\n');
-        int idx = msg.lastIndexOf("Caused by:");
+        String errorMessage = cause.replace('\r', '\n');
+        int idx = errorMessage.lastIndexOf("Caused by:");
         if (idx >= 0) {
-            msg = msg.substring(idx + "Caused by:".length()).trim();
+            errorMessage = errorMessage.substring(idx + "Caused by:".length()).trim();
         }
-        msg = STACK_TRACE_LINE.matcher(msg).replaceAll("");
-        msg = EX_PREFIX.matcher(msg).replaceFirst("");
-        msg = msg.replace('\n', ' ').replaceAll("\\s+", " ").trim();
-        return msg;
+        errorMessage = STACK_TRACE_LINE.matcher(errorMessage).replaceAll("");
+        errorMessage = EX_PREFIX.matcher(errorMessage).replaceFirst("");
+        errorMessage = errorMessage.replace('\n', ' ').replaceAll("\\s+", " ").trim();
+        return errorMessage;
     }
 
-    // CHECKSTYLE:OFF
     public String durationOfExecution(final long executionTime) {
-        long totalSeconds = executionTime / 1000;
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
-
-        StringBuilder duration = new StringBuilder();
-        if (hours > 0) {
-            duration.append(hours).append("h ");
-        }
-        if (minutes > 0) {
-            duration.append(minutes).append("m ");
-        }
-        if (seconds > 0) {
-            duration.append(seconds).append("s");
-        }
-        return duration.toString().trim();
+        Duration duration = Duration.ofMillis(executionTime);
+        List<String> parts = new ArrayList<>();
+        addIfPositive(parts, duration.toHours(), "h");
+        addIfPositive(parts, duration.toMinutesPart(), "m");
+        addIfPositive(parts, duration.toSecondsPart(), "s");
+        return String.join(" ", parts);
     }
-    // CHECKSTYLE:ON
+
+    private void addIfPositive(final List<String> parts, final long value, final String unit) {
+        if (value > 0) {
+            parts.add(value + unit);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.testlum.testing.framework.report.testrail.util;
 import com.testlum.testing.framework.report.ScenarioResult;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.model.GroupedScenarios;
+import com.testlum.testing.model.scenario.TestRail;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -56,26 +57,28 @@ public class ScenarioResultDataExtractor {
 
     private List<ScenarioResult> getAllScenarioWithoutRunId(final List<ScenarioResult> scenarioResults) {
         return scenarioResults.stream()
-                .filter(scenarioResult -> {
-                    var testRails = scenarioResult.getOverview().getTestRail();
-                    boolean enable = testRails.isEnabled();
-                    String runId = testRails.getTestRailRunId();
-                    String testCase = testRails.getTestCaseId();
-                    return enable
-                            && (StringUtils.isEmpty(runId) || Integer.parseInt(runId) <= 0)
-                            && NumberUtils.isParsable(testCase) && Integer.parseInt(testCase) > 0;
-                })
+                .filter(this::isScenarioWithoutRunId)
                 .collect(Collectors.toList());
     }
 
-    private boolean parseId(final String idStr, final String idType) {
-        if (NumberUtils.isParsable(idStr)) {
+    private boolean isScenarioWithoutRunId(final ScenarioResult scenarioResult) {
+        TestRail testRail = scenarioResult.getOverview().getTestRail();
+        boolean enable = testRail.isEnabled();
+        String runId = testRail.getTestRailRunId();
+        String testCase = testRail.getTestCaseId();
+        return enable
+                && (StringUtils.isEmpty(runId) || Integer.parseInt(runId) <= 0)
+                && NumberUtils.isParsable(testCase) && Integer.parseInt(testCase) > 0;
+    }
+
+    private boolean parseId(final String id, final String attrName) {
+        if (NumberUtils.isParsable(id)) {
             return Boolean.TRUE;
         } else {
-            String idLogError = CASE_ID_ATTR.equalsIgnoreCase(idType)
+            String idLogError = CASE_ID_ATTR.equalsIgnoreCase(attrName)
                     ? TestRailConstants.CASE_ID_ERROR_RESPONSE
                     : TestRailConstants.RUN_ID_ERROR_RESPONSE;
-            log.error(idLogError, idStr);
+            log.error(idLogError, id);
             return Boolean.FALSE;
         }
     }

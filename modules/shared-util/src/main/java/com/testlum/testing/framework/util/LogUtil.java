@@ -80,6 +80,10 @@ public class LogUtil {
         log.warn(LogMessage.SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
     }
 
+    public void logEmptyScenariosForTestRails() {
+        log.warn(LogMessage.EMPTY_SCENARIOS_FOR_TESTRAIL);
+    }
+
     public void logInvalidScenariosSummary(final Map<String, String> invalid, final Map<String, String> skipped) {
         if (!invalid.isEmpty()) {
             log.error(constructScenarioStatusTable(LogMessage.INVALID_SCENARIOS_TITLE, Color.RED, invalid));

@@ -2,6 +2,7 @@ package com.testlum.testing.framework.condition;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
+import com.testlum.testing.framework.util.InjectionService;
 import com.testlum.testing.framework.xml.XMLParser;
 import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.model.global_config.Environment;
@@ -110,6 +111,7 @@ class ConditionBaseTest {
         FileSearcher fileSearcher = mock(FileSearcher.class);
         XMLParsers xmlParsers = mock(XMLParsers.class);
         TestResourceSettings settings = mock(TestResourceSettings.class);
+        InjectionService injectionService = mock(InjectionService.class);
         GlobalTestConfiguration globalConfig =
                 mock(GlobalTestConfiguration.class);
         Environments environments = mock(Environments.class);
@@ -120,6 +122,10 @@ class ConditionBaseTest {
         when(beanFactory.getBean(XMLParsers.class)).thenReturn(xmlParsers);
         when(beanFactory.getBean(TestResourceSettings.class))
                 .thenReturn(settings);
+        when(beanFactory.getBean(InjectionService.class))
+                .thenReturn(injectionService);
+        when(injectionService.injectFromSystem(globalConfig))
+                .thenReturn(globalConfig);
         when(settings.getConfigFile()).thenReturn(new File("config.xml"));
 
         XMLParser<GlobalTestConfiguration> configParser =

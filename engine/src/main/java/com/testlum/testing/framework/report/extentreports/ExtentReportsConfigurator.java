@@ -51,7 +51,7 @@ public class ExtentReportsConfigurator {
         String reportPath = buildReportPath(projectName);
         try {
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportPath);
-            if (globalTestConfiguration.getReport().getExtentReports().isOnlyFailedScenarios()) {
+            if (Boolean.TRUE.equals(globalTestConfiguration.getReport().getExtentReports().isOnlyFailedScenarios())) {
                 sparkReporter.filter()
                         .statusFilter()
                         .as(new Status[]{Status.FAIL})

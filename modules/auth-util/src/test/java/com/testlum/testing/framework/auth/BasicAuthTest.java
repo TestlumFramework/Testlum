@@ -4,6 +4,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.model.scenario.Auth;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +34,7 @@ class BasicAuthTest {
 
     private InterpreterDependencies dependencies;
     private FileSearcher fileSearcher;
+    private SystemVariableService systemVariableService;
     private BasicAuth basicAuth;
 
     @BeforeEach
@@ -39,9 +42,13 @@ class BasicAuthTest {
         dependencies = mock(InterpreterDependencies.class);
         ApplicationContext context = mock(ApplicationContext.class);
         fileSearcher = mock(FileSearcher.class);
+        systemVariableService = mock(SystemVariableService.class);
 
         when(dependencies.getContext()).thenReturn(context);
         when(context.getBean(FileSearcher.class)).thenReturn(fileSearcher);
+        when(context.getBean(SystemVariableService.class)).thenReturn(systemVariableService);
+        lenient().when(systemVariableService.inject(anyString()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         basicAuth = new BasicAuth(dependencies);
     }
@@ -134,6 +141,47 @@ class BasicAuthTest {
             CommandResult result = new CommandResult();
 
             assertDoesNotThrow(() -> basicAuth.authenticate(auth, result));
+        }
+    }
+
+    @Nested
+    class EnvironmentVariableInjection {
+
+        @Test
+        void resolvesEnvVariablesBeforeParsingCredentials() throws IOException {
+            File credFile = createCredentialsFile("${API_USER}", "${API_PASS}");
+            when(fileSearcher.searchFileFromDataFolder("env-creds.json")).thenReturn(credFile);
+            when(systemVariableService.inject("{\"username\":\"${API_USER}\",\"password\":\"${API_PASS}\"}"))
+                    .thenReturn("{\"username\":\"admin\",\"password\":\"secret\"}");
+
+            Auth auth = buildAuth("myApi", "env-creds.json", "/login");
+            CommandResult result = new CommandResult();
+
+            basicAuth.authenticate(auth, result);
+
+            ArgumentCaptor<InterpreterDependencies.Authorization> captor =
+                    ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
+            verify(dependencies).setAuthorization(captor.capture());
+
+            String expectedEncoded = Base64.getEncoder()
+                    .encodeToString("admin:secret".getBytes(StandardCharsets.UTF_8));
+            String headerValue = captor.getValue().getHeaders()
+                    .get(AuthorizationConstant.HEADER_AUTHORIZATION);
+            assertEquals("Basic " + expectedEncoded, headerValue);
+        }
+
+        @Test
+        void propagatesExceptionWhenEnvVariableIsMissing() throws IOException {
+            File credFile = createCredentialsFile("${MISSING_VAR}", "secret");
+            when(fileSearcher.searchFileFromDataFolder("env-creds.json")).thenReturn(credFile);
+            when(systemVariableService.inject(anyString()))
+                    .thenThrow(new DefaultFrameworkException("Environment variable <MISSING_VAR> not found"));
+
+            Auth auth = buildAuth("myApi", "env-creds.json", "/login");
+            CommandResult result = new CommandResult();
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> basicAuth.authenticate(auth, result));
         }
     }
 

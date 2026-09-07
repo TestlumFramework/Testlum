@@ -41,6 +41,11 @@ public enum ElementCheck {
 
     ENABLED {
         @Override
+        public boolean supports(final UiType uiType) {
+            return uiType != UiType.NATIVE;
+        }
+
+        @Override
         public void check(final ExecutorDependencies dependencies, final WebElement element) {
             if (!element.isEnabled()) {
                 throw new DefaultFrameworkException(

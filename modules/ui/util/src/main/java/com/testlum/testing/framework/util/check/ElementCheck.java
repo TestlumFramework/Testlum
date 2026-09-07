@@ -25,11 +25,6 @@ public enum ElementCheck {
 
     SCROLLED_INTO_VIEW_AND_INTERACTABLE {
         @Override
-        public boolean supports(final UiType uiType) {
-            return uiType != UiType.NATIVE;
-        }
-
-        @Override
         public void check(final ExecutorDependencies dependencies, final WebElement element) {
             Boolean isTopElement = (Boolean) ((JavascriptExecutor) dependencies.getDriver())
                     .executeScript(COVERED_CHECK_SCRIPT, element);
@@ -40,11 +35,6 @@ public enum ElementCheck {
     },
 
     ENABLED {
-        @Override
-        public boolean supports(final UiType uiType) {
-            return uiType != UiType.NATIVE;
-        }
-
         @Override
         public void check(final ExecutorDependencies dependencies, final WebElement element) {
             if (!element.isEnabled()) {
@@ -59,11 +49,6 @@ public enum ElementCheck {
     },
 
     EDITABLE {
-        @Override
-        public boolean supports(final UiType uiType) {
-            return uiType != UiType.NATIVE;
-        }
-
         @Override
         public void check(final ExecutorDependencies dependencies, final WebElement element) {
             if (isFlagSet(element, READONLY_ATTRIBUTE)) {
@@ -93,7 +78,7 @@ public enum ElementCheck {
     }
 
     public boolean supports(final UiType uiType) {
-        return true;
+        return uiType != UiType.NATIVE;
     }
 
     public abstract void check(ExecutorDependencies dependencies, WebElement element);

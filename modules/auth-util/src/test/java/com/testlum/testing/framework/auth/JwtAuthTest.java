@@ -47,11 +47,11 @@ class JwtAuthTest {
     @BeforeEach
     void setUp() {
         dependencies = mock(InterpreterDependencies.class);
-        ApplicationContext context = mock(ApplicationContext.class);
         integrationsProvider = mock(IntegrationsProvider.class);
         fileSearcher = mock(FileSearcher.class);
         systemVariableService = mock(SystemVariableService.class);
 
+        ApplicationContext context = mock(ApplicationContext.class);
         when(dependencies.getContext()).thenReturn(context);
         when(dependencies.getEnvironment()).thenReturn("test");
         when(context.getBean(IntegrationsProvider.class)).thenReturn(integrationsProvider);

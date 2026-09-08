@@ -44,7 +44,24 @@ public final class TestRailConstants {
     public static final String COMMENT_PASSED_TEMPLATE = "Test case '%s' passed successfully.";
     public static final String COMMENT_FAILED_TEMPLATE = "Test case '%s' failed.\nFailure: %s";
 
-    public static final String CASE_ID_ERROR_RESPONSE = "Failed to parse Case ID '{}' for TestRail.";
+    public static final String CASES_FIELD = "cases";
+    public static final String CASES_PAGE_LIMIT = "250";
+
+    public static final String LOG_FETCHING_CASES_FAILED =
+            "Failed to fetch TestRail cases for project {}. Error: {}";
+    public static final String LOG_CASES_FETCHED =
+            "Fetched {} TestRail cases carrying a value for custom key '{}'";
+
+    public static final String CASE_MATCH_KEY_NOT_CONFIGURED =
+            "Scenario '{}' uses caseMatchKeyValue but <caseMatchKey> is not set in "
+                    + "<testRailReports> of the global config. Scenario is skipped.";
+    public static final String CASE_MATCH_KEY_VALUE_NOT_FOUND =
+            "No TestRail case has value '{}' for custom key '{}' (scenario '{}'). Scenario is skipped.";
+    public static final String CASE_MATCH_KEY_VALUE_DUPLICATED =
+            "Custom key '{}' has value '{}' on more than one TestRail case ({} and {}). Case {} is used.";
+    public static final String TEST_RAIL_CASE_NOT_RESOLVED =
+            "Scenario '{}' has neither a usable testCaseId nor a caseMatchKeyValue. Scenario is skipped.";
+
     public static final String RUN_ID_ERROR_RESPONSE = "Failed to parse Run ID '{}' for TestRail.";
 
     public static final String ID_FETCH_ERROR_RESPONSE = "Failed to obtain field '{}' from JSON response.";

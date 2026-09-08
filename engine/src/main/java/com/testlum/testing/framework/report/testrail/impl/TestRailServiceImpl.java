@@ -5,8 +5,10 @@ import com.testlum.testing.framework.report.testrail.TestRailApiClient;
 import com.testlum.testing.framework.report.testrail.TestRailService;
 import com.testlum.testing.framework.report.testrail.model.GroupedScenarios;
 import com.testlum.testing.framework.report.testrail.model.ResultRequestDto;
-import com.testlum.testing.framework.report.testrail.util.FailureScreenshotCollector;
+import com.testlum.testing.framework.report.testrail.model.ScenarioCase;
+import com.testlum.testing.framework.report.testrail.util.TestRailFailedScreenshotCollector;
 import com.testlum.testing.framework.report.testrail.util.ScenarioResultDataExtractor;
+import com.testlum.testing.framework.report.testrail.util.TestRailCaseIdResolver;
 import com.testlum.testing.framework.report.testrail.util.TestRailResultMapper;
 import com.testlum.testing.framework.util.LogUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,8 @@ public class TestRailServiceImpl implements TestRailService {
     private final TestRailApiClient testRailApiClient;
     private final TestRailResultMapper formatResult;
     private final ScenarioResultDataExtractor scenarioResultDataExtractor;
-    private final FailureScreenshotCollector failureScreenshotCollector;
+    private final TestRailCaseIdResolver caseIdResolver;
+    private final TestRailFailedScreenshotCollector failureScreenshotCollector;
     private final LogUtil logUtil;
 
     @Override
@@ -31,27 +34,28 @@ public class TestRailServiceImpl implements TestRailService {
         testRailApiClient.validateConnection();
         List<ScenarioResult> testRailScenarios = scenarioResultDataExtractor
                 .collectScenarioWithTestRailIntegrations(results);
-        if (!testRailScenarios.isEmpty()) {
-            sendTestResultToTestRail(testRailScenarios);
+        List<ScenarioCase> scenarioCases = caseIdResolver.resolveCases(testRailScenarios);
+        if (!scenarioCases.isEmpty()) {
+            sendTestResultToTestRail(scenarioCases);
         } else {
             logUtil.logEmptyScenariosForTestRails();
         }
     }
 
-    private void sendTestResultToTestRail(final List<ScenarioResult> results) {
-        GroupedScenarios grouped = scenarioResultDataExtractor.splitScenariosByRunId(results);
+    private void sendTestResultToTestRail(final List<ScenarioCase> scenarioCases) {
+        GroupedScenarios grouped = scenarioResultDataExtractor.splitScenariosByRunId(scenarioCases);
         processWithRunId(grouped.getWithRunId());
         processWithoutRunId(grouped.getWithoutRunId());
     }
 
-    private void processWithRunId(final Map<Integer, List<ScenarioResult>> withRunIdMap) {
+    private void processWithRunId(final Map<Integer, List<ScenarioCase>> withRunIdMap) {
         if (withRunIdMap.isEmpty()) {
             return;
         }
         sendGroupedResultsToApi(withRunIdMap);
     }
 
-    private void processWithoutRunId(final List<ScenarioResult> scenariosWithoutRunId) {
+    private void processWithoutRunId(final List<ScenarioCase> scenariosWithoutRunId) {
         if (scenariosWithoutRunId.isEmpty()) {
             return;
         }
@@ -60,12 +64,12 @@ public class TestRailServiceImpl implements TestRailService {
             return;
         }
         testRailApiClient.createNewTestRailRun(caseIds).ifPresent(newTestRunId -> {
-            Map<Integer, List<ScenarioResult>> newGroup = Map.of(newTestRunId, scenariosWithoutRunId);
+            Map<Integer, List<ScenarioCase>> newGroup = Map.of(newTestRunId, scenariosWithoutRunId);
             sendGroupedResultsToApi(newGroup);
         });
     }
 
-    private void sendGroupedResultsToApi(final Map<Integer, List<ScenarioResult>> groupedResults) {
+    private void sendGroupedResultsToApi(final Map<Integer, List<ScenarioCase>> groupedResults) {
         groupedResults.forEach((runId, scenarioList) -> {
             List<ResultRequestDto> results = buildBatchResults(scenarioList);
             Map<Integer, String> screenshotsOfUnsuccessfulTests = failureScreenshotCollector
@@ -74,7 +78,7 @@ public class TestRailServiceImpl implements TestRailService {
         });
     }
 
-    public List<ResultRequestDto> buildBatchResults(final List<ScenarioResult> scenarioList) {
+    public List<ResultRequestDto> buildBatchResults(final List<ScenarioCase> scenarioList) {
         return scenarioList.stream()
                 .map(formatResult::formatResult)
                 .collect(Collectors.toList());

@@ -15,4 +15,10 @@ public interface TestRailApiClient {
                             Map<Integer, String> screenshotsOfUnsuccessfulTests);
 
     Optional<Integer> createNewTestRailRun(List<Integer> caseIds);
+
+    /**
+     * Reads every case and maps the value of the given custom
+     * field to its case id. Returns an empty map when the cases cannot be fetched.
+     */
+    Map<String, Integer> fetchCaseIdsByMatchKey(String caseMatchKey);
 }

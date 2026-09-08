@@ -30,7 +30,9 @@
 
     <x:complexType name="testRail">
         <x:attribute name="enabled" type="x:boolean" use="required"/>
-        <x:attribute name="testCaseId" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="testRailRunId" type="tns:nonEmptyString" use="optional"/>
+        <!-- Exactly one of testCaseId / caseMatchKeyValue must be set -->
+        <x:attribute name="testCaseId" type="tns:nonEmptyString"/>
+        <x:attribute name="caseMatchKeyValue" type="tns:nonEmptyString"/>
+        <x:attribute name="testRailRunId" type="tns:nonEmptyString"/>
     </x:complexType>
 </x:schema>

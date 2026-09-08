@@ -72,6 +72,7 @@ public class TestRailConnectionService {
         private static final String ADD_RESULTS_FOR_CASES_URL = "add_results_for_cases/";
         private static final String CREATE_NEW_TEST_RUN_URL = "add_run/";
         private static final String GET_TEST_URL = "get_test/";
+        private static final String GET_CASES_URL = "get_cases/";
         private static final String ADD_ATTACHMENT_TO_RESULT_URL = "add_attachment_to_result/";
 
         private final TestRailReports testRails;
@@ -94,6 +95,11 @@ public class TestRailConnectionService {
 
         public String getFetchTestEndpoint(final String testId) {
             return baseUrl() + GET_TEST_URL + testId;
+        }
+
+        public String getCasesEndpoint(final String projectId, final int offset) {
+            return baseUrl() + GET_CASES_URL + projectId
+                    + "&limit=" + TestRailConstants.CASES_PAGE_LIMIT + "&offset=" + offset;
         }
 
         public String getAddAttachmentEndpoint(final int resultId) {

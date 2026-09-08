@@ -8,9 +8,11 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.model.ResultResponseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -50,6 +52,48 @@ public class TestRailResponseJsonDeserializer {
             return Optional.empty();
         }
         return Optional.empty();
+    }
+
+    /**
+     * Collects customKeyValue - caseId pairs from one page of the
+     * get_cases response and returns how many cases that page held.
+     */
+    public int collectCaseIdsByMatchKey(final String jsonResponse, final String caseMatchKey,
+                                        final Map<String, Integer> target) {
+        JsonNode root;
+        try {
+            root = OBJECT_MAPPER.readTree(jsonResponse);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(ExceptionMessage.ERROR_ON_PARSING_JSON, e);
+        }
+        JsonNode cases = root.isArray() ? root : root.get(TestRailConstants.CASES_FIELD);
+        if (cases == null || !cases.isArray()) {
+            return 0;
+        }
+        cases.forEach(caseNode -> collectCase(caseNode, caseMatchKey, target));
+        return cases.size();
+    }
+
+    private void collectCase(final JsonNode caseNode, final String caseMatchKey,
+                             final Map<String, Integer> target) {
+        Integer caseId = readInt(caseNode, TestRailConstants.ID_FIELD);
+        String matchKeyValue = readMatchKeyValue(caseNode, caseMatchKey);
+        if (caseId == null || StringUtils.isBlank(matchKeyValue)) {
+            return;
+        }
+        Integer previous = target.putIfAbsent(matchKeyValue, caseId);
+        if (previous != null && !previous.equals(caseId)) {
+            log.error(TestRailConstants.CASE_MATCH_KEY_VALUE_DUPLICATED,
+                    caseMatchKey, matchKeyValue, previous, caseId, previous);
+        }
+    }
+
+    private static String readMatchKeyValue(final JsonNode caseNode, final String caseMatchKey) {
+        JsonNode matchKeyNode = caseNode.get(caseMatchKey);
+        if (matchKeyNode == null || matchKeyNode.isNull()) {
+            return null;
+        }
+        return matchKeyNode.isTextual() ? matchKeyNode.textValue() : matchKeyNode.asText();
     }
 
     private Optional<ResultResponseDto> mapNodeToResult(final JsonNode resultNode) {

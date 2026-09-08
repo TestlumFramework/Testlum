@@ -3,6 +3,7 @@ package com.testlum.testing.framework.report.testrail.util;
 import com.testlum.testing.framework.report.ScenarioResult;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.model.ResultRequestDto;
+import com.testlum.testing.framework.report.testrail.model.ScenarioCase;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +22,10 @@ public class TestRailResultMapper {
             "(?m)^\\s*(?:at\\s+.+|Suppressed:\\s+.+|\\.\\.\\.\\s+\\d+\\s+more)\\s*$"
     );
 
-    public ResultRequestDto formatResult(final ScenarioResult scenarioResult) {
+    public ResultRequestDto formatResult(final ScenarioCase scenarioCase) {
+        ScenarioResult scenarioResult = scenarioCase.scenarioResult();
         return new ResultRequestDto(
-                scenarioResult.getOverview().getTestRail().getTestCaseId(),
+                String.valueOf(scenarioCase.caseId()),
                 determineStatus(scenarioResult),
                 generateComment(scenarioResult),
                 durationOfExecution(scenarioResult.getExecutionTime())

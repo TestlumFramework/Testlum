@@ -16,6 +16,7 @@ import jakarta.xml.bind.annotation.*;
  *         &lt;element name="apiKey" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="url" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="projectId" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="caseMatchKey" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="defaultRunName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="defaultRunDescription" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -34,6 +35,7 @@ import jakarta.xml.bind.annotation.*;
         "apiKey",
         "url",
         "projectId",
+        "caseMatchKey",
         "defaultRunName",
         "defaultRunDescription"
 })
@@ -47,6 +49,7 @@ public class TestRailReports {
     protected String url;
     @XmlElement(required = true)
     protected String projectId;
+    protected String caseMatchKey;
     protected String defaultRunName;
     protected String defaultRunDescription;
     @XmlAttribute(name = "enabled", required = true)
@@ -148,6 +151,30 @@ public class TestRailReports {
      */
     public void setProjectId(String value) {
         this.projectId = value;
+    }
+
+    /**
+     * Gets the value of the caseMatchKey property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getCaseMatchKey() {
+        return caseMatchKey;
+    }
+
+    /**
+     * Sets the value of the caseMatchKey property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setCaseMatchKey(String value) {
+        this.caseMatchKey = value;
     }
 
     /**

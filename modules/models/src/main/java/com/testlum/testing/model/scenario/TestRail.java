@@ -15,7 +15,8 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" use="required" /&gt;
- *       &lt;attribute name="testCaseId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" use="required" /&gt;
+ *       &lt;attribute name="testCaseId" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="caseMatchKeyValue" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="testRailRunId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" use="optional" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -30,10 +31,12 @@ public class TestRail {
 
     @XmlAttribute(name = "enabled", required = true)
     protected Boolean enabled;
-    @XmlAttribute(name = "testCaseId", required = true)
+    @XmlAttribute(name = "testCaseId")
     protected String testCaseId;
     @XmlAttribute(name = "testRailRunId")
     protected String testRailRunId;
+    @XmlAttribute(name = "caseMatchKeyValue")
+    protected String caseMatchKeyValue;
 
     /**
      * Gets the value of the enabled property.
@@ -106,6 +109,30 @@ public class TestRail {
      */
     public void setTestRailRunId(String value) {
         this.testRailRunId = value;
+    }
+
+    /**
+     * Gets the value of the caseMatchKeyValue property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getCaseMatchKeyValue() {
+        return caseMatchKeyValue;
+    }
+
+    /**
+     * Sets the value of the caseMatchKeyValue property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setCaseMatchKeyValue(String value) {
+        this.caseMatchKeyValue = value;
     }
 
 }

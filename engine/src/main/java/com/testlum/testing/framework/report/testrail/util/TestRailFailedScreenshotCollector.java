@@ -2,7 +2,7 @@ package com.testlum.testing.framework.report.testrail.util;
 
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.report.ScenarioResult;
-import org.apache.commons.lang3.math.NumberUtils;
+import com.testlum.testing.framework.report.testrail.model.ScenarioCase;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,17 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class FailureScreenshotCollector {
+public class TestRailFailedScreenshotCollector {
 
-    public Map<Integer, String> getScreenshotsOfUnsuccessfulTests(final List<ScenarioResult> scenarioResults) {
+    public Map<Integer, String> getScreenshotsOfUnsuccessfulTests(final List<ScenarioCase> scenarioCases) {
         Map<Integer, String> caseIdAttachmentsMap = new HashMap<>();
-        scenarioResults.forEach(scenarioResult -> {
-            String screenshotOfLastUnsuccessfulCommand = getScreenshotOfLastUnsuccessfulCommand(scenarioResult);
+        scenarioCases.forEach(scenarioCase -> {
+            String screenshotOfLastUnsuccessfulCommand =
+                    getScreenshotOfLastUnsuccessfulCommand(scenarioCase.scenarioResult());
             if (screenshotOfLastUnsuccessfulCommand != null) {
-                String testCaseId = scenarioResult.getOverview().getTestRail().getTestCaseId();
-                if (NumberUtils.isParsable(testCaseId)) {
-                    caseIdAttachmentsMap.put(Integer.parseInt(testCaseId), screenshotOfLastUnsuccessfulCommand);
-                }
+                caseIdAttachmentsMap.put(scenarioCase.caseId(), screenshotOfLastUnsuccessfulCommand);
             }
         });
         return caseIdAttachmentsMap;

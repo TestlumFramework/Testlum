@@ -4,6 +4,7 @@ import com.testlum.testing.framework.report.testrail.TestRailApiClient;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.model.ResultRequestDto;
 import com.testlum.testing.framework.report.testrail.model.Run;
+import com.testlum.testing.framework.report.testrail.util.TestRailResponseJsonDeserializer;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.TestRailReports;
 import lombok.extern.slf4j.Slf4j;
@@ -23,16 +24,20 @@ import java.util.Optional;
 @Slf4j
 public class TestRailApiClientImpl implements TestRailApiClient {
 
+    private static final int CASES_PAGE_LIMIT = Integer.parseInt(TestRailConstants.CASES_PAGE_LIMIT);
     private final TestRailReports testRails;
     private final TestRailAttachmentApiClient attachmentApiClient;
+    private final TestRailResponseJsonDeserializer jsonDeserializer;
     private final TestRailConnectionService connectionService;
     private final RestTemplate restTemplate;
 
     public TestRailApiClientImpl(final GlobalTestConfiguration globalTestConfiguration,
                                  final TestRailAttachmentApiClient attachmentApiClient,
+                                 final TestRailResponseJsonDeserializer jsonDeserializer,
                                  final RestTemplate restTemplate) {
         this.testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
         this.attachmentApiClient = attachmentApiClient;
+        this.jsonDeserializer = jsonDeserializer;
         this.restTemplate = restTemplate;
         this.connectionService = new TestRailConnectionService(testRails, restTemplate);
     }
@@ -99,6 +104,31 @@ public class TestRailApiClientImpl implements TestRailApiClient {
             return Optional.of(id);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Map<String, Integer> fetchCaseIdsByMatchKey(final String caseMatchKey) {
+        Map<String, Integer> caseIdsByMatchKeyValue = new HashMap<>();
+        try {
+            collectAllCasePages(caseMatchKey, caseIdsByMatchKeyValue);
+        } catch (Exception e) {
+            log.error(TestRailConstants.LOG_FETCHING_CASES_FAILED, testRails.getProjectId(), e.getMessage(), e);
+            return Map.of();
+        }
+        log.info(TestRailConstants.LOG_CASES_FETCHED, caseIdsByMatchKeyValue.size(), caseMatchKey);
+        return caseIdsByMatchKeyValue;
+    }
+
+    private void collectAllCasePages(final String caseMatchKey, final Map<String, Integer> target) {
+        HttpEntity<Void> entity = new HttpEntity<>(connectionService.buildHeaders());
+        int offset = 0;
+        int fetched;
+        do {
+            String url = connectionService.endpoints().getCasesEndpoint(testRails.getProjectId(), offset);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            fetched = jsonDeserializer.collectCaseIdsByMatchKey(response.getBody(), caseMatchKey, target);
+            offset += CASES_PAGE_LIMIT;
+        } while (fetched == CASES_PAGE_LIMIT);
     }
 
     private boolean screenshotsEnabled() {

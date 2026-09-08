@@ -46,6 +46,7 @@
             <x:element name="apiKey" type="tns:nonEmptyString"/>
             <x:element name="url" type="tns:nonEmptyString"/>
             <x:element name="projectId" type="tns:nonEmptyString"/>
+            <x:element name="caseMatchKey" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="defaultRunName" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="defaultRunDescription" type="tns:nonEmptyString" minOccurs="0"/>
         </x:sequence>

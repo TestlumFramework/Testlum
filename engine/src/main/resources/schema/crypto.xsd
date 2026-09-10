@@ -7,7 +7,7 @@
 
     <x:include schemaLocation="shared.xsd"/>
     
-    <x:complexType name="">
+    <x:complexType name="crypto">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:sequence>

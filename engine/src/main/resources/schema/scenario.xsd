@@ -33,6 +33,7 @@
     <x:include schemaLocation="logout.xsd"/>
     <x:include schemaLocation="shell.xsd"/>
     <x:include schemaLocation="smtp.xsd"/>
+    <x:include schemaLocation="email.xsd"/>
     <x:include schemaLocation="twilio.xsd"/>
     <x:include schemaLocation="websocket.xsd"/>
     <x:include schemaLocation="graphql.xsd"/>
@@ -99,6 +100,7 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="email" type="tns:email"/>
                     <x:element name="twilio" type="tns:twilio"/>
 
                     <x:element name="ai" type="tns:ai"/>
@@ -135,6 +137,7 @@
                     <x:element name="dynamo" type="tns:dynamo"/>
                     <x:element name="graphql" type="tns:graphql"/>
                     <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="email" type="tns:email"/>
                     <x:element name="twilio" type="tns:twilio"/>
 
                     <x:element name="var" type="tns:var"/>
@@ -179,6 +182,7 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="email" type="tns:email"/>
                     <x:element name="twilio" type="tns:twilio"/>
                     <x:element name="ai" type="tns:ai"/>
                 </x:choice>

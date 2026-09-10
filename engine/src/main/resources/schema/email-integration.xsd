@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.testlum.com/testing/model/global-config"
+          xmlns:tns="http://www.testlum.com/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="emailIntegration">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="email" type="tns:email"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="email">
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="protocol" type="tns:emailProtocol" default="imaps" minOccurs="0"/>
+                    <x:element name="host" type="tns:nonEmptyString"/>
+                    <x:element name="port" type="x:positiveInteger"/>
+                    <x:element name="username" type="tns:nonEmptyString"/>
+                    <x:element name="password" type="tns:nonEmptyString"/>
+                    <x:element name="folder" type="tns:nonEmptyString" default="INBOX" minOccurs="0"/>
+                    <x:element name="ssl" type="x:boolean" default="true" minOccurs="0"/>
+                    <x:element name="timeout" type="x:positiveInteger" default="10000" minOccurs="0"/>
+                    <x:element name="properties" type="tns:emailProperties" minOccurs="0"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="emailProtocol">
+        <x:restriction base="x:string">
+            <x:enumeration value="imaps"/>
+            <x:enumeration value="imap"/>
+            <x:enumeration value="pop3s"/>
+            <x:enumeration value="pop3"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="emailProperties">
+        <x:sequence>
+            <x:element name="property" type="tns:emailProperty" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="emailProperty">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+</x:schema>

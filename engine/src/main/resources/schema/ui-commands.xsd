@@ -62,6 +62,26 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="cryptoInput">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:choice>
+                    <x:element name="encrypt" type="tns:cryptoOperation"/>
+                    <x:element name="decrypt" type="tns:cryptoOperation"/>
+                </x:choice>
+                <x:attribute name="highlight" type="x:boolean" default="true"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="cryptoOperation">
+        <x:sequence>
+            <x:element name="value" type="tns:nonEmptyString"/>
+        </x:sequence>
+        <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+        <x:attribute name="comment" type="x:string"/>
+    </x:complexType>
+
     <x:complexType name="navigate">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
@@ -205,6 +225,7 @@
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
+                    <x:element name="cryptoInput" type="tns:cryptoInput"/>
                     <x:element name="assert" type="tns:webAssert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="wait" type="tns:uiWait"/>

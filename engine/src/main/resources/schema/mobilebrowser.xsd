@@ -15,6 +15,7 @@
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
+                    <x:element name="cryptoInput" type="tns:cryptoInput"/>
                     <x:element name="assert" type="tns:webAssert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="wait" type="tns:uiWait"/>
@@ -46,6 +47,7 @@
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
+                    <x:element name="cryptoInput" type="tns:cryptoInput"/>
                     <x:element name="assert" type="tns:webAssert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="wait" type="tns:uiWait"/>

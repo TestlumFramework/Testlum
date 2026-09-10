@@ -319,6 +319,11 @@
             </dependency>
             <dependency>
                 <groupId>com.testlum</groupId>
+                <artifactId>testlum-email</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.testlum</groupId>
                 <artifactId>testlum-sqlDatabase</artifactId>
                 <version>${project.version}</version>
             </dependency>

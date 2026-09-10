@@ -14,6 +14,7 @@
             <x:element name="jira" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="developer" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="link" type="tns:nonEmptyString" minOccurs="0"/>
+            <x:element name="testRail" type="tns:testRail" minOccurs="0"/>
         </x:all>
     </x:complexType>
 
@@ -26,4 +27,12 @@
             <x:enumeration value="Link"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:complexType name="testRail">
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <!-- Exactly one of testCaseId / caseMatchKeyValue must be set -->
+        <x:attribute name="testCaseId" type="tns:nonEmptyString"/>
+        <x:attribute name="caseMatchKeyValue" type="tns:nonEmptyString"/>
+        <x:attribute name="testRailRunId" type="tns:nonEmptyString"/>
+    </x:complexType>
 </x:schema>

@@ -21,9 +21,9 @@ public class DoubleClickExecutor extends AbstractUiExecutor<DoubleClick> {
     public void execute(final DoubleClick click, final CommandResult result) {
         result.put(ResultUtil.DOUBLE_CLICK_LOCATOR, click.getLocator());
         WebElement webElement = uiUtil.findWebElement(dependencies, click.getLocator(), click.getLocatorStrategy(),
-                ElementChecks.FOR_INTERACTION);
+                ElementChecks.FOR_INTERACTION, result);
         uiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         Actions act = new Actions(dependencies.getDriver());
         act.doubleClick(webElement).perform();
     }

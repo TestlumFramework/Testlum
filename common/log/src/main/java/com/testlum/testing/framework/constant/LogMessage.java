@@ -60,6 +60,12 @@ public final class LogMessage {
             + LogFormat.newLogLine()
             + LINE);
 
+    public static final String EMPTY_SCENARIOS_FOR_TESTRAIL = LogFormat.withYellow(LINE
+            + LogFormat.newLogLine()
+            + "There is not scenarios to push to TestRail."
+            + LogFormat.newLogLine()
+            + LINE);
+
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
 
     public static final String NAME_LOG = LogFormat.table("Name");

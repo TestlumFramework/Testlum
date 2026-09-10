@@ -3,6 +3,9 @@ package com.testlum.testing;
 import com.testlum.starter.summary.TestExecutionPostProcessor;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
+import com.testlum.testing.framework.util.InjectionService;
+import com.testlum.testing.framework.util.JacksonService;
+import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.framework.xml.XMLParsers;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -21,6 +24,9 @@ public class TestResourceInfrastructureInitializer
             registerBeanDefinition(registry, "testResourceSettings", TestResourceSettings.class, false);
             registerBeanDefinition(registry, "fileSearcher", FileSearcher.class, true);
             registerBeanDefinition(registry, "XMLParsers", XMLParsers.class, false);
+            registerBeanDefinition(registry, "jacksonService", JacksonService.class, false);
+            registerBeanDefinition(registry, "systemVariableService", SystemVariableService.class, false);
+            registerBeanDefinition(registry, "injectionService", InjectionService.class, true);
             registerBeanDefinition(registry, "testExecutionPostProcessor", TestExecutionPostProcessor.class, false);
         });
     }

@@ -184,12 +184,12 @@ class NativeAssertExecutorTest {
             attr.setContent("expected");
             nativeAssert.getAttributeOrEqualOrNotEqual().add(attr);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any()))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(), result))
                     .thenReturn(mockElement);
             when(mockElement.getAttribute("value")).thenReturn("expected");
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -206,12 +206,12 @@ class NativeAssertExecutorTest {
             attr.setContent("expected");
             nativeAssert.getAttributeOrEqualOrNotEqual().add(attr);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any()))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(), result))
                     .thenReturn(mockElement);
             when(mockElement.getAttribute("value")).thenReturn("different");
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);

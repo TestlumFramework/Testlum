@@ -41,6 +41,12 @@ public class ExceptionMessage {
             LogFormat.withRed("There are no active scenarios by enabled tags");
     public static final String NO_ENABLED_TAGS_CONFIG =
             LogFormat.withRed("No enabled tags in runScenariosByTag configuration");
+    public static final String ERROR_ON_PARSING_JSON =
+            LogFormat.withRed("Error in deserialization of JSON content");
+    public static final String TEST_RAIL_CASE_REFERENCE_MISSING =
+            "<testRail> requires either 'testCaseId' or 'caseMatchKeyValue' attribute, but neither is set";
+    public static final String TEST_RAIL_CASE_REFERENCE_AMBIGUOUS =
+            "<testRail> accepts either 'testCaseId' or 'caseMatchKeyValue' attribute, but both are set";
 
     public static final String INTEGRATION_NOT_FOUND =
             "Cannot find integration configuration for <%s>";

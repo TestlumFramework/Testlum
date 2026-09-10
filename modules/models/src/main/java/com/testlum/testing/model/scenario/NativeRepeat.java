@@ -1,18 +1,22 @@
 
 package com.testlum.testing.model.scenario;
 
-import jakarta.xml.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for nativeRepeat complex type.
+ * &lt;p&gt;Java class for nativeRepeat complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="nativeRepeat"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}abstractUiCommand"&gt;
@@ -31,14 +35,16 @@ import java.util.List;
  *         &lt;element name="var" type="{http://www.testlum.com/testing/model/scenario}nativeVar"/&gt;
  *         &lt;element name="condition" type="{http://www.testlum.com/testing/model/scenario}uiCondition"/&gt;
  *         &lt;element name="repeat" type="{http://www.testlum.com/testing/model/scenario}nativeRepeat"/&gt;
- *         &lt;element name="ai" type="{http://www.testlum.com/testing/model/scenario}uiAskAi"/&gt;
+ *         &lt;element name="ai" type="{http://www.testlum.com/testing/model/scenario}uiAi"/&gt;
+ *         &lt;element name="email" type="{http://www.testlum.com/testing/model/scenario}email"/&gt;
+ *         &lt;element name="inputEmail" type="{http://www.testlum.com/testing/model/scenario}inputEmail"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="times" type="{http://www.testlum.com/testing/model/scenario}positiveIntegerMin1" /&gt;
  *       &lt;attribute name="variations" type="{http://www.testlum.com/testing/model/scenario}csv" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -65,7 +71,9 @@ public class NativeRepeat
         @XmlElement(name = "var", type = NativeVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = NativeRepeat.class),
-        @XmlElement(name = "ai", type = UiAi.class)
+        @XmlElement(name = "ai", type = UiAi.class),
+        @XmlElement(name = "email", type = Email.class),
+        @XmlElement(name = "inputEmail", type = InputEmail.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "times")
@@ -76,42 +84,47 @@ public class NativeRepeat
     /**
      * Gets the value of the clickOrInputOrAssert property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
+     * <p>This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the clickOrInputOrAssert property.
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a {@code set} method for the clickOrInputOrAssert property.</p>
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * </p>
      * <pre>
-     *    getClickOrInputOrAssert().add(newItem);
+     * getClickOrInputOrAssert().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Click }
-     * {@link Input }
-     * {@link NativeAssert }
-     * {@link WaitNative }
      * {@link Clear }
-     * {@link NativeImage }
-     * {@link Refresh }
-     * {@link NavigateNative }
+     * {@link Click }
      * {@link DragAndDropNative }
-     * {@link SwipeNative }
-     * {@link WebView }
-     * {@link NativeVar }
-     * {@link UiCondition }
+     * {@link Email }
+     * {@link Input }
+     * {@link InputEmail }
+     * {@link NativeAssert }
+     * {@link NativeImage }
      * {@link NativeRepeat }
+     * {@link NativeVar }
+     * {@link NavigateNative }
+     * {@link Refresh }
+     * {@link SwipeNative }
      * {@link UiAi }
+     * {@link UiCondition }
+     * {@link WaitNative }
+     * {@link WebView }
+     * </p>
      * 
      * 
+     * @return
+     *     The value of the clickOrInputOrAssert property.
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {
         if (clickOrInputOrAssert == null) {
-            clickOrInputOrAssert = new ArrayList<AbstractUiCommand>();
+            clickOrInputOrAssert = new ArrayList<>();
         }
         return this.clickOrInputOrAssert;
     }

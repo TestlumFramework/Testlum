@@ -36,6 +36,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         map.put(i -> Objects.nonNull(i.getSesIntegration()), i -> i.getSesIntegration().getSes());
         map.put(i -> Objects.nonNull(i.getSqsIntegration()), i -> i.getSqsIntegration().getSqs());
         map.put(i -> Objects.nonNull(i.getSmtpIntegration()), i -> i.getSmtpIntegration().getSmtp());
+        map.put(i -> Objects.nonNull(i.getEmailIntegration()), i -> i.getEmailIntegration().getEmail());
         map.put(i -> Objects.nonNull(i.getRedisIntegration()), i -> i.getRedisIntegration().getRedis());
         map.put(i -> Objects.nonNull(i.getMongoIntegration()), i -> i.getMongoIntegration().getMongo());
         map.put(i -> Objects.nonNull(i.getMysqlIntegration()), i -> i.getMysqlIntegration().getMysql());

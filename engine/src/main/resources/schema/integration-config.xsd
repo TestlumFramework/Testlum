@@ -35,6 +35,7 @@
     <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
     <x:include schemaLocation="sqlDatabase-integration.xsd"/>
+    <x:include schemaLocation="cryptography-integration.xsd"/>
 
     <x:element name="integrations">
         <x:complexType>
@@ -61,6 +62,7 @@
                 <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>
                 <x:element name="twilioIntegration" type="tns:twilioIntegration" minOccurs="0"/>
                 <x:element name="sqlDatabaseIntegration" type="tns:sqlDatabaseIntegration" minOccurs="0"/>
+                <x:element name="cryptographyIntegration" type="tns:cryptographyIntegrations" minOccurs="0"/>
             </x:all>
         </x:complexType>
     </x:element>

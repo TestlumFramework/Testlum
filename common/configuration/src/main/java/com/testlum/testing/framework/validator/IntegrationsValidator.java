@@ -51,6 +51,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         map.put(i -> Objects.nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
         map.put(i -> Objects.nonNull(i.getElasticsearchIntegration()),
                 i -> i.getElasticsearchIntegration().getElasticsearch());
+        map.put(i -> Objects.nonNull(i.getCryptographyIntegrations()), i -> i.getCryptographyIntegrations().getCryptography());
         this.configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 

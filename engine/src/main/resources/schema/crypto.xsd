@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.testlum.com/testing/model/global-config"
+          xmlns:tns="http://www.testlum.com/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared.xsd"/>
+    
+    <x:complexType name="">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="value" type="tns:nonEmptyString" minOccurs="1" maxOccurs="1"/>
+                </x:sequence>
+
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="action" type="tns:cryptoAction" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+    
+    <x:simpleType name="cryptoAction">
+        <x:restriction base="x:string">
+            <x:enumeration value="encrypt"/>
+            <x:enumeration value="decrypt"/>
+        </x:restriction>
+    </x:simpleType>
+    
+</x:schema>

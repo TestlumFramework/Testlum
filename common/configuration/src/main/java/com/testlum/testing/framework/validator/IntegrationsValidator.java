@@ -4,10 +4,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.testlum.testing.model.global_config.Api;
-import com.testlum.testing.model.global_config.Auth;
-import com.testlum.testing.model.global_config.Integration;
-import com.testlum.testing.model.global_config.Integrations;
+import com.testlum.testing.model.global_config.*;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -51,7 +48,8 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         map.put(i -> Objects.nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
         map.put(i -> Objects.nonNull(i.getElasticsearchIntegration()),
                 i -> i.getElasticsearchIntegration().getElasticsearch());
-        map.put(i -> Objects.nonNull(i.getCryptographyIntegrations()), i -> i.getCryptographyIntegrations().getCryptography());
+        map.put(i -> Objects.nonNull(i.getCryptographyIntegrations()),
+                i -> i.getCryptographyIntegrations().getCryptography());
         this.configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 
@@ -67,6 +65,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                 List<String> defaultAliases = getDefaultAliases(integrationLists);
                 checkAliasesDifferAndMatch(new ArrayList<>(integrationsMap.keySet()), defaultAliases, integrationLists);
                 checkApiAuth(integrationLists);
+                checkCryptoMethods(integrationLists);
             }
         });
     }
@@ -152,6 +151,35 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         }
         if (!Objects.equals(defaultAuthMap.get(alias).getAuthCustomClassName(), auth.getAuthCustomClassName())) {
             throw new DefaultFrameworkException(ExceptionMessage.AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, alias);
+        }
+    }
+
+    private void checkCryptoMethods(final List<List<? extends Integration>> integrationLists) {
+        List<Map<String, CryptoMethods>> cryptoMethodMaps = getCryptoMethodMaps(integrationLists);
+        if (cryptoMethodMaps.size() > 1) {
+            Map<String, CryptoMethods> defaultMethodMap = cryptoMethodMaps.get(0);
+            cryptoMethodMaps.stream()
+                    .flatMap(map -> map.entrySet().stream())
+                    .forEach(entry -> checkCryptoMethod(entry.getKey(), entry.getValue(), defaultMethodMap));
+        }
+    }
+
+    private List<Map<String, CryptoMethods>> getCryptoMethodMaps(
+            final List<List<? extends Integration>> integrationLists) {
+        return integrationLists.stream()
+                .map(integrations -> integrations.stream()
+                        .filter(Cryptography.class::isInstance)
+                        .map(Cryptography.class::cast)
+                        .collect(Collectors.toMap(Cryptography::getAlias, Cryptography::getMethod)))
+                .filter(map -> !map.isEmpty())
+                .toList();
+    }
+
+    private void checkCryptoMethod(final String alias,
+                                   final CryptoMethods method,
+                                   final Map<String, CryptoMethods> defaultMethodMap) {
+        if (defaultMethodMap.containsKey(alias) && !Objects.equals(defaultMethodMap.get(alias), method)) {
+            throw new DefaultFrameworkException("Cryptography method mismatch for alias: " + alias);
         }
     }
 

@@ -130,6 +130,58 @@ class IntegrationsValidatorTest {
                     () -> validator.validate(map));
         }
     }
+    @Nested
+    class ValidateCryptographyIntegrations {
+
+        @Test
+        void matchingCryptographyAcrossEnvsDoesNotThrow() {
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", createIntegrationsWithCrypto("crypto1", CryptoMethods.AES));
+            map.put("staging", createIntegrationsWithCrypto("crypto1", CryptoMethods.AES));
+            assertDoesNotThrow(() -> validator.validate(map));
+        }
+
+        @Test
+        void mismatchedCryptographyAliasThrows() {
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", createIntegrationsWithCrypto("crypto1", CryptoMethods.AES));
+            map.put("staging", createIntegrationsWithCrypto("crypto2", CryptoMethods.AES));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(map));
+        }
+
+        @Test
+        void cryptographyInOneEnvOnlyThrows() {
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", createIntegrationsWithCrypto("crypto1", CryptoMethods.AES));
+            map.put("staging", new Integrations());
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(map));
+        }
+
+        @Test
+        void duplicateCryptographyAliasInSameEnvThrows() {
+            final Integrations integrations = new Integrations();
+            final CryptographyIntegrations cryptoIntegrations = new CryptographyIntegrations();
+            cryptoIntegrations.getCryptography().add(createCrypto("dup", CryptoMethods.AES, true));
+            cryptoIntegrations.getCryptography().add(createCrypto("dup", CryptoMethods.AES, true));
+            integrations.setCryptographyIntegrations(cryptoIntegrations);
+
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", integrations);
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(map));
+        }
+
+        @Test
+        void mismatchedCryptoMethodThrows() {
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", createIntegrationsWithCrypto("crypto1", CryptoMethods.AES));
+            map.put("staging", createIntegrationsWithCrypto("crypto1", CryptoMethods.ECC));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(map));
+        }
+    }
 
     private Integrations createIntegrationsWithApi(final String alias) {
         final Integrations integrations = new Integrations();
@@ -161,5 +213,22 @@ class IntegrationsValidatorTest {
         api.setAlias(alias);
         api.setEnabled(enabled);
         return api;
+    }
+
+    private Integrations createIntegrationsWithCrypto(final String alias, final CryptoMethods method) {
+        final Integrations integrations = new Integrations();
+        final CryptographyIntegrations cryptoIntegrations = new CryptographyIntegrations();
+        cryptoIntegrations.getCryptography().add(createCrypto(alias, method, true));
+        integrations.setCryptographyIntegrations(cryptoIntegrations);
+        return integrations;
+    }
+
+    private Cryptography createCrypto(final String alias, final CryptoMethods method, final boolean enabled) {
+        final Cryptography crypto = new Cryptography();
+        crypto.setAlias(alias);
+        crypto.setMethod(method);
+        crypto.setSecret("testSecret123");
+        crypto.setEnabled(enabled);
+        return crypto;
     }
 }

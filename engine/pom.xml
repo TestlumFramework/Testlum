@@ -553,6 +553,11 @@
 
         <dependency>
             <groupId>com.testlum</groupId>
+            <artifactId>testlum-email</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-twilio</artifactId>
         </dependency>
 

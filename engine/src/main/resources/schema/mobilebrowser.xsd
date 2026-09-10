@@ -33,6 +33,8 @@
                     <x:element name="repeat" type="tns:mobilebrowserRepeat"/>
                     <x:element name="ai" type="tns:uiAi"/>
                     <x:element name="alert" type="tns:alert"/>
+                    <x:element name="ott" type="tns:uiOtt"/>
+                    <x:element name="ottInput" type="tns:ottInput"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
                 <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
@@ -64,6 +66,8 @@
                     <x:element name="repeat" type="tns:mobilebrowserRepeat"/>
                     <x:element name="ai" type="tns:uiAi"/>
                     <x:element name="alert" type="tns:alert"/>
+                    <x:element name="ott" type="tns:uiOtt"/>
+                    <x:element name="ottInput" type="tns:ottInput"/>
                 </x:choice>
                 <x:attribute name="times" type="tns:positiveIntegerMin1"/>
                 <x:attribute name="variations" type="tns:csv"/>

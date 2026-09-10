@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          xmlns:tns="http://www.testlum.com/testing/model/scenario"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+          targetNamespace="http://www.testlum.com/testing/model/scenario"
+          elementFormDefault="qualified" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="ott">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="uiOtt">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="ottInput">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+                <x:attribute name="name" type="tns:nonEmptyString"/>
+                <x:attribute name="highlight" type="x:boolean" default="true"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

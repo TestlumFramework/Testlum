@@ -15,6 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Interpreter for executing standalone scenario-level email inbox commands.
+ * Polls for incoming emails matching the configured pattern and stores extracted values in ScenarioContext.
+ */
 @Slf4j
 @InterpreterForClass(Email.class)
 public class EmailInterpreter extends AbstractInterpreter<Email> {
@@ -33,6 +37,11 @@ public class EmailInterpreter extends AbstractInterpreter<Email> {
 
     private final Map<AliasEnv, EmailInboxService> emailInboxServices;
 
+    /**
+     * Constructs EmailInterpreter with runtime dependencies and resolves email inbox services.
+     *
+     * @param dependencies interpreter runtime dependencies
+     */
     @SuppressWarnings("unchecked")
     public EmailInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);

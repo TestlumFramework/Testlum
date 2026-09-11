@@ -19,6 +19,10 @@ import org.openqa.selenium.WebElement;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Executor for extracting values from email inboxes and typing them directly into UI target elements.
+ * Locates the target element, sends the extracted value, and optionally highlights the element.
+ */
 @Slf4j
 @ExecutorForClass(InputEmail.class)
 public class InputEmailExecutor extends AbstractUiExecutor<InputEmail> {
@@ -40,6 +44,11 @@ public class InputEmailExecutor extends AbstractUiExecutor<InputEmail> {
 
     private final Map<AliasEnv, EmailInboxService> emailInboxServices;
 
+    /**
+     * Constructs InputEmailExecutor with UI executor dependencies.
+     *
+     * @param dependencies UI executor runtime dependencies
+     */
     @SuppressWarnings("unchecked")
     public InputEmailExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);

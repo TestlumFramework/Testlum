@@ -15,6 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Executor for executing email inbox commands within UI blocks (web, native, mobilebrowser).
+ * Polls for matching incoming emails and stores extracted values in ScenarioContext.
+ */
 @Slf4j
 @ExecutorForClass(Email.class)
 public class EmailExecutor extends AbstractUiExecutor<Email> {
@@ -36,6 +40,11 @@ public class EmailExecutor extends AbstractUiExecutor<Email> {
 
     private final Map<AliasEnv, EmailInboxService> emailInboxServices;
 
+    /**
+     * Constructs EmailExecutor with UI executor dependencies.
+     *
+     * @param dependencies UI executor runtime dependencies
+     */
     @SuppressWarnings("unchecked")
     public EmailExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);

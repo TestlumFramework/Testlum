@@ -20,6 +20,10 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Service for interacting with email inboxes (IMAP, POP3).
+ * Supports connection pooling, message polling, subject matching, and regex token extraction.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class EmailInboxService {
@@ -35,6 +39,9 @@ public class EmailInboxService {
     @Getter
     private final Email emailSettings;
 
+    /**
+     * Verifies the connection to the configured email store and folder.
+     */
     public void testConnection() {
         Store store = null;
         Folder folder = null;
@@ -50,6 +57,13 @@ public class EmailInboxService {
         }
     }
 
+    /**
+     * Polls the inbox for messages matching the given pattern until timeout.
+     *
+     * @param patternStr regex pattern to extract value from message content
+     * @param timeoutMs maximum time to wait in milliseconds
+     * @return extracted value matching the first capturing group
+     */
     public String fetchValueByPattern(final String patternStr, final long timeoutMs) {
         final Pattern pattern = Pattern.compile(patternStr);
         final long deadline = System.currentTimeMillis() + timeoutMs;

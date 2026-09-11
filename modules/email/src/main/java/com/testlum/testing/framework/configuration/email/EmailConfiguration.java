@@ -17,6 +17,9 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Spring configuration for registering resilient email inbox service instances.
+ */
 @Configuration
 @Conditional(OnEmailEnabledCondition.class)
 @RequiredArgsConstructor
@@ -24,6 +27,12 @@ public class EmailConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
 
+    /**
+     * Creates and registers a map of alias/environment pairs to resilient EmailInboxService instances.
+     *
+     * @param envToIntegrations map of environment names to parsed integrations
+     * @return map of alias and environment pairs to configured EmailInboxService beans
+     */
     @Bean("emailInboxServices")
     public Map<AliasEnv, EmailInboxService> emailInboxServices(final EnvToIntegrationMap envToIntegrations) {
         final Map<AliasEnv, EmailInboxService> serviceMap = new HashMap<>();

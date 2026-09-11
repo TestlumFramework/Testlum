@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Condition that checks if email inbox integration is configured and enabled in the current environment.
+ */
 @Component
 public class OnEmailEnabledCondition extends AbstractCondition<Email> {
 

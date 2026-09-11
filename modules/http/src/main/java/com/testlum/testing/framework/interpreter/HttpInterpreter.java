@@ -165,7 +165,9 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private String createFullUrl(final String endpoint, final String alias) {
         List<Api> apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
         Api apiIntegration = integrationsProvider.findApiForAlias(apiList, alias);
-        return apiIntegration.getUrl() + endpoint;
+        String baseUrl = StringUtils.stripEnd(apiIntegration.getUrl(), "/");
+        String normalizedEndpoint = "/" + StringUtils.stripStart(endpoint, "/");
+        return baseUrl + normalizedEndpoint;
     }
 
     private void logHttpInfo(final String alias, final String method, final String endpoint) {

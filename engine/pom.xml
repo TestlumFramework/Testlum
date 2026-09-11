@@ -556,6 +556,11 @@
             <artifactId>testlum-twilio</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.testlum</groupId>
+            <artifactId>testlum-cryptography</artifactId>
+        </dependency>
+
         <!--    API    -->
 
         <dependency>

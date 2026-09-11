@@ -474,6 +474,12 @@
             </dependency>
 
             <dependency>
+                <groupId>com.testlum</groupId>
+                <artifactId>testlum-cryptography</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>${commons-codec.version}</version>

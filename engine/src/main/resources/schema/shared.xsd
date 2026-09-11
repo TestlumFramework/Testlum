@@ -143,7 +143,7 @@
     <x:simpleType name="endpointPattern">
         <x:restriction base="x:string">
             <x:minLength value="2"/>
-            <x:pattern value="(/[^/].+)"/>
+            <x:pattern value="(/[^/].+)|(\{\{.+\}\})"/>
         </x:restriction>
     </x:simpleType>
 

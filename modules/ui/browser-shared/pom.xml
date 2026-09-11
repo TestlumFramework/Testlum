@@ -41,6 +41,11 @@
 
         <dependency>
             <groupId>com.testlum</groupId>
+            <artifactId>testlum-ott</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.testlum</groupId>
             <artifactId>testlum-ai-util</artifactId>
         </dependency>
 

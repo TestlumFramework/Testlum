@@ -81,7 +81,6 @@ class SmtpConfigurationTest {
         final Properties props = sender.getJavaMailProperties();
         assertEquals(Boolean.TRUE, props.get("mail.smtp.ssl.enable"));
         assertEquals(5000, props.get("mail.smtp.connectiontimeout"));
-        assertEquals(5000, props.get("mail.smtp.connectiontimout"));
         assertEquals(5000, props.get("mail.smtp.timeout"));
     }
 

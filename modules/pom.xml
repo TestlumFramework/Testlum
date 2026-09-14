@@ -61,6 +61,7 @@
         <module>ui</module>
         <module>ai</module>
         <module>cryptography</module>
+        <module>cryptography-util</module>
     </modules>
 
 </project>

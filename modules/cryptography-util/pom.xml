@@ -8,14 +8,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>testlum-cryptography</artifactId>
+    <artifactId>testlum-cryptography-util</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.testlum</groupId>
-            <artifactId>testlum-cryptography-util</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>com.testlum</groupId>
             <artifactId>testlum-log</artifactId>
@@ -58,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>com.testlum</groupId>
-            <artifactId>testlum-shared-util</artifactId>
+            <artifactId>exception</artifactId>
         </dependency>
     </dependencies>
 </project>

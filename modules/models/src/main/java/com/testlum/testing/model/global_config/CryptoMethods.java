@@ -12,7 +12,6 @@ import jakarta.xml.bind.annotation.XmlType;
  * <simpleType name="cryptoMethods">
  *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     <enumeration value="AES"/>
- *     <enumeration value="ECC"/>
  *     <enumeration value="CHACHA20"/>
  *   </restriction>
  * </simpleType>
@@ -25,8 +24,6 @@ public enum CryptoMethods {
 
     @XmlEnumValue("AES")
     AES("AES"),
-    @XmlEnumValue("ECC")
-    ECC("ECC"),
     @XmlEnumValue("CHACHA20")
     CHACHA20("CHACHA20");
 

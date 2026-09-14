@@ -10,5 +10,6 @@ public interface IntegrationsProvider {
     <T extends Integration> T findForAliasEnv(Class<T> clazz, AliasEnv aliasEnv);
     <T extends Integration> List<T> findListByEnv(Class<T> clazz, String env);
     <T extends Integration> T findApiForAlias(List<T> apiIntegrations, String alias);
+    <T extends Integration> T findCryptographyForAlias(List<T> cryptoIntegrations, String alias);
     <T extends Integration> boolean isEnabled(List<T> integrations);
 }

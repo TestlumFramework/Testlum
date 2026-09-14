@@ -177,7 +177,7 @@ class IntegrationsValidatorTest {
         void mismatchedCryptoMethodThrows() {
             final Map<String, Integrations> map = new LinkedHashMap<>();
             map.put("dev", createIntegrationsWithCrypto("crypto1", CryptoMethods.AES));
-            map.put("staging", createIntegrationsWithCrypto("crypto1", CryptoMethods.ECC));
+            map.put("staging", createIntegrationsWithCrypto("crypto1", CryptoMethods.CHACHA20));
             assertThrows(DefaultFrameworkException.class,
                     () -> validator.validate(map));
         }

@@ -28,7 +28,6 @@
     <x:simpleType name="cryptoMethods">
         <x:restriction base="x:string">
             <x:enumeration value="AES"/>
-            <x:enumeration value="ECC"/>
             <x:enumeration value="CHACHA20"/>
         </x:restriction>
     </x:simpleType>

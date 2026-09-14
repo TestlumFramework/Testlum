@@ -119,5 +119,9 @@
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.testlum</groupId>
+            <artifactId>testlum-cryptography-util</artifactId>
+        </dependency>
     </dependencies>
 </project>

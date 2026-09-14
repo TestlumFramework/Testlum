@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Base64;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -79,7 +81,7 @@ class CryptographyServiceTest {
 
         final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                 () -> service.processCommand(corrupted, "DECRYPT", "AES", AES_SECRET, ALIAS));
-        assertTrue(ex.getMessage().contains("Try changing the ALIAS or check the secret key"));
+        assertTrue(ex.getMessage().contains("invalid secret key or corrupted ciphertext"));
     }
 
     @ParameterizedTest
@@ -129,7 +131,7 @@ class CryptographyServiceTest {
 
         final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                 () -> service.processCommand(encrypted, "DECRYPT", "AES", wrongSecret, ALIAS));
-        assertTrue(ex.getMessage().contains("Try changing the ALIAS or check the secret key"));
+        assertTrue(ex.getMessage().contains("invalid secret key or corrupted ciphertext"));
     }
 
     @Test
@@ -137,10 +139,10 @@ class CryptographyServiceTest {
     void shouldThrowExceptionWhenKeyFormatIsInvalid() {
         final String invalidKey = "ShortKey";
 
+        final String encrypted = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", AES_SECRET, ALIAS);
         final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
-                () -> service.processCommand(RAW_TEXT, "ENCRYPT", "AES", invalidKey, ALIAS));
-        assertTrue(ex.getMessage().contains("Invalid key specification for alias")
-                || ex.getMessage().contains("Try changing the ALIAS"));
+                () -> service.processCommand(encrypted, "DECRYPT", "AES", invalidKey, ALIAS));
+        assertTrue(ex.getMessage().contains("invalid secret key or corrupted ciphertext"));
     }
 
     @Test
@@ -168,6 +170,80 @@ class CryptographyServiceTest {
                 () -> service.processCommand(encrypted, "DECRYPT", "AES", wrongSecret, receiverAlias));
 
         assertTrue(ex.getMessage().contains("RECEIVER_SERVICE"));
-        assertTrue(ex.getMessage().contains("Try changing the ALIAS or check the secret key"));
+        assertTrue(ex.getMessage().contains("invalid secret key or corrupted ciphertext"));
+    }
+
+    @Test
+    @DisplayName("Should use SHA-256 fallback for arbitrary plain text secret and decrypt successfully")
+    void shouldEncryptAndDecryptWithArbitraryPlainTextSecret() {
+        final String arbitrarySecret = "simple_user_password_123";
+
+        final String encrypted = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", arbitrarySecret, ALIAS);
+        assertNotNull(encrypted);
+
+        final String decrypted = service.processCommand(encrypted, "DECRYPT", "AES", arbitrarySecret, ALIAS);
+        assertEquals(RAW_TEXT, decrypted);
+    }
+
+    @Test
+    @DisplayName("Should correctly handle 16-byte (128-bit) and 24-byte (192-bit) secrets for AES")
+    void shouldSupportDifferentAesKeySizes() {
+        final String secret128 = "1234567890123456"; // 16 bytes
+        final String secret192 = "123456789012345678901234"; // 24 bytes
+
+        final String enc128 = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", secret128, ALIAS);
+        final String dec128 = service.processCommand(enc128, "DECRYPT", "AES", secret128, ALIAS);
+
+        final String enc192 = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", secret192, ALIAS);
+        final String dec192 = service.processCommand(enc192, "DECRYPT", "AES", secret192, ALIAS);
+
+        assertEquals(RAW_TEXT, dec128);
+        assertEquals(RAW_TEXT, dec192);
+    }
+
+    @Test
+    @DisplayName("Should generate different ciphertexts for same raw value due to random IV (Uniqueness Test)")
+    void shouldProduceDifferentCiphertextsForSameInput() {
+        final String encrypted1 = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", AES_SECRET, ALIAS);
+        final String encrypted2 = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", AES_SECRET, ALIAS);
+
+        assertNotEquals(encrypted1, encrypted2);
+
+        assertEquals(RAW_TEXT, service.processCommand(encrypted1, "DECRYPT", "AES", AES_SECRET, ALIAS));
+        assertEquals(RAW_TEXT, service.processCommand(encrypted2, "DECRYPT", "AES", AES_SECRET, ALIAS));
+    }
+
+    @Test
+    @DisplayName("Should fail when decrypting Base64 payload that is too short to extract IV (< 12 bytes)")
+    void shouldThrowExceptionWhenCiphertextIsTooShortForIv() {
+        final String shortBase64 = Base64.getEncoder().encodeToString(new byte[]{1, 2, 3, 4, 5});
+
+        final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                () -> service.processCommand(shortBase64, "DECRYPT", "AES", AES_SECRET, ALIAS));
+
+        assertTrue(ex.getMessage().contains("Ciphertext is too short to extract IV"));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when decrypting ChaCha20 payload with wrong secret key")
+    void shouldFailChaCha20DecryptionWithWrongKey() {
+        final String wrongSecret = "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5OTk=";
+
+        final String encrypted = service.processCommand(RAW_TEXT, "ENCRYPT", "CHACHA20", CHACHA_SECRET, ALIAS);
+
+        final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                () -> service.processCommand(encrypted, "DECRYPT", "CHACHA20", wrongSecret, ALIAS));
+
+        assertTrue(ex.getMessage().contains("Try changing the ALIAS or check the secret key")
+                || ex.getMessage().contains("invalid secret key or corrupted ciphertext"));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when any parameter is null")
+    void shouldThrowExceptionWhenParametersAreNull() {
+        final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                () -> service.processCommand(null, "ENCRYPT", "AES", AES_SECRET, ALIAS));
+
+        assertTrue(ex.getMessage().contains("must not be empty"));
     }
 }

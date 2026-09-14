@@ -46,6 +46,21 @@ inputs:
     required: false
     default: ""
 
+  email_username:
+    description: Email inbox username.
+    required: false
+    default: ""
+
+  email_password:
+    description: Email inbox password.
+    required: false
+    default: ""
+
+  email_host:
+    description: Email inbox IMAP host.
+    required: false
+    default: ""
+
 runs:
   using: composite
   steps:
@@ -70,6 +85,9 @@ runs:
           -e TWILIO_ACCOUNT_SID="${{ inputs.twilio_account_sid }}" \
           -e TWILIO_AUTH_TOKEN="${{ inputs.twilio_auth_token }}" \
           -e TWILIO_PHONE_NUMBER="${{ inputs.twilio_phone_number }}" \
+          -e EMAIL_USERNAME="${{ inputs.email_username }}" \
+          -e EMAIL_PASSWORD="${{ inputs.email_password }}" \
+          -e EMAIL_HOST="${{ inputs.email_host }}" \
           -v "${MOUNT_DIR}:/REGRESSION" \
           "${IMAGE}" -c="${{ inputs.config_file }}" -p="${RESOURCES_DIR}"
         EXIT_CODE=$?

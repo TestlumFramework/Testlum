@@ -17,19 +17,27 @@
         <x:complexContent>
             <x:extension base="tns:integration">
                 <x:sequence>
-                    <x:element name="protocol" type="tns:emailProtocol" default="imaps" minOccurs="0"/>
+                    <x:element name="protocol" type="tns:emailProtocol"/>
                     <x:element name="host" type="tns:nonEmptyString"/>
                     <x:element name="port" type="x:positiveInteger"/>
-                    <x:element name="username" type="tns:nonEmptyString"/>
+                    <x:element name="emailAddress" type="tns:emailAddressPattern"/>
                     <x:element name="password" type="tns:nonEmptyString"/>
-                    <x:element name="folder" type="tns:nonEmptyString" default="INBOX" minOccurs="0"/>
-                    <x:element name="ssl" type="x:boolean" default="true" minOccurs="0"/>
-                    <x:element name="timeout" type="x:positiveInteger" default="10000" minOccurs="0"/>
+                    <x:element name="folder" type="tns:nonEmptyString"/>
+                    <x:element name="ssl" type="x:boolean"/>
+                    <x:element name="timeout" type="x:positiveInteger"/>
                     <x:element name="properties" type="tns:emailProperties" minOccurs="0"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:simpleType name="emailAddressPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"/>
+            <x:pattern value="\{\{.*\}\}"/>
+            <x:pattern value="$\{.*\}"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:simpleType name="emailProtocol">
         <x:restriction base="x:string">

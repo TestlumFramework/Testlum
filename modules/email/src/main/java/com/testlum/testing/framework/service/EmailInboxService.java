@@ -192,7 +192,7 @@ public class EmailInboxService {
         final Store store = session.getStore(protocol);
         store.connect(this.emailSettings.getHost(),
                 this.emailSettings.getPort().intValue(),
-                this.emailSettings.getUsername(),
+                this.emailSettings.getEmailAddress(),
                 this.emailSettings.getPassword());
         return store;
     }

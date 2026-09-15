@@ -39,7 +39,7 @@ class EmailInboxServiceTest {
         this.emailSettings.setAlias("testAlias");
         this.emailSettings.setHost("imap.test.com");
         this.emailSettings.setPort(BigInteger.valueOf(993));
-        this.emailSettings.setUsername("user@test.com");
+        this.emailSettings.setEmailAddress("user@test.com");
         this.emailSettings.setPassword("secret");
         this.emailSettings.setProtocol(EmailProtocol.IMAPS);
         this.emailSettings.setFolder("INBOX");

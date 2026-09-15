@@ -19,14 +19,14 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/global-config}integration"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="protocol" type="{http://www.testlum.com/testing/model/global-config}emailProtocol" minOccurs="0"/&gt;
+ *         &lt;element name="protocol" type="{http://www.testlum.com/testing/model/global-config}emailProtocol"/&gt;
  *         &lt;element name="host" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
- *         &lt;element name="username" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="emailAddress" type="{http://www.testlum.com/testing/model/global-config}emailAddressPattern"/&gt;
  *         &lt;element name="password" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="folder" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
- *         &lt;element name="ssl" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
- *         &lt;element name="timeout" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" minOccurs="0"/&gt;
+ *         &lt;element name="folder" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="ssl" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="timeout" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
  *         &lt;element name="properties" type="{http://www.testlum.com/testing/model/global-config}emailProperties" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
@@ -41,7 +41,7 @@ import jakarta.xml.bind.annotation.XmlType;
     "protocol",
     "host",
     "port",
-    "username",
+    "emailAddress",
     "password",
     "folder",
     "ssl",
@@ -52,7 +52,7 @@ public class Email
     extends Integration
 {
 
-    @XmlElement(defaultValue = "imaps")
+    @XmlElement(required = true)
     @XmlSchemaType(name = "string")
     protected EmailProtocol protocol;
     @XmlElement(required = true)
@@ -61,14 +61,14 @@ public class Email
     @XmlSchemaType(name = "positiveInteger")
     protected BigInteger port;
     @XmlElement(required = true)
-    protected String username;
+    protected String emailAddress;
     @XmlElement(required = true)
     protected String password;
-    @XmlElement(defaultValue = "INBOX")
+    @XmlElement(required = true)
     protected String folder;
-    @XmlElement(defaultValue = "true")
+    @XmlElement(required = true)
     protected Boolean ssl;
-    @XmlElement(defaultValue = "10000")
+    @XmlElement(required = true)
     @XmlSchemaType(name = "positiveInteger")
     protected BigInteger timeout;
     protected EmailProperties properties;
@@ -146,27 +146,27 @@ public class Email
     }
 
     /**
-     * Gets the value of the username property.
+     * Gets the value of the emailAddress property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUsername() {
-        return username;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
     /**
-     * Sets the value of the username property.
+     * Sets the value of the emailAddress property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUsername(String value) {
-        this.username = value;
+    public void setEmailAddress(final String value) {
+        this.emailAddress = value;
     }
 
     /**

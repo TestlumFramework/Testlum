@@ -29,21 +29,28 @@ public class OttInterpreter extends AbstractInterpreter<Ott> {
         ensureAlias(ott::getAlias, ott::setAlias);
 
         final String alias = ott.getAlias();
-        final String name = ott.getName();
 
-        final Supplier<String> codeSupplier = () -> {
-            String code = ottUtil.generateCode(alias);
+        storeCode(ott, buildCodeSupplier(alias, ott.getSecret()));
+
+        result.put(ALIAS, alias);
+        log.info(ALIAS_LOG, alias);
+    }
+
+    private Supplier<String> buildCodeSupplier(final String alias, final String secret) {
+        return () -> {
+            String code = secret != null ? ottUtil.generateCodeFromSecret(secret) : ottUtil.generateCode(alias);
             log.info(CODE_LOG, code);
             return code;
         };
+    }
+
+    private void storeCode(final Ott ott, final Supplier<String> codeSupplier) {
+        final String name = ott.getName();
 
         if (ott.isRefresh()) {
             dependencies.getScenarioContext().setLazyRefreshing(name, codeSupplier);
         } else {
             dependencies.getScenarioContext().setLazy(name, codeSupplier);
         }
-
-        result.put(ALIAS, alias);
-        log.info(ALIAS_LOG, alias);
     }
 }

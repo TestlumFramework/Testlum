@@ -24,8 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class OttInterpreterTest {
 
@@ -160,6 +159,25 @@ public class OttInterpreterTest {
 
             assertEquals("111111", scenarioContext.get("otpCode"));
             assertEquals("222222", scenarioContext.get("otpCode"));
+        }
+
+        @Test
+        void usesSecretDirectlyWhenProvided() throws Exception {
+            final Ott ott = new Ott();
+            ott.setName("otpCode");
+            ott.setSecret("JBSWY3DPEHPK3PXP");
+            when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
+            when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
+            when(ottUtil.generateCodeFromSecret("JBSWY3DPEHPK3PXP")).thenReturn("111111");
+            final CommandResult result = new CommandResult();
+
+            final Method method = OttInterpreter.class.getDeclaredMethod(
+                    "acceptImpl", Ott.class, CommandResult.class);
+            method.setAccessible(true);
+            method.invoke(ottInterpreter, ott, result);
+
+            assertEquals("111111", scenarioContext.get("otpCode"));
+            verify(ottUtil, never()).generateCode(any());
         }
     }
 }

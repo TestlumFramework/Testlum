@@ -20,8 +20,7 @@ import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OttExecutorTest {
@@ -121,6 +120,20 @@ public class OttExecutorTest {
 
             assertEquals("111111", scenarioContext.get("otpCode"));
             assertEquals("222222", scenarioContext.get("otpCode"));
+        }
+
+        @Test
+        void usesSecretDirectlyWhenProvided() {
+            final UiOtt uiOtt = new UiOtt();
+            uiOtt.setName("otpCode");
+            uiOtt.setSecret("JBSWY3DPEHPK3PXP");
+            when(ottUtil.generateCodeFromSecret("JBSWY3DPEHPK3PXP")).thenReturn("111111");
+            final CommandResult result = new CommandResult();
+
+            executor.execute(uiOtt, result);
+
+            assertEquals("111111", scenarioContext.get("otpCode"));
+            verify(ottUtil, never()).generateCode(any());
         }
     }
 }

@@ -48,6 +48,14 @@ public class OttUtilTest {
         }
 
         @Test
+        void generatesCodeDirectlyFromSecretWithoutResolvingAlias() {
+            final String code = ottUtil.generateCodeFromSecret("JBSWY3DPEHPK3PXP");
+
+            assertTrue(code.matches("\\d{6}"), "code should be exactly 6 digits, got: " + code);
+            verifyNoInteractions(integrations, integrationsUtil);
+        }
+
+        @Test
         void throwsWhenSecretKeyIsBlank() {
             final Ott ottModel = mock(Ott.class);
             when(ottModel.getSecretKey()).thenReturn("   ");

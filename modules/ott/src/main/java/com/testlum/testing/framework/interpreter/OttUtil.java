@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.interpreter;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.util.IntegrationsUtil;
 import com.testlum.testing.model.global_config.Integrations;
@@ -26,7 +27,6 @@ public class OttUtil {
     private static final int CODE_DIGITS_LIMIT = (int) Math.pow(10, CODE_DIGITS);
     private static final String HMAC_ALGORITHM = "HmacSHA1";
     private static final Duration MIN_REMAINING_VALIDITY = Duration.ofSeconds(5L);
-    private static final String BLANK_SECRET_KEY = "OTT secret key must not be blank";
 
     private static final int LAST_NIBBLE_MASK = 0xF;
     private static final int SIGN_BIT_MASK = 0x7F;
@@ -44,6 +44,10 @@ public class OttUtil {
     public String generateCode(final String alias) {
         String secretKey = resolveSecretKey(alias);
         return generateFreshCode(secretKey);
+    }
+
+    public String generateCodeFromSecret(final String secret) {
+        return generateFreshCode(secret);
     }
 
     private String resolveSecretKey(final String alias) {
@@ -85,7 +89,7 @@ public class OttUtil {
 
     private byte[] decodeSecret(final String secretKey) {
         if (StringUtils.isBlank(secretKey)) {
-            throw new DefaultFrameworkException(BLANK_SECRET_KEY);
+            throw new DefaultFrameworkException(ExceptionMessage.OTT_SECRET_KEY_BLANK);
         }
         return new Base32().decode(secretKey.trim().toUpperCase());
     }

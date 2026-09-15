@@ -36,22 +36,29 @@ public class OttExecutor extends AbstractUiExecutor<UiOtt> {
         checkAlias(uiOtt);
 
         final String alias = uiOtt.getAlias();
-        final String name = uiOtt.getName();
 
-        final Supplier<String> codeSupplier = () -> {
-            String code = ottUtil.generateCode(alias);
+        storeCode(uiOtt, buildCodeSupplier(alias, uiOtt.getSecret()));
+
+        result.put(ALIAS, alias);
+        log.info(ALIAS_LOG, alias);
+    }
+
+    private Supplier<String> buildCodeSupplier(final String alias, final String secret) {
+        return () -> {
+            String code = secret != null ? ottUtil.generateCodeFromSecret(secret) : ottUtil.generateCode(alias);
             log.info(CODE_LOG, code);
             return code;
         };
+    }
+
+    private void storeCode(final UiOtt uiOtt, final Supplier<String> codeSupplier) {
+        final String name = uiOtt.getName();
 
         if (uiOtt.isRefresh()) {
             dependencies.getScenarioContext().setLazyRefreshing(name, codeSupplier);
         } else {
             dependencies.getScenarioContext().setLazy(name, codeSupplier);
         }
-
-        result.put(ALIAS, alias);
-        log.info(ALIAS_LOG, alias);
     }
 
     private void checkAlias(final UiOtt uiOtt) {

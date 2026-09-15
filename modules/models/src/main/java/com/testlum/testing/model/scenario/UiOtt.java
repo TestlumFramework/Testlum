@@ -19,6 +19,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *       &lt;attribute name="alias" type="{http://www.testlum.com/testing/model/scenario}aliasPattern" default="DEFAULT" /&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="refresh" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="secret" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -38,6 +39,8 @@ public class UiOtt
     protected String name;
     @XmlAttribute(name = "refresh")
     protected Boolean refresh;
+    @XmlAttribute(name = "secret")
+    protected String secret;
 
     /**
      * Gets the value of the alias property.
@@ -117,6 +120,30 @@ public class UiOtt
      */
     public void setRefresh(Boolean value) {
         this.refresh = value;
+    }
+
+    /**
+     * Gets the value of the secret property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSecret() {
+        return secret;
+    }
+
+    /**
+     * Sets the value of the secret property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSecret(String value) {
+        this.secret = value;
     }
 
 }

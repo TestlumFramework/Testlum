@@ -197,6 +197,7 @@ class EmailE2ETest {
             inputEmail.setHighlight(true);
 
             final WebElement element = mock(WebElement.class);
+            when(element.getTagName()).thenReturn("input");
             when(EmailE2ETest.this.uiUtil.findWebElement(any(), eq("//input[@id='otp']"), any(),
                     eq(ElementChecks.FOR_WRITING))).thenReturn(element);
 

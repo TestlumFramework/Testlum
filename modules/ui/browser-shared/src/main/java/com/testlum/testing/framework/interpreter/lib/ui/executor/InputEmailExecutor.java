@@ -4,6 +4,7 @@ import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -14,6 +15,8 @@ import com.testlum.testing.framework.util.check.ElementChecks;
 import com.testlum.testing.model.scenario.InputEmail;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.ElementNotInteractableException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
 import java.util.Collections;
@@ -41,6 +44,13 @@ public class InputEmailExecutor extends AbstractUiExecutor<InputEmail> {
     private static final String EXTRACTED_VALUE = "Extracted Value";
     private static final String EMAIL_NOT_FOUND_FOR_ALIAS_AND_ENV =
             "Email inbox configuration not found for alias '%s' and environment '%s'";
+    private static final String NON_EDITABLE_ELEMENT_EXCEPTION =
+            "Element found by locator '%s' (<%s>) is not an editable field. "
+                    + "Expected <input>, <textarea>, or an element with contenteditable='true'";
+    private static final String ELEMENT_NOT_INTERACTABLE_EXCEPTION =
+            "Cannot type into element found by locator '%s': element is not interactable";
+    private static final String FAILED_TO_TYPE_EXCEPTION =
+            "Failed to type into element found by locator '%s': %s";
 
     private final Map<AliasEnv, EmailInboxService> emailInboxServices;
 
@@ -97,11 +107,42 @@ public class InputEmailExecutor extends AbstractUiExecutor<InputEmail> {
         result.put(ResultUtil.INPUT_LOCATOR, inputEmail.getLocator());
         final WebElement webElement = this.uiUtil.findWebElement(this.dependencies,
                 inputEmail.getLocator(), inputEmail.getLocatorStrategy(), ElementChecks.FOR_WRITING);
+        this.validateTargetElement(webElement, inputEmail.getLocator());
         this.uiUtil.highlightElementIfRequired(inputEmail.isHighlight(), webElement, this.dependencies.getDriver());
         result.put(ResultUtil.INPUT_VALUE, value);
         log.info(LogMessage.VALUE_LOG, value);
-        webElement.sendKeys(value);
+        this.sendValue(webElement, value, inputEmail.getLocator());
         this.uiUtil.takeScreenshotAndSaveIfRequired(result, this.dependencies);
+    }
+
+    private void validateTargetElement(final WebElement webElement, final String locator) {
+        if (this.dependencies.getUiType() == UiType.NATIVE) {
+            return;
+        }
+        final String tagName = webElement.getTagName();
+        if (this.isInputOrTextarea(tagName) || this.isContentEditable(webElement)) {
+            return;
+        }
+        throw new DefaultFrameworkException(NON_EDITABLE_ELEMENT_EXCEPTION, locator, tagName);
+    }
+
+    private boolean isInputOrTextarea(final String tagName) {
+        return "input".equalsIgnoreCase(tagName) || "textarea".equalsIgnoreCase(tagName);
+    }
+
+    private boolean isContentEditable(final WebElement webElement) {
+        final String contentEditable = webElement.getAttribute("contenteditable");
+        return contentEditable != null && !Boolean.FALSE.toString().equalsIgnoreCase(contentEditable);
+    }
+
+    private void sendValue(final WebElement webElement, final String value, final String locator) {
+        try {
+            webElement.sendKeys(value);
+        } catch (ElementNotInteractableException e) {
+            throw new DefaultFrameworkException(ELEMENT_NOT_INTERACTABLE_EXCEPTION, locator);
+        } catch (WebDriverException e) {
+            throw new DefaultFrameworkException(FAILED_TO_TYPE_EXCEPTION, locator, e.getMessage());
+        }
     }
 
     private void logInputEmailInfo(final InputEmail inputEmail, final String extracted) {

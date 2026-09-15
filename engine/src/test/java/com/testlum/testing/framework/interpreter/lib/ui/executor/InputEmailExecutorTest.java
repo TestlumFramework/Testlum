@@ -9,6 +9,7 @@ import com.testlum.testing.framework.service.EmailInboxService;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.framework.util.check.ElementChecks;
+import com.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.testlum.testing.model.scenario.InputEmail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +33,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -120,6 +124,7 @@ class InputEmailExecutorTest {
                     .thenReturn("654321");
 
             final WebElement element = mock(WebElement.class);
+            when(element.getTagName()).thenReturn("input");
             when(InputEmailExecutorTest.this.uiUtil.findWebElement(any(), eq(LOCATOR), any(),
                     eq(ElementChecks.FOR_WRITING))).thenReturn(element);
 
@@ -151,6 +156,7 @@ class InputEmailExecutorTest {
                     .thenReturn("1122");
 
             final WebElement element = mock(WebElement.class);
+            when(element.getTagName()).thenReturn("input");
             when(InputEmailExecutorTest.this.uiUtil.findWebElement(any(), eq(LOCATOR), any(),
                     eq(ElementChecks.FOR_WRITING))).thenReturn(element);
 
@@ -177,6 +183,7 @@ class InputEmailExecutorTest {
                     .thenReturn("autoCode");
 
             final WebElement element = mock(WebElement.class);
+            when(element.getTagName()).thenReturn("input");
             when(InputEmailExecutorTest.this.uiUtil.findWebElement(any(), eq(LOCATOR), any(),
                     eq(ElementChecks.FOR_WRITING))).thenReturn(element);
 
@@ -185,6 +192,117 @@ class InputEmailExecutorTest {
 
             assertEquals("DEFAULT", result.getMetadata().get("Alias"));
             assertEquals("autoCode", result.getActual());
+        }
+
+        @Test
+        void throwsExceptionWhenElementIsNotEditable() {
+            final InputEmail inputEmail = new InputEmail();
+            inputEmail.setLocator(LOCATOR);
+            inputEmail.setAlias(TEST_ALIAS);
+            inputEmail.setPattern("code: (\\d+)");
+            inputEmail.setTimeout(BigInteger.valueOf(5000L));
+
+            when(InputEmailExecutorTest.this.emailInboxService.fetchValueByPattern("code: (\\d+)", 5000L))
+                    .thenReturn("654321");
+
+            final WebElement element = mock(WebElement.class);
+            when(element.getTagName()).thenReturn("div");
+            when(element.getAttribute("contenteditable")).thenReturn(null);
+            when(InputEmailExecutorTest.this.uiUtil.findWebElement(any(), eq(LOCATOR), any(),
+                    eq(ElementChecks.FOR_WRITING))).thenReturn(element);
+
+            final CommandResult result = new CommandResult();
+            final DefaultFrameworkException ex = assertThrows(
+                    DefaultFrameworkException.class,
+                    () -> InputEmailExecutorTest.this.executor.execute(inputEmail, result));
+
+            assertEquals(
+                    "Element found by locator '//input[@id='otp']' (<div>) is not an editable field. "
+                            + "Expected <input>, <textarea>, or an element with contenteditable='true'",
+                    ex.getMessage());
+        }
+
+        @Test
+        void typesIntoContentEditableElement() {
+            final InputEmail inputEmail = new InputEmail();
+            inputEmail.setLocator(LOCATOR);
+            inputEmail.setAlias(TEST_ALIAS);
+            inputEmail.setPattern("code: (\\d+)");
+            inputEmail.setTimeout(BigInteger.valueOf(5000L));
+
+            when(InputEmailExecutorTest.this.emailInboxService.fetchValueByPattern("code: (\\d+)", 5000L))
+                    .thenReturn("654321");
+
+            final WebElement element = mock(WebElement.class);
+            when(element.getTagName()).thenReturn("div");
+            when(element.getAttribute("contenteditable")).thenReturn("true");
+            when(InputEmailExecutorTest.this.uiUtil.findWebElement(any(), eq(LOCATOR), any(),
+                    eq(ElementChecks.FOR_WRITING))).thenReturn(element);
+
+            final CommandResult result = new CommandResult();
+            InputEmailExecutorTest.this.executor.execute(inputEmail, result);
+
+            verify(element).sendKeys("654321");
+        }
+
+        @Test
+        void throwsExceptionWhenElementNotInteractableDuringSendKeys() {
+            final InputEmail inputEmail = new InputEmail();
+            inputEmail.setLocator(LOCATOR);
+            inputEmail.setAlias(TEST_ALIAS);
+            inputEmail.setPattern("code: (\\d+)");
+            inputEmail.setTimeout(BigInteger.valueOf(5000L));
+
+            when(InputEmailExecutorTest.this.emailInboxService.fetchValueByPattern("code: (\\d+)", 5000L))
+                    .thenReturn("654321");
+
+            final WebElement element = mock(WebElement.class);
+            when(element.getTagName()).thenReturn("input");
+            doThrow(new ElementNotInteractableException("not interactable"))
+                    .when(element).sendKeys("654321");
+            when(InputEmailExecutorTest.this.uiUtil.findWebElement(any(), eq(LOCATOR), any(),
+                    eq(ElementChecks.FOR_WRITING))).thenReturn(element);
+
+            final CommandResult result = new CommandResult();
+            final DefaultFrameworkException ex = assertThrows(
+                    DefaultFrameworkException.class,
+                    () -> InputEmailExecutorTest.this.executor.execute(inputEmail, result));
+
+            assertEquals(
+                    "Cannot type into element found by locator '//input[@id='otp']': element is not interactable",
+                    ex.getMessage());
+        }
+
+        @Test
+        void skipsValidationWhenUiTypeIsNative() {
+            final ExecutorDependencies nativeDeps = ExecutorDependencies.builder()
+                    .context(InputEmailExecutorTest.this.context)
+                    .scenarioContext(InputEmailExecutorTest.this.scenarioContext)
+                    .driver(InputEmailExecutorTest.this.driver)
+                    .environment(DEV_ENV)
+                    .uiType(UiType.NATIVE)
+                    .build();
+            final InputEmailExecutor nativeExecutor = new InputEmailExecutor(nativeDeps);
+            ReflectionTestUtils.setField(nativeExecutor, "uiUtil", InputEmailExecutorTest.this.uiUtil);
+
+            final InputEmail inputEmail = new InputEmail();
+            inputEmail.setLocator(LOCATOR);
+            inputEmail.setAlias(TEST_ALIAS);
+            inputEmail.setPattern("code: (\\d+)");
+            inputEmail.setTimeout(BigInteger.valueOf(5000L));
+
+            when(InputEmailExecutorTest.this.emailInboxService.fetchValueByPattern("code: (\\d+)", 5000L))
+                    .thenReturn("654321");
+
+            final WebElement element = mock(WebElement.class);
+            when(InputEmailExecutorTest.this.uiUtil.findWebElement(any(), eq(LOCATOR), any(),
+                    eq(ElementChecks.FOR_WRITING))).thenReturn(element);
+
+            final CommandResult result = new CommandResult();
+            nativeExecutor.execute(inputEmail, result);
+
+            verify(element).sendKeys("654321");
+            verify(element, never()).getTagName();
         }
 
         @Test

@@ -9,11 +9,11 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for integration complex type.
+ * &lt;p&gt;Java class for integration complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="integration"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
@@ -22,7 +22,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -38,7 +38,8 @@ import jakarta.xml.bind.annotation.XmlType;
     Ses.class,
     Smtp.class,
     Twilio.class,
-    StorageIntegration.class
+    StorageIntegration.class,
+    Ott.class
 })
 public abstract class Integration {
 

@@ -12,6 +12,7 @@
     <x:include schemaLocation="condition.xsd"/>
     <x:include schemaLocation="assert.xsd"/>
     <x:include schemaLocation="ai.xsd"/>
+    <x:include schemaLocation="ott.xsd"/>
 
     <x:complexType name="click">
         <x:complexContent>
@@ -223,6 +224,8 @@
                     <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="doubleClick" type="tns:doubleClick"/>
                     <x:element name="alert" type="tns:alert"/>
+                    <x:element name="ott" type="tns:uiOtt"/>
+                    <x:element name="ottInput" type="tns:ottInput"/>
                 </x:choice>
                 <x:attribute name="index" type="x:string"/>
             </x:extension>

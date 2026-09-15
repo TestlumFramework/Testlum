@@ -6,6 +6,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,15 +21,16 @@ public class ScenarioContext {
             Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
     private static final Pattern CONDITION_NAME_PATTERN = Pattern.compile("\\b([A-Za-z_][A-Za-z0-9_]*)\\b");
 
-    private final Map<String, String> contextMap;
+    private final Map<String, Supplier<String>> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
 
     public ScenarioContext(final Map<String, String> contextMap) {
-        this.contextMap = new LinkedHashMap<>(contextMap);
+        this.contextMap = new LinkedHashMap<>();
+        contextMap.forEach((key, value) -> this.contextMap.put(key, () -> value));
     }
 
-    public Map.Entry<String, String> getBody() {
-        Map.Entry<String, String> lastEntryFromLinkedHashMap = getLastEntryFromLinkedHashMap(contextMap);
+    public Map.Entry<String, Supplier<String>> getBody() {
+        Map.Entry<String, Supplier<String>> lastEntryFromLinkedHashMap = getLastEntryFromLinkedHashMap(contextMap);
         if (lastEntryFromLinkedHashMap == null) {
             throw new IllegalArgumentException(String.format(NO_VALUES_FOUND_IN_CONTEXT, contextMap));
         }
@@ -44,7 +46,15 @@ public class ScenarioContext {
     }
 
     public void set(final String key, final String value) {
-        contextMap.put(key, value);
+        contextMap.put(key, () -> value);
+    }
+
+    public void setLazy(final String key, final Supplier<String> supplier) {
+        contextMap.put(key, Lazy.of(supplier));
+    }
+
+    public void setLazyRefreshing(final String key, final Supplier<String> supplier) {
+        contextMap.put(key, supplier);
     }
 
     public boolean containsKey(final String key) {
@@ -52,14 +62,15 @@ public class ScenarioContext {
     }
 
     public String get(final String key) {
-        String result = contextMap.get(key);
-        if (result == null) {
-            result = String.valueOf(conditionMap.get(key));
-            if (result == null || "null".equals(result)) {
+        Supplier<String> supplier = contextMap.get(key);
+        if (supplier == null) {
+            String result = String.valueOf(conditionMap.get(key));
+            if ("null".equals(result)) {
                 throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, contextMap));
             }
+            return result;
         }
-        return result;
+        return supplier.get();
     }
 
     public void setCondition(final String key, final Boolean value) {

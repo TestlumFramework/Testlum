@@ -75,9 +75,7 @@
     </x:complexType>
 
     <x:complexType name="cryptoOperation">
-        <x:sequence>
-            <x:element name="value" type="tns:nonEmptyString"/>
-        </x:sequence>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
         <x:attribute name="comment" type="x:string"/>
     </x:complexType>

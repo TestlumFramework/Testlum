@@ -1,18 +1,20 @@
 package com.testlum.testing.framework.interpreter;
 
 import com.testlum.log.LogFormat;
-import com.testlum.testing.framework.exception.IncorrectCryptographyValueException;
+import com.testlum.testing.framework.constant.ExceptionMessage;
+import com.testlum.testing.framework.env.AliasEnv;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.testlum.testing.framework.interpreter.lib.cryptography.CryptographyService;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.model.global_config.Cryptography;
 import com.testlum.testing.model.scenario.Crypto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @InterpreterForClass(Crypto.class)
@@ -23,18 +25,14 @@ public class CryptoInterpreter extends AbstractInterpreter<Crypto> {
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String VALUE_LOG = LogFormat.table("Value");
 
-    private static final String FAILED_CRYPTO_LOG =
-            "Failed crypto operation for name <{}>, action <{}>";
-    private static final String INCORRECT_VALUE_MSG =
-            "Value must not be empty.";
-
     private final CryptographyService cryptographyService;
-    private final IntegrationsProvider integrationsProvider;
+
+    @Autowired(required = false)
+    private Map<AliasEnv, Cryptography> cryptographyIntegrations;
 
     public CryptoInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.cryptographyService = dependencies.getContext().getBean(CryptographyService.class);
-        this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
     }
 
     @Override
@@ -42,35 +40,29 @@ public class CryptoInterpreter extends AbstractInterpreter<Crypto> {
         final Crypto crypto = injectCommand(o);
         ensureAlias(crypto::getAlias, crypto::setAlias);
         try {
-            final String rawValue = validateAndGetValue(crypto);
-            CryptographyDto dto = getCryptographyMethodAndSecret(crypto.getAlias());
-            String processedValue = cryptographyService.processCommand(rawValue,
-                    crypto.getAction(), dto.method(), dto.secret(), crypto.getAlias());
+            CryptographyParams params = fetchCryptographyParams(crypto.getAlias());
+            String processedValue = cryptographyService.processCommand(
+                    crypto.getValue().trim(), crypto.getAction(),
+                    params.method(), params.secret(), crypto.getAlias());
             dependencies.getScenarioContext().set(crypto.getName(), processedValue);
             logCryptographyInfo(crypto.getName(), crypto.getAction(), crypto.getAlias());
         } catch (final Exception e) {
-            log.error(FAILED_CRYPTO_LOG, crypto.getName(), crypto.getAction());
+            log.error(ExceptionMessage.FAILED_CRYPTO_LOG, crypto.getName(), crypto.getAction());
             throw e;
         }
     }
 
-    private String validateAndGetValue(final Crypto o) {
-        if (o.getValue() == null || o.getValue().trim().isEmpty()) {
-            throw new IncorrectCryptographyValueException(INCORRECT_VALUE_MSG);
+    private CryptographyParams fetchCryptographyParams(final String alias) {
+        final AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
+
+        if (cryptographyIntegrations == null || !cryptographyIntegrations.containsKey(aliasEnv)) {
+            throw new DefaultFrameworkException(
+                    String.format(ExceptionMessage.CRYPTO_NOT_CONFIGURED, alias, dependencies.getEnvironment())
+            );
         }
-        return o.getValue().trim();
-    }
 
-    private CryptographyDto getCryptographyMethodAndSecret(final String alias) {
-        List<Cryptography> cryptographyList =
-                integrationsProvider.findListByEnv(Cryptography.class, dependencies.getEnvironment());
-
-        Cryptography cryptographyIntegration =
-                integrationsProvider.findCryptographyForAlias(cryptographyList, alias);
-        return new CryptographyDto(
-                cryptographyIntegration.getMethod().value(),
-                cryptographyIntegration.getSecret()
-        );
+        final Cryptography cryptography = cryptographyIntegrations.get(aliasEnv);
+        return new CryptographyParams(cryptography.getMethod().value(), cryptography.getSecret());
     }
 
     private void logCryptographyInfo(final String name, final String action,
@@ -82,7 +74,7 @@ public class CryptoInterpreter extends AbstractInterpreter<Crypto> {
     }
 }
 
-record CryptographyDto(
+record CryptographyParams(
         String method,
         String secret) {
 

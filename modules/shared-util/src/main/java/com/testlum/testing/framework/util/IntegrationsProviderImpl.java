@@ -29,11 +29,6 @@ public class IntegrationsProviderImpl implements IntegrationsProvider {
     }
 
     @Override
-    public <T extends Integration> T findCryptographyForAlias(final List<T> cryptoIntegrations, final String alias) {
-        return integrationsUtil.findCryptoForAlias(cryptoIntegrations, alias);
-    }
-
-    @Override
     public <T extends Integration> boolean isEnabled(final List<T> integrations) {
         return false;
     }

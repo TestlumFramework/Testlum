@@ -1,14 +1,14 @@
 package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.constant.LogMessage;
+import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.testlum.testing.framework.exception.IncorrectCryptographyValueException;
 import com.testlum.testing.framework.interpreter.lib.cryptography.CryptographyService;
 import com.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.framework.util.check.ElementChecks;
 import com.testlum.testing.model.global_config.Cryptography;
@@ -16,28 +16,23 @@ import com.testlum.testing.model.scenario.CryptoInput;
 import com.testlum.testing.model.scenario.CryptoOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @ExecutorForClass(CryptoInput.class)
 public class CryptoInputExecutor
         extends AbstractUiExecutor<CryptoInput> {
 
-    private static final String FAILED_CRYPTO_INPUT_LOG =
-            "Failed crypto input operation for locator <{}>, action <{}>";
-    private static final String INCORRECT_VALUE_MSG =
-            "Value must not be empty.";
-    private static final String MISSING_OPERATION_MSG =
-            "Crypto operation (<encrypt> or <decrypt>) is missing in cryptoInput.";
-
     private final CryptographyService cryptographyService;
-    private final IntegrationsProvider integrationsProvider;
+
+    @Autowired(required = false)
+    private Map<AliasEnv, Cryptography> cryptographyIntegrations;
 
     public CryptoInputExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         this.cryptographyService = dependencies.getContext().getBean(CryptographyService.class);
-        this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
     }
 
     @Override
@@ -48,17 +43,18 @@ public class CryptoInputExecutor
             final WebElement webElement = getAndPrepareElement(cryptoInput);
             sendValueToElement(processedValue, webElement, result);
         } catch (final Exception e) {
-            log.error(FAILED_CRYPTO_INPUT_LOG, cryptoInput.getLocator(), cryptoInput.getAction());
+            log.error(ExceptionMessage.FAILED_CRYPTO_INPUT_LOG, cryptoInput.getLocator(), cryptoInput.getAction());
             throw e;
         }
     }
 
     private String processCryptoValue(final CryptoInput cryptoInput) {
-        final CryptoOperation operation = validateAndGetOperation(cryptoInput);
-        final String rawValue = validateAndGetValue(operation);
-        final CryptographyDto dto = getCryptographyMethodAndSecret(operation.getAlias());
+        final CryptoOperation operation = cryptoInput.getOperation();
+        final String rawValue = operation.getValue().trim();
+        final CryptographyParams dto = fetchCryptoParams(operation.getAlias());
         return cryptographyService.processCommand(
-                rawValue, cryptoInput.getAction(), dto.method(), dto.secret(), operation.getAlias()
+                rawValue, cryptoInput.getAction(),
+                dto.method(), dto.secret(), operation.getAlias()
         );
     }
 
@@ -78,30 +74,21 @@ public class CryptoInputExecutor
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private CryptoOperation validateAndGetOperation(final CryptoInput cryptoInput) {
-        final CryptoOperation operation = cryptoInput.getOperation();
-        if (operation == null) {
-            throw new DefaultFrameworkException(MISSING_OPERATION_MSG);
-        }
-        return operation;
-    }
+    private CryptographyParams fetchCryptoParams(final String alias) {
+        final AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
 
-    private String validateAndGetValue(final CryptoOperation operation) {
-        if (operation.getValue() == null || operation.getValue().trim().isEmpty()) {
-            throw new IncorrectCryptographyValueException(INCORRECT_VALUE_MSG);
+        if (cryptographyIntegrations == null || !cryptographyIntegrations.containsKey(aliasEnv)) {
+            throw new DefaultFrameworkException(
+                    String.format(ExceptionMessage.CRYPTO_NOT_CONFIGURED, alias, dependencies.getEnvironment())
+            );
         }
-        return operation.getValue().trim();
-    }
 
-    private CryptographyDto getCryptographyMethodAndSecret(final String alias) {
-        final List<Cryptography> list = integrationsProvider
-                .findListByEnv(Cryptography.class, dependencies.getEnvironment());
-        final Cryptography cryptography = integrationsProvider.findCryptographyForAlias(list, alias);
-        return new CryptographyDto(cryptography.getMethod().value(), cryptography.getSecret());
+        final Cryptography cryptography = cryptographyIntegrations.get(aliasEnv);
+        return new CryptographyParams(cryptography.getMethod().value(), cryptography.getSecret());
     }
 }
 
-record CryptographyDto(
+record CryptographyParams(
         String method,
         String secret) {
 

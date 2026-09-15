@@ -55,5 +55,9 @@
             <groupId>com.testlum</groupId>
             <artifactId>exception</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.testlum</groupId>
+            <artifactId>testlum-condition</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -3,18 +3,18 @@ package com.testlum.testing.model.scenario;
 import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "cryptoOperation", propOrder = {"value"})
+@XmlType(name = "cryptoOperation")
 @XmlSeeAlso({Encrypt.class, Decrypt.class})
 public abstract class CryptoOperation {
 
-    @XmlElement(required = true)
+    @XmlAttribute(name = "value", required = true)
     protected String value;
 
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
 
     public String getValue() {
-        return value != null ? value.trim() : null;
+        return value;
     }
 
     public void setValue(final String value) {

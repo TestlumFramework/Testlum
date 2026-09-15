@@ -18,6 +18,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}abstractCommand"&gt;
  *       &lt;attribute name="alias" type="{http://www.testlum.com/testing/model/scenario}aliasPattern" default="DEFAULT" /&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="refresh" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -35,6 +36,8 @@ public class Ott
     protected String alias;
     @XmlAttribute(name = "name", required = true)
     protected String name;
+    @XmlAttribute(name = "refresh")
+    protected Boolean refresh;
 
     /**
      * Gets the value of the alias property.
@@ -86,6 +89,34 @@ public class Ott
      */
     public void setName(String value) {
         this.name = value;
+    }
+
+    /**
+     * Gets the value of the refresh property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isRefresh() {
+        if (refresh == null) {
+            return false;
+        } else {
+            return refresh;
+        }
+    }
+
+    /**
+     * Sets the value of the refresh property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setRefresh(Boolean value) {
+        this.refresh = value;
     }
 
 }

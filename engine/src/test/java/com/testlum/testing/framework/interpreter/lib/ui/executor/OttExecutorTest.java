@@ -88,8 +88,39 @@ public class OttExecutorTest {
             final CommandResult result = new CommandResult();
 
             executor.execute(uiOtt, result);
+            scenarioContext.get("otpCode");
 
             assertEquals("someAlias", result.getMetadata().get("Alias"));
+        }
+
+        @Test
+        void refreshFalseKeepsCachedCodeAcrossReads() {
+            final UiOtt uiOtt = new UiOtt();
+            uiOtt.setName("otpCode");
+            uiOtt.setAlias("myAlias");
+            uiOtt.setRefresh(false);
+            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            final CommandResult result = new CommandResult();
+
+            executor.execute(uiOtt, result);
+
+            assertEquals("111111", scenarioContext.get("otpCode"));
+            assertEquals("111111", scenarioContext.get("otpCode"));
+        }
+
+        @Test
+        void refreshTrueRecomputesCodeOnEveryRead() {
+            final UiOtt uiOtt = new UiOtt();
+            uiOtt.setName("otpCode");
+            uiOtt.setAlias("myAlias");
+            uiOtt.setRefresh(true);
+            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            final CommandResult result = new CommandResult();
+
+            executor.execute(uiOtt, result);
+
+            assertEquals("111111", scenarioContext.get("otpCode"));
+            assertEquals("222222", scenarioContext.get("otpCode"));
         }
     }
 }

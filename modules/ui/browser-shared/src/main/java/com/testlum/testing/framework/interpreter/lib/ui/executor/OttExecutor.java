@@ -9,6 +9,8 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.UiOtt;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.function.Supplier;
+
 import static java.lang.String.format;
 
 @Slf4j
@@ -32,20 +34,29 @@ public class OttExecutor extends AbstractUiExecutor<UiOtt> {
     @Override
     protected void execute(final UiOtt uiOtt, final CommandResult result) {
         checkAlias(uiOtt);
-        String code = ottUtil.generateCode(uiOtt.getAlias());
-        dependencies.getScenarioContext().set(uiOtt.getName(), code);
-        addOttMetaData(uiOtt.getAlias(), code, result);
+
+        final String alias = uiOtt.getAlias();
+        final String name = uiOtt.getName();
+
+        final Supplier<String> codeSupplier = () -> {
+            String code = ottUtil.generateCode(alias);
+            log.info(CODE_LOG, code);
+            return code;
+        };
+
+        if (uiOtt.isRefresh()) {
+            dependencies.getScenarioContext().setLazyRefreshing(name, codeSupplier);
+        } else {
+            dependencies.getScenarioContext().setLazy(name, codeSupplier);
+        }
+
+        result.put(ALIAS, alias);
+        log.info(ALIAS_LOG, alias);
     }
 
     private void checkAlias(final UiOtt uiOtt) {
         if (uiOtt.getAlias() == null) {
             uiOtt.setAlias(DEFAULT_ALIAS_VALUE);
         }
-    }
-
-    private void addOttMetaData(final String alias, final String code, final CommandResult result) {
-        result.put(ALIAS, alias);
-        log.info(ALIAS_LOG, alias);
-        log.info(CODE_LOG, code);
     }
 }

@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -100,6 +101,22 @@ public class OttInputExecutorTest {
             verify(element).sendKeys("654321");
             assertEquals("DEFAULT", result.getMetadata().get("Alias"));
             assertEquals("654321", scenarioContext.get("otpCode"));
+        }
+
+        @Test
+        void doesNotStoreInScenarioContextWhenNameIsOmitted() {
+            final OttInput ottInput = new OttInput();
+            ottInput.setLocator("otpField");
+            when(ottUtil.generateCode("DEFAULT")).thenReturn("111222");
+            final WebElement element = mock(WebElement.class);
+            when(uiUtil.findWebElement(any(), eq("otpField"), any(), eq(ElementChecks.FOR_WRITING)))
+                    .thenReturn(element);
+            final CommandResult result = new CommandResult();
+
+            executor.execute(ottInput, result);
+
+            verify(element).sendKeys("111222");
+            assertFalse(scenarioContext.containsKey(null));
         }
     }
 }

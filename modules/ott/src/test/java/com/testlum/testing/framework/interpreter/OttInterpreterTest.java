@@ -9,6 +9,7 @@ import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.testlum.testing.model.scenario.Ott;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,8 @@ public class OttInterpreterTest {
 
     private OttUtil ottUtil;
     private OttInterpreter ottInterpreter;
+    private ScenarioContext scenarioContext;
+    private JacksonService jacksonService;
 
     @BeforeEach
     void setUp() {
@@ -40,7 +43,8 @@ public class OttInterpreterTest {
         when(applicationContext.getBean(ConfigProvider.class)).thenReturn(mock(ConfigProvider.class));
         when(applicationContext.getBean(ConditionProvider.class)).thenReturn(mock(ConditionProvider.class));
         when(applicationContext.getBean(FileSearcher.class)).thenReturn(mock(FileSearcher.class));
-        when(applicationContext.getBean(JacksonService.class)).thenReturn(mock(JacksonService.class));
+        jacksonService = mock(JacksonService.class);
+        when(applicationContext.getBean(JacksonService.class)).thenReturn(jacksonService);
         when(applicationContext.getBean(StringPrettifier.class)).thenReturn(mock(StringPrettifier.class));
         final GlobalTestConfiguration globalConfig = mock(GlobalTestConfiguration.class);
         when(globalConfig.isStopScenarioOnFailure()).thenReturn(false);
@@ -48,10 +52,12 @@ public class OttInterpreterTest {
         ottUtil = mock(OttUtil.class);
         when(applicationContext.getBean(OttUtil.class)).thenReturn(ottUtil);
 
+        scenarioContext = new ScenarioContext(new HashMap<>());
+
         final InterpreterDependencies dependencies = InterpreterDependencies.builder()
                 .context(applicationContext)
                 .file(new File(tempDir, "scenario.xml"))
-                .scenarioContext(new ScenarioContext(new HashMap<>()))
+                .scenarioContext(scenarioContext)
                 .position(new AtomicInteger())
                 .environment("test")
                 .build();
@@ -77,18 +83,83 @@ public class OttInterpreterTest {
     }
 
     @Nested
-    class AddOttMetaData {
+    class AcceptImpl {
 
         @Test
-        void addsAllMetaDataToResult() throws Exception {
+        void generatesCodeAndStoresItInScenarioContext() throws Exception {
+            final Ott ott = new Ott();
+            ott.setName("otpCode");
+            ott.setAlias("myAlias");
+            when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
+            when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
+            when(ottUtil.generateCode("myAlias")).thenReturn("123456");
             final CommandResult result = new CommandResult();
 
             final Method method = OttInterpreter.class.getDeclaredMethod(
-                    "addOttMetaData", String.class, String.class, CommandResult.class);
+                    "acceptImpl", Ott.class, CommandResult.class);
             method.setAccessible(true);
-            method.invoke(ottInterpreter, "myAlias", "123456", result);
+            method.invoke(ottInterpreter, ott, result);
 
+            assertEquals("123456", scenarioContext.get("otpCode"));
             assertEquals("myAlias", result.getMetadata().get("Alias"));
+        }
+
+        @Test
+        void usesDefaultAliasWhenNoneProvided() throws Exception {
+            final Ott ott = new Ott();
+            ott.setName("otpCode");
+            when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
+            when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
+            when(ottUtil.generateCode("DEFAULT")).thenReturn("654321");
+            final CommandResult result = new CommandResult();
+
+            final Method method = OttInterpreter.class.getDeclaredMethod(
+                    "acceptImpl", Ott.class, CommandResult.class);
+            method.setAccessible(true);
+            method.invoke(ottInterpreter, ott, result);
+
+            assertEquals("DEFAULT", result.getMetadata().get("Alias"));
+            assertEquals("654321", scenarioContext.get("otpCode"));
+        }
+
+        @Test
+        void refreshFalseKeepsCachedCodeAcrossReads() throws Exception {
+            final Ott ott = new Ott();
+            ott.setName("otpCode");
+            ott.setAlias("myAlias");
+            ott.setRefresh(false);
+            when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
+            when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
+            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            final CommandResult result = new CommandResult();
+
+            final Method method = OttInterpreter.class.getDeclaredMethod(
+                    "acceptImpl", Ott.class, CommandResult.class);
+            method.setAccessible(true);
+            method.invoke(ottInterpreter, ott, result);
+
+            assertEquals("111111", scenarioContext.get("otpCode"));
+            assertEquals("111111", scenarioContext.get("otpCode"));
+        }
+
+        @Test
+        void refreshTrueRecomputesCodeOnEveryRead() throws Exception {
+            final Ott ott = new Ott();
+            ott.setName("otpCode");
+            ott.setAlias("myAlias");
+            ott.setRefresh(true);
+            when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
+            when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
+            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            final CommandResult result = new CommandResult();
+
+            final Method method = OttInterpreter.class.getDeclaredMethod(
+                    "acceptImpl", Ott.class, CommandResult.class);
+            method.setAccessible(true);
+            method.invoke(ottInterpreter, ott, result);
+
+            assertEquals("111111", scenarioContext.get("otpCode"));
+            assertEquals("222222", scenarioContext.get("otpCode"));
         }
     }
 }

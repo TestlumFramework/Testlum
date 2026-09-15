@@ -35,7 +35,9 @@ public class OttInputExecutor extends AbstractUiExecutor<OttInput> {
     protected void execute(final OttInput ottInput, final CommandResult result) {
         checkAlias(ottInput);
         String code = ottUtil.generateCode(ottInput.getAlias());
-        dependencies.getScenarioContext().set(ottInput.getName(), code);
+        if (ottInput.getName() != null) {
+            dependencies.getScenarioContext().set(ottInput.getName(), code);
+        }
         inputCode(ottInput, code, result);
         addOttMetaData(ottInput.getAlias(), code, result);
     }

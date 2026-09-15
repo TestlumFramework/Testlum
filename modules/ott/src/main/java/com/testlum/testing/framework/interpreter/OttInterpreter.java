@@ -8,6 +8,8 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Ott;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.function.Supplier;
+
 @Slf4j
 @InterpreterForClass(Ott.class)
 public class OttInterpreter extends AbstractInterpreter<Ott> {
@@ -25,14 +27,23 @@ public class OttInterpreter extends AbstractInterpreter<Ott> {
     protected void acceptImpl(final Ott o, final CommandResult result) {
         Ott ott = injectCommand(o);
         ensureAlias(ott::getAlias, ott::setAlias);
-        String code = ottUtil.generateCode(ott.getAlias());
-        dependencies.getScenarioContext().set(ott.getName(), code);
-        addOttMetaData(ott.getAlias(), code, result);
-    }
 
-    private void addOttMetaData(final String alias, final String code, final CommandResult result) {
+        final String alias = ott.getAlias();
+        final String name = ott.getName();
+
+        final Supplier<String> codeSupplier = () -> {
+            String code = ottUtil.generateCode(alias);
+            log.info(CODE_LOG, code);
+            return code;
+        };
+
+        if (ott.isRefresh()) {
+            dependencies.getScenarioContext().setLazyRefreshing(name, codeSupplier);
+        } else {
+            dependencies.getScenarioContext().setLazy(name, codeSupplier);
+        }
+
         result.put(ALIAS, alias);
         log.info(ALIAS_LOG, alias);
-        log.info(CODE_LOG, code);
     }
 }

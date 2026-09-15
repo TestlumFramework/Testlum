@@ -193,7 +193,7 @@ public class VariableHelperImpl implements VariableHelper {
     private String resolveBodySource(final FromPath fromPath, final ScenarioContext scenarioContext,
                                      final UnaryOperator<String> fileToString) {
         if (fromPath.getFromFile() == null && fromPath.getFromVar() == null) {
-            return scenarioContext.getBody().getValue();
+            return scenarioContext.getBody().getValue().get();
         }
         if (fromPath.getFromFile() != null) {
             return fromPath.getFromFile().startsWith("expected")

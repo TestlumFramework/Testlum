@@ -8,11 +8,11 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * &lt;p&gt;Java class for anonymous complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
@@ -37,13 +37,14 @@ import jakarta.xml.bind.annotation.XmlType;
  *         &lt;element name="sendgridIntegration" type="{http://www.testlum.com/testing/model/global-config}sendgridIntegration" minOccurs="0"/&gt;
  *         &lt;element name="sesIntegration" type="{http://www.testlum.com/testing/model/global-config}sesIntegration" minOccurs="0"/&gt;
  *         &lt;element name="smtpIntegration" type="{http://www.testlum.com/testing/model/global-config}smtpIntegration" minOccurs="0"/&gt;
+ *         &lt;element name="emailIntegration" type="{http://www.testlum.com/testing/model/global-config}emailIntegration" minOccurs="0"/&gt;
  *         &lt;element name="twilioIntegration" type="{http://www.testlum.com/testing/model/global-config}twilioIntegration" minOccurs="0"/&gt;
  *         &lt;element name="sqlDatabaseIntegration" type="{http://www.testlum.com/testing/model/global-config}sqlDatabaseIntegration" minOccurs="0"/&gt;
  *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -74,16 +75,17 @@ public class Integrations {
     protected SendgridIntegration sendgridIntegration;
     protected SesIntegration sesIntegration;
     protected SmtpIntegration smtpIntegration;
+    protected EmailIntegration emailIntegration;
     protected TwilioIntegration twilioIntegration;
     protected SqlDatabaseIntegration sqlDatabaseIntegration;
 
     /**
      * Gets the value of the aiIntegration property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link AiIntegration }
-     *
+     *     
      */
     public AiIntegration getAiIntegration() {
         return aiIntegration;
@@ -91,11 +93,11 @@ public class Integrations {
 
     /**
      * Sets the value of the aiIntegration property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link AiIntegration }
-     *
+     *     
      */
     public void setAiIntegration(AiIntegration value) {
         this.aiIntegration = value;
@@ -555,6 +557,30 @@ public class Integrations {
      */
     public void setSmtpIntegration(SmtpIntegration value) {
         this.smtpIntegration = value;
+    }
+
+    /**
+     * Gets the value of the emailIntegration property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link EmailIntegration }
+     *     
+     */
+    public EmailIntegration getEmailIntegration() {
+        return emailIntegration;
+    }
+
+    /**
+     * Sets the value of the emailIntegration property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link EmailIntegration }
+     *     
+     */
+    public void setEmailIntegration(EmailIntegration value) {
+        this.emailIntegration = value;
     }
 
     /**

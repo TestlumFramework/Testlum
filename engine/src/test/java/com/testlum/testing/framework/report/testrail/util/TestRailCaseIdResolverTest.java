@@ -76,6 +76,41 @@ class TestRailCaseIdResolverTest {
         }
 
         @Test
+        void resolvesEveryCaseIdOfCommaSeparatedList() {
+            TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
+
+            List<ScenarioCase> resolved = resolver.resolveCases(
+                    List.of(scenario("login", "91, 94", null)));
+
+            assertEquals(2, resolved.size());
+            assertEquals(List.of(91, 94), resolved.stream().map(ScenarioCase::caseId).toList());
+            assertTrue(resolved.stream().allMatch(scenarioCase ->
+                    "login".equals(scenarioCase.scenarioResult().getName())));
+            verify(apiClient, never()).fetchCaseIdsByMatchKey(anyString());
+        }
+
+        @Test
+        void reportsDuplicatedCaseIdOnlyOnce() {
+            TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
+
+            List<ScenarioCase> resolved = resolver.resolveCases(
+                    List.of(scenario("login", "91,91", null)));
+
+            assertEquals(1, resolved.size());
+            assertEquals(91, resolved.get(0).caseId());
+        }
+
+        @Test
+        void skipsUnparsableEntryAndKeepsRemainingCaseIds() {
+            TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
+
+            List<ScenarioCase> resolved = resolver.resolveCases(
+                    List.of(scenario("login", "91,C94,0,94", null)));
+
+            assertEquals(List.of(91, 94), resolved.stream().map(ScenarioCase::caseId).toList());
+        }
+
+        @Test
         void skipsScenarioWithNeitherCaseIdNorMatchKeyValue() {
             TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
 

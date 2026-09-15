@@ -59,6 +59,8 @@ public final class TestRailConstants {
             "No TestRail case has value '{}' for custom key '{}' (scenario '{}'). Scenario is skipped.";
     public static final String CASE_MATCH_KEY_VALUE_DUPLICATED =
             "Custom key '{}' has value '{}' on more than one TestRail case ({} and {}). Case {} is used.";
+    public static final String TEST_RAIL_CASE_ID_NOT_PARSABLE =
+            "Value '{}' in testCaseId of scenario '{}' is not a positive case id. Value is skipped.";
     public static final String TEST_RAIL_CASE_NOT_RESOLVED =
             "Scenario '{}' has neither a usable testCaseId nor a caseMatchKeyValue. Scenario is skipped.";
 

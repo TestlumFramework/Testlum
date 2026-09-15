@@ -48,9 +48,23 @@ For each scenario that should send results to TestRail, add the `<testRails>` se
 
 * **enable**: Enables TestRail reporting for this scenario.
 * **testRailRunId**: ID of the existing TestRail run.
-* **testCaseId**: ID of the TestRail test case (required).
+* **testCaseId**: ID of the TestRail test case, or a comma separated list of IDs (required).
 
 This will send the result of the test to the **existing run (ID=1)** and associate it with **test case ID=1**.
+
+### Example 1️⃣.1 (One scenario mapped to several test cases):
+
+```xml
+<overview>
+    <description>TestRail API test</description>
+    <name>TestRailApi2</name>
+    <testRail enabled="true" testCaseId="91,94"/>
+</overview>
+```
+
+* The scenario result is reported **once per listed case** - here to case 91 and to case 94.
+* Duplicated IDs in the list are reported only once, and a value that is not a positive
+  number is logged and skipped while the remaining IDs are still reported.
 
 ---
 
@@ -107,8 +121,8 @@ This will send the result of the test to the **existing run (ID=1)** and associa
 ```xml
 <x:complexType name="testRail">
     <x:attribute name="enable" type="x:boolean" use="optional" default="false"/>
-    <x:attribute name="testRailRunId" type="x:int" use="optional"/>
-    <x:attribute name="testCaseId" type="x:int" use="required"/>
+    <x:attribute name="testRailRunId" type="tns:testRunId" use="optional"/>
+    <x:attribute name="testCaseId" type="tns:testCaseIds" use="required"/>
 </x:complexType>
 ```
 
@@ -117,6 +131,7 @@ This will send the result of the test to the **existing run (ID=1)** and associa
 ## ✅ Best Practices
 
 * Always ensure `testCaseId` is provided (it is **required**).
+* List several cases as `testCaseId="91,94"` when one scenario covers more than one TestRail case.
 * Use `testRailRunId` if you want to **send results to an existing run**.
 * If no `testRailRunId` is provided, make sure `projectId`, `defaultRunName`, and `defaultRunDescription` are properly configured in `global-config`.
 * Check your API permissions in TestRail to ensure you can **create runs** and **send results**.

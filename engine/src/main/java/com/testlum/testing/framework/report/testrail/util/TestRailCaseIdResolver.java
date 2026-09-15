@@ -18,14 +18,18 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Resolves the TestRail case each scenario must be reported against.
- * A scenario either names the case directly via testCaseId, or names a value of
- * the custom field configured as caseMatchKey via caseMatchKeyValue.
+ * Resolves the TestRail cases each scenario must be reported against.
+ * A scenario either names the cases directly via testCaseId, which holds a single id
+ * or a comma separated list of ids, or names a value of the custom field configured
+ * as caseMatchKey via caseMatchKeyValue.
  * Scenarios whose case cannot be resolved are logged and dropped rather than failing the run.
  */
 @Slf4j
 @Component
 public class TestRailCaseIdResolver {
+
+    private static final String CASE_ID_SEPARATOR = ",";
+    private static final int INVALID_CASE_ID = 0;
 
     private final TestRailApiClient testRailApiClient;
     private final TestRailReports testRails;
@@ -49,8 +53,9 @@ public class TestRailCaseIdResolver {
                                       final List<ScenarioCase> resolved,
                                       final List<ScenarioResult> matchedByKey) {
         TestRail testRail = scenarioResult.getOverview().getTestRail();
-        if (hasUsableCaseId(testRail)) {
-            resolved.add(new ScenarioCase(scenarioResult, Integer.parseInt(testRail.getTestCaseId().trim())));
+        List<Integer> caseIds = parseCaseIds(testRail.getTestCaseId(), scenarioResult.getName());
+        if (!caseIds.isEmpty()) {
+            caseIds.forEach(caseId -> resolved.add(new ScenarioCase(scenarioResult, caseId)));
         } else if (StringUtils.isNotBlank(testRail.getCaseMatchKeyValue())) {
             matchedByKey.add(scenarioResult);
         } else {
@@ -58,11 +63,30 @@ public class TestRailCaseIdResolver {
         }
     }
 
-    private boolean hasUsableCaseId(final TestRail testRail) {
-        String testCaseId = testRail.getTestCaseId();
-        return StringUtils.isNotBlank(testCaseId)
-                && NumberUtils.isParsable(testCaseId.trim())
-                && Integer.parseInt(testCaseId.trim()) > 0;
+    private List<Integer> parseCaseIds(final String testCaseId, final String scenarioName) {
+        if (StringUtils.isBlank(testCaseId)) {
+            return List.of();
+        }
+        List<Integer> caseIds = new ArrayList<>();
+        for (String rawCaseId : testCaseId.split(CASE_ID_SEPARATOR)) {
+            collectCaseId(rawCaseId.trim(), caseIds, scenarioName);
+        }
+        return caseIds;
+    }
+
+    private void collectCaseId(final String caseId, final List<Integer> caseIds, final String scenarioName) {
+        int parsedCaseId = NumberUtils.toInt(caseId, INVALID_CASE_ID);
+        if (parsedCaseId > 0) {
+            addIfAbsent(caseIds, parsedCaseId);
+        } else if (StringUtils.isNotBlank(caseId)) {
+            log.error(TestRailConstants.TEST_RAIL_CASE_ID_NOT_PARSABLE, caseId, scenarioName);
+        }
+    }
+
+    private void addIfAbsent(final List<Integer> caseIds, final int caseId) {
+        if (!caseIds.contains(caseId)) {
+            caseIds.add(caseId);
+        }
     }
 
     private List<ScenarioCase> resolveByMatchKey(final List<ScenarioResult> scenarioResults) {

@@ -31,12 +31,20 @@
     <x:complexType name="testRail">
         <x:attribute name="enabled" type="x:boolean" use="required"/>
         <!-- Exactly one of testCaseId / caseMatchKeyValue must be set -->
-        <x:attribute name="testCaseId" type="tns:testRailId"/>
+        <!-- testCaseId accepts a single id or a comma separated list, e.g. "91,94" -->
+        <x:attribute name="testCaseId" type="tns:testCaseIds"/>
         <x:attribute name="caseMatchKeyValue" type="tns:nonEmptyString"/>
-        <x:attribute name="testRailRunId" type="tns:testRailId"/>
+        <x:attribute name="testRailRunId" type="tns:testRunId"/>
     </x:complexType>
 
-    <x:simpleType name="testRailId">
+    <x:simpleType name="testCaseIds">
+        <x:restriction base="x:string">
+            <x:pattern value="\s*[1-9]\d*\s*(,\s*[1-9]\d*\s*)*"/>
+            <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="testRunId">
         <x:restriction base="x:string">
             <x:pattern value="\s*[1-9]\d*\s*"/>
             <x:pattern value=".*\$\{[^{}\s]+\}.*"/>

@@ -5,30 +5,7 @@ import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.exception.IntegrationDisabledException;
-import com.testlum.testing.model.global_config.Ai;
-import com.testlum.testing.model.global_config.Api;
-import com.testlum.testing.model.global_config.Clickhouse;
-import com.testlum.testing.model.global_config.Dynamo;
-import com.testlum.testing.model.global_config.Elasticsearch;
-import com.testlum.testing.model.global_config.GraphqlApi;
-import com.testlum.testing.model.global_config.Integration;
-import com.testlum.testing.model.global_config.Integrations;
-import com.testlum.testing.model.global_config.Kafka;
-import com.testlum.testing.model.global_config.Lambda;
-import com.testlum.testing.model.global_config.Mongo;
-import com.testlum.testing.model.global_config.Mysql;
-import com.testlum.testing.model.global_config.Oracle;
-import com.testlum.testing.model.global_config.Postgres;
-import com.testlum.testing.model.global_config.Rabbitmq;
-import com.testlum.testing.model.global_config.Redis;
-import com.testlum.testing.model.global_config.S3;
-import com.testlum.testing.model.global_config.Sendgrid;
-import com.testlum.testing.model.global_config.Ses;
-import com.testlum.testing.model.global_config.Smtp;
-import com.testlum.testing.model.global_config.SqlDatabase;
-import com.testlum.testing.model.global_config.Sqs;
-import com.testlum.testing.model.global_config.Twilio;
-import com.testlum.testing.model.global_config.WebsocketApi;
+import com.testlum.testing.model.global_config.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +36,7 @@ public class IntegrationsUtil {
         registerMessagingIntegrations(map);
         registerCloudIntegrations(map);
         registerNotificationIntegrations(map);
+        registerCryptographyIntegrations(map);
         return Collections.unmodifiableMap(map);
     }
 
@@ -102,6 +80,10 @@ public class IntegrationsUtil {
         map.put(c -> c.equals(Twilio.class), i -> i.getTwilioIntegration().getTwilio());
     }
 
+    private void registerCryptographyIntegrations(final Map<IntegrationsPredicate, IntegrationListMethod> map) {
+        map.put(c -> c.equals(Cryptography.class), i -> i.getCryptographyIntegrations().getCryptography());
+    }
+
     public <T extends Integration> T findForAliasEnv(final Class<T> clazz, final AliasEnv aliasEnv) {
         List<T> intList = findListByEnv(clazz, aliasEnv.getEnvironment());
         return findForAlias(intList, aliasEnv.getAlias());
@@ -128,6 +110,10 @@ public class IntegrationsUtil {
 
     public <T extends Integration> T findForAlias(final List<T> integrationList, final String alias) {
         return getIntegrationByAliasOrThrow(integrationList, alias, ExceptionMessage.ALIAS_NOT_FOUND);
+    }
+
+    public <T extends Integration> T findCryptoForAlias(final List<T> cryptoIntegrations, final String alias) {
+        return getIntegrationByAliasOrThrow(cryptoIntegrations, alias, ExceptionMessage.ALIAS_NOT_FOUND);
     }
 
     private <T extends Integration> T getIntegrationByAliasOrThrow(final List<T> integrations,

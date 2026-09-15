@@ -33,6 +33,7 @@ import jakarta.xml.bind.annotation.*;
     DoubleClick.class,
     Hover.class,
     Input.class,
+    CryptoInput.class,
     DropDown.class,
     Clear.class,
     ScrollTo.class,

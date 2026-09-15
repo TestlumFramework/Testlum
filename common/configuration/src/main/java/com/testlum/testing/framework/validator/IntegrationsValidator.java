@@ -4,10 +4,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.testlum.testing.model.global_config.Api;
-import com.testlum.testing.model.global_config.Auth;
-import com.testlum.testing.model.global_config.Integration;
-import com.testlum.testing.model.global_config.Integrations;
+import com.testlum.testing.model.global_config.*;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -29,7 +26,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                                  final TestResourceSettings testResourceSettings) {
         this.fileSearcher = fileSearcher;
         this.testResourceSettings = testResourceSettings;
-        final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
+        final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(21);
         map.put(i -> Objects.nonNull(i.getApis()), i -> i.getApis().getApi());
         map.put(i -> Objects.nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
         map.put(i -> Objects.nonNull(i.getS3Integration()), i -> i.getS3Integration().getS3());
@@ -51,6 +48,8 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         map.put(i -> Objects.nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
         map.put(i -> Objects.nonNull(i.getElasticsearchIntegration()),
                 i -> i.getElasticsearchIntegration().getElasticsearch());
+        map.put(i -> Objects.nonNull(i.getCryptographyIntegrations()),
+                i -> i.getCryptographyIntegrations().getCryptography());
         this.configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 

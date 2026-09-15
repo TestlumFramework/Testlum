@@ -7,6 +7,7 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
+import com.testlum.testing.framework.service.EmailHelper;
 import com.testlum.testing.framework.service.EmailInboxService;
 import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
@@ -56,6 +57,7 @@ class EmailInterpreterTest {
     @Mock
     private StringPrettifier stringPrettifier;
 
+    private EmailHelper emailHelper;
     private ApplicationContext applicationContext;
     private ScenarioContext scenarioContext;
     private Map<AliasEnv, EmailInboxService> servicesMap;
@@ -66,6 +68,7 @@ class EmailInterpreterTest {
         this.servicesMap = new HashMap<>();
         this.servicesMap.put(new AliasEnv(TEST_ALIAS, DEV_ENV), this.emailInboxService);
 
+        this.emailHelper = new EmailHelper(this.stringPrettifier);
         this.applicationContext = mock(ApplicationContext.class);
         final GlobalTestConfiguration globalConfig = mock(GlobalTestConfiguration.class);
         when(globalConfig.isStopScenarioOnFailure()).thenReturn(false);
@@ -75,6 +78,7 @@ class EmailInterpreterTest {
         when(this.applicationContext.getBean(FileSearcher.class)).thenReturn(mock(FileSearcher.class));
         when(this.applicationContext.getBean(JacksonService.class)).thenReturn(this.jacksonService);
         when(this.applicationContext.getBean(StringPrettifier.class)).thenReturn(this.stringPrettifier);
+        when(this.applicationContext.getBean(EmailHelper.class)).thenReturn(this.emailHelper);
         when(this.applicationContext.getBean(GlobalTestConfiguration.class)).thenReturn(globalConfig);
         when(this.applicationContext.containsBean("emailInboxServices")).thenReturn(true);
         when(this.applicationContext.getBean("emailInboxServices", Map.class)).thenReturn(this.servicesMap);
@@ -109,6 +113,7 @@ class EmailInterpreterTest {
             when(emptyContext.getBean(FileSearcher.class)).thenReturn(mock(FileSearcher.class));
             when(emptyContext.getBean(JacksonService.class)).thenReturn(EmailInterpreterTest.this.jacksonService);
             when(emptyContext.getBean(StringPrettifier.class)).thenReturn(EmailInterpreterTest.this.stringPrettifier);
+            when(emptyContext.getBean(EmailHelper.class)).thenReturn(EmailInterpreterTest.this.emailHelper);
             when(emptyContext.getBean(GlobalTestConfiguration.class)).thenReturn(globalConfig);
             when(emptyContext.containsBean("emailInboxServices")).thenReturn(false);
 

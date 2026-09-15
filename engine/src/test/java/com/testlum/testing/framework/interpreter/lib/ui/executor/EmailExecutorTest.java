@@ -5,7 +5,9 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
+import com.testlum.testing.framework.service.EmailHelper;
 import com.testlum.testing.framework.service.EmailInboxService;
+import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.scenario.Email;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -40,6 +42,7 @@ class EmailExecutorTest {
     @Mock
     private ApplicationContext context;
 
+    private EmailHelper emailHelper;
     private ScenarioContext scenarioContext;
     private Map<AliasEnv, EmailInboxService> servicesMap;
     private EmailExecutor executor;
@@ -49,7 +52,19 @@ class EmailExecutorTest {
         this.servicesMap = new HashMap<>();
         this.servicesMap.put(new AliasEnv(TEST_ALIAS, DEV_ENV), this.emailInboxService);
 
-        when(this.context.getBean(any(Class.class))).thenAnswer(inv -> mock((Class<?>) inv.getArgument(0)));
+        final StringPrettifier prettifier = mock(StringPrettifier.class);
+        this.emailHelper = new EmailHelper(prettifier);
+
+        when(this.context.getBean(any(Class.class))).thenAnswer(inv -> {
+            final Class<?> clazz = inv.getArgument(0);
+            if (clazz == EmailHelper.class) {
+                return this.emailHelper;
+            }
+            if (clazz == StringPrettifier.class) {
+                return prettifier;
+            }
+            return mock(clazz);
+        });
         when(this.context.containsBean("emailInboxServices")).thenReturn(true);
         when(this.context.getBean("emailInboxServices", Map.class)).thenReturn(this.servicesMap);
 
@@ -74,7 +89,13 @@ class EmailExecutorTest {
         @Test
         void buildsWhenBeanMissing() {
             final ApplicationContext emptyCtx = mock(ApplicationContext.class);
-            when(emptyCtx.getBean(any(Class.class))).thenAnswer(inv -> mock((Class<?>) inv.getArgument(0)));
+            when(emptyCtx.getBean(any(Class.class))).thenAnswer(inv -> {
+                final Class<?> clazz = inv.getArgument(0);
+                if (clazz == EmailHelper.class) {
+                    return EmailExecutorTest.this.emailHelper;
+                }
+                return mock(clazz);
+            });
             when(emptyCtx.containsBean("emailInboxServices")).thenReturn(false);
 
             final ExecutorDependencies deps = ExecutorDependencies.builder()

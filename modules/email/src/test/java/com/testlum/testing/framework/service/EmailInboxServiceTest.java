@@ -293,4 +293,88 @@ class EmailInboxServiceTest {
             verify(mockStore, times(1)).close();
         }
     }
+
+    @Nested
+    class ValidationAndFailFast {
+
+        @Test
+        void throwsWhenFolderIsNull() {
+            emailSettings.setFolder(null);
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.testConnection());
+            assertEquals("Email folder must not be null or blank", ex.getMessage());
+        }
+
+        @Test
+        void throwsWhenFolderIsBlank() {
+            emailSettings.setFolder("   ");
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.testConnection());
+            assertEquals("Email folder must not be null or blank", ex.getMessage());
+        }
+
+        @Test
+        void throwsWhenTimeoutIsNull() {
+            emailSettings.setTimeout(null);
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.buildProperties("imaps"));
+            assertEquals("Email timeout must not be null", ex.getMessage());
+        }
+
+        @Test
+        void throwsWhenSslIsNull() {
+            emailSettings.setSsl(null);
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.buildProperties("imaps"));
+            assertEquals("Email SSL setting must not be null", ex.getMessage());
+        }
+
+        @Test
+        void throwsWhenPatternIsBlankOrNull() {
+            assertThrows(DefaultFrameworkException.class,
+                    () -> service.fetchValueByPattern("", 1000L));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> service.fetchValueByPattern(null, 1000L));
+        }
+
+        @Test
+        void throwsWhenTimeoutIsZeroOrNegative() {
+            assertThrows(DefaultFrameworkException.class,
+                    () -> service.fetchValueByPattern(".*", 0L));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> service.fetchValueByPattern(".*", -10L));
+        }
+
+        @Test
+        void throwsWhenHostIsBlank() {
+            emailSettings.setHost("");
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.testConnection());
+            assertEquals("Email host must not be null or blank", ex.getMessage());
+        }
+
+        @Test
+        void throwsWhenPortIsNull() {
+            emailSettings.setPort(null);
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.testConnection());
+            assertEquals("Email port must not be null", ex.getMessage());
+        }
+
+        @Test
+        void throwsWhenEmailAddressIsBlank() {
+            emailSettings.setEmailAddress("");
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.testConnection());
+            assertEquals("Email address must not be null or blank", ex.getMessage());
+        }
+
+        @Test
+        void throwsWhenProtocolIsNull() {
+            emailSettings.setProtocol(null);
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> service.testConnection());
+            assertEquals("Email protocol must not be null", ex.getMessage());
+        }
+    }
 }

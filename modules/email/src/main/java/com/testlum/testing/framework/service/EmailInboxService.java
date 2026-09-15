@@ -2,7 +2,8 @@ package com.testlum.testing.framework.service;
 
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.global_config.Email;
-import com.testlum.testing.model.global_config.EmailProperty;
+import com.testlum.testing.model.global_config.EmailProperties;
+import com.testlum.testing.model.global_config.EmailProtocol;
 import jakarta.mail.Flags;
 import jakarta.mail.Folder;
 import jakarta.mail.Message;
@@ -14,9 +15,12 @@ import jakarta.mail.Store;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,10 +32,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class EmailInboxService {
 
-    private static final String DEFAULT_FOLDER = "INBOX";
     private static final long DEFAULT_POLL_INTERVAL_MS = 1000L;
     private static final int MAX_SEARCH_MESSAGES = 50;
-    private static final String DEFAULT_TIMEOUT_STR = "10000";
     private static final String PROTOCOL_PROPERTY_FORMAT = "mail.%s.%s";
     private static final String EMAIL_NOT_FOUND_MSG =
             "Timeout of %d ms reached. No email matching pattern [%s] found in folder [%s]";
@@ -43,18 +45,26 @@ public class EmailInboxService {
      * Verifies the connection to the configured email store and folder.
      */
     public void testConnection() {
+        final String folderName = this.resolveFolder();
         Store store = null;
         Folder folder = null;
         try {
             store = this.connectStore();
-            folder = store.getFolder(this.resolveFolder());
+            folder = store.getFolder(folderName);
             folder.open(Folder.READ_ONLY);
         } catch (final Exception e) {
-            throw new DefaultFrameworkException("Failed to connect to email store: " + e.getMessage(), e);
+            this.handleConnectionException(e);
         } finally {
             this.closeQuietly(folder);
             this.closeQuietly(store);
         }
+    }
+
+    private void handleConnectionException(final Exception e) {
+        if (e instanceof DefaultFrameworkException dfe) {
+            throw dfe;
+        }
+        throw new DefaultFrameworkException("Failed to connect to email store: " + e.getMessage(), e);
     }
 
     /**
@@ -65,6 +75,7 @@ public class EmailInboxService {
      * @return extracted value matching the first capturing group
      */
     public String fetchValueByPattern(final String patternStr, final long timeoutMs) {
+        this.validateFetchParams(patternStr, timeoutMs);
         final Pattern pattern = Pattern.compile(patternStr);
         final long deadline = System.currentTimeMillis() + timeoutMs;
         Store store = null;
@@ -75,6 +86,15 @@ public class EmailInboxService {
             throw new DefaultFrameworkException("Failed to connect to email store: " + e.getMessage(), e);
         } finally {
             this.closeQuietly(store);
+        }
+    }
+
+    private void validateFetchParams(final String patternStr, final long timeoutMs) {
+        if (StringUtils.isBlank(patternStr)) {
+            throw new DefaultFrameworkException("Pattern must not be null or blank");
+        }
+        if (timeoutMs <= 0) {
+            throw new DefaultFrameworkException("Timeout must be greater than 0");
         }
     }
 
@@ -146,10 +166,19 @@ public class EmailInboxService {
         }
     }
 
+    /**
+     * Extracts text content from a message or MIME body part.
+     *
+     * @param part email message part
+     * @return extracted text content
+     * @throws MessagingException if a message error occurs
+     * @throws IOException if an I/O error occurs
+     */
     public String extractContent(final Part part) throws MessagingException, IOException {
         final StringBuilder builder = new StringBuilder();
-        if (part instanceof Message msg && msg.getSubject() != null) {
-            builder.append("Subject: ").append(msg.getSubject()).append("\n");
+        if (part instanceof Message msg) {
+            Optional.ofNullable(msg.getSubject())
+                    .ifPresent(subject -> builder.append("Subject: ").append(subject).append("\n"));
         }
         builder.append(this.extractBody(part));
         return builder.toString();
@@ -174,18 +203,24 @@ public class EmailInboxService {
         return builder.toString();
     }
 
+    /**
+     * Matches the given regex pattern against message content.
+     *
+     * @param content text content to search within
+     * @param pattern compiled regex pattern
+     * @return captured value or full match, or null if no match found
+     */
     public String matchPattern(final String content, final Pattern pattern) {
-        if (content == null || content.isEmpty()) {
-            return null;
-        }
-        final Matcher matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            return matcher.groupCount() >= 1 ? matcher.group(1) : matcher.group(0);
-        }
-        return null;
+        return Optional.ofNullable(content)
+                .filter(Predicate.not(String::isEmpty))
+                .map(pattern::matcher)
+                .filter(Matcher::find)
+                .map(matcher -> matcher.groupCount() >= 1 ? matcher.group(1) : matcher.group(0))
+                .orElse(null);
     }
 
     protected Store connectStore() throws MessagingException {
+        this.validateEmailSettings();
         final String protocol = this.resolveProtocol();
         final Properties properties = this.buildProperties(protocol);
         final Session session = Session.getInstance(properties);
@@ -197,6 +232,24 @@ public class EmailInboxService {
         return store;
     }
 
+    private void validateEmailSettings() {
+        if (StringUtils.isBlank(this.emailSettings.getHost())) {
+            throw new DefaultFrameworkException("Email host must not be null or blank");
+        }
+        if (this.emailSettings.getPort() == null) {
+            throw new DefaultFrameworkException("Email port must not be null");
+        }
+        if (StringUtils.isBlank(this.emailSettings.getEmailAddress())) {
+            throw new DefaultFrameworkException("Email address must not be null or blank");
+        }
+    }
+
+    /**
+     * Builds JavaMail properties for the given protocol from configured email settings.
+     *
+     * @param protocol email protocol (e.g. imaps, pop3s)
+     * @return populated Properties object
+     */
     public Properties buildProperties(final String protocol) {
         final Properties props = new Properties();
         props.put(String.format(PROTOCOL_PROPERTY_FORMAT, protocol, "host"), this.emailSettings.getHost());
@@ -209,38 +262,37 @@ public class EmailInboxService {
     }
 
     private void configureTimeout(final Properties props, final String protocol) {
-        final String timeoutVal = this.emailSettings.getTimeout() != null
-                ? String.valueOf(this.emailSettings.getTimeout())
-                : DEFAULT_TIMEOUT_STR;
+        final String timeoutVal = Optional.ofNullable(this.emailSettings.getTimeout())
+                .map(String::valueOf)
+                .orElseThrow(() -> new DefaultFrameworkException("Email timeout must not be null"));
         props.put(String.format(PROTOCOL_PROPERTY_FORMAT, protocol, "connectiontimeout"), timeoutVal);
         props.put(String.format(PROTOCOL_PROPERTY_FORMAT, protocol, "timeout"), timeoutVal);
     }
 
     private void configureSsl(final Properties props, final String protocol) {
-        final boolean isSsl = Boolean.TRUE.equals(this.emailSettings.isSsl()) || protocol.endsWith("s");
-        if (isSsl) {
+        final boolean isSsl = Optional.ofNullable(this.emailSettings.isSsl())
+                .orElseThrow(() -> new DefaultFrameworkException("Email SSL setting must not be null"));
+        if (isSsl || protocol.endsWith("s")) {
             props.put(String.format(PROTOCOL_PROPERTY_FORMAT, protocol, "ssl.enable"), "true");
         }
     }
 
     private void configureCustomProperties(final Properties props) {
-        if (this.emailSettings.getProperties() != null) {
-            for (final EmailProperty prop : this.emailSettings.getProperties().getProperty()) {
-                props.put(prop.getName(), prop.getValue());
-            }
-        }
+        Optional.ofNullable(this.emailSettings.getProperties())
+                .map(EmailProperties::getProperty)
+                .ifPresent(propsList -> propsList.forEach(prop -> props.put(prop.getName(), prop.getValue())));
     }
 
     private String resolveProtocol() {
-        return this.emailSettings.getProtocol() != null
-                ? this.emailSettings.getProtocol().value()
-                : "imaps";
+        return Optional.ofNullable(this.emailSettings.getProtocol())
+                .map(EmailProtocol::value)
+                .orElseThrow(() -> new DefaultFrameworkException("Email protocol must not be null"));
     }
 
     private String resolveFolder() {
-        return this.emailSettings.getFolder() != null && !this.emailSettings.getFolder().isBlank()
-                ? this.emailSettings.getFolder()
-                : DEFAULT_FOLDER;
+        return Optional.ofNullable(this.emailSettings.getFolder())
+                .filter(Predicate.not(String::isBlank))
+                .orElseThrow(() -> new DefaultFrameworkException("Email folder must not be null or blank"));
     }
 
     private void sleep(final long millis) {

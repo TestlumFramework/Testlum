@@ -16,6 +16,7 @@ import com.testlum.testing.framework.interpreter.lib.ui.executor.EmailExecutor;
 import com.testlum.testing.framework.interpreter.lib.ui.executor.InputEmailExecutor;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
+import com.testlum.testing.framework.service.EmailHelper;
 import com.testlum.testing.framework.service.EmailInboxService;
 import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
@@ -88,11 +89,13 @@ class EmailE2ETest {
 
         final JacksonService jackson = new JacksonService();
         final StringPrettifier prettifier = new StringPrettifier(jackson);
+        final EmailHelper emailHelper = new EmailHelper(prettifier);
         final GlobalTestConfiguration globalConfig = mock(GlobalTestConfiguration.class);
         lenient().when(globalConfig.isStopScenarioOnFailure()).thenReturn(false);
 
         lenient().when(this.context.getBean(JacksonService.class)).thenReturn(jackson);
         lenient().when(this.context.getBean(StringPrettifier.class)).thenReturn(prettifier);
+        lenient().when(this.context.getBean(EmailHelper.class)).thenReturn(emailHelper);
         lenient().when(this.context.getBean(GlobalTestConfiguration.class)).thenReturn(globalConfig);
         lenient().when(this.context.getBean(ConfigProvider.class)).thenReturn(mock(ConfigProvider.class));
         lenient().when(this.context.getBean(ConditionProvider.class)).thenReturn(mock(ConditionProvider.class));

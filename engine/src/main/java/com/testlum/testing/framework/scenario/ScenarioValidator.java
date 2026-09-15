@@ -332,11 +332,33 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             try {
                 variationList.get().clear();
                 validateVariationsIfExist(scenario, xmlFile);
+                validateTestRail(scenario);
                 validateIfContainsNativeAndMobileCommands(scenario.getCommands());
                 scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
             } finally {
                 variationList.remove();
             }
+        }
+    }
+
+    private void validateTestRail(final Scenario scenario) {
+        if (Objects.isNull(scenario.getOverview())) {
+            return;
+        }
+        TestRail testRail = scenario.getOverview().getTestRail();
+        if (Objects.nonNull(testRail) && Boolean.TRUE.equals(testRail.isEnabled())) {
+            validateTestRailCaseReference(testRail);
+        }
+    }
+
+    private void validateTestRailCaseReference(final TestRail testRail) {
+        boolean hasCaseId = StringUtils.isNotBlank(testRail.getTestCaseId());
+        boolean hasMatchKeyValue = StringUtils.isNotBlank(testRail.getCaseMatchKeyValue());
+        if (hasCaseId && hasMatchKeyValue) {
+            throw new DefaultFrameworkException(ExceptionMessage.TEST_RAIL_CASE_REFERENCE_AMBIGUOUS);
+        }
+        if (!hasCaseId && !hasMatchKeyValue) {
+            throw new DefaultFrameworkException(ExceptionMessage.TEST_RAIL_CASE_REFERENCE_MISSING);
         }
     }
 

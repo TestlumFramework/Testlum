@@ -325,11 +325,11 @@ class AssertExecutorTest {
             present.setNegative(false);
             webAssert.getAttributeOrTitleOrEqual().add(present);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("myElement"), any()))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("myElement"), any(), result))
                     .thenReturn(mockElement);
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -345,10 +345,10 @@ class AssertExecutorTest {
             present.setNegative(false);
             webAssert.getAttributeOrTitleOrEqual().add(present);
 
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("missingElement"), any()))
+            CommandResult result = new CommandResult();
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("missingElement"), any(), result))
                     .thenThrow(new DefaultFrameworkException("Element not found"));
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -364,10 +364,10 @@ class AssertExecutorTest {
             present.setNegative(true);
             webAssert.getAttributeOrTitleOrEqual().add(present);
 
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("missingElement"), any()))
+            CommandResult result = new CommandResult();
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("missingElement"), any(), result))
                     .thenThrow(new DefaultFrameworkException("Element not found"));
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -383,11 +383,11 @@ class AssertExecutorTest {
             present.setNegative(true);
             webAssert.getAttributeOrTitleOrEqual().add(present);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("existingElement"), any()))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("existingElement"), any(), result))
                     .thenReturn(mockElement);
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -407,12 +407,12 @@ class AssertExecutorTest {
             checked.setNegative(false);
             webAssert.getAttributeOrTitleOrEqual().add(checked);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(true);
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -428,12 +428,12 @@ class AssertExecutorTest {
             checked.setNegative(false);
             webAssert.getAttributeOrTitleOrEqual().add(checked);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(false);
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -449,12 +449,12 @@ class AssertExecutorTest {
             checked.setNegative(true);
             webAssert.getAttributeOrTitleOrEqual().add(checked);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(false);
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -470,12 +470,12 @@ class AssertExecutorTest {
             checked.setNegative(true);
             webAssert.getAttributeOrTitleOrEqual().add(checked);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(true);
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -497,13 +497,13 @@ class AssertExecutorTest {
             attr.setNegative(false);
             webAssert.getAttributeOrTitleOrEqual().add(attr);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("expected");
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -521,13 +521,13 @@ class AssertExecutorTest {
             attr.setNegative(false);
             webAssert.getAttributeOrTitleOrEqual().add(attr);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("actual-different");
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -545,13 +545,13 @@ class AssertExecutorTest {
             attr.setNegative(true);
             webAssert.getAttributeOrTitleOrEqual().add(attr);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("different");
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);
@@ -569,13 +569,13 @@ class AssertExecutorTest {
             attr.setNegative(true);
             webAssert.getAttributeOrTitleOrEqual().add(attr);
 
+            CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.FOR_READING), result)).thenReturn(mockElement);
             when(uiUtil.getElementAttribute(eq(mockElement), eq("value"), eq(driver)))
                     .thenReturn("same");
 
-            CommandResult result = new CommandResult();
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(true);

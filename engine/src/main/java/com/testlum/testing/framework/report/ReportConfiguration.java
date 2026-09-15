@@ -35,11 +35,18 @@ public class ReportConfiguration {
     private void validateReport(final ExtentReports extentReports) {
         HtmlReportGenerator htmlReportGenerator = extentReports.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerReportGenerator = extentReports.getKlovServerReportGenerator();
-        if (!htmlReportGenerator.isEnabled()) {
-            if (Objects.isNull(klovServerReportGenerator) || !klovServerReportGenerator.isEnabled()) {
-                log.error(ExceptionMessage.NO_ENABLED_REPORT_GENERATORS_FOUND);
-                throw new DefaultFrameworkException("At least one report generator must be enabled");
-            }
+        TestRailReports testRailReportsGenerator = extentReports.getTestRailReports();
+
+        boolean isHtmlReportGeneratorEnabled =
+                !Objects.isNull(htmlReportGenerator) && htmlReportGenerator.isEnabled();
+        boolean isKlovReportGeneratorEnabled =
+                !Objects.isNull(klovServerReportGenerator) && klovServerReportGenerator.isEnabled();
+        boolean isTestRailReportGeneratorEnabled =
+                !Objects.isNull(testRailReportsGenerator) && testRailReportsGenerator.isEnabled();
+
+        if (!(isHtmlReportGeneratorEnabled || isKlovReportGeneratorEnabled || isTestRailReportGeneratorEnabled)) {
+            log.error(ExceptionMessage.NO_ENABLED_REPORT_GENERATORS_FOUND);
+            throw new DefaultFrameworkException("At least one report generator must be enabled");
         }
     }
 }

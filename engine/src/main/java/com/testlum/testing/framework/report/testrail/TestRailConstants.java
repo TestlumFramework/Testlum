@@ -52,17 +52,30 @@ public final class TestRailConstants {
     public static final String LOG_CASES_FETCHED =
             "Fetched {} TestRail cases carrying a value for custom key '{}'";
 
-    public static final String CASE_MATCH_KEY_NOT_CONFIGURED =
-            "Scenario '{}' uses caseMatchKeyValue but <caseMatchKey> is not set in "
-                    + "<testRailReports> of the global config. Scenario is skipped.";
-    public static final String CASE_MATCH_KEY_VALUE_NOT_FOUND =
-            "No TestRail case has value '{}' for custom key '{}' (scenario '{}'). Scenario is skipped.";
     public static final String CASE_MATCH_KEY_VALUE_DUPLICATED =
             "Custom key '{}' has value '{}' on more than one TestRail case ({} and {}). Case {} is used.";
-    public static final String TEST_RAIL_CASE_ID_NOT_PARSABLE =
-            "Value '{}' in testCaseId of scenario '{}' is not a positive case id. Value is skipped.";
-    public static final String TEST_RAIL_CASE_NOT_RESOLVED =
-            "Scenario '{}' has neither a usable testCaseId nor a caseMatchKeyValue. Scenario is skipped.";
+
+    public static final String REPORTED_TABLE_TITLE = "TestRail results";
+    public static final String NOT_REPORTED_TABLE_TITLE = "TestRail cases not reported";
+    public static final String SCENARIO_HEADER = "Scenario";
+    public static final String CASE_HEADER = "Case";
+    public static final String RUN_HEADER = "Run";
+    public static final String RESULT_HEADER = "Result";
+    public static final String REASON_HEADER = "Reason";
+    public static final String RESULT_PASSED = "Passed";
+    public static final String RESULT_FAILED = "Failed";
+    public static final String REPORTED_TABLE_FOOTER = "%d result(s) sent, %d screenshot(s) attached";
+    public static final String NOT_REPORTED_TABLE_FOOTER = "%d case(s) did not reach TestRail";
+    public static final String CASE_ID_UNRESOLVED = "-";
+
+    public static final String REASON_CASE_ID_NOT_PARSABLE = "testCaseId value is not a positive case id";
+    public static final String REASON_CASE_REFERENCE_MISSING =
+            "Neither 'testCaseId' nor 'caseMatchKeyValue' is set on <testRail>";
+    public static final String REASON_MATCH_KEY_NOT_CONFIGURED =
+            "<caseMatchKey> is not set in <testRailReports> of the global config";
+    public static final String REASON_MATCH_KEY_VALUE_NOT_FOUND =
+            "No TestRail case has value '%s' for custom key '%s'";
+    public static final String REASON_RUN_NOT_CREATED = "Test Run could not be created in TestRail";
 
     public static final String RUN_ID_ERROR_RESPONSE = "Failed to parse Run ID '{}' for TestRail.";
 

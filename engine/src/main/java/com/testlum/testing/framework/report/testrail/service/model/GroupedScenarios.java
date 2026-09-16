@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.testrail.model;
+package com.testlum.testing.framework.report.testrail.service.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

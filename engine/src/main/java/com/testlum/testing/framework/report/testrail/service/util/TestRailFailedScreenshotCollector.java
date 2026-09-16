@@ -1,8 +1,8 @@
-package com.testlum.testing.framework.report.testrail.util;
+package com.testlum.testing.framework.report.testrail.service.util;
 
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.report.ScenarioResult;
-import com.testlum.testing.framework.report.testrail.model.ScenarioCase;
+import com.testlum.testing.framework.report.testrail.service.model.ScenarioCase;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

@@ -1,8 +1,12 @@
 package com.testlum.testing.framework.report.testrail.util;
 
 import com.testlum.testing.framework.report.ScenarioResult;
-import com.testlum.testing.framework.report.testrail.TestRailApiClient;
-import com.testlum.testing.framework.report.testrail.model.ScenarioCase;
+import com.testlum.testing.framework.report.testrail.api.TestRailApiClient;
+import com.testlum.testing.framework.report.testrail.TestRailConstants;
+import com.testlum.testing.framework.report.testrail.service.util.TestRailCaseIdResolver;
+import com.testlum.testing.framework.report.testrail.summary.dto.NotReportedCase;
+import com.testlum.testing.framework.report.testrail.service.model.ScenarioCase;
+import com.testlum.testing.framework.report.testrail.summary.TestRailReportSummary;
 import com.testlum.testing.model.global_config.ExtentReports;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.Report;
@@ -29,10 +33,12 @@ class TestRailCaseIdResolverTest {
     private static final String MATCH_KEY = "custom_automation_id";
 
     private TestRailApiClient apiClient;
+    private TestRailReportSummary summary;
 
     @BeforeEach
     void setUp() {
         apiClient = mock(TestRailApiClient.class);
+        summary = new TestRailReportSummary();
     }
 
     private TestRailCaseIdResolver resolverWithMatchKey(final String caseMatchKey) {
@@ -45,6 +51,16 @@ class TestRailCaseIdResolverTest {
         GlobalTestConfiguration globalConfig = new GlobalTestConfiguration();
         globalConfig.setReport(report);
         return new TestRailCaseIdResolver(globalConfig, apiClient);
+    }
+
+    private List<ScenarioCase> resolveCases(final TestRailCaseIdResolver resolver,
+                                           final List<ScenarioResult> scenarioResults) {
+        summary = new TestRailReportSummary();
+        return resolver.resolveCases(scenarioResults, summary);
+    }
+
+    private List<String> notReportedScenarios() {
+        return summary.getNotReportedCases().stream().map(NotReportedCase::scenarioName).toList();
     }
 
     private ScenarioResult scenario(final String name, final String caseId, final String matchKeyValue) {
@@ -67,7 +83,7 @@ class TestRailCaseIdResolverTest {
         void resolvesDirectlyFromTestCaseIdWithoutCallingApi() {
             TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
 
-            List<ScenarioCase> resolved = resolver.resolveCases(
+            List<ScenarioCase> resolved = resolveCases(resolver,
                     List.of(scenario("login", "42", null)));
 
             assertEquals(1, resolved.size());
@@ -79,7 +95,7 @@ class TestRailCaseIdResolverTest {
         void resolvesEveryCaseIdOfCommaSeparatedList() {
             TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
 
-            List<ScenarioCase> resolved = resolver.resolveCases(
+            List<ScenarioCase> resolved = resolveCases(resolver,
                     List.of(scenario("login", "91, 94", null)));
 
             assertEquals(2, resolved.size());
@@ -93,7 +109,7 @@ class TestRailCaseIdResolverTest {
         void reportsDuplicatedCaseIdOnlyOnce() {
             TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
 
-            List<ScenarioCase> resolved = resolver.resolveCases(
+            List<ScenarioCase> resolved = resolveCases(resolver,
                     List.of(scenario("login", "91,91", null)));
 
             assertEquals(1, resolved.size());
@@ -104,7 +120,7 @@ class TestRailCaseIdResolverTest {
         void skipsUnparsableEntryAndKeepsRemainingCaseIds() {
             TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
 
-            List<ScenarioCase> resolved = resolver.resolveCases(
+            List<ScenarioCase> resolved = resolveCases(resolver,
                     List.of(scenario("login", "91,C94,0,94", null)));
 
             assertEquals(List.of(91, 94), resolved.stream().map(ScenarioCase::caseId).toList());
@@ -114,14 +130,29 @@ class TestRailCaseIdResolverTest {
         void skipsScenarioWithNeitherCaseIdNorMatchKeyValue() {
             TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
 
-            assertTrue(resolver.resolveCases(List.of(scenario("login", null, null))).isEmpty());
+            assertTrue(resolveCases(resolver, List.of(scenario("login", null, null))).isEmpty());
+            assertEquals(List.of("login"), notReportedScenarios());
+            assertEquals(TestRailConstants.REASON_CASE_REFERENCE_MISSING,
+                    summary.getNotReportedCases().get(0).reason());
+        }
+
+        @Test
+        void recordsUnparsableEntryAsNotReportedCase() {
+            TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
+
+            resolveCases(resolver, List.of(scenario("login", "91,C94", null)));
+
+            assertEquals(1, summary.getNotReportedCases().size());
+            assertEquals("C94", summary.getNotReportedCases().get(0).caseId());
+            assertEquals(TestRailConstants.REASON_CASE_ID_NOT_PARSABLE,
+                    summary.getNotReportedCases().get(0).reason());
         }
 
         @Test
         void skipsScenarioWithNonNumericCaseIdAndNoMatchKeyValue() {
             TestRailCaseIdResolver resolver = resolverWithMatchKey(MATCH_KEY);
 
-            assertTrue(resolver.resolveCases(List.of(scenario("login", "C42", null))).isEmpty());
+            assertTrue(resolveCases(resolver, List.of(scenario("login", "C42", null))).isEmpty());
         }
     }
 
@@ -133,7 +164,7 @@ class TestRailCaseIdResolverTest {
             when(apiClient.fetchCaseIdsByMatchKey(MATCH_KEY)).thenReturn(Map.of("LOGIN_001", 77));
             TestRailCaseIdResolver caseResolver = resolverWithMatchKey(MATCH_KEY);
 
-            List<ScenarioCase> resolvedCases = caseResolver.resolveCases(
+            List<ScenarioCase> resolvedCases = resolveCases(caseResolver,
                     List.of(scenario("login", null, "LOGIN_001")));
 
             assertEquals(1, resolvedCases.size());
@@ -145,7 +176,7 @@ class TestRailCaseIdResolverTest {
             when(apiClient.fetchCaseIdsByMatchKey(MATCH_KEY)).thenReturn(Map.of("A", 1, "B", 2));
             TestRailCaseIdResolver caseResolver = resolverWithMatchKey(MATCH_KEY);
 
-            List<ScenarioCase> resolvedCases = caseResolver.resolveCases(List.of(
+            List<ScenarioCase> resolvedCases = resolveCases(caseResolver, List.of(
                     scenario("a", null, "A"),
                     scenario("b", null, "B")));
 
@@ -158,17 +189,22 @@ class TestRailCaseIdResolverTest {
             when(apiClient.fetchCaseIdsByMatchKey(MATCH_KEY)).thenReturn(Map.of("OTHER", 5));
             TestRailCaseIdResolver caseResolver = resolverWithMatchKey(MATCH_KEY);
 
-            assertTrue(caseResolver.resolveCases(
+            assertTrue(resolveCases(caseResolver,
                     List.of(scenario("login", null, "LOGIN_001"))).isEmpty());
+            assertEquals(List.of("login"), notReportedScenarios());
+            assertEquals(String.format(TestRailConstants.REASON_MATCH_KEY_VALUE_NOT_FOUND, "LOGIN_001", MATCH_KEY),
+                    summary.getNotReportedCases().get(0).reason());
         }
 
         @Test
         void skipsScenarioAndDoesNotCallApiWhenCaseMatchKeyNotConfigured() {
             TestRailCaseIdResolver caseResolver = resolverWithMatchKey(null);
 
-            assertTrue(caseResolver.resolveCases(
+            assertTrue(resolveCases(caseResolver,
                     List.of(scenario("login", null, "LOGIN_001"))).isEmpty());
             verify(apiClient, never()).fetchCaseIdsByMatchKey(anyString());
+            assertEquals(TestRailConstants.REASON_MATCH_KEY_NOT_CONFIGURED,
+                    summary.getNotReportedCases().get(0).reason());
         }
     }
 
@@ -180,7 +216,7 @@ class TestRailCaseIdResolverTest {
             when(apiClient.fetchCaseIdsByMatchKey(MATCH_KEY)).thenReturn(Map.of("LOGIN_001", 77));
             TestRailCaseIdResolver caseResolver = resolverWithMatchKey(MATCH_KEY);
 
-            List<ScenarioCase> resolvedCases = caseResolver.resolveCases(List.of(
+            List<ScenarioCase> resolvedCases = resolveCases(caseResolver, List.of(
                     scenario("byId", "42", null),
                     scenario("byKey", null, "LOGIN_001"),
                     scenario("broken", null, null)));

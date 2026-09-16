@@ -98,7 +98,21 @@ This will send the result of the test to the **existing run (ID=1)** and associa
 
 ---
 
-## 4️⃣ XML Schema Updates
+## 4️⃣ Console Output
+
+When the run is over, TestRail reporting prints two tables instead of the raw API responses.
+
+**Results that reached TestRail** (passed rows in green, failed rows in red)
+
+**Cases that did not reach TestRail**, with the reason for each one.
+
+A case lands in the second table when it could not be resolved (no `testCaseId` or `caseMatchKeyValue`,
+an unparsable id, an unknown `caseMatchKeyValue`), when the Test Run could not be created, or when the
+API call that carried it failed.
+
+---
+
+## 5️⃣ XML Schema Updates
 
 ### `<testRailReports>` (Global Config)
 
@@ -158,7 +172,8 @@ This will send the result of the test to the **existing run (ID=1)** and associa
 
 ## ℹ️ Additional Info
 
-* Errors and responses from TestRail are logged.
+* Every scenario handed to TestRail ends up in one of the two summary tables.
+* A scenario that cannot be reported never fails the run.
 * The integration uses TestRail's [add\_results\_for\_cases](https://www.gurock.com/testrail/docs/api/reference/results) and [add\_run](https://www.gurock.com/testrail/docs/api/reference/runs) API endpoints.
 
 ---

@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.testrail.model;
+package com.testlum.testing.framework.report.testrail.api.dto;
 
 
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Run {
+public class RunRequest {
     private Integer id;
     private Integer projectId;
     private String name;

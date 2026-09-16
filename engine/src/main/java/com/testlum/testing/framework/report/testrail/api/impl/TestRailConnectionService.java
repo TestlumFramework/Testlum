@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.testrail.impl;
+package com.testlum.testing.framework.report.testrail.api.impl;
 
 import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;

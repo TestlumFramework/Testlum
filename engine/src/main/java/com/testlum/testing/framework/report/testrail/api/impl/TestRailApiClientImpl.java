@@ -1,10 +1,12 @@
-package com.testlum.testing.framework.report.testrail.impl;
+package com.testlum.testing.framework.report.testrail.api.impl;
 
-import com.testlum.testing.framework.report.testrail.TestRailApiClient;
+import com.testlum.testing.framework.report.testrail.api.TestRailApiClient;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
-import com.testlum.testing.framework.report.testrail.model.ResultRequestDto;
-import com.testlum.testing.framework.report.testrail.model.Run;
-import com.testlum.testing.framework.report.testrail.util.TestRailResponseJsonDeserializer;
+import com.testlum.testing.framework.report.testrail.api.dto.ResultRequest;
+import com.testlum.testing.framework.report.testrail.api.dto.TestRailDeliveryOutcome;
+import com.testlum.testing.framework.report.testrail.api.dto.RunRequest;
+import com.testlum.testing.framework.report.testrail.summary.util.TestRailErrorDescriber;
+import com.testlum.testing.framework.report.testrail.api.util.TestRailResponseJsonDeserializer;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.TestRailReports;
 import lombok.extern.slf4j.Slf4j;
@@ -28,16 +30,19 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     private final TestRailReports testRails;
     private final TestRailAttachmentApiClient attachmentApiClient;
     private final TestRailResponseJsonDeserializer jsonDeserializer;
+    private final TestRailErrorDescriber errorDescriber;
     private final TestRailConnectionService connectionService;
     private final RestTemplate restTemplate;
 
     public TestRailApiClientImpl(final GlobalTestConfiguration globalTestConfiguration,
                                  final TestRailAttachmentApiClient attachmentApiClient,
                                  final TestRailResponseJsonDeserializer jsonDeserializer,
+                                 final TestRailErrorDescriber errorDescriber,
                                  final RestTemplate restTemplate) {
         this.testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
         this.attachmentApiClient = attachmentApiClient;
         this.jsonDeserializer = jsonDeserializer;
+        this.errorDescriber = errorDescriber;
         this.restTemplate = restTemplate;
         this.connectionService = new TestRailConnectionService(testRails, restTemplate);
     }
@@ -48,24 +53,31 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     }
 
     @Override
-    public void sendResultsInBatch(final int runId, final List<ResultRequestDto> results,
-                                   final Map<Integer, String> screenshotsOfUnsuccessfulTests) {
+    public TestRailDeliveryOutcome sendResultsInBatch(final int runId, final List<ResultRequest> results,
+                                                      final Map<Integer, String> screenshotsOfUnsuccessfulTests) {
         String url = connectionService.endpoints().getAddResultsForCaseEndpoint(runId);
         HttpEntity<Map<String, Object>> entity = prepareSendHttpRequest(results);
         try {
-            log.info(TestRailConstants.LOG_SENDING_RESULTS, runId, results.size());
+            log.debug(TestRailConstants.LOG_SENDING_RESULTS, runId, results.size());
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-            log.info(TestRailConstants.LOG_SUCCESS_RESPONSE, runId, response.getBody());
-            if (screenshotsEnabled() && !screenshotsOfUnsuccessfulTests.isEmpty()) {
-                attachmentApiClient.attachScreenshotsForFailedScenarios(
-                        response.getBody(), screenshotsOfUnsuccessfulTests);
-            }
+            log.debug(TestRailConstants.LOG_SUCCESS_RESPONSE, runId, response.getBody());
+            return TestRailDeliveryOutcome.delivered(
+                    attachScreenshots(response.getBody(), screenshotsOfUnsuccessfulTests));
         } catch (Exception e) {
-            log.error(TestRailConstants.LOG_ERROR_RESPONSE, runId, e.getMessage(), e);
+            String reason = errorDescriber.describe(e);
+            log.debug(TestRailConstants.LOG_ERROR_RESPONSE, runId, reason, e);
+            return TestRailDeliveryOutcome.failed(reason);
         }
     }
 
-    private HttpEntity<Map<String, Object>> prepareSendHttpRequest(final List<ResultRequestDto> results) {
+    private int attachScreenshots(final String responseBody, final Map<Integer, String> screenshots) {
+        if (!screenshotsEnabled() || screenshots.isEmpty()) {
+            return 0;
+        }
+        return attachmentApiClient.attachScreenshotsForFailedScenarios(responseBody, screenshots);
+    }
+
+    private HttpEntity<Map<String, Object>> prepareSendHttpRequest(final List<ResultRequest> results) {
         Map<String, Object> request = new HashMap<>();
         request.put(TestRailConstants.RESULTS, results);
         HttpHeaders headers = connectionService.buildHeaders();
@@ -75,19 +87,20 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     @Override
     public Optional<Integer> createNewTestRailRun(final List<Integer> caseIds) {
         String url = connectionService.endpoints().getCreateTextRunEndpoint(testRails.getProjectId());
-        HttpEntity<Run> entity = buildTestRunHttpEntity(caseIds);
+        HttpEntity<RunRequest> entity = buildTestRunHttpEntity(caseIds);
         try {
-            log.info(TestRailConstants.LOG_CREATING_TEST_RUN, testRails.getDefaultRunName(), caseIds.size());
-            ResponseEntity<Run> response = restTemplate.exchange(url, HttpMethod.POST, entity, Run.class);
+            log.debug(TestRailConstants.LOG_CREATING_TEST_RUN, testRails.getDefaultRunName(), caseIds.size());
+            ResponseEntity<RunRequest> response = restTemplate.exchange(url, HttpMethod.POST, entity, RunRequest.class);
             return fetchIdFromResponse(response);
         } catch (Exception e) {
-            log.error(TestRailConstants.LOG_TEST_RUN_CREATION_FAILED, testRails.getDefaultRunName(), e.getMessage(), e);
+            log.error(TestRailConstants.LOG_TEST_RUN_CREATION_FAILED,
+                    testRails.getDefaultRunName(), errorDescriber.describe(e));
             return Optional.empty();
         }
     }
 
-    private HttpEntity<Run> buildTestRunHttpEntity(final List<Integer> caseIds) {
-        Run request = Run.builder()
+    private HttpEntity<RunRequest> buildTestRunHttpEntity(final List<Integer> caseIds) {
+        RunRequest request = RunRequest.builder()
                 .name(testRails.getDefaultRunName())
                 .description(testRails.getDefaultRunDescription())
                 .includeAll(false)
@@ -96,11 +109,11 @@ public class TestRailApiClientImpl implements TestRailApiClient {
         return new HttpEntity<>(request, headers);
     }
 
-    private Optional<Integer> fetchIdFromResponse(final ResponseEntity<Run> response) {
-        Run body = response.getBody();
+    private Optional<Integer> fetchIdFromResponse(final ResponseEntity<RunRequest> response) {
+        RunRequest body = response.getBody();
         if (body != null && body.getId() != null) {
             Integer id = body.getId();
-            log.info(TestRailConstants.LOG_TEST_RUN_CREATED, testRails.getDefaultRunName(), id);
+            log.debug(TestRailConstants.LOG_TEST_RUN_CREATED, testRails.getDefaultRunName(), id);
             return Optional.of(id);
         }
         return Optional.empty();
@@ -112,10 +125,11 @@ public class TestRailApiClientImpl implements TestRailApiClient {
         try {
             collectAllCasePages(caseMatchKey, caseIdsByMatchKeyValue);
         } catch (Exception e) {
-            log.error(TestRailConstants.LOG_FETCHING_CASES_FAILED, testRails.getProjectId(), e.getMessage(), e);
+            log.error(TestRailConstants.LOG_FETCHING_CASES_FAILED, testRails.getProjectId(),
+                    errorDescriber.describe(e));
             return Map.of();
         }
-        log.info(TestRailConstants.LOG_CASES_FETCHED, caseIdsByMatchKeyValue.size(), caseMatchKey);
+        log.debug(TestRailConstants.LOG_CASES_FETCHED, caseIdsByMatchKeyValue.size(), caseMatchKey);
         return caseIdsByMatchKeyValue;
     }
 

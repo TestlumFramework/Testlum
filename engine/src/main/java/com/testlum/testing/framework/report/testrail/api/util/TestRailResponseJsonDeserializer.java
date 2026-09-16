@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.testrail.util;
+package com.testlum.testing.framework.report.testrail.api.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
-import com.testlum.testing.framework.report.testrail.model.ResultResponseDto;
+import com.testlum.testing.framework.report.testrail.api.dto.ResultResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ public class TestRailResponseJsonDeserializer {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public List<ResultResponseDto> extractResultsDTOs(final String jsonResponse) {
+    public List<ResultResponse> extractResultsDTOs(final String jsonResponse) {
         JsonNode root;
         try {
             root = OBJECT_MAPPER.readTree(jsonResponse);
@@ -96,14 +96,14 @@ public class TestRailResponseJsonDeserializer {
         return matchKeyNode.isTextual() ? matchKeyNode.textValue() : matchKeyNode.asText();
     }
 
-    private Optional<ResultResponseDto> mapNodeToResult(final JsonNode resultNode) {
+    private Optional<ResultResponse> mapNodeToResult(final JsonNode resultNode) {
         final Integer id = readInt(resultNode, TestRailConstants.ID_FIELD);
         final Integer testId = readInt(resultNode, TestRailConstants.TEST_ID);
         final Integer statusId = readInt(resultNode, TestRailConstants.STATUS_ID);
         if (id == null || testId == null || statusId == null) {
             return Optional.empty();
         }
-        return Optional.of(ResultResponseDto.builder()
+        return Optional.of(ResultResponse.builder()
                 .id(id)
                 .testId(testId)
                 .statusId(statusId)

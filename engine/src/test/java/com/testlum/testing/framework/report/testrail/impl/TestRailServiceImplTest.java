@@ -1,12 +1,15 @@
 package com.testlum.testing.framework.report.testrail.impl;
 
 import com.testlum.testing.framework.report.ScenarioResult;
-import com.testlum.testing.framework.report.testrail.TestRailApiClient;
-import com.testlum.testing.framework.report.testrail.model.ResultRequestDto;
-import com.testlum.testing.framework.report.testrail.util.TestRailFailedScreenshotCollector;
-import com.testlum.testing.framework.report.testrail.util.ScenarioResultDataExtractor;
-import com.testlum.testing.framework.report.testrail.util.TestRailCaseIdResolver;
-import com.testlum.testing.framework.report.testrail.util.TestRailResultMapper;
+import com.testlum.testing.framework.report.testrail.api.dto.ResultRequest;
+import com.testlum.testing.framework.report.testrail.service.impl.TestRailServiceImpl;
+import com.testlum.testing.framework.report.testrail.api.TestRailApiClient;
+import com.testlum.testing.framework.report.testrail.api.dto.TestRailDeliveryOutcome;
+import com.testlum.testing.framework.report.testrail.service.util.TestRailFailedScreenshotCollector;
+import com.testlum.testing.framework.report.testrail.service.util.ScenarioResultDataExtractor;
+import com.testlum.testing.framework.report.testrail.service.util.TestRailCaseIdResolver;
+import com.testlum.testing.framework.report.testrail.service.util.TestRailResultMapper;
+import com.testlum.testing.framework.report.testrail.summary.TestRailSummaryLogger;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.model.global_config.ExtentReports;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
@@ -43,6 +46,7 @@ class TestRailServiceImplTest {
     @BeforeEach
     void setUp() {
         apiClient = mock(TestRailApiClient.class);
+        when(apiClient.sendResultsInBatch(anyInt(), anyList(), any())).thenReturn(TestRailDeliveryOutcome.delivered(0));
         TestRailReports testRailReports = new TestRailReports();
         testRailReports.setCaseMatchKey(MATCH_KEY);
         ExtentReports extentReports = new ExtentReports();
@@ -58,6 +62,7 @@ class TestRailServiceImplTest {
                 new ScenarioResultDataExtractor(),
                 new TestRailCaseIdResolver(globalConfig, apiClient),
                 new TestRailFailedScreenshotCollector(),
+                new TestRailSummaryLogger(),
                 mock(LogUtil.class));
     }
 
@@ -80,8 +85,8 @@ class TestRailServiceImplTest {
     }
 
     @SuppressWarnings("unchecked")
-    private List<ResultRequestDto> captureSentResults() {
-        ArgumentCaptor<List<ResultRequestDto>> captor = ArgumentCaptor.forClass(List.class);
+    private List<ResultRequest> captureSentResults() {
+        ArgumentCaptor<List<ResultRequest>> captor = ArgumentCaptor.forClass(List.class);
         verify(apiClient).sendResultsInBatch(eq(RUN_ID), captor.capture(), any());
         return captor.getValue();
     }
@@ -93,7 +98,7 @@ class TestRailServiceImplTest {
         void sendsResultUnderTheDeclaredCaseId() {
             service.generateTestRailReports(List.of(scenario("login", true, "42", null)));
 
-            List<ResultRequestDto> sent = captureSentResults();
+            List<ResultRequest> sent = captureSentResults();
             assertEquals(1, sent.size());
             assertEquals("42", sent.get(0).caseId());
             verify(apiClient, never()).fetchCaseIdsByMatchKey(MATCH_KEY);
@@ -109,7 +114,7 @@ class TestRailServiceImplTest {
 
             service.generateTestRailReports(List.of(scenario("login", true, null, "LOGIN_001")));
 
-            List<ResultRequestDto> sent = captureSentResults();
+            List<ResultRequest> sent = captureSentResults();
             assertEquals(1, sent.size());
             assertEquals("77", sent.get(0).caseId());
         }
@@ -122,7 +127,7 @@ class TestRailServiceImplTest {
                     scenario("byId", true, "42", null),
                     scenario("byKey", true, null, "LOGIN_001")));
 
-            List<String> caseIds = captureSentResults().stream().map(ResultRequestDto::caseId).sorted().toList();
+            List<String> caseIds = captureSentResults().stream().map(ResultRequest::caseId).sorted().toList();
             assertEquals(List.of("42", "77"), caseIds);
         }
     }
@@ -136,7 +141,7 @@ class TestRailServiceImplTest {
                     scenario("noTestRail", false, null, null),
                     scenario("byId", true, "42", null)));
 
-            List<ResultRequestDto> sent = captureSentResults();
+            List<ResultRequest> sent = captureSentResults();
             assertEquals(1, sent.size());
             assertEquals("42", sent.get(0).caseId());
         }

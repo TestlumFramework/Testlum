@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.report.testrail.util;
 
+import com.testlum.testing.framework.report.testrail.api.util.TestRailResponseJsonDeserializer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

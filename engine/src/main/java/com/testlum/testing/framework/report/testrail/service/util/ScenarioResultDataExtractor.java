@@ -1,9 +1,9 @@
-package com.testlum.testing.framework.report.testrail.util;
+package com.testlum.testing.framework.report.testrail.service.util;
 
 import com.testlum.testing.framework.report.ScenarioResult;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
-import com.testlum.testing.framework.report.testrail.model.GroupedScenarios;
-import com.testlum.testing.framework.report.testrail.model.ScenarioCase;
+import com.testlum.testing.framework.report.testrail.service.model.GroupedScenarios;
+import com.testlum.testing.framework.report.testrail.service.model.ScenarioCase;
 import com.testlum.testing.model.scenario.TestRail;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -3,7 +3,7 @@ package com.testlum.testing.framework.report.extentreports;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.testlum.testing.framework.report.ScenarioResult;
-import com.testlum.testing.framework.report.testrail.TestRailService;
+import com.testlum.testing.framework.report.testrail.service.TestRailService;
 import com.testlum.testing.framework.util.BrowserUtil;
 import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.model.global_config.AbstractBrowser;

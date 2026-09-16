@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.testrail;
+package com.testlum.testing.framework.report.testrail.service;
 
 
 import com.testlum.testing.framework.report.ScenarioResult;

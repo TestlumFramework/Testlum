@@ -3,6 +3,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.ResultUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.framework.util.check.ElementChecks;
 import com.testlum.testing.model.scenario.DoubleClick;
@@ -30,6 +31,8 @@ class DoubleClickExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private InteractiveWebDriver driver;
     @Mock
     private ApplicationContext context;
@@ -56,13 +59,13 @@ class DoubleClickExecutorTest {
             click.setLocator("row-item");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("row-item"), any(), eq(ElementChecks.FOR_INTERACTION)))
+            when(uiUtil.findWebElement(any(), eq("row-item"), any(), eq(ElementChecks.FOR_INTERACTION), result))
                     .thenReturn(element);
 
             executor.execute(click, result);
 
             verify(uiUtil).highlightElementIfRequired(anyBoolean(), eq(element), eq(driver));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
             assertEquals("row-item", result.getMetadata().get(ResultUtil.DOUBLE_CLICK_LOCATOR));
         }
     }

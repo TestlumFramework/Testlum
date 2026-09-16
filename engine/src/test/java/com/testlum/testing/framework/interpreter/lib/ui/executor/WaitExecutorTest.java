@@ -109,11 +109,11 @@ class WaitExecutorTest {
             CommandResult result = new CommandResult();
             when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("loading-spinner"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("loading-spinner"), any(), result)).thenReturn(element);
 
             executor.execute(uiWait, result);
 
-            verify(uiUtil).findWebElement(any(), eq("loading-spinner"), any());
+            verify(uiUtil).findWebElement(any(), eq("loading-spinner"), any(), result);
         }
 
         @Test
@@ -127,7 +127,7 @@ class WaitExecutorTest {
             CommandResult result = new CommandResult();
             when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("my-element"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("my-element"), any(), result)).thenReturn(element);
 
             executor.execute(uiWait, result);
 
@@ -149,11 +149,11 @@ class WaitExecutorTest {
             CommandResult result = new CommandResult();
             when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("submit-btn"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("submit-btn"), any(), result)).thenReturn(element);
 
             executor.execute(uiWait, result);
 
-            verify(uiUtil).findWebElement(any(), eq("submit-btn"), any());
+            verify(uiUtil).findWebElement(any(), eq("submit-btn"), any(), result);
         }
 
         @Test
@@ -167,7 +167,7 @@ class WaitExecutorTest {
             CommandResult result = new CommandResult();
             when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("btn-id"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("btn-id"), any(), result)).thenReturn(element);
 
             executor.execute(uiWait, result);
 
@@ -213,7 +213,7 @@ class WaitExecutorTest {
             uiWait.setVisible(visible);
             CommandResult result = new CommandResult();
             when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
-            when(uiUtil.findWebElement(any(), eq("nonexistent"), any()))
+            when(uiUtil.findWebElement(any(), eq("nonexistent"), any(), result))
                     .thenThrow(new RuntimeException("Element not found"));
 
             executor.execute(uiWait, result);

@@ -54,16 +54,16 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
         uiLogUtil.logAssertAttributeInfo(attribute);
         resultUtil.addAssertAttributeMetaData(attribute, result);
-        String actual = getActualValue(attribute);
+        String actual = getActualValue(attribute, result);
         String expected = attribute.getContent();
         resultUtil.setExpectedActual(expected, actual, result);
         executeComparison(actual, expected, result);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private String getActualValue(final AssertAttribute attribute) {
+    private String getActualValue(final AssertAttribute attribute, final CommandResult result) {
         WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
-                attribute.getLocatorStrategy());
+                attribute.getLocatorStrategy(), result);
         return webElement.getAttribute(attribute.getName());
     }
 

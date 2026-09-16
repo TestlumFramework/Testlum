@@ -31,7 +31,7 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
         result.put(ALERT_TYPE, alert.getType().value());
         waitForAlertVisibleIfRequired(alert, result);
         handleAlertInteraction(alert, result);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void waitForAlertVisibleIfRequired(final Alert alert, final CommandResult result) {

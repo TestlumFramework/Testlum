@@ -2,13 +2,17 @@ package com.testlum.testing.framework.scenario;
 
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.exception.IntegrationDisabledException;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.util.InjectionService;
 import com.testlum.testing.framework.util.IntegrationsUtil;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLParser;
 import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.model.global_config.Integrations;
+import com.testlum.testing.model.scenario.Overview;
 import com.testlum.testing.model.scenario.Scenario;
 import com.testlum.testing.model.scenario.Settings;
+import com.testlum.testing.model.scenario.TestRail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,6 +51,8 @@ class ScenarioCollectorTest {
     private GlobalVariationsProvider globalVariationsProvider;
     @Mock
     private Integrations integrations;
+    @Mock
+    private InjectionService injectionService;
 
     private ScenarioCollector collector;
 
@@ -54,7 +60,8 @@ class ScenarioCollectorTest {
     void setUp() {
         collector = new ScenarioCollector(
                 scenarioValidator, xmlParsers, testResourceSettings,
-                globalVariationsProvider, new AuthCommandExpander(integrationUtil, integrations));
+                globalVariationsProvider, new AuthCommandExpander(integrationUtil, integrations),
+                injectionService);
     }
 
     @Nested
@@ -360,6 +367,88 @@ class ScenarioCollectorTest {
                         .map(Path::toFile)
                         .forEach(File::delete);
             }
+        }
+    }
+
+    @Nested
+    class TestRailInjection {
+
+        @TempDir
+        Path tempDir;
+
+        @SuppressWarnings("unchecked")
+        private Scenario prepareScenario(final Overview overview) throws IOException {
+            Path scenarioDir = tempDir.resolve("testRail");
+            Files.createDirectories(scenarioDir);
+            Files.writeString(scenarioDir.resolve("scenario.xml"), "<s/>");
+
+            when(testResourceSettings.getScenarioScopeFolder()).thenReturn(Optional.empty());
+            when(testResourceSettings.getTestResourcesFolder()).thenReturn(tempDir.toFile());
+
+            XMLParser<Scenario> parser = mock(XMLParser.class);
+            when(xmlParsers.forScenario()).thenReturn(parser);
+
+            Scenario scenario = new Scenario();
+            scenario.setSettings(new Settings());
+            scenario.setOverview(overview);
+            when(parser.process(any(File.class))).thenReturn(scenario);
+            return scenario;
+        }
+
+        @Test
+        void injectsSystemVariablesIntoTestRailBeforeValidation() throws IOException {
+            TestRail raw = new TestRail();
+            raw.setTestRailRunId("${TESTRAIL_RUN_ID}");
+            TestRail injected = new TestRail();
+            injected.setTestRailRunId("42");
+            Overview overview = new Overview();
+            overview.setTestRail(raw);
+            when(injectionService.injectFromSystem(raw)).thenReturn(injected);
+
+            ScenarioCollector.Result result = collector.collect();
+
+            Scenario scenario = prepareScenario(overview);
+            assertEquals(1, result.size());
+            assertNull(result.get(0).exception);
+            assertSame(injected, scenario.getOverview().getTestRail());
+            var inOrder = inOrder(injectionService, scenarioValidator);
+            inOrder.verify(injectionService).injectFromSystem(raw);
+            inOrder.verify(scenarioValidator).validate(eq(scenario), any(File.class));
+        }
+
+        @Test
+        void skipsInjectionWhenTestRailIsAbsent() throws IOException {
+            prepareScenario(new Overview());
+
+            collector.collect();
+
+            verifyNoInteractions(injectionService);
+        }
+
+        @Test
+        void skipsInjectionWhenOverviewIsAbsent() throws IOException {
+            prepareScenario(null);
+
+            collector.collect();
+
+            verifyNoInteractions(injectionService);
+        }
+
+        @Test
+        void keepsScenarioWhenSystemVariableIsMissing() throws IOException {
+            TestRail raw = new TestRail();
+            Overview overview = new Overview();
+            overview.setTestRail(raw);
+            prepareScenario(overview);
+            when(injectionService.injectFromSystem(raw))
+                    .thenThrow(new DefaultFrameworkException("env variable not found"));
+
+            ScenarioCollector.Result result = collector.collect();
+
+            assertEquals(1, result.size());
+            assertNotNull(result.get(0).scenario);
+            assertInstanceOf(DefaultFrameworkException.class, result.get(0).exception);
+            verifyNoInteractions(scenarioValidator);
         }
     }
 }

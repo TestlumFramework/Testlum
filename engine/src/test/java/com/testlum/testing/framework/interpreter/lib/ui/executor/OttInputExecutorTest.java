@@ -46,7 +46,8 @@ public class OttInputExecutorTest {
 
     @BeforeEach
     void setUp() {
-        when(context.getBean(any(Class.class))).thenAnswer(inv -> mock((Class<?>) inv.getArgument(0)));
+        when(context.getBean(any(Class.class)))
+                .thenAnswer(inv -> mock((Class<?>) inv.getArgument(0)));
         scenarioContext = new ScenarioContext(new HashMap<>());
         final ExecutorDependencies dependencies = ExecutorDependencies.builder()
                 .context(context)

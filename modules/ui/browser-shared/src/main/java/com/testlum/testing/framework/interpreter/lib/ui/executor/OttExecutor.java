@@ -45,7 +45,9 @@ public class OttExecutor extends AbstractUiExecutor<UiOtt> {
 
     private Supplier<String> buildCodeSupplier(final String alias, final String secret) {
         return () -> {
-            String code = secret != null ? ottGenerator.generateCodeFromSecret(secret) : ottGenerator.generateCode(alias);
+            String code = secret != null
+                    ? ottGenerator.generateCodeFromSecret(secret)
+                    : ottGenerator.generateCode(alias);
             log.info(CODE_LOG, code);
             return code;
         };

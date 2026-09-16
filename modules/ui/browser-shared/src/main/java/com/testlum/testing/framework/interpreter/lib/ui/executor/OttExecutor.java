@@ -1,7 +1,7 @@
 package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.testlum.log.LogFormat;
-import com.testlum.testing.framework.interpreter.OttUtil;
+import com.testlum.testing.framework.interpreter.OttGenerator;
 import com.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -24,11 +24,11 @@ public class OttExecutor extends AbstractUiExecutor<UiOtt> {
 
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
-    private final OttUtil ottUtil;
+    private final OttGenerator ottGenerator;
 
     public OttExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        this.ottUtil = dependencies.getContext().getBean(OttUtil.class);
+        this.ottGenerator = dependencies.getContext().getBean(OttGenerator.class);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class OttExecutor extends AbstractUiExecutor<UiOtt> {
 
     private Supplier<String> buildCodeSupplier(final String alias, final String secret) {
         return () -> {
-            String code = secret != null ? ottUtil.generateCodeFromSecret(secret) : ottUtil.generateCode(alias);
+            String code = secret != null ? ottGenerator.generateCodeFromSecret(secret) : ottGenerator.generateCode(alias);
             log.info(CODE_LOG, code);
             return code;
         };
@@ -54,7 +54,7 @@ public class OttExecutor extends AbstractUiExecutor<UiOtt> {
     private void storeCode(final UiOtt uiOtt, final Supplier<String> codeSupplier) {
         final String name = uiOtt.getName();
 
-        if (uiOtt.isRefresh()) {
+        if (Boolean.TRUE.equals(uiOtt.isRefresh())) {
             dependencies.getScenarioContext().setLazyRefreshing(name, codeSupplier);
         } else {
             dependencies.getScenarioContext().setLazy(name, codeSupplier);

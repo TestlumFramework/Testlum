@@ -12,7 +12,7 @@
             <x:extension base="tns:abstractCommand">
                 <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="refresh" type="x:boolean" default="false"/>
+                <x:attribute name="refresh" type="x:boolean"/>
                 <x:attribute name="secret" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>
@@ -23,7 +23,7 @@
             <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="refresh" type="x:boolean" default="false"/>
+                <x:attribute name="refresh" type="x:boolean"/>
                 <x:attribute name="secret" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>

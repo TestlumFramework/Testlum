@@ -19,14 +19,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class OttUtilTest {
+public class OttGeneratorTest {
 
     private static final String RFC_SEED_BASE32 = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
     private static final String RFC_SEED_ASCII = "12345678901234567890";
 
     private final Integrations integrations = mock(Integrations.class);
     private final IntegrationsUtil integrationsUtil = mock(IntegrationsUtil.class);
-    private final OttUtil ottUtil = new OttUtil(integrations, integrationsUtil);
+    private final OttGenerator ottGenerator = new OttGenerator(integrations, integrationsUtil);
 
     @Nested
     class GenerateCode {
@@ -41,7 +41,7 @@ public class OttUtilTest {
             when(integrations.getOttIntegration()).thenReturn(ottIntegration);
             when(integrationsUtil.findForAlias(ottList, "myAlias")).thenReturn(ottModel);
 
-            final String code = ottUtil.generateCode("myAlias");
+            final String code = ottGenerator.generateCode("myAlias");
 
             assertTrue(code.matches("\\d{6}"), "code should be exactly 6 digits, got: " + code);
             verify(integrationsUtil).findForAlias(ottList, "myAlias");
@@ -49,7 +49,7 @@ public class OttUtilTest {
 
         @Test
         void generatesCodeDirectlyFromSecretWithoutResolvingAlias() {
-            final String code = ottUtil.generateCodeFromSecret("JBSWY3DPEHPK3PXP");
+            final String code = ottGenerator.generateCodeFromSecret("JBSWY3DPEHPK3PXP");
 
             assertTrue(code.matches("\\d{6}"), "code should be exactly 6 digits, got: " + code);
             verifyNoInteractions(integrations, integrationsUtil);
@@ -66,7 +66,7 @@ public class OttUtilTest {
             when(integrationsUtil.findForAlias(ottList, "blankAlias")).thenReturn(ottModel);
 
             final DefaultFrameworkException exception =
-                    assertThrows(DefaultFrameworkException.class, () -> ottUtil.generateCode("blankAlias"));
+                    assertThrows(DefaultFrameworkException.class, () -> ottGenerator.generateCode("blankAlias"));
 
             assertEquals("OTT secret key must not be blank", exception.getMessage());
         }
@@ -85,11 +85,11 @@ public class OttUtilTest {
                 "20000000000, 353130"
         })
         void matchesRfc6238TestVectors(final long epochSecond, final String expectedCode) throws Exception {
-            final Method method = OttUtil.class.getDeclaredMethod("generate", String.class, Instant.class);
+            final Method method = OttGenerator.class.getDeclaredMethod("computeCode", String.class, Instant.class);
             method.setAccessible(true);
 
             final String actualCode = (String) method.invoke(
-                    ottUtil, RFC_SEED_BASE32, Instant.ofEpochSecond(epochSecond)
+                    ottGenerator, RFC_SEED_BASE32, Instant.ofEpochSecond(epochSecond)
             );
 
             assertEquals(expectedCode, actualCode);
@@ -101,31 +101,31 @@ public class OttUtilTest {
 
         @Test
         void decodesBase32SecretToOriginalBytes() throws Exception {
-            final Method method = OttUtil.class.getDeclaredMethod("decodeSecret", String.class);
+            final Method method = OttGenerator.class.getDeclaredMethod("decodeSecret", String.class);
             method.setAccessible(true);
 
-            final byte[] decoded = (byte[]) method.invoke(ottUtil, RFC_SEED_BASE32);
+            final byte[] decoded = (byte[]) method.invoke(ottGenerator, RFC_SEED_BASE32);
 
             assertArrayEquals(RFC_SEED_ASCII.getBytes(StandardCharsets.US_ASCII), decoded);
         }
 
         @Test
         void isCaseInsensitiveAndTrimsWhitespace() throws Exception {
-            final Method method = OttUtil.class.getDeclaredMethod("decodeSecret", String.class);
+            final Method method = OttGenerator.class.getDeclaredMethod("decodeSecret", String.class);
             method.setAccessible(true);
 
-            final byte[] decoded = (byte[]) method.invoke(ottUtil, "  " + RFC_SEED_BASE32.toLowerCase() + "  ");
+            final byte[] decoded = (byte[]) method.invoke(ottGenerator, "  " + RFC_SEED_BASE32.toLowerCase() + "  ");
 
             assertArrayEquals(RFC_SEED_ASCII.getBytes(StandardCharsets.US_ASCII), decoded);
         }
 
         @Test
         void throwsWhenSecretIsBlank() throws Exception {
-            final Method method = OttUtil.class.getDeclaredMethod("decodeSecret", String.class);
+            final Method method = OttGenerator.class.getDeclaredMethod("decodeSecret", String.class);
             method.setAccessible(true);
 
             final InvocationTargetException wrapper =
-                    assertThrows(InvocationTargetException.class, () -> method.invoke(ottUtil, "  "));
+                    assertThrows(InvocationTargetException.class, () -> method.invoke(ottGenerator, "  "));
 
             assertInstanceOf(DefaultFrameworkException.class, wrapper.getCause());
             assertEquals("OTT secret key must not be blank", wrapper.getCause().getMessage());

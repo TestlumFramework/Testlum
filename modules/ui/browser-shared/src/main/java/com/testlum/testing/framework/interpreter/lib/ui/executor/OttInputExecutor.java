@@ -1,7 +1,7 @@
 package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.testlum.log.LogFormat;
-import com.testlum.testing.framework.interpreter.OttUtil;
+import com.testlum.testing.framework.interpreter.OttGenerator;
 import com.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -24,17 +24,17 @@ public class OttInputExecutor extends AbstractUiExecutor<OttInput> {
     private static final String ALIAS = "Alias";
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
-    private final OttUtil ottUtil;
+    private final OttGenerator ottGenerator;
 
     public OttInputExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        this.ottUtil = dependencies.getContext().getBean(OttUtil.class);
+        this.ottGenerator = dependencies.getContext().getBean(OttGenerator.class);
     }
 
     @Override
     protected void execute(final OttInput ottInput, final CommandResult result) {
         checkAlias(ottInput);
-        String code = ottUtil.generateCode(ottInput.getAlias());
+        String code = ottGenerator.generateCode(ottInput.getAlias());
         if (ottInput.getName() != null) {
             dependencies.getScenarioContext().set(ottInput.getName(), code);
         }

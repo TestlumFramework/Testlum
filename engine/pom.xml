@@ -611,8 +611,6 @@
             <artifactId>testlum-comparator</artifactId>
         </dependency>
 
-        <!--    AUTHENTICATION    -->
-
         <dependency>
             <groupId>com.testlum</groupId>
             <artifactId>testlum-ott</artifactId>

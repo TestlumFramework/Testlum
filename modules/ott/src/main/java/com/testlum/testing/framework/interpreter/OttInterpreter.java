@@ -16,11 +16,11 @@ public class OttInterpreter extends AbstractInterpreter<Ott> {
 
     private static final String CODE_LOG = LogFormat.table("Generated code");
 
-    private final OttUtil ottUtil;
+    private final OttGenerator ottGenerator;
 
     public OttInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.ottUtil = dependencies.getContext().getBean(OttUtil.class);
+        this.ottGenerator = dependencies.getContext().getBean(OttGenerator.class);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class OttInterpreter extends AbstractInterpreter<Ott> {
 
     private Supplier<String> buildCodeSupplier(final String alias, final String secret) {
         return () -> {
-            String code = secret != null ? ottUtil.generateCodeFromSecret(secret) : ottUtil.generateCode(alias);
+            String code = secret != null ? ottGenerator.generateCodeFromSecret(secret) : ottGenerator.generateCode(alias);
             log.info(CODE_LOG, code);
             return code;
         };
@@ -47,7 +47,7 @@ public class OttInterpreter extends AbstractInterpreter<Ott> {
     private void storeCode(final Ott ott, final Supplier<String> codeSupplier) {
         final String name = ott.getName();
 
-        if (ott.isRefresh()) {
+        if (Boolean.TRUE.equals(ott.isRefresh())) {
             dependencies.getScenarioContext().setLazyRefreshing(name, codeSupplier);
         } else {
             dependencies.getScenarioContext().setLazy(name, codeSupplier);

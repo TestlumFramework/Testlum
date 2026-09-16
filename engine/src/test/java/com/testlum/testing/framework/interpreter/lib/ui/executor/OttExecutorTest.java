@@ -1,6 +1,6 @@
 package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.testlum.testing.framework.interpreter.OttUtil;
+import com.testlum.testing.framework.interpreter.OttGenerator;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class OttExecutorTest {
 
     @Mock
-    private OttUtil ottUtil;
+    private OttGenerator ottGenerator;
     @Mock
     private WebDriver driver;
     @Mock
@@ -46,7 +46,7 @@ public class OttExecutorTest {
                 .scenarioContext(scenarioContext)
                 .build();
         executor = new OttExecutor(dependencies);
-        ReflectionTestUtils.setField(executor, "ottUtil", ottUtil);
+        ReflectionTestUtils.setField(executor, "ottGenerator", ottGenerator);
     }
 
     @Nested
@@ -57,7 +57,7 @@ public class OttExecutorTest {
             final UiOtt uiOtt = new UiOtt();
             uiOtt.setName("otpCode");
             uiOtt.setAlias("myAlias");
-            when(ottUtil.generateCode("myAlias")).thenReturn("123456");
+            when(ottGenerator.generateCode("myAlias")).thenReturn("123456");
             final CommandResult result = new CommandResult();
 
             executor.execute(uiOtt, result);
@@ -69,7 +69,7 @@ public class OttExecutorTest {
         void usesDefaultAliasWhenNoneProvided() {
             final UiOtt uiOtt = new UiOtt();
             uiOtt.setName("otpCode");
-            when(ottUtil.generateCode("DEFAULT")).thenReturn("654321");
+            when(ottGenerator.generateCode("DEFAULT")).thenReturn("654321");
             final CommandResult result = new CommandResult();
 
             executor.execute(uiOtt, result);
@@ -83,7 +83,7 @@ public class OttExecutorTest {
             final UiOtt uiOtt = new UiOtt();
             uiOtt.setName("otpCode");
             uiOtt.setAlias("someAlias");
-            when(ottUtil.generateCode("someAlias")).thenReturn("999999");
+            when(ottGenerator.generateCode("someAlias")).thenReturn("999999");
             final CommandResult result = new CommandResult();
 
             executor.execute(uiOtt, result);
@@ -98,7 +98,7 @@ public class OttExecutorTest {
             uiOtt.setName("otpCode");
             uiOtt.setAlias("myAlias");
             uiOtt.setRefresh(false);
-            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            when(ottGenerator.generateCode("myAlias")).thenReturn("111111", "222222");
             final CommandResult result = new CommandResult();
 
             executor.execute(uiOtt, result);
@@ -113,7 +113,7 @@ public class OttExecutorTest {
             uiOtt.setName("otpCode");
             uiOtt.setAlias("myAlias");
             uiOtt.setRefresh(true);
-            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            when(ottGenerator.generateCode("myAlias")).thenReturn("111111", "222222");
             final CommandResult result = new CommandResult();
 
             executor.execute(uiOtt, result);
@@ -127,13 +127,13 @@ public class OttExecutorTest {
             final UiOtt uiOtt = new UiOtt();
             uiOtt.setName("otpCode");
             uiOtt.setSecret("JBSWY3DPEHPK3PXP");
-            when(ottUtil.generateCodeFromSecret("JBSWY3DPEHPK3PXP")).thenReturn("111111");
+            when(ottGenerator.generateCodeFromSecret("JBSWY3DPEHPK3PXP")).thenReturn("111111");
             final CommandResult result = new CommandResult();
 
             executor.execute(uiOtt, result);
 
             assertEquals("111111", scenarioContext.get("otpCode"));
-            verify(ottUtil, never()).generateCode(any());
+            verify(ottGenerator, never()).generateCode(any());
         }
     }
 }

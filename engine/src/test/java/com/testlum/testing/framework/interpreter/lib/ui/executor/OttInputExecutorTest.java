@@ -1,6 +1,6 @@
 package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.testlum.testing.framework.interpreter.OttUtil;
+import com.testlum.testing.framework.interpreter.OttGenerator;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 public class OttInputExecutorTest {
 
     @Mock
-    private OttUtil ottUtil;
+    private OttGenerator ottGenerator;
     @Mock
     private UiUtil uiUtil;
     @Mock
@@ -55,7 +55,7 @@ public class OttInputExecutorTest {
                 .scenarioContext(scenarioContext)
                 .build();
         executor = new OttInputExecutor(dependencies);
-        ReflectionTestUtils.setField(executor, "ottUtil", ottUtil);
+        ReflectionTestUtils.setField(executor, "ottGenerator", ottGenerator);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
     }
 
@@ -68,7 +68,7 @@ public class OttInputExecutorTest {
             ottInput.setName("otpCode");
             ottInput.setAlias("myAlias");
             ottInput.setLocator("otpField");
-            when(ottUtil.generateCode("myAlias")).thenReturn("123456");
+            when(ottGenerator.generateCode("myAlias")).thenReturn("123456");
             final WebElement element = mock(WebElement.class);
             when(uiUtil.findWebElement(any(), eq("otpField"), any(), eq(ElementChecks.FOR_WRITING)))
                     .thenReturn(element);
@@ -90,7 +90,7 @@ public class OttInputExecutorTest {
             final OttInput ottInput = new OttInput();
             ottInput.setName("otpCode");
             ottInput.setLocator("otpField");
-            when(ottUtil.generateCode("DEFAULT")).thenReturn("654321");
+            when(ottGenerator.generateCode("DEFAULT")).thenReturn("654321");
             final WebElement element = mock(WebElement.class);
             when(uiUtil.findWebElement(any(), eq("otpField"), any(), eq(ElementChecks.FOR_WRITING)))
                     .thenReturn(element);
@@ -107,7 +107,7 @@ public class OttInputExecutorTest {
         void doesNotStoreInScenarioContextWhenNameIsOmitted() {
             final OttInput ottInput = new OttInput();
             ottInput.setLocator("otpField");
-            when(ottUtil.generateCode("DEFAULT")).thenReturn("111222");
+            when(ottGenerator.generateCode("DEFAULT")).thenReturn("111222");
             final WebElement element = mock(WebElement.class);
             when(uiUtil.findWebElement(any(), eq("otpField"), any(), eq(ElementChecks.FOR_WRITING)))
                     .thenReturn(element);

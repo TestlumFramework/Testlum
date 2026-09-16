@@ -31,7 +31,7 @@ public class OttInterpreterTest {
     @TempDir
     File tempDir;
 
-    private OttUtil ottUtil;
+    private OttGenerator ottGenerator;
     private OttInterpreter ottInterpreter;
     private ScenarioContext scenarioContext;
     private JacksonService jacksonService;
@@ -48,8 +48,8 @@ public class OttInterpreterTest {
         final GlobalTestConfiguration globalConfig = mock(GlobalTestConfiguration.class);
         when(globalConfig.isStopScenarioOnFailure()).thenReturn(false);
         when(applicationContext.getBean(GlobalTestConfiguration.class)).thenReturn(globalConfig);
-        ottUtil = mock(OttUtil.class);
-        when(applicationContext.getBean(OttUtil.class)).thenReturn(ottUtil);
+        ottGenerator = mock(OttGenerator.class);
+        when(applicationContext.getBean(OttGenerator.class)).thenReturn(ottGenerator);
 
         scenarioContext = new ScenarioContext(new HashMap<>());
 
@@ -73,11 +73,11 @@ public class OttInterpreterTest {
         }
 
         @Test
-        void resolvesOttUtilFromContext() throws Exception {
-            final Field field = OttInterpreter.class.getDeclaredField("ottUtil");
+        void resolvesOttGeneratorFromContext() throws Exception {
+            final Field field = OttInterpreter.class.getDeclaredField("ottGenerator");
             field.setAccessible(true);
 
-            assertEquals(ottUtil, field.get(ottInterpreter));
+            assertEquals(ottGenerator, field.get(ottInterpreter));
         }
     }
 
@@ -91,7 +91,7 @@ public class OttInterpreterTest {
             ott.setAlias("myAlias");
             when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
             when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
-            when(ottUtil.generateCode("myAlias")).thenReturn("123456");
+            when(ottGenerator.generateCode("myAlias")).thenReturn("123456");
             final CommandResult result = new CommandResult();
 
             final Method method = OttInterpreter.class.getDeclaredMethod(
@@ -109,7 +109,7 @@ public class OttInterpreterTest {
             ott.setName("otpCode");
             when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
             when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
-            when(ottUtil.generateCode("DEFAULT")).thenReturn("654321");
+            when(ottGenerator.generateCode("DEFAULT")).thenReturn("654321");
             final CommandResult result = new CommandResult();
 
             final Method method = OttInterpreter.class.getDeclaredMethod(
@@ -129,7 +129,7 @@ public class OttInterpreterTest {
             ott.setRefresh(false);
             when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
             when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
-            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            when(ottGenerator.generateCode("myAlias")).thenReturn("111111", "222222");
             final CommandResult result = new CommandResult();
 
             final Method method = OttInterpreter.class.getDeclaredMethod(
@@ -149,7 +149,7 @@ public class OttInterpreterTest {
             ott.setRefresh(true);
             when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
             when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
-            when(ottUtil.generateCode("myAlias")).thenReturn("111111", "222222");
+            when(ottGenerator.generateCode("myAlias")).thenReturn("111111", "222222");
             final CommandResult result = new CommandResult();
 
             final Method method = OttInterpreter.class.getDeclaredMethod(
@@ -168,7 +168,7 @@ public class OttInterpreterTest {
             ott.setSecret("JBSWY3DPEHPK3PXP");
             when(jacksonService.writeValueToCopiedString(ott)).thenReturn("json");
             when(jacksonService.readCopiedValue("json", Ott.class)).thenReturn(ott);
-            when(ottUtil.generateCodeFromSecret("JBSWY3DPEHPK3PXP")).thenReturn("111111");
+            when(ottGenerator.generateCodeFromSecret("JBSWY3DPEHPK3PXP")).thenReturn("111111");
             final CommandResult result = new CommandResult();
 
             final Method method = OttInterpreter.class.getDeclaredMethod(
@@ -177,7 +177,7 @@ public class OttInterpreterTest {
             method.invoke(ottInterpreter, ott, result);
 
             assertEquals("111111", scenarioContext.get("otpCode"));
-            verify(ottUtil, never()).generateCode(any());
+            verify(ottGenerator, never()).generateCode(any());
         }
     }
 }

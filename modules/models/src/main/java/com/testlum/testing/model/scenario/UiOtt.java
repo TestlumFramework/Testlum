@@ -18,7 +18,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="alias" type="{http://www.testlum.com/testing/model/scenario}aliasPattern" default="DEFAULT" /&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="refresh" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="refresh" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *       &lt;attribute name="secret" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -102,12 +102,8 @@ public class UiOtt
      *     {@link Boolean }
      *     
      */
-    public boolean isRefresh() {
-        if (refresh == null) {
-            return false;
-        } else {
-            return refresh;
-        }
+    public Boolean isRefresh() {
+        return refresh;
     }
 
     /**

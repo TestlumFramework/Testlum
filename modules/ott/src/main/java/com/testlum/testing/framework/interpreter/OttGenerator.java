@@ -20,7 +20,7 @@ import java.time.Instant;
 
 @RequiredArgsConstructor
 @Service
-public class OttUtil {
+public class OttGenerator {
 
     private static final long TIME_STEP_SECONDS = 30L;
     private static final int CODE_DIGITS = 6;
@@ -43,11 +43,11 @@ public class OttUtil {
 
     public String generateCode(final String alias) {
         String secretKey = resolveSecretKey(alias);
-        return generateFreshCode(secretKey);
+        return generateCodeForCurrentWindow(secretKey);
     }
 
     public String generateCodeFromSecret(final String secret) {
-        return generateFreshCode(secret);
+        return generateCodeForCurrentWindow(secret);
     }
 
     private String resolveSecretKey(final String alias) {
@@ -56,16 +56,16 @@ public class OttUtil {
         return ott.getSecretKey();
     }
 
-    private String generateFreshCode(final String secretKey) {
+    private String generateCodeForCurrentWindow(final String secretKey) {
         Instant now = Instant.now();
-        if (validityLeft(now).compareTo(MIN_REMAINING_VALIDITY) < 0) {
-            sleepUntilNextWindow(validityLeft(now));
+        if (remainingWindowTime(now).compareTo(MIN_REMAINING_VALIDITY) < 0) {
+            sleepUntilNextWindow(remainingWindowTime(now));
             now = Instant.now();
         }
-        return generate(secretKey, now);
+        return computeCode(secretKey, now);
     }
 
-    private Duration validityLeft(final Instant time) {
+    private Duration remainingWindowTime(final Instant time) {
         long secondsIntoStep = time.getEpochSecond() % TIME_STEP_SECONDS;
         return Duration.ofSeconds(TIME_STEP_SECONDS - secondsIntoStep);
     }
@@ -79,11 +79,11 @@ public class OttUtil {
         }
     }
 
-    private String generate(final String secretKey, final Instant time) {
+    private String computeCode(final String secretKey, final Instant time) {
         long counter = time.getEpochSecond() / TIME_STEP_SECONDS;
         byte[] key = decodeSecret(secretKey);
         byte[] hash = hmacSha1(key, counter);
-        int code = truncate(hash) % CODE_DIGITS_LIMIT;
+        int code = extractRawValueFromHash(hash) % CODE_DIGITS_LIMIT;
         return String.format("%0" + CODE_DIGITS + "d", code);
     }
 
@@ -105,7 +105,7 @@ public class OttUtil {
         }
     }
 
-    private int truncate(final byte[] hash) {
+    private int extractRawValueFromHash(final byte[] hash) {
         int offset = hash[hash.length - 1] & LAST_NIBBLE_MASK;
         return ((hash[offset] & SIGN_BIT_MASK) << BYTE_3_SHIFT)
                 | ((hash[offset + OFFSET_BYTE_1] & BYTE_MASK) << BYTE_2_SHIFT)

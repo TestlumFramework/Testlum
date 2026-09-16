@@ -162,4 +162,21 @@ class IntegrationsValidatorTest {
         api.setEnabled(enabled);
         return api;
     }
+
+    private Integrations createIntegrationsWithCrypto(final String alias, final CryptoMethods method) {
+        final Integrations integrations = new Integrations();
+        final CryptographyIntegrations cryptoIntegrations = new CryptographyIntegrations();
+        cryptoIntegrations.getCryptography().add(createCrypto(alias, method, true));
+        integrations.setCryptographyIntegrations(cryptoIntegrations);
+        return integrations;
+    }
+
+    private Cryptography createCrypto(final String alias, final CryptoMethods method, final boolean enabled) {
+        final Cryptography crypto = new Cryptography();
+        crypto.setAlias(alias);
+        crypto.setMethod(method);
+        crypto.setSecret("testSecret123");
+        crypto.setEnabled(enabled);
+        return crypto;
+    }
 }

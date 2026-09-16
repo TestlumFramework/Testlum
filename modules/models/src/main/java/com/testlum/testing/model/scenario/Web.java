@@ -60,6 +60,8 @@ public class Web
     @XmlElements({
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
+        @XmlElement(name = "cryptoInput", type = CryptoInput.class),
+        @XmlElement(name = "crypto", type = Crypto.class),
         @XmlElement(name = "assert", type = WebAssert.class),
         @XmlElement(name = "dropDown", type = DropDown.class),
         @XmlElement(name = "wait", type = UiWait.class),

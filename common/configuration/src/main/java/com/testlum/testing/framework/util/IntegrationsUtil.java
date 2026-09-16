@@ -8,6 +8,7 @@ import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.model.global_config.Ai;
 import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.global_config.Clickhouse;
+import com.testlum.testing.model.global_config.Cryptography;
 import com.testlum.testing.model.global_config.Dynamo;
 import com.testlum.testing.model.global_config.Elasticsearch;
 import com.testlum.testing.model.global_config.GraphqlApi;
@@ -59,6 +60,7 @@ public class IntegrationsUtil {
         registerMessagingIntegrations(map);
         registerCloudIntegrations(map);
         registerNotificationIntegrations(map);
+        registerCryptographyIntegrations(map);
         return Collections.unmodifiableMap(map);
     }
 
@@ -102,6 +104,10 @@ public class IntegrationsUtil {
         map.put(c -> c.equals(Twilio.class), i -> i.getTwilioIntegration().getTwilio());
     }
 
+    private void registerCryptographyIntegrations(final Map<IntegrationsPredicate, IntegrationListMethod> map) {
+        map.put(c -> c.equals(Cryptography.class), i -> i.getCryptographyIntegrations().getCryptography());
+    }
+
     public <T extends Integration> T findForAliasEnv(final Class<T> clazz, final AliasEnv aliasEnv) {
         List<T> intList = findListByEnv(clazz, aliasEnv.getEnvironment());
         return findForAlias(intList, aliasEnv.getAlias());
@@ -128,6 +134,10 @@ public class IntegrationsUtil {
 
     public <T extends Integration> T findForAlias(final List<T> integrationList, final String alias) {
         return getIntegrationByAliasOrThrow(integrationList, alias, ExceptionMessage.ALIAS_NOT_FOUND);
+    }
+
+    public <T extends Integration> T findCryptoForAlias(final List<T> cryptoIntegrations, final String alias) {
+        return getIntegrationByAliasOrThrow(cryptoIntegrations, alias, ExceptionMessage.ALIAS_NOT_FOUND);
     }
 
     private <T extends Integration> T getIntegrationByAliasOrThrow(final List<T> integrations,

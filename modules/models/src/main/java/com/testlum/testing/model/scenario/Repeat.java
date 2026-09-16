@@ -89,7 +89,8 @@ public class Repeat
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "shell", type = Shell.class),
         @XmlElement(name = "smtp", type = Smtp.class),
-        @XmlElement(name = "twilio", type = Twilio.class)
+        @XmlElement(name = "twilio", type = Twilio.class),
+        @XmlElement(name = "crypto", type = Crypto.class)
     })
     protected List<AbstractCommand> commands;
     @XmlAttribute(name = "times")

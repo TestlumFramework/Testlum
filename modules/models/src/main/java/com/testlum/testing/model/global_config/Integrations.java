@@ -76,6 +76,7 @@ public class Integrations {
     protected SmtpIntegration smtpIntegration;
     protected TwilioIntegration twilioIntegration;
     protected SqlDatabaseIntegration sqlDatabaseIntegration;
+    protected CryptographyIntegrations cryptographyIntegrations;
 
     /**
      * Gets the value of the aiIntegration property.
@@ -605,4 +606,27 @@ public class Integrations {
         this.sqlDatabaseIntegration = value;
     }
 
+    /**
+     * Gets the value of the cryptographyIntegrations property.
+     *
+     * @return
+     *     possible object is
+     *     {@link CryptographyIntegrations }
+     *
+     */
+    public CryptographyIntegrations getCryptographyIntegrations() {
+        return cryptographyIntegrations;
+    }
+
+    /**
+     * Sets the value of the cryptographyIntegrations property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link CryptographyIntegrations }
+     *
+     */
+    public void setCryptographyIntegrations(CryptographyIntegrations value) {
+        this.cryptographyIntegrations = value;
+    }
 }

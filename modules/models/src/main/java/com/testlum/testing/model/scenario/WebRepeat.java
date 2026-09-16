@@ -75,7 +75,9 @@ public class WebRepeat
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = WebRepeat.class),
-        @XmlElement(name = "ai", type = UiAi.class)
+        @XmlElement(name = "ai", type = UiAi.class),
+        @XmlElement(name = "cryptoInput", type = CryptoInput.class),
+        @XmlElement(name = "crypto", type = Crypto.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "times")

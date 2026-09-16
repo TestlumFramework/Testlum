@@ -2,21 +2,79 @@ name: Docker Image Manual Build & Push
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (defaults to the root pom version)"
+        required: false
+        type: string
+      overwrite:
+        description: "Overwrite the version tag if it is already published"
+        required: false
+        type: boolean
+        default: false
+      push_latest:
+        description: "Move :latest to this version"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/testlumframework/testlum
 
 jobs:
   prepare-version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract project version
+      - name: Resolve project version
         id: version
         run: |
-          VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-          VERSION=$(echo "$VERSION" | tail -n 1)
+          set -euo pipefail
+          VERSION='${{ inputs.version }}'
+          if [ -z "$VERSION" ]; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq xmlstarlet
+            VERSION="$(xmlstarlet sel -N x='http://maven.apache.org/POM/4.0.0' -t -v '/x:project/x:version' pom.xml | xargs)"
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not resolve a version to publish"
+            exit 1
+          fi
+          echo "Publishing version: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Ensure the version tag is free
+        run: |
+          set -uo pipefail
+          VERSION='${{ steps.version.outputs.version }}'
+          if docker manifest inspect "${IMAGE}:${VERSION}" > /dev/null 2>&1; then
+            if [ '${{ inputs.overwrite }}' != 'true' ]; then
+              echo "::error::Tag ${VERSION} is already published. Re-run with overwrite=true to replace it."
+              exit 1
+            fi
+            echo "::warning::Tag ${VERSION} already exists and will be overwritten."
+          else
+            echo "Tag ${VERSION} is free."
+          fi
 
   build-jar:
     runs-on: ubuntu-latest
@@ -72,14 +130,15 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: |
-            APP_VERSION=${{ needs.prepare-version.outputs.version }}
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/testlumframework/testlum:${{ needs.prepare-version.outputs.version }}-linux
-            ghcr.io/testlumframework/testlum:latest-linux
+          tags: ${{ env.IMAGE }}:${{ needs.prepare-version.outputs.version }}-linux
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.version=${{ needs.prepare-version.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=Apache-2.0
           provenance: false
           sbom: false
 
@@ -99,19 +158,6 @@ jobs:
           name: testlum-jar
           path: build-artifacts
 
-      - name: Prepare JAR for Docker build context
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path engine/target | Out-Null
-          $version = "${{ needs.prepare-version.outputs.version }}"
-          $jar = "build-artifacts/testlum-$version.jar"
-          if (-not (Test-Path $jar)) {
-            Write-Error "Missing $jar"
-            Get-ChildItem -Recurse build-artifacts
-            exit 1
-          }
-          Copy-Item $jar "engine/target/testlum-$version.jar"
-
       - name: Set up Docker Engine
         uses: docker/setup-docker-action@v4
 
@@ -125,13 +171,27 @@ jobs:
       - name: Build and push Windows AMD64 image
         shell: pwsh
         run: |
+          $ErrorActionPreference = "Stop"
           $version = "${{ needs.prepare-version.outputs.version }}"
-          $imageVersion = "ghcr.io/testlumframework/testlum:$version-windows-amd64"
-          $imageLatest = "ghcr.io/testlumframework/testlum:latest-windows-amd64"
+          $image = "${{ env.IMAGE }}:$version-windows-amd64"
 
-          docker build -f Dockerfile.windows --build-arg APP_VERSION=$version -t $imageVersion -t $imageLatest .
-          docker push $imageVersion
-          docker push $imageLatest
+          $jar = "build-artifacts/testlum-$version.jar"
+          if (-not (Test-Path $jar)) {
+            Get-ChildItem -Recurse build-artifacts
+            throw "Missing $jar"
+          }
+
+          docker build -f Dockerfile.windows `
+            --build-arg APP_VERSION=$version `
+            --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" `
+            --label "org.opencontainers.image.version=$version" `
+            --label "org.opencontainers.image.revision=${{ github.sha }}" `
+            --label "org.opencontainers.image.licenses=Apache-2.0" `
+            -t $image .
+          if ($LASTEXITCODE -ne 0) { throw "docker build failed" }
+
+          docker push $image
+          if ($LASTEXITCODE -ne 0) { throw "docker push failed" }
 
   publish-manifest:
     runs-on: ubuntu-latest
@@ -151,19 +211,50 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish unified version and latest tags
+      - name: Publish unified version tag
         run: |
+          set -euo pipefail
           VERSION='${{ needs.prepare-version.outputs.version }}'
-
           docker buildx imagetools create \
-            -t ghcr.io/testlumframework/testlum:${VERSION} \
-            ghcr.io/testlumframework/testlum:${VERSION}-linux \
-            ghcr.io/testlumframework/testlum:${VERSION}-windows-amd64
+            -t "${IMAGE}:${VERSION}" \
+            "${IMAGE}:${VERSION}-linux" \
+            "${IMAGE}:${VERSION}-windows-amd64"
 
+      - name: Publish latest tag
+        if: ${{ inputs.push_latest }}
+        run: |
+          set -euo pipefail
+          VERSION='${{ needs.prepare-version.outputs.version }}'
           docker buildx imagetools create \
-            -t ghcr.io/testlumframework/testlum:latest \
-            ghcr.io/testlumframework/testlum:latest-linux \
-            ghcr.io/testlumframework/testlum:latest-windows-amd64
+            -t "${IMAGE}:latest" \
+            "${IMAGE}:${VERSION}-linux" \
+            "${IMAGE}:${VERSION}-windows-amd64"
 
-      - name: Inspect unified latest manifest
-        run: docker buildx imagetools inspect ghcr.io/testlumframework/testlum:latest
+      - name: Summarise the release
+        if: ${{ always() && needs.prepare-version.result == 'success' }}
+        run: |
+          set -uo pipefail
+          VERSION='${{ needs.prepare-version.outputs.version }}'
+          {
+            echo "## Docker publish: \`${VERSION}\`"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Image | \`${IMAGE}\` |"
+            echo "| Version | \`${VERSION}\` |"
+            echo "| Overwrote existing tag | \`${{ inputs.overwrite }}\` |"
+            echo "| Moved \`:latest\` | \`${{ inputs.push_latest }}\` |"
+            echo
+            echo "### Published tags"
+            echo "- \`${IMAGE}:${VERSION}\`"
+            if [ '${{ inputs.push_latest }}' = 'true' ]; then
+              echo "- \`${IMAGE}:latest\`"
+            fi
+            echo "- \`${IMAGE}:${VERSION}-linux\`"
+            echo "- \`${IMAGE}:${VERSION}-windows-amd64\`"
+            echo
+            echo "### Manifest"
+            echo '```'
+            docker buildx imagetools inspect "${IMAGE}:${VERSION}" 2>&1 || echo "inspect failed"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -92,15 +92,25 @@ Make sure you have the following installed:
 After cloning repository to your local machine: 
 - navigate to root project folder
 - build executable jar file ```mvn clean install -DskipTests```
-- and run it by passing test resources location ```java -jar engine/target/testlum-2.0.0.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
+- and run it by passing test resources location
+  ```java -jar engine/target/testlum-<version>.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
 - examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/wiki)
 
 ### If you want to build docker image from the latest code
 - navigate to root project folder
 - build image from [Dockerfile](Dockerfile)
 ```shell
-  docker build --no-cache --build-arg APP_VERSION=2.0.0 -t testlum:2.0.0 .
-  ./run-docker testlum:2.0.0 global-config.xml ~/Users/user/test-resources 
+  docker build --no-cache -t testlum:local .
+  ./run-docker testlum:local global-config.xml ~/Users/user/test-resources
+```
+
+To build the Windows image from [Dockerfile.windows](Dockerfile.windows), build the JAR first and place it in
+`build-artifacts/`, then pass its version:
+
+```shell
+  mvn clean install -DskipTests
+  mkdir -p build-artifacts && cp engine/target/testlum-*.jar build-artifacts/
+  docker build -f Dockerfile.windows --build-arg APP_VERSION=<version> -t testlum:local-windows .
 ```
 
 Or You can use our official docker image from [Packages](https://github.com/TestlumFramework/Testlum/pkgs/container/testlum)

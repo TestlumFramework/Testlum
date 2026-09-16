@@ -4,7 +4,10 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.testlum.testing.model.global_config.*;
+import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.global_config.Auth;
+import com.testlum.testing.model.global_config.Integration;
+import com.testlum.testing.model.global_config.Integrations;
 import org.springframework.stereotype.Component;
 
 import java.io.File;

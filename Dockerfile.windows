@@ -1,9 +1,7 @@
 FROM eclipse-temurin:17-jre-nanoserver-ltsc2025
 
-ARG APP_VERSION
-
 WORKDIR C:/testlum
 
-COPY build-artifacts/testlum-${APP_VERSION}.jar C:/testlum/testlum-final.jar
+COPY build-artifacts/testlum.jar C:/testlum/testlum-final.jar
 
 ENTRYPOINT ["java", "-jar", "C:\\testlum\\testlum-final.jar"]

@@ -104,13 +104,13 @@ After cloning repository to your local machine:
   ./run-docker testlum:local global-config.xml ~/Users/user/test-resources
 ```
 
-To build the Windows image from [Dockerfile.windows](Dockerfile.windows), build the JAR first and place it in
-`build-artifacts/`, then pass its version:
+To build the Windows image from [Dockerfile.windows](Dockerfile.windows), build the JAR first and stage it as
+`build-artifacts/testlum.jar`:
 
 ```shell
   mvn clean install -DskipTests
-  mkdir -p build-artifacts && cp engine/target/testlum-*.jar build-artifacts/
-  docker build -f Dockerfile.windows --build-arg APP_VERSION=<version> -t testlum:local-windows .
+  mkdir -p build-artifacts && cp engine/target/testlum-*.jar build-artifacts/testlum.jar
+  docker build -f Dockerfile.windows -t testlum:local-windows .
 ```
 
 Or You can use our official docker image from [Packages](https://github.com/TestlumFramework/Testlum/pkgs/container/testlum)

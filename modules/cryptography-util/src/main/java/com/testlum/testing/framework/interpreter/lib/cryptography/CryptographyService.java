@@ -1,7 +1,6 @@
 package com.testlum.testing.framework.interpreter.lib.cryptography;
 
-import com.testlum.testing.framework.exception.CryptoException;
-import lombok.extern.slf4j.Slf4j;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
@@ -17,12 +16,13 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Component
 public class CryptographyService {
 
     private static final int IV_SIZE_BYTES = 12;
     private static final List<Integer> VALID_KEY_SIZES = List.of(16, 24, 32);
+    private static final String DIGEST_ALGO = "SHA-256";
+
     private final SecureRandom secureRandom = new SecureRandom();
 
     public String processCommand(final String rawValue, final String action,
@@ -34,8 +34,9 @@ public class CryptographyService {
                     ? encrypt(rawValue, key, algo)
                     : decrypt(rawValue, key, algo);
         } catch (final Exception e) {
-            log.error("Crypto operation [{}] failed for alias [{}] with method [{}]", action, alias, method, e);
-            throw new CryptoException(String.format("Crypto operation [%s] failed for alias [%s]", action, alias), e);
+            throw new DefaultFrameworkException(
+                    String.format("Crypto operation [%s] failed for alias [%s]", action, alias), e
+            );
         }
     }
 
@@ -74,27 +75,30 @@ public class CryptographyService {
     }
 
     private SecretKey deriveSecretKey(final String secret, final String algoName) {
-        final byte[] keyBytes = tryDecodeBase64(secret)
-                .filter(bytes -> VALID_KEY_SIZES.contains(bytes.length))
+        final byte[] keyBytes = parseBase64Key(secret)
                 .orElseGet(() -> digestSha256(secret));
 
         return new SecretKeySpec(keyBytes, algoName);
     }
 
-    private Optional<byte[]> tryDecodeBase64(final String text) {
+    private Optional<byte[]> parseBase64Key(final String text) {
+        if (text == null || text.isBlank()) {
+            return Optional.empty();
+        }
         try {
-            return Optional.of(Base64.getDecoder().decode(text));
-        } catch (final IllegalArgumentException e) {
+            final byte[] decoded = Base64.getDecoder().decode(text);
+            return VALID_KEY_SIZES.contains(decoded.length) ? Optional.of(decoded) : Optional.empty();
+        } catch (final IllegalArgumentException ignored) {
             return Optional.empty();
         }
     }
 
     private byte[] digestSha256(final String text) {
         try {
-            return MessageDigest.getInstance("SHA-256")
+            return MessageDigest.getInstance(DIGEST_ALGO)
                     .digest(text.getBytes(StandardCharsets.UTF_8));
         } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 algorithm unavailable", e);
+            throw new IllegalStateException("Standard JVM algorithm unavailable: " + DIGEST_ALGO, e);
         }
     }
 }

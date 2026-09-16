@@ -11,6 +11,7 @@ import com.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.framework.util.check.ElementChecks;
+import com.testlum.testing.model.global_config.CryptoMethods;
 import com.testlum.testing.model.global_config.Cryptography;
 import com.testlum.testing.model.scenario.CryptoInput;
 import com.testlum.testing.model.scenario.CryptoOperation;
@@ -19,6 +20,7 @@ import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @ExecutorForClass(CryptoInput.class)
@@ -38,14 +40,10 @@ public class CryptoInputExecutor
     @Override
     public void execute(final CryptoInput cryptoInput, final CommandResult result) {
         result.put(ResultUtil.INPUT_LOCATOR, cryptoInput.getLocator());
-        try {
-            final String processedValue = processCryptoValue(cryptoInput);
-            final WebElement webElement = getAndPrepareElement(cryptoInput);
-            sendValueToElement(processedValue, webElement, result);
-        } catch (final Exception e) {
-            log.error(ExceptionMessage.FAILED_CRYPTO_INPUT_LOG, cryptoInput.getLocator(), cryptoInput.getAction());
-            throw e;
-        }
+
+        final String processedValue = processCryptoValue(cryptoInput);
+        final WebElement webElement = getAndPrepareElement(cryptoInput);
+        sendValueToElement(processedValue, webElement, result);
     }
 
     private String processCryptoValue(final CryptoInput cryptoInput) {
@@ -77,14 +75,19 @@ public class CryptoInputExecutor
     private CryptographyParams fetchCryptoParams(final String alias) {
         final AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
 
-        if (cryptographyIntegrations == null || !cryptographyIntegrations.containsKey(aliasEnv)) {
-            throw new DefaultFrameworkException(
-                    String.format(ExceptionMessage.CRYPTO_NOT_CONFIGURED, alias, dependencies.getEnvironment())
-            );
-        }
+        final Cryptography cryptography = Optional.ofNullable(cryptographyIntegrations)
+                .map(map -> map.get(aliasEnv))
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        String.format(ExceptionMessage.CRYPTO_NOT_CONFIGURED, alias, dependencies.getEnvironment())
+                ));
 
-        final Cryptography cryptography = cryptographyIntegrations.get(aliasEnv);
-        return new CryptographyParams(cryptography.getMethod().value(), cryptography.getSecret());
+        final String method = Optional.ofNullable(cryptography.getMethod())
+                .map(CryptoMethods::value)
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        String.format("Cryptography method is not set for alias <%s>", alias)
+                ));
+
+        return new CryptographyParams(method, cryptography.getSecret());
     }
 }
 

@@ -9,12 +9,14 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.testlum.testing.framework.interpreter.lib.cryptography.CryptographyService;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.model.global_config.CryptoMethods;
 import com.testlum.testing.model.global_config.Cryptography;
 import com.testlum.testing.model.scenario.Crypto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @InterpreterForClass(Crypto.class)
@@ -39,30 +41,32 @@ public class CryptoInterpreter extends AbstractInterpreter<Crypto> {
     protected void acceptImpl(final Crypto o, final CommandResult result) {
         final Crypto crypto = injectCommand(o);
         ensureAlias(crypto::getAlias, crypto::setAlias);
-        try {
-            CryptographyParams params = fetchCryptographyParams(crypto.getAlias());
-            String processedValue = cryptographyService.processCommand(
-                    crypto.getValue().trim(), crypto.getAction(),
-                    params.method(), params.secret(), crypto.getAlias());
-            dependencies.getScenarioContext().set(crypto.getName(), processedValue);
-            logCryptographyInfo(crypto.getName(), crypto.getAction(), crypto.getAlias());
-        } catch (final Exception e) {
-            log.error(ExceptionMessage.FAILED_CRYPTO_LOG, crypto.getName(), crypto.getAction());
-            throw e;
-        }
+
+        final CryptographyParams params = fetchCryptoParams(crypto.getAlias());
+        final String processedValue = cryptographyService.processCommand(
+                crypto.getValue().trim(), crypto.getAction(),
+                params.method(), params.secret(), crypto.getAlias());
+
+        dependencies.getScenarioContext().set(crypto.getName(), processedValue);
+        logCryptographyInfo(crypto.getName(), crypto.getAction(), crypto.getAlias());
     }
 
-    private CryptographyParams fetchCryptographyParams(final String alias) {
+    private CryptographyParams fetchCryptoParams(final String alias) {
         final AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
 
-        if (cryptographyIntegrations == null || !cryptographyIntegrations.containsKey(aliasEnv)) {
-            throw new DefaultFrameworkException(
-                    String.format(ExceptionMessage.CRYPTO_NOT_CONFIGURED, alias, dependencies.getEnvironment())
-            );
-        }
+        final Cryptography cryptography = Optional.ofNullable(cryptographyIntegrations)
+                .map(map -> map.get(aliasEnv))
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        String.format(ExceptionMessage.CRYPTO_NOT_CONFIGURED, alias, dependencies.getEnvironment())
+                ));
 
-        final Cryptography cryptography = cryptographyIntegrations.get(aliasEnv);
-        return new CryptographyParams(cryptography.getMethod().value(), cryptography.getSecret());
+        final String method = Optional.ofNullable(cryptography.getMethod())
+                .map(CryptoMethods::value)
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        String.format("Cryptography method is not set for alias <%s>", alias)
+                ));
+
+        return new CryptographyParams(method, cryptography.getSecret());
     }
 
     private void logCryptographyInfo(final String name, final String action,

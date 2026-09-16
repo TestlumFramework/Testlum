@@ -1,6 +1,6 @@
 package com.testlum.testing.framework.interpreter.lib.cryptography;
 
-import com.testlum.testing.framework.exception.CryptoException;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,7 +76,7 @@ class CryptographyServiceTest {
         final String encrypted = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", AES_SECRET, ALIAS);
         final String corrupted = encrypted.substring(0, encrypted.length() - 2) + "AA";
 
-        assertThrows(CryptoException.class,
+        assertThrows(DefaultFrameworkException.class,
                 () -> service.processCommand(corrupted, "DECRYPT", "AES", AES_SECRET, ALIAS));
     }
 
@@ -90,7 +90,7 @@ class CryptographyServiceTest {
     @Test
     @DisplayName("Should throw CryptoException when trying to decrypt invalid Base64 string")
     void shouldThrowExceptionWhenDecryptingNonBase64() {
-        assertThrows(CryptoException.class,
+        assertThrows(DefaultFrameworkException.class,
                 () -> service.processCommand("NOT_BASE_64!", "DECRYPT", "AES", AES_SECRET, ALIAS));
     }
 
@@ -100,7 +100,7 @@ class CryptographyServiceTest {
         final String encrypted = service.processCommand(RAW_TEXT, "ENCRYPT", "AES", AES_SECRET, ALIAS);
         final String wrongSecret = "99999999901234567890123456789012";
 
-        assertThrows(CryptoException.class,
+        assertThrows(DefaultFrameworkException.class,
                 () -> service.processCommand(encrypted, "DECRYPT", "AES", wrongSecret, ALIAS));
     }
 
@@ -163,7 +163,7 @@ class CryptographyServiceTest {
 
         final String encrypted = service.processCommand(RAW_TEXT, "ENCRYPT", "CHACHA20", CHACHA_SECRET, ALIAS);
 
-        assertThrows(CryptoException.class,
+        assertThrows(DefaultFrameworkException.class,
                 () -> service.processCommand(encrypted, "DECRYPT", "CHACHA20", wrongSecret, ALIAS));
     }
 }

@@ -5,7 +5,7 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
-import com.testlum.testing.framework.service.EmailHelper;
+import com.testlum.testing.framework.service.EmailExecutionService;
 import com.testlum.testing.framework.service.EmailInboxService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.scenario.Email;
@@ -42,7 +42,7 @@ class EmailExecutorTest {
     @Mock
     private ApplicationContext context;
 
-    private EmailHelper emailHelper;
+    private EmailExecutionService emailExecutionService;
     private ScenarioContext scenarioContext;
     private Map<AliasEnv, EmailInboxService> servicesMap;
     private EmailExecutor executor;
@@ -53,12 +53,12 @@ class EmailExecutorTest {
         this.servicesMap.put(new AliasEnv(TEST_ALIAS, DEV_ENV), this.emailInboxService);
 
         final StringPrettifier prettifier = mock(StringPrettifier.class);
-        this.emailHelper = new EmailHelper(prettifier);
+        this.emailExecutionService = new EmailExecutionService(prettifier);
 
         when(this.context.getBean(any(Class.class))).thenAnswer(inv -> {
             final Class<?> clazz = inv.getArgument(0);
-            if (clazz == EmailHelper.class) {
-                return this.emailHelper;
+            if (clazz == EmailExecutionService.class) {
+                return this.emailExecutionService;
             }
             if (clazz == StringPrettifier.class) {
                 return prettifier;
@@ -91,8 +91,8 @@ class EmailExecutorTest {
             final ApplicationContext emptyCtx = mock(ApplicationContext.class);
             when(emptyCtx.getBean(any(Class.class))).thenAnswer(inv -> {
                 final Class<?> clazz = inv.getArgument(0);
-                if (clazz == EmailHelper.class) {
-                    return EmailExecutorTest.this.emailHelper;
+                if (clazz == EmailExecutionService.class) {
+                    return EmailExecutorTest.this.emailExecutionService;
                 }
                 return mock(clazz);
             });

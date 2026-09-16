@@ -224,6 +224,8 @@
                     <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="doubleClick" type="tns:doubleClick"/>
                     <x:element name="alert" type="tns:alert"/>
+                    <x:element name="email" type="tns:email"/>
+                    <x:element name="inputEmail" type="tns:inputEmail"/>
                 </x:choice>
                 <x:attribute name="index" type="x:string"/>
             </x:extension>

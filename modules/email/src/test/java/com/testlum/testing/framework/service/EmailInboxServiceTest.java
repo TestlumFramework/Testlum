@@ -17,12 +17,13 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,29 +55,31 @@ class EmailInboxServiceTest {
         @Test
         void matchesWithCaptureGroup() {
             final Pattern pattern = Pattern.compile("code: (\\d+)");
-            final String result = service.matchPattern("Your activation code: 849201 for account", pattern);
-            assertEquals("849201", result);
+            final Optional<String> result = service.matchPattern("Your activation code: 849201 for account", pattern);
+            assertTrue(result.isPresent());
+            assertEquals("849201", result.get());
         }
 
         @Test
         void matchesWithoutCaptureGroup() {
             final Pattern pattern = Pattern.compile("\\d{6}");
-            final String result = service.matchPattern("Your code is 123456 thank you", pattern);
-            assertEquals("123456", result);
+            final Optional<String> result = service.matchPattern("Your code is 123456 thank you", pattern);
+            assertTrue(result.isPresent());
+            assertEquals("123456", result.get());
         }
 
         @Test
-        void returnsNullWhenNoMatch() {
+        void returnsEmptyWhenNoMatch() {
             final Pattern pattern = Pattern.compile("token=([a-z]+)");
-            final String result = service.matchPattern("No token here", pattern);
-            assertNull(result);
+            final Optional<String> result = service.matchPattern("No token here", pattern);
+            assertTrue(result.isEmpty());
         }
 
         @Test
-        void returnsNullOnNullOrEmptyContent() {
+        void returnsEmptyOnNullOrEmptyContent() {
             final Pattern pattern = Pattern.compile("\\d+");
-            assertNull(service.matchPattern(null, pattern));
-            assertNull(service.matchPattern("", pattern));
+            assertTrue(service.matchPattern(null, pattern).isEmpty());
+            assertTrue(service.matchPattern("", pattern).isEmpty());
         }
     }
 

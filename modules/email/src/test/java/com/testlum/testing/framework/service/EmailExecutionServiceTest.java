@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class EmailHelperTest {
+class EmailExecutionServiceTest {
 
     private static final String DEV = "dev";
     private static final String ALIAS = "inbox";
@@ -34,12 +34,12 @@ class EmailHelperTest {
     @Mock
     private EmailInboxService service;
 
-    private EmailHelper emailHelper;
+    private EmailExecutionService emailExecutionService;
     private Map<AliasEnv, EmailInboxService> services;
 
     @BeforeEach
     void setUp() {
-        this.emailHelper = new EmailHelper(this.stringPrettifier);
+        this.emailExecutionService = new EmailExecutionService(this.stringPrettifier);
         this.services = new HashMap<>();
         this.services.put(new AliasEnv(ALIAS, DEV), this.service);
     }
@@ -49,7 +49,7 @@ class EmailHelperTest {
 
         @Test
         void returnsServiceWhenFound() {
-            final EmailInboxService result = emailHelper.resolveService(services, ALIAS, DEV);
+            final EmailInboxService result = emailExecutionService.resolveService(services, ALIAS, DEV);
             assertNotNull(result);
             assertEquals(service, result);
         }
@@ -58,7 +58,7 @@ class EmailHelperTest {
         void throwsWhenNotFound() {
             final DefaultFrameworkException ex = assertThrows(
                     DefaultFrameworkException.class,
-                    () -> emailHelper.resolveService(services, "missing", DEV));
+                    () -> emailExecutionService.resolveService(services, "missing", DEV));
             assertEquals("Email inbox configuration not found for alias 'missing' and environment 'dev'",
                     ex.getMessage());
         }
@@ -66,7 +66,7 @@ class EmailHelperTest {
         @Test
         void throwsWhenMapIsNull() {
             assertThrows(DefaultFrameworkException.class,
-                    () -> emailHelper.resolveService(null, ALIAS, DEV));
+                    () -> emailExecutionService.resolveService(null, ALIAS, DEV));
         }
     }
 
@@ -76,16 +76,16 @@ class EmailHelperTest {
         @Test
         void setsVariableWhenNotBlank() {
             final ScenarioContext context = new ScenarioContext(new HashMap<>());
-            emailHelper.handleTargetVariable(context, "myVar", "12345");
+            emailExecutionService.handleTargetVariable(context, "myVar", "12345");
             assertEquals("12345", context.get("myVar"));
         }
 
         @Test
         void doesNothingWhenNullOrBlank() {
             final ScenarioContext context = new ScenarioContext(new HashMap<>());
-            emailHelper.handleTargetVariable(context, null, "12345");
-            emailHelper.handleTargetVariable(context, "", "12345");
-            emailHelper.handleTargetVariable(context, "   ", "12345");
+            emailExecutionService.handleTargetVariable(context, null, "12345");
+            emailExecutionService.handleTargetVariable(context, "", "12345");
+            emailExecutionService.handleTargetVariable(context, "   ", "12345");
             assertFalse(context.containsKey("myVar"));
         }
     }
@@ -96,13 +96,13 @@ class EmailHelperTest {
         @Test
         void logsWithTargetVariable() {
             when(stringPrettifier.cut("999")).thenReturn("999");
-            emailHelper.logEmailInfo(ALIAS, "\\d+", BigInteger.valueOf(5000), "targetVar", "999");
+            emailExecutionService.logEmailInfo(ALIAS, "\\d+", BigInteger.valueOf(5000), "targetVar", "999");
         }
 
         @Test
         void logsWithoutTargetVariable() {
             when(stringPrettifier.cut("999")).thenReturn("999");
-            emailHelper.logEmailInfo(ALIAS, "\\d+", BigInteger.valueOf(5000), null, "999");
+            emailExecutionService.logEmailInfo(ALIAS, "\\d+", BigInteger.valueOf(5000), null, "999");
         }
     }
 
@@ -112,7 +112,7 @@ class EmailHelperTest {
         @Test
         void populatesResultWithTargetVariable() {
             final CommandResult result = new CommandResult();
-            emailHelper.addEmailMetaData(result, ALIAS, "\\d+", BigInteger.valueOf(5000), "targetVar", "val");
+            emailExecutionService.addEmailMetaData(result, ALIAS, "\\d+", BigInteger.valueOf(5000), "targetVar", "val");
             assertEquals(ALIAS, result.getMetadata().get("Alias"));
             assertEquals("\\d+", result.getMetadata().get("Pattern"));
             assertEquals(BigInteger.valueOf(5000), result.getMetadata().get("Timeout"));
@@ -124,7 +124,7 @@ class EmailHelperTest {
         @Test
         void populatesResultWithoutTargetVariable() {
             final CommandResult result = new CommandResult();
-            emailHelper.addEmailMetaData(result, ALIAS, "\\d+", BigInteger.valueOf(3000), null, "val");
+            emailExecutionService.addEmailMetaData(result, ALIAS, "\\d+", BigInteger.valueOf(3000), null, "val");
             assertEquals(ALIAS, result.getMetadata().get("Alias"));
             assertFalse(result.getMetadata().containsKey("Target Variable"));
             assertEquals("val", result.getActual());

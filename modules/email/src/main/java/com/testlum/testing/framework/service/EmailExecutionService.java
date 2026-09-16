@@ -9,19 +9,19 @@ import com.testlum.testing.framework.util.StringPrettifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * Shared helper component for email execution logic across interpreters and executors.
+ * Shared execution service for email execution logic across interpreters and executors.
  */
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
-public class EmailHelper {
+public class EmailExecutionService {
 
     public static final String DEFAULT_ALIAS = "DEFAULT";
     public static final String ALIAS = "Alias";

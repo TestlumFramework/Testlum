@@ -102,9 +102,9 @@ public class EmailInboxService {
                                         final long deadline, final long timeoutMs,
                                         final String patternStr) {
         while (System.currentTimeMillis() < deadline) {
-            final String match = this.searchInStoreFolder(store, pattern);
-            if (match != null) {
-                return match;
+            final Optional<String> match = this.searchInStoreFolder(store, pattern);
+            if (match.isPresent()) {
+                return match.get();
             }
             this.sleep(DEFAULT_POLL_INTERVAL_MS);
         }
@@ -112,7 +112,7 @@ public class EmailInboxService {
         throw new DefaultFrameworkException(String.format(EMAIL_NOT_FOUND_MSG, timeoutMs, patternStr, folder));
     }
 
-    private String searchInStoreFolder(final Store store, final Pattern pattern) {
+    private Optional<String> searchInStoreFolder(final Store store, final Pattern pattern) {
         Folder folder = null;
         try {
             folder = store.getFolder(this.resolveFolder());
@@ -120,34 +120,32 @@ public class EmailInboxService {
             return this.findMatchInFolder(folder, pattern);
         } catch (final Exception e) {
             log.debug("Error checking folder: {}", e.getMessage());
-            return null;
+            return Optional.empty();
         } finally {
             this.closeQuietly(folder);
         }
     }
 
-    private String findMatchInFolder(final Folder folder, final Pattern pattern) throws Exception {
+    private Optional<String> findMatchInFolder(final Folder folder, final Pattern pattern) throws Exception {
         final int count = folder.getMessageCount();
         final int minIndex = Math.max(1, count - MAX_SEARCH_MESSAGES + 1);
         for (int i = count; i >= minIndex; i--) {
-            final String match = this.checkMessage(folder.getMessage(i), pattern);
-            if (match != null) {
+            final Optional<String> match = this.checkMessage(folder.getMessage(i), pattern);
+            if (match.isPresent()) {
                 return match;
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    private String checkMessage(final Message msg, final Pattern pattern) throws Exception {
+    private Optional<String> checkMessage(final Message msg, final Pattern pattern) throws Exception {
         if (this.isMessageUnread(msg)) {
             final String content = this.extractContent(msg);
-            final String match = this.matchPattern(content, pattern);
-            if (match != null) {
-                this.markAsRead(msg);
-                return match;
-            }
+            final Optional<String> match = this.matchPattern(content, pattern);
+            match.ifPresent(m -> this.markAsRead(msg));
+            return match;
         }
-        return null;
+        return Optional.empty();
     }
 
     private boolean isMessageUnread(final Message msg) {
@@ -210,13 +208,12 @@ public class EmailInboxService {
      * @param pattern compiled regex pattern
      * @return captured value or full match, or null if no match found
      */
-    public String matchPattern(final String content, final Pattern pattern) {
+    public Optional<String> matchPattern(final String content, final Pattern pattern) {
         return Optional.ofNullable(content)
                 .filter(Predicate.not(String::isEmpty))
                 .map(pattern::matcher)
                 .filter(Matcher::find)
-                .map(matcher -> matcher.groupCount() >= 1 ? matcher.group(1) : matcher.group(0))
-                .orElse(null);
+                .map(matcher -> matcher.groupCount() >= 1 ? matcher.group(1) : matcher.group(0));
     }
 
     protected Store connectStore() throws MessagingException {

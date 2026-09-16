@@ -4,7 +4,7 @@ import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.service.EmailHelper;
+import com.testlum.testing.framework.service.EmailExecutionService;
 import com.testlum.testing.framework.service.EmailInboxService;
 import com.testlum.testing.model.scenario.AbstractUiCommand;
 
@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 public abstract class AbstractEmailExecutor<T extends AbstractUiCommand> extends AbstractUiExecutor<T> {
 
-    protected final EmailHelper emailHelper;
+    protected final EmailExecutionService emailExecutionService;
     protected final Map<AliasEnv, EmailInboxService> emailInboxServices;
 
     /**
@@ -31,7 +31,7 @@ public abstract class AbstractEmailExecutor<T extends AbstractUiCommand> extends
     @SuppressWarnings("unchecked")
     public AbstractEmailExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        this.emailHelper = dependencies.getContext().getBean(EmailHelper.class);
+        this.emailExecutionService = dependencies.getContext().getBean(EmailExecutionService.class);
         this.emailInboxServices = dependencies.getContext().containsBean("emailInboxServices")
                 ? dependencies.getContext().getBean("emailInboxServices", Map.class)
                 : Collections.emptyMap();
@@ -42,13 +42,15 @@ public abstract class AbstractEmailExecutor<T extends AbstractUiCommand> extends
                                          final BigInteger timeout,
                                          final String targetVariable,
                                          final CommandResult result) {
-        final String resolvedAlias = Optional.ofNullable(alias).orElse(EmailHelper.DEFAULT_ALIAS);
-        final EmailInboxService service = this.emailHelper.resolveService(
+        final String resolvedAlias = Optional.ofNullable(alias).orElse(EmailExecutionService.DEFAULT_ALIAS);
+        final EmailInboxService service = this.emailExecutionService.resolveService(
                 this.emailInboxServices, resolvedAlias, this.dependencies.getEnvironment());
         final String extracted = service.fetchValueByPattern(pattern, timeout.longValue());
-        this.emailHelper.handleTargetVariable(this.dependencies.getScenarioContext(), targetVariable, extracted);
-        this.emailHelper.logEmailInfo(resolvedAlias, pattern, timeout, targetVariable, extracted);
-        this.emailHelper.addEmailMetaData(result, resolvedAlias, pattern, timeout, targetVariable, extracted);
+        this.emailExecutionService.handleTargetVariable(
+                this.dependencies.getScenarioContext(), targetVariable, extracted);
+        this.emailExecutionService.logEmailInfo(resolvedAlias, pattern, timeout, targetVariable, extracted);
+        this.emailExecutionService.addEmailMetaData(
+                result, resolvedAlias, pattern, timeout, targetVariable, extracted);
         return extracted;
     }
 }

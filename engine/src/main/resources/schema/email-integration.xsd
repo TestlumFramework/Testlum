@@ -18,7 +18,7 @@
             <x:extension base="tns:integration">
                 <x:sequence>
                     <x:element name="protocol" type="tns:emailProtocol"/>
-                    <x:element name="host" type="tns:nonEmptyString"/>
+                    <x:element name="host" type="tns:hostPattern"/>
                     <x:element name="port" type="x:positiveInteger"/>
                     <x:element name="emailAddress" type="tns:emailAddressPattern"/>
                     <x:element name="password" type="tns:nonEmptyString"/>
@@ -31,11 +31,20 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:simpleType name="hostPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="([a-zA-Z0-9_\-]+)(\.[a-zA-Z0-9_\-]+)*"/>
+            <x:pattern value="\[?[a-fA-F0-9:]+\]?"/>
+            <x:pattern value="\{\{.*\}\}"/>
+            <x:pattern value="\$\{.*\}"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="emailAddressPattern">
         <x:restriction base="x:string">
             <x:pattern value="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"/>
             <x:pattern value="\{\{.*\}\}"/>
-            <x:pattern value="$\{.*\}"/>
+            <x:pattern value="\$\{.*\}"/>
         </x:restriction>
     </x:simpleType>
 

@@ -22,6 +22,7 @@
         <module>condition</module>
         <module>configuration</module>
         <module>exception</module>
+        <module>reporting</module>
     </modules>
 
 </project>

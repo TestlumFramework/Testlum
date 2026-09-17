@@ -8,18 +8,18 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for abstractUiCommand complex type.
+ * &lt;p&gt;Java class for abstractUiCommand complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="abstractUiCommand"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}abstractCommand"&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -37,6 +37,7 @@ import jakarta.xml.bind.annotation.XmlType;
     AssertTitle.class,
     AssertAlert.class,
     UiAi.class,
+    UiOtt.class,
     Javascript.class,
     Navigate.class,
     BrowserTab.class,

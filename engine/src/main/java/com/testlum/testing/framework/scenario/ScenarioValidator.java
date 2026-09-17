@@ -30,6 +30,7 @@ import com.testlum.testing.model.global_config.MongoIntegration;
 import com.testlum.testing.model.global_config.MysqlIntegration;
 import com.testlum.testing.model.global_config.NativeDevice;
 import com.testlum.testing.model.global_config.OracleIntegration;
+import com.testlum.testing.model.global_config.OttIntegration;
 import com.testlum.testing.model.global_config.PostgresIntegration;
 import com.testlum.testing.model.global_config.RabbitmqIntegration;
 import com.testlum.testing.model.global_config.RedisIntegration;
@@ -41,6 +42,7 @@ import com.testlum.testing.model.global_config.SqsIntegration;
 import com.testlum.testing.model.global_config.TwilioIntegration;
 import com.testlum.testing.model.global_config.UiConfig;
 import com.testlum.testing.model.global_config.Websockets;
+
 import com.testlum.testing.model.scenario.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -102,6 +104,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         registerMessagingValidators(map, integrations);
         registerCloudValidators(map, integrations);
         registerNotificationValidators(map, integrations);
+        registerOttValidators(map, integrations);
         registerMiscValidators(map);
         registerUiValidators(map);
         return Collections.unmodifiableMap(map);
@@ -192,8 +195,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private <I> void validateDbCmd(final File xmlFile, final String alias, final String file,
-                                    final I integration, final Class<I> intClass,
-                                    final java.util.function.Function<I, List<? extends Integration>> listFn) {
+                                   final I integration, final Class<I> intClass,
+                                   final java.util.function.Function<I, List<? extends Integration>> listFn) {
         checkIntegrationExistence(integration, intClass);
         validateAlias(listFn.apply(integration), alias);
         validateFileIfExist(xmlFile, file);
@@ -267,6 +270,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateTwilio(final Twilio twilio, final Integrations i) {
         checkIntegrationExistence(i.getTwilioIntegration(), TwilioIntegration.class);
         validateAlias(i.getTwilioIntegration().getTwilio(), twilio.getAlias());
+    }
+
+    private void registerOttValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map,
+                                       final Integrations i) {
+        map.put(o -> o instanceof Ott, (f, c) -> validateOtt((Ott) c, i));
+    }
+
+    private void validateOtt(final Ott ott, final Integrations i) {
+        checkIntegrationExistence(i.getOttIntegration(), OttIntegration.class);
+        validateAlias(i.getOttIntegration().getOtt(), ott.getAlias());
     }
 
     private void registerMiscValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {

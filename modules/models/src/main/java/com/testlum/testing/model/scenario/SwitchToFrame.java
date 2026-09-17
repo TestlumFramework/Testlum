@@ -1,18 +1,22 @@
 
 package com.testlum.testing.model.scenario;
 
-import jakarta.xml.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for switchToFrame complex type.
- *
- * <p>The following schema fragment specifies the expected content contained within this class.
- *
- * <pre>
+ * &lt;p&gt;Java class for switchToFrame complex type&lt;/p&gt;.
+ * 
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
+ * 
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="switchToFrame"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}commandWithOptionalLocator"&gt;
@@ -36,42 +40,49 @@ import java.util.List;
  *         &lt;element name="var" type="{http://www.testlum.com/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.testlum.com/testing/model/scenario}uiCondition"/&gt;
  *         &lt;element name="doubleClick" type="{http://www.testlum.com/testing/model/scenario}doubleClick"/&gt;
+ *         &lt;element name="alert" type="{http://www.testlum.com/testing/model/scenario}alert"/&gt;
+ *         &lt;element name="ott" type="{http://www.testlum.com/testing/model/scenario}uiOtt"/&gt;
+ *         &lt;element name="ottInput" type="{http://www.testlum.com/testing/model/scenario}ottInput"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="index" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "switchToFrame", propOrder = {
-        "clickOrInputOrAssert"
+    "clickOrInputOrAssert"
 })
 public class SwitchToFrame
     extends CommandWithOptionalLocator
 {
 
     @XmlElements({
-            @XmlElement(name = "click", type = Click.class),
-            @XmlElement(name = "input", type = Input.class),
-            @XmlElement(name = "assert", type = WebAssert.class),
-            @XmlElement(name = "dropDown", type = DropDown.class),
-            @XmlElement(name = "wait", type = UiWait.class),
-            @XmlElement(name = "clear", type = Clear.class),
-            @XmlElement(name = "scroll", type = Scroll.class),
-            @XmlElement(name = "scrollTo", type = ScrollTo.class),
-            @XmlElement(name = "image", type = Image.class),
-            @XmlElement(name = "javascript", type = Javascript.class),
-            @XmlElement(name = "navigate", type = Navigate.class),
-            @XmlElement(name = "hover", type = Hover.class),
-            @XmlElement(name = "tab", type = BrowserTab.class),
-            @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
-            @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
-            @XmlElement(name = "hotKey", type = HotKey.class),
-            @XmlElement(name = "var", type = WebVar.class),
-            @XmlElement(name = "condition", type = UiCondition.class),
-            @XmlElement(name = "doubleClick", type = DoubleClick.class),
-            @XmlElement(name = "ai", type = UiAi.class)
+        @XmlElement(name = "click", type = Click.class),
+        @XmlElement(name = "input", type = Input.class),
+        @XmlElement(name = "assert", type = WebAssert.class),
+        @XmlElement(name = "dropDown", type = DropDown.class),
+        @XmlElement(name = "wait", type = UiWait.class),
+        @XmlElement(name = "clear", type = Clear.class),
+        @XmlElement(name = "scroll", type = Scroll.class),
+        @XmlElement(name = "scrollTo", type = ScrollTo.class),
+        @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "javascript", type = Javascript.class),
+        @XmlElement(name = "navigate", type = Navigate.class),
+        @XmlElement(name = "hover", type = Hover.class),
+        @XmlElement(name = "tab", type = BrowserTab.class),
+        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
+        @XmlElement(name = "hotKey", type = HotKey.class),
+        @XmlElement(name = "var", type = WebVar.class),
+        @XmlElement(name = "condition", type = UiCondition.class),
+        @XmlElement(name = "doubleClick", type = DoubleClick.class),
+        @XmlElement(name = "alert", type = Alert.class),
+        @XmlElement(name = "ott", type = UiOtt.class),
+        @XmlElement(name = "ottInput", type = OttInput.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "index")
@@ -79,57 +90,64 @@ public class SwitchToFrame
 
     /**
      * Gets the value of the clickOrInputOrAssert property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list,
+     * 
+     * <p>This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the clickOrInputOrAssert property.
-     *
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a {@code set} method for the clickOrInputOrAssert property.</p>
+     * 
      * <p>
      * For example, to add a new item, do as follows:
+     * </p>
      * <pre>
-     *    getClickOrInputOrAssert().add(newItem);
+     * getClickOrInputOrAssert().add(newItem);
      * </pre>
-     *
-     *
+     * 
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Click }
-     * {@link Input }
-     * {@link WebAssert }
-     * {@link DropDown }
-     * {@link UiWait }
+     * {@link Alert }
+     * {@link BrowserTab }
      * {@link Clear }
-     * {@link Scroll }
-     * {@link ScrollTo }
+     * {@link Click }
+     * {@link DoubleClick }
+     * {@link DragAndDrop }
+     * {@link DropDown }
+     * {@link HotKey }
+     * {@link Hover }
      * {@link Image }
+     * {@link Input }
      * {@link Javascript }
      * {@link Navigate }
-     * {@link Hover }
-     * {@link BrowserTab }
+     * {@link OttInput }
+     * {@link Scroll }
+     * {@link ScrollTo }
      * {@link SwitchToFrame }
-     * {@link DragAndDrop }
-     * {@link HotKey }
-     * {@link WebVar }
      * {@link UiCondition }
-     * {@link DoubleClick }
-     * {@link UiAi }
+     * {@link UiOtt }
+     * {@link UiWait }
+     * {@link WebAssert }
+     * {@link WebVar }
+     * </p>
+     * 
+     * 
+     * @return
+     *     The value of the clickOrInputOrAssert property.
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {
         if (clickOrInputOrAssert == null) {
-            clickOrInputOrAssert = new ArrayList<AbstractUiCommand>();
+            clickOrInputOrAssert = new ArrayList<>();
         }
         return this.clickOrInputOrAssert;
     }
 
     /**
      * Gets the value of the index property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getIndex() {
         return index;
@@ -137,11 +155,11 @@ public class SwitchToFrame
 
     /**
      * Sets the value of the index property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setIndex(String value) {
         this.index = value;

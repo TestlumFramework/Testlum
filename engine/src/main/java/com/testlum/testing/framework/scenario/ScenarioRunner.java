@@ -11,7 +11,7 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterScanner;
 import com.testlum.testing.framework.interpreter.lib.ui.MockDriver;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.report.ScenarioResult;
+import com.testlum.report.ScenarioResult;
 import com.testlum.testing.framework.util.*;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.AbstractBrowser;

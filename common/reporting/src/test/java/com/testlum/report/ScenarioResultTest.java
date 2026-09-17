@@ -1,5 +1,6 @@
-package com.testlum.testing.framework.report;
+package com.testlum.report;
 
+import com.testlum.testing.framework.report.CommandResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

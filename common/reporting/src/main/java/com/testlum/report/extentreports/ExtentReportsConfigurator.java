@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.extentreports;
+package com.testlum.report.extentreports;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.Status;

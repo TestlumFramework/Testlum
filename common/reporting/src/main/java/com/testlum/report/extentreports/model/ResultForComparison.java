@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.extentreports.model;
+package com.testlum.report.extentreports.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

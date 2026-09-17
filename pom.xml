@@ -447,6 +447,11 @@
                 <artifactId>testlum-ai-util</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.testlum</groupId>
+                <artifactId>reporting</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!--
 

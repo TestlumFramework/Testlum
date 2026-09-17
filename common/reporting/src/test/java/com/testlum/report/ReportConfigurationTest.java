@@ -1,7 +1,7 @@
-package com.testlum.testing.framework.report;
+package com.testlum.report;
 
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.testlum.testing.framework.report.extentreports.ExtentReportsGenerator;
+import com.testlum.report.extentreports.ExtentReportsGenerator;
 import com.testlum.testing.model.global_config.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

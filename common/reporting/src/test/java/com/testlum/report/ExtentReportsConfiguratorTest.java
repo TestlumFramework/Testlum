@@ -1,6 +1,7 @@
-package com.testlum.testing.framework.report.extentreports;
+package com.testlum.report;
 
 import com.aventstack.extentreports.ExtentReports;
+import com.testlum.report.extentreports.ExtentReportsConfigurator;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.HtmlReportGenerator;

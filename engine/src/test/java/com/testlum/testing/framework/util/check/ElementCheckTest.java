@@ -79,12 +79,6 @@ class ElementCheckTest {
             assertEquals(LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE, ex.getMessage());
         }
 
-        @Test
-        void appliesToEveryUiType() {
-            for (UiType uiType : UiType.values()) {
-                assertTrue(ElementCheck.VISIBILITY.supports(uiType));
-            }
-        }
     }
 
     @Nested

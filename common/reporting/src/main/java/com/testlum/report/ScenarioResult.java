@@ -1,5 +1,6 @@
-package com.testlum.testing.framework.report;
+package com.testlum.report;
 
+import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Overview;
 import lombok.Data;
 

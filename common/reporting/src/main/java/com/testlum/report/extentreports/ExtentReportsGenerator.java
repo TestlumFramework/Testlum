@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report.extentreports;
+package com.testlum.report.extentreports;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -8,10 +8,10 @@ import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.report.GlobalScenarioStatCollector;
-import com.testlum.testing.framework.report.ReportGenerator;
-import com.testlum.testing.framework.report.ScenarioResult;
-import com.testlum.testing.framework.report.extentreports.model.ResultForComparison;
+import com.testlum.report.GlobalScenarioStatCollector;
+import com.testlum.report.ReportGenerator;
+import com.testlum.report.ScenarioResult;
+import com.testlum.report.extentreports.model.ResultForComparison;
 import com.testlum.testing.framework.util.BrowserUtil;
 import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.model.global_config.AbstractBrowser;

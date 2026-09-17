@@ -1,8 +1,8 @@
-package com.testlum.testing.framework.report.extentreports;
+package com.testlum.report;
 
+import com.testlum.report.extentreports.ExtentReportsConfigurator;
+import com.testlum.report.extentreports.ExtentReportsGenerator;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.report.GlobalScenarioStatCollector;
-import com.testlum.testing.framework.report.ScenarioResult;
 import com.testlum.testing.framework.util.BrowserUtil;
 import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.model.global_config.AbstractBrowser;

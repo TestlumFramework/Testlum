@@ -794,11 +794,6 @@ class WebElementFinderTest {
             when(byService.xpath(anyList())).thenReturn(List.of(by));
 
             WebElement element = mock(WebElement.class);
-            when(element.isDisplayed()).thenReturn(true);
-            when(element.getSize()).thenReturn(new Dimension(10, 10));
-            when(element.isEnabled()).thenReturn(true);
-            // A plain WebDriver mock is not a JavascriptExecutor: if the JS based check were not
-            // skipped for NATIVE, the cast inside it would blow up instead of returning the element.
             WebDriver driver = mock(WebDriver.class);
             when(driver.findElement(by)).thenReturn(element);
             stubNativeSettings(5);
@@ -849,10 +844,6 @@ class WebElementFinderTest {
             when(byService.xpath(anyList())).thenReturn(List.of(by));
 
             WebElement element = mock(WebElement.class);
-            when(element.isDisplayed()).thenReturn(true);
-            when(element.getSize()).thenReturn(new Dimension(120, 30));
-            when(element.isEnabled()).thenReturn(true);
-            when(element.getAttribute("aria-disabled")).thenReturn(null);
             WebDriver driver = mock(WebDriver.class);
             when(driver.findElement(by)).thenReturn(element);
             stubNativeSettings(5);

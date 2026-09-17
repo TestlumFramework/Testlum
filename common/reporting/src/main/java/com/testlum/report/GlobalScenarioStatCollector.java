@@ -1,4 +1,4 @@
-package com.testlum.testing.framework.report;
+package com.testlum.report;
 
 import lombok.Getter;
 import org.springframework.stereotype.Service;

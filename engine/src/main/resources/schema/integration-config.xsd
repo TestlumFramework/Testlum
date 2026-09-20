@@ -33,6 +33,7 @@
     <x:include schemaLocation="sendgrid-integration.xsd"/>
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="smtp-integration.xsd"/>
+    <x:include schemaLocation="email-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
     <x:include schemaLocation="sqlDatabase-integration.xsd"/>
 
@@ -59,6 +60,7 @@
                 <x:element name="sendgridIntegration" type="tns:sendgridIntegration" minOccurs="0"/>
                 <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
                 <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>
+                <x:element name="emailIntegration" type="tns:emailIntegration" minOccurs="0"/>
                 <x:element name="twilioIntegration" type="tns:twilioIntegration" minOccurs="0"/>
                 <x:element name="sqlDatabaseIntegration" type="tns:sqlDatabaseIntegration" minOccurs="0"/>
             </x:all>

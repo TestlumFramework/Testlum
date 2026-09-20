@@ -29,13 +29,14 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                                  final TestResourceSettings testResourceSettings) {
         this.fileSearcher = fileSearcher;
         this.testResourceSettings = testResourceSettings;
-        final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
+        final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(21);
         map.put(i -> Objects.nonNull(i.getApis()), i -> i.getApis().getApi());
         map.put(i -> Objects.nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
         map.put(i -> Objects.nonNull(i.getS3Integration()), i -> i.getS3Integration().getS3());
         map.put(i -> Objects.nonNull(i.getSesIntegration()), i -> i.getSesIntegration().getSes());
         map.put(i -> Objects.nonNull(i.getSqsIntegration()), i -> i.getSqsIntegration().getSqs());
         map.put(i -> Objects.nonNull(i.getSmtpIntegration()), i -> i.getSmtpIntegration().getSmtp());
+        map.put(i -> Objects.nonNull(i.getEmailIntegration()), i -> i.getEmailIntegration().getEmail());
         map.put(i -> Objects.nonNull(i.getRedisIntegration()), i -> i.getRedisIntegration().getRedis());
         map.put(i -> Objects.nonNull(i.getMongoIntegration()), i -> i.getMongoIntegration().getMongo());
         map.put(i -> Objects.nonNull(i.getMysqlIntegration()), i -> i.getMysqlIntegration().getMysql());

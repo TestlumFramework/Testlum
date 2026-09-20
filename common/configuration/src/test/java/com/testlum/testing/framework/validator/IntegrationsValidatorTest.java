@@ -162,4 +162,62 @@ class IntegrationsValidatorTest {
         api.setEnabled(enabled);
         return api;
     }
+
+    @Nested
+    class ValidateEmailIntegrations {
+        @Test
+        void matchingEmailAcrossEnvsDoNotThrow() {
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", createIntegrationsWithEmail("myEmail"));
+            map.put("staging", createIntegrationsWithEmail("myEmail"));
+            assertDoesNotThrow(() -> validator.validate(map));
+        }
+
+        @Test
+        void mismatchedEmailAliasThrows() {
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", createIntegrationsWithEmail("email1"));
+            map.put("staging", createIntegrationsWithEmail("email2"));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(map));
+        }
+
+        @Test
+        void emailInOneEnvOnlyThrows() {
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", createIntegrationsWithEmail("email1"));
+            map.put("staging", new Integrations());
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(map));
+        }
+
+        @Test
+        void duplicateEmailAliasInSameEnvThrows() {
+            final Integrations integrations = new Integrations();
+            final EmailIntegration emailIntegration = new EmailIntegration();
+            emailIntegration.getEmail().add(createEmail("dup", true));
+            emailIntegration.getEmail().add(createEmail("dup", true));
+            integrations.setEmailIntegration(emailIntegration);
+
+            final Map<String, Integrations> map = new LinkedHashMap<>();
+            map.put("dev", integrations);
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(map));
+        }
+    }
+
+    private Integrations createIntegrationsWithEmail(final String alias) {
+        final Integrations integrations = new Integrations();
+        final EmailIntegration emailIntegration = new EmailIntegration();
+        emailIntegration.getEmail().add(createEmail(alias, true));
+        integrations.setEmailIntegration(emailIntegration);
+        return integrations;
+    }
+
+    private Email createEmail(final String alias, final boolean enabled) {
+        final Email email = new Email();
+        email.setAlias(alias);
+        email.setEnabled(enabled);
+        return email;
+    }
 }

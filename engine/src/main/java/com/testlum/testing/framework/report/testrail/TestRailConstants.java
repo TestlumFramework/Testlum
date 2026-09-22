@@ -18,6 +18,9 @@ public final class TestRailConstants {
     public static final String LOG_SUCCESS_RESPONSE = "TestRail response for Run ID {}: {}";
     public static final String LOG_ERROR_RESPONSE = "Failed to send results to TestRail (Run ID: {}). Error: {}";
 
+    public static final String URL_NOT_CONFIGURED = "<url> is not set in <testRailReports> of the global config";
+    public static final String LOG_URL_FORMATTED = "TestRail URL '{}' formatted to '{}'";
+
     public static final String LOG_VALIDATE_CONNECTION = "Validating TestRail connection: {}";
     public static final String LOG_CONNECTION_SUCCESSFUL =
             "TestRail connection and authentication validated successfully";

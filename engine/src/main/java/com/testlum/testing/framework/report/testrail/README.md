@@ -23,7 +23,7 @@ To enable TestRail integration, you must add a `<testRailReports>` section insid
 
 * **username**: Your TestRail account email.
 * **apiKey**: API Key from TestRail.
-* **url**: Base URL of your TestRail instance.
+* **url**: Base URL of your TestRail instance. The value is formatted automatically.
 * **projectId**: (Optional) Used when creating a new test run.
 * **defaultRunName**: (Optional) Name used for new test runs.
 * **defaultRunDescription**: (Optional) Description used for new test runs.

@@ -3,6 +3,7 @@ package com.testlum.testing.framework.report.testrail.api.impl;
 import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
+import com.testlum.testing.framework.report.testrail.api.util.TestRailUrlFormatter;
 import com.testlum.testing.model.global_config.TestRailReports;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
@@ -66,8 +67,6 @@ public class TestRailConnectionService {
 
     public static class ApiEndpoints {
 
-        private static final String API_SUFFIX = "index.php?/api/v2/";
-
         private static final String GET_PROJECTS_URL = "get_projects";
         private static final String ADD_RESULTS_FOR_CASES_URL = "add_results_for_cases/";
         private static final String CREATE_NEW_TEST_RUN_URL = "add_run/";
@@ -75,48 +74,35 @@ public class TestRailConnectionService {
         private static final String GET_CASES_URL = "get_cases/";
         private static final String ADD_ATTACHMENT_TO_RESULT_URL = "add_attachment_to_result/";
 
-        private final TestRailReports testRails;
+        private final String baseUrl;
 
         private ApiEndpoints(final TestRailReports testRails) {
-            this.testRails = testRails;
+            this.baseUrl = TestRailUrlFormatter.format(testRails.getUrl());
         }
 
         public String getFetchProjectsEndpoint() {
-            return baseUrl() + GET_PROJECTS_URL;
+            return baseUrl + GET_PROJECTS_URL;
         }
 
         public String getAddResultsForCaseEndpoint(final int runId) {
-            return baseUrl() + ADD_RESULTS_FOR_CASES_URL + runId;
+            return baseUrl + ADD_RESULTS_FOR_CASES_URL + runId;
         }
 
         public String getCreateTextRunEndpoint(final String projectId) {
-            return baseUrl() + CREATE_NEW_TEST_RUN_URL + projectId;
+            return baseUrl + CREATE_NEW_TEST_RUN_URL + projectId;
         }
 
         public String getFetchTestEndpoint(final String testId) {
-            return baseUrl() + GET_TEST_URL + testId;
+            return baseUrl + GET_TEST_URL + testId;
         }
 
         public String getCasesEndpoint(final String projectId, final int offset) {
-            return baseUrl() + GET_CASES_URL + projectId
+            return baseUrl + GET_CASES_URL + projectId
                     + "&limit=" + TestRailConstants.CASES_PAGE_LIMIT + "&offset=" + offset;
         }
 
         public String getAddAttachmentEndpoint(final int resultId) {
-            return baseUrl() + ADD_ATTACHMENT_TO_RESULT_URL + resultId;
-        }
-
-        private String baseUrl() {
-            String url = testRails.getUrl().trim();
-
-            while (url.endsWith("/")) {
-                url = url.substring(0, url.length() - 1);
-            }
-
-            if (!url.contains("index.php")) {
-                return url + "/" + API_SUFFIX;
-            }
-            return url + "/";
+            return baseUrl + ADD_ATTACHMENT_TO_RESULT_URL + resultId;
         }
 
     }

@@ -11,13 +11,13 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterScanner;
 import com.testlum.testing.framework.interpreter.lib.ui.MockDriver;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.report.ScenarioResult;
 import com.testlum.testing.framework.util.*;
-import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.AbstractBrowser;
+import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.Safari;
 import com.testlum.testing.model.scenario.AbstractCommand;
 import com.testlum.testing.model.scenario.Scenario;
+import com.testlum.testing.report.ScenarioResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -31,11 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.testlum.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
-import static com.testlum.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
-import static com.testlum.testing.framework.constant.ExceptionMessage.MOBILEBROWSER_DRIVER_NOT_INIT;
-import static com.testlum.testing.framework.constant.ExceptionMessage.NATIVE_DRIVER_NOT_INIT;
-import static com.testlum.testing.framework.constant.ExceptionMessage.WEB_DRIVER_NOT_INIT;
+import static com.testlum.testing.framework.constant.ExceptionMessage.*;
 import static com.testlum.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
 import static java.util.Objects.nonNull;
 
@@ -114,9 +110,18 @@ public class ScenarioRunner {
                 dependencies.getScenarioContext()));
     }
 
+    /**
+     * @return the next scenario id of the run, unique across every scenario result (executed or skipped)
+     */
+    public static int nextScenarioId() {
+        return SCENARIO_ID_GENERATOR.incrementAndGet();
+    }
+
     private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
+        scenarioResult.setId(nextScenarioId());
+        scenarioResult.setStartedAt(System.currentTimeMillis());
+        scenarioResult.setVariation(scenarioArguments.getVariations());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getSettings().getTags());

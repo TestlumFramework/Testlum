@@ -24,8 +24,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>klov-reporter</artifactId>
+            <groupId>com.testlum</groupId>
+            <artifactId>reporting-sdk</artifactId>
         </dependency>
 
         <dependency>

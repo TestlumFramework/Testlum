@@ -74,9 +74,8 @@ class ExceptionMessageTest {
         }
 
         @Test
-        void noEnabledReportGeneratorsFoundIsNotEmpty() {
-            assertNotNull(ExceptionMessage.NO_ENABLED_REPORT_GENERATORS_FOUND);
-            assertFalse(ExceptionMessage.NO_ENABLED_REPORT_GENERATORS_FOUND.isEmpty());
+        void reportServerUnreachableContainsPlaceholder() {
+            assertTrue(ExceptionMessage.REPORT_SERVER_UNREACHABLE.contains("%s"));
         }
     }
 

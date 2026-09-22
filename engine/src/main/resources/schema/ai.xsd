@@ -3,7 +3,7 @@
           targetNamespace="http://www.testlum.com/testing/model/scenario"
           xmlns:tns="http://www.testlum.com/testing/model/scenario"
           elementFormDefault="qualified"
-          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
 
     <x:include schemaLocation="shared.xsd"/>
 

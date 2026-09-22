@@ -1,4 +1,4 @@
-package com.testlum.report.extentreports;
+package com.testlum.testing.report.extentreports;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -7,11 +7,8 @@ import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.testlum.testing.framework.constant.DelimiterConstant;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.report.GlobalScenarioStatCollector;
-import com.testlum.report.ReportGenerator;
-import com.testlum.report.ScenarioResult;
-import com.testlum.report.extentreports.model.ResultForComparison;
 import com.testlum.testing.framework.util.BrowserUtil;
 import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.model.global_config.AbstractBrowser;
@@ -19,11 +16,15 @@ import com.testlum.testing.model.global_config.AbstractCapabilities;
 import com.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.testlum.testing.model.global_config.NativeDevice;
 import com.testlum.testing.model.scenario.Overview;
-import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.report.GlobalScenarioStatCollector;
+import com.testlum.testing.report.ReportListener;
+import com.testlum.testing.report.ScenarioResult;
+import com.testlum.testing.report.extentreports.model.ResultForComparison;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -34,9 +35,10 @@ import java.util.Objects;
 
 
 @Slf4j
+@Lazy
 @RequiredArgsConstructor
 @Component
-public class ExtentReportsGenerator implements ReportGenerator {
+public class ExtentHtmlReportListener implements ReportListener {
 
     //because of quality-checking
     private static final int ZERO = 0;
@@ -81,7 +83,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private final MobileUtil mobileUtil;
 
     @Override
-    public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
+    public void onRunFinished(final GlobalScenarioStatCollector globalScenarioStatCollector) {
         ExtentReports extentReports = new ExtentReports();
         extentReportsConfigurator.configure(extentReports);
         globalScenarioStatCollector

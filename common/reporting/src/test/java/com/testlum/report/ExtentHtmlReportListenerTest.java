@@ -1,17 +1,14 @@
 package com.testlum.report;
 
-import com.testlum.report.extentreports.ExtentReportsConfigurator;
-import com.testlum.report.extentreports.ExtentReportsGenerator;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.BrowserUtil;
 import com.testlum.testing.framework.util.MobileUtil;
-import com.testlum.testing.model.global_config.AbstractBrowser;
-import com.testlum.testing.model.global_config.AppiumCapabilities;
-import com.testlum.testing.model.global_config.AppiumNativeCapabilities;
-import com.testlum.testing.model.global_config.MobilebrowserDevice;
-import com.testlum.testing.model.global_config.NativeDevice;
-import com.testlum.testing.model.global_config.Platform;
+import com.testlum.testing.model.global_config.*;
 import com.testlum.testing.model.scenario.Overview;
+import com.testlum.testing.report.GlobalScenarioStatCollector;
+import com.testlum.testing.report.ScenarioResult;
+import com.testlum.testing.report.extentreports.ExtentHtmlReportListener;
+import com.testlum.testing.report.extentreports.ExtentReportsConfigurator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,12 +26,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link ExtentReportsGenerator} verifying report generation,
+ * Unit tests for {@link ExtentHtmlReportListener} verifying report generation,
  * scenario result handling, screenshot logic, step execution status,
  * browser/device info tables, and metadata rendering.
  */
 @ExtendWith(MockitoExtension.class)
-class ExtentReportsGeneratorTest {
+class ExtentHtmlReportListenerTest {
 
     @Mock
     private ExtentReportsConfigurator extentReportsConfigurator;
@@ -43,11 +40,11 @@ class ExtentReportsGeneratorTest {
     @Mock
     private MobileUtil mobileUtil;
 
-    private ExtentReportsGenerator generator;
+    private ExtentHtmlReportListener generator;
 
     @BeforeEach
     void setUp() {
-        generator = new ExtentReportsGenerator(extentReportsConfigurator, browserUtil, mobileUtil);
+        generator = new ExtentHtmlReportListener(extentReportsConfigurator, browserUtil, mobileUtil);
     }
 
     @Nested
@@ -58,7 +55,7 @@ class ExtentReportsGeneratorTest {
             final GlobalScenarioStatCollector collector = new GlobalScenarioStatCollector();
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -70,7 +67,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -83,7 +80,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(createScenarioResult(2, "second", false));
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
     }
 
@@ -97,7 +94,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -109,7 +106,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -122,7 +119,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -135,7 +132,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -148,7 +145,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
     }
 
@@ -170,7 +167,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
             verify(browserUtil).getBrowserBy("dev", "chrome-alias");
         }
 
@@ -182,7 +179,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(browserUtil, never()).getBrowserBy(any(), any());
         }
@@ -195,7 +192,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(browserUtil, never()).getBrowserBy(any(), any());
         }
@@ -222,7 +219,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
             verify(mobileUtil).getMobileBrowserDeviceBy("dev", "pixel-alias");
         }
 
@@ -244,7 +241,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
             verify(mobileUtil).getNativeDeviceBy("dev", "iphone-alias");
         }
 
@@ -256,7 +253,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(mobileUtil, never()).getMobileBrowserDeviceBy(any(), any());
         }
@@ -269,7 +266,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(mobileUtil, never()).getNativeDeviceBy(any(), any());
         }
@@ -287,7 +284,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -301,7 +298,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -316,7 +313,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -331,7 +328,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -346,7 +343,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -361,7 +358,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            generator.generateReport(collector);
+            generator.onRunFinished(collector);
 
             verify(extentReportsConfigurator).configure(any());
         }
@@ -377,7 +374,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -390,7 +387,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -404,7 +401,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -418,7 +415,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -430,7 +427,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -444,7 +441,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -456,7 +453,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -468,7 +465,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
     }
 
@@ -483,7 +480,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -494,7 +491,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -505,7 +502,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -516,7 +513,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -527,7 +524,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
 
         @Test
@@ -538,7 +535,7 @@ class ExtentReportsGeneratorTest {
             collector.addResult(result);
             doNothing().when(extentReportsConfigurator).configure(any());
 
-            assertDoesNotThrow(() -> generator.generateReport(collector));
+            assertDoesNotThrow(() -> generator.onRunFinished(collector));
         }
     }
 
@@ -547,7 +544,8 @@ class ExtentReportsGeneratorTest {
 
         @Test
         void evaluateCategoriesReturnsEmptyArrayForNullTags() throws Exception {
-            Method method = ExtentReportsGenerator.class.getDeclaredMethod("evaluateCategories", ScenarioResult.class);
+            Method method = ExtentHtmlReportListener.class
+                    .getDeclaredMethod("evaluateCategories", ScenarioResult.class);
             method.setAccessible(true);
             ScenarioResult result = new ScenarioResult();
             result.setTags(null);
@@ -559,7 +557,8 @@ class ExtentReportsGeneratorTest {
 
         @Test
         void evaluateCategoriesSplitsCommaSeparatedTags() throws Exception {
-            Method method = ExtentReportsGenerator.class.getDeclaredMethod("evaluateCategories", ScenarioResult.class);
+            Method method = ExtentHtmlReportListener.class
+                    .getDeclaredMethod("evaluateCategories", ScenarioResult.class);
             method.setAccessible(true);
             ScenarioResult result = new ScenarioResult();
             result.setTags("smoke,regression,api");
@@ -574,7 +573,8 @@ class ExtentReportsGeneratorTest {
 
         @Test
         void evaluateCategoriesHandlesSingleTag() throws Exception {
-            Method method = ExtentReportsGenerator.class.getDeclaredMethod("evaluateCategories", ScenarioResult.class);
+            Method method = ExtentHtmlReportListener.class
+                    .getDeclaredMethod("evaluateCategories", ScenarioResult.class);
             method.setAccessible(true);
             ScenarioResult result = new ScenarioResult();
             result.setTags("smoke");
@@ -591,7 +591,7 @@ class ExtentReportsGeneratorTest {
 
         @Test
         void formatsListAsUnsortedList() throws Exception {
-            Method method = ExtentReportsGenerator.class
+            Method method = ExtentHtmlReportListener.class
                     .getDeclaredMethod("getValueAsStringFromMetaData", Object.class);
             method.setAccessible(true);
 
@@ -606,7 +606,7 @@ class ExtentReportsGeneratorTest {
 
         @Test
         void formatsStringAsPreformattedText() throws Exception {
-            Method method = ExtentReportsGenerator.class
+            Method method = ExtentHtmlReportListener.class
                     .getDeclaredMethod("getValueAsStringFromMetaData", Object.class);
             method.setAccessible(true);
 

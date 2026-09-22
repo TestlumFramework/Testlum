@@ -8,7 +8,7 @@ import jakarta.xml.bind.annotation.XmlRegistry;
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the com.testlum.testing.model.global_config package. 
- * <p>An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programmatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -31,7 +31,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link UiConfig }
-     * 
+     *
+     * @return
+     *     the new instance of {@link UiConfig }
      */
     public UiConfig createUiConfig() {
         return new UiConfig();
@@ -39,7 +41,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Web }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Web }
      */
     public Web createWeb() {
         return new Web();
@@ -47,7 +51,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Mobilebrowser }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Mobilebrowser }
      */
     public Mobilebrowser createMobilebrowser() {
         return new Mobilebrowser();
@@ -55,7 +61,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Native }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Native }
      */
     public Native createNative() {
         return new Native();
@@ -63,7 +71,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserStackLogin }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserStackLogin }
      */
     public BrowserStackLogin createBrowserStackLogin() {
         return new BrowserStackLogin();
@@ -71,7 +81,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Integrations }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Integrations }
      */
     public Integrations createIntegrations() {
         return new Integrations();
@@ -79,7 +91,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link AiIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link AiIntegration }
      */
     public AiIntegration createAiIntegration() {
         return new AiIntegration();
@@ -87,7 +101,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Apis }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Apis }
      */
     public Apis createApis() {
         return new Apis();
@@ -95,7 +111,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Websockets }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Websockets }
      */
     public Websockets createWebsockets() {
         return new Websockets();
@@ -103,7 +121,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GraphqlIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link GraphqlIntegration }
      */
     public GraphqlIntegration createGraphqlIntegration() {
         return new GraphqlIntegration();
@@ -111,7 +131,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link PostgresIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link PostgresIntegration }
      */
     public PostgresIntegration createPostgresIntegration() {
         return new PostgresIntegration();
@@ -119,7 +141,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ClickhouseIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link ClickhouseIntegration }
      */
     public ClickhouseIntegration createClickhouseIntegration() {
         return new ClickhouseIntegration();
@@ -127,7 +151,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MysqlIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link MysqlIntegration }
      */
     public MysqlIntegration createMysqlIntegration() {
         return new MysqlIntegration();
@@ -135,7 +161,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link OracleIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link OracleIntegration }
      */
     public OracleIntegration createOracleIntegration() {
         return new OracleIntegration();
@@ -143,7 +171,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link RedisIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link RedisIntegration }
      */
     public RedisIntegration createRedisIntegration() {
         return new RedisIntegration();
@@ -151,7 +181,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MongoIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link MongoIntegration }
      */
     public MongoIntegration createMongoIntegration() {
         return new MongoIntegration();
@@ -159,7 +191,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link S3Integration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link S3Integration }
      */
     public S3Integration createS3Integration() {
         return new S3Integration();
@@ -167,7 +201,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SqsIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link SqsIntegration }
      */
     public SqsIntegration createSqsIntegration() {
         return new SqsIntegration();
@@ -175,7 +211,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link KafkaIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link KafkaIntegration }
      */
     public KafkaIntegration createKafkaIntegration() {
         return new KafkaIntegration();
@@ -183,7 +221,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link RabbitmqIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link RabbitmqIntegration }
      */
     public RabbitmqIntegration createRabbitmqIntegration() {
         return new RabbitmqIntegration();
@@ -191,7 +231,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DynamoIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link DynamoIntegration }
      */
     public DynamoIntegration createDynamoIntegration() {
         return new DynamoIntegration();
@@ -199,7 +241,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ElasticsearchIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link ElasticsearchIntegration }
      */
     public ElasticsearchIntegration createElasticsearchIntegration() {
         return new ElasticsearchIntegration();
@@ -207,7 +251,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link LambdaIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link LambdaIntegration }
      */
     public LambdaIntegration createLambdaIntegration() {
         return new LambdaIntegration();
@@ -215,7 +261,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SendgridIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link SendgridIntegration }
      */
     public SendgridIntegration createSendgridIntegration() {
         return new SendgridIntegration();
@@ -223,7 +271,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SesIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link SesIntegration }
      */
     public SesIntegration createSesIntegration() {
         return new SesIntegration();
@@ -231,7 +281,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SmtpIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link SmtpIntegration }
      */
     public SmtpIntegration createSmtpIntegration() {
         return new SmtpIntegration();
@@ -239,7 +291,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TwilioIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link TwilioIntegration }
      */
     public TwilioIntegration createTwilioIntegration() {
         return new TwilioIntegration();
@@ -247,7 +301,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SqlDatabaseIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link SqlDatabaseIntegration }
      */
     public SqlDatabaseIntegration createSqlDatabaseIntegration() {
         return new SqlDatabaseIntegration();
@@ -255,7 +311,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GlobalTestConfiguration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link GlobalTestConfiguration }
      */
     public GlobalTestConfiguration createGlobalTestConfiguration() {
         return new GlobalTestConfiguration();
@@ -263,7 +321,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DelayBetweenScenarioRuns }
-     * 
+     *
+     * @return
+     *     the new instance of {@link DelayBetweenScenarioRuns }
      */
     public DelayBetweenScenarioRuns createDelayBetweenScenarioRuns() {
         return new DelayBetweenScenarioRuns();
@@ -271,7 +331,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link RunScenariosByTag }
-     * 
+     *
+     * @return
+     *     the new instance of {@link RunScenariosByTag }
      */
     public RunScenariosByTag createRunScenariosByTag() {
         return new RunScenariosByTag();
@@ -279,7 +341,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Report }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Report }
      */
     public Report createReport() {
         return new Report();
@@ -287,7 +351,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Environments }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Environments }
      */
     public Environments createEnvironments() {
         return new Environments();
@@ -295,7 +361,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Vault }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Vault }
      */
     public Vault createVault() {
         return new Vault();
@@ -303,7 +371,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link AutoHealing }
-     * 
+     *
+     * @return
+     *     the new instance of {@link AutoHealing }
      */
     public AutoHealing createAutoHealing() {
         return new AutoHealing();
@@ -311,7 +381,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TagValue }
-     * 
+     *
+     * @return
+     *     the new instance of {@link TagValue }
      */
     public TagValue createTagValue() {
         return new TagValue();
@@ -319,7 +391,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Hikari }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Hikari }
      */
     public Hikari createHikari() {
         return new Hikari();
@@ -327,7 +401,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link StorageIntegration }
-     * 
+     *
+     * @return
+     *     the new instance of {@link StorageIntegration }
      */
     public StorageIntegration createStorageIntegration() {
         return new StorageIntegration();
@@ -335,7 +411,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Settings }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Settings }
      */
     public Settings createSettings() {
         return new Settings();
@@ -343,7 +421,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link TakeScreenshot }
-     * 
+     *
+     * @return
+     *     the new instance of {@link TakeScreenshot }
      */
     public TakeScreenshot createTakeScreenshot() {
         return new TakeScreenshot();
@@ -351,7 +431,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ElementAutowait }
-     * 
+     *
+     * @return
+     *     the new instance of {@link ElementAutowait }
      */
     public ElementAutowait createElementAutowait() {
         return new ElementAutowait();
@@ -359,7 +441,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ConnectionType }
-     * 
+     *
+     * @return
+     *     the new instance of {@link ConnectionType }
      */
     public ConnectionType createConnectionType() {
         return new ConnectionType();
@@ -367,7 +451,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link AppiumServer }
-     * 
+     *
+     * @return
+     *     the new instance of {@link AppiumServer }
      */
     public AppiumServer createAppiumServer() {
         return new AppiumServer();
@@ -375,7 +461,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserStackServer }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserStackServer }
      */
     public BrowserStackServer createBrowserStackServer() {
         return new BrowserStackServer();
@@ -383,7 +471,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link AppiumCapabilities }
-     * 
+     *
+     * @return
+     *     the new instance of {@link AppiumCapabilities }
      */
     public AppiumCapabilities createAppiumCapabilities() {
         return new AppiumCapabilities();
@@ -391,7 +481,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserStackCapabilities }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserStackCapabilities }
      */
     public BrowserStackCapabilities createBrowserStackCapabilities() {
         return new BrowserStackCapabilities();
@@ -399,7 +491,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Capabilities }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Capabilities }
      */
     public Capabilities createCapabilities() {
         return new Capabilities();
@@ -407,55 +501,49 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Capability }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Capability }
      */
     public Capability createCapability() {
         return new Capability();
     }
 
     /**
-     * Create an instance of {@link ExtentReports }
-     * 
+     * Create an instance of {@link HtmlReport }
+     *
+     * @return
+     *     the new instance of {@link HtmlReport }
      */
-    public ExtentReports createExtentReports() {
-        return new ExtentReports();
+    public HtmlReport createHtmlReport() {
+        return new HtmlReport();
     }
 
     /**
-     * Create an instance of {@link HtmlReportGenerator }
-     * 
+     * Create an instance of {@link TestlumReportServer }
+     *
+     * @return
+     *     the new instance of {@link TestlumReportServer }
      */
-    public HtmlReportGenerator createHtmlReportGenerator() {
-        return new HtmlReportGenerator();
+    public TestlumReportServer createTestlumReportServer() {
+        return new TestlumReportServer();
     }
 
     /**
-     * Create an instance of {@link KlovServerReportGenerator }
-     * 
+     * Create an instance of {@link RabbitConfig }
+     *
+     * @return
+     *     the new instance of {@link RabbitConfig }
      */
-    public KlovServerReportGenerator createKlovServerReportGenerator() {
-        return new KlovServerReportGenerator();
-    }
-
-    /**
-     * Create an instance of {@link Mongodb }
-     * 
-     */
-    public Mongodb createMongodb() {
-        return new Mongodb();
-    }
-
-    /**
-     * Create an instance of {@link KlovServer }
-     * 
-     */
-    public KlovServer createKlovServer() {
-        return new KlovServer();
+    public RabbitConfig createRabbitConfig() {
+        return new RabbitConfig();
     }
 
     /**
      * Create an instance of {@link BrowserSettings }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserSettings }
      */
     public BrowserSettings createBrowserSettings() {
         return new BrowserSettings();
@@ -463,7 +551,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Browsers }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Browsers }
      */
     public Browsers createBrowsers() {
         return new Browsers();
@@ -471,7 +561,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserType }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserType }
      */
     public BrowserType createBrowserType() {
         return new BrowserType();
@@ -479,7 +571,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link LocalBrowser }
-     * 
+     *
+     * @return
+     *     the new instance of {@link LocalBrowser }
      */
     public LocalBrowser createLocalBrowser() {
         return new LocalBrowser();
@@ -487,7 +581,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserInDocker }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserInDocker }
      */
     public BrowserInDocker createBrowserInDocker() {
         return new BrowserInDocker();
@@ -495,7 +591,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link RemoteBrowser }
-     * 
+     *
+     * @return
+     *     the new instance of {@link RemoteBrowser }
      */
     public RemoteBrowser createRemoteBrowser() {
         return new RemoteBrowser();
@@ -503,7 +601,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserStackWeb }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserStackWeb }
      */
     public BrowserStackWeb createBrowserStackWeb() {
         return new BrowserStackWeb();
@@ -511,7 +611,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ScreenRecording }
-     * 
+     *
+     * @return
+     *     the new instance of {@link ScreenRecording }
      */
     public ScreenRecording createScreenRecording() {
         return new ScreenRecording();
@@ -519,7 +621,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserOptionsArguments }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserOptionsArguments }
      */
     public BrowserOptionsArguments createBrowserOptionsArguments() {
         return new BrowserOptionsArguments();
@@ -527,7 +631,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Chrome }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Chrome }
      */
     public Chrome createChrome() {
         return new Chrome();
@@ -535,7 +641,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Firefox }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Firefox }
      */
     public Firefox createFirefox() {
         return new Firefox();
@@ -543,7 +651,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Edge }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Edge }
      */
     public Edge createEdge() {
         return new Edge();
@@ -551,7 +661,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Safari }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Safari }
      */
     public Safari createSafari() {
         return new Safari();
@@ -559,7 +671,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MobilebrowserDevices }
-     * 
+     *
+     * @return
+     *     the new instance of {@link MobilebrowserDevices }
      */
     public MobilebrowserDevices createMobilebrowserDevices() {
         return new MobilebrowserDevices();
@@ -567,7 +681,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MobilebrowserDevice }
-     * 
+     *
+     * @return
+     *     the new instance of {@link MobilebrowserDevice }
      */
     public MobilebrowserDevice createMobilebrowserDevice() {
         return new MobilebrowserDevice();
@@ -575,7 +691,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NativeDevices }
-     * 
+     *
+     * @return
+     *     the new instance of {@link NativeDevices }
      */
     public NativeDevices createNativeDevices() {
         return new NativeDevices();
@@ -583,7 +701,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NativeDevice }
-     * 
+     *
+     * @return
+     *     the new instance of {@link NativeDevice }
      */
     public NativeDevice createNativeDevice() {
         return new NativeDevice();
@@ -591,7 +711,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link AppiumNativeCapabilities }
-     * 
+     *
+     * @return
+     *     the new instance of {@link AppiumNativeCapabilities }
      */
     public AppiumNativeCapabilities createAppiumNativeCapabilities() {
         return new AppiumNativeCapabilities();
@@ -599,7 +721,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BrowserStackNativeCapabilities }
-     * 
+     *
+     * @return
+     *     the new instance of {@link BrowserStackNativeCapabilities }
      */
     public BrowserStackNativeCapabilities createBrowserStackNativeCapabilities() {
         return new BrowserStackNativeCapabilities();
@@ -607,7 +731,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GooglePlayLogin }
-     * 
+     *
+     * @return
+     *     the new instance of {@link GooglePlayLogin }
      */
     public GooglePlayLogin createGooglePlayLogin() {
         return new GooglePlayLogin();
@@ -615,7 +741,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Ai }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Ai }
      */
     public Ai createAi() {
         return new Ai();
@@ -623,7 +751,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Api }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Api }
      */
     public Api createApi() {
         return new Api();
@@ -631,7 +761,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Auth }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Auth }
      */
     public Auth createAuth() {
         return new Auth();
@@ -639,7 +771,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GraphqlApi }
-     * 
+     *
+     * @return
+     *     the new instance of {@link GraphqlApi }
      */
     public GraphqlApi createGraphqlApi() {
         return new GraphqlApi();
@@ -647,7 +781,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WebsocketApi }
-     * 
+     *
+     * @return
+     *     the new instance of {@link WebsocketApi }
      */
     public WebsocketApi createWebsocketApi() {
         return new WebsocketApi();
@@ -655,7 +791,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Postgres }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Postgres }
      */
     public Postgres createPostgres() {
         return new Postgres();
@@ -663,7 +801,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Clickhouse }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Clickhouse }
      */
     public Clickhouse createClickhouse() {
         return new Clickhouse();
@@ -671,7 +811,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Mysql }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Mysql }
      */
     public Mysql createMysql() {
         return new Mysql();
@@ -679,7 +821,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Oracle }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Oracle }
      */
     public Oracle createOracle() {
         return new Oracle();
@@ -687,7 +831,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Redis }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Redis }
      */
     public Redis createRedis() {
         return new Redis();
@@ -695,7 +841,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Mongo }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Mongo }
      */
     public Mongo createMongo() {
         return new Mongo();
@@ -703,7 +851,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link S3 }
-     * 
+     *
+     * @return
+     *     the new instance of {@link S3 }
      */
     public S3 createS3() {
         return new S3();
@@ -711,7 +861,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Sqs }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Sqs }
      */
     public Sqs createSqs() {
         return new Sqs();
@@ -719,7 +871,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Kafka }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Kafka }
      */
     public Kafka createKafka() {
         return new Kafka();
@@ -727,7 +881,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Rabbitmq }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Rabbitmq }
      */
     public Rabbitmq createRabbitmq() {
         return new Rabbitmq();
@@ -735,7 +891,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Dynamo }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Dynamo }
      */
     public Dynamo createDynamo() {
         return new Dynamo();
@@ -743,7 +901,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Elasticsearch }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Elasticsearch }
      */
     public Elasticsearch createElasticsearch() {
         return new Elasticsearch();
@@ -751,7 +911,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Lambda }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Lambda }
      */
     public Lambda createLambda() {
         return new Lambda();
@@ -759,7 +921,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Sendgrid }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Sendgrid }
      */
     public Sendgrid createSendgrid() {
         return new Sendgrid();
@@ -767,7 +931,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Ses }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Ses }
      */
     public Ses createSes() {
         return new Ses();
@@ -775,7 +941,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Smtp }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Smtp }
      */
     public Smtp createSmtp() {
         return new Smtp();
@@ -783,7 +951,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Twilio }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Twilio }
      */
     public Twilio createTwilio() {
         return new Twilio();
@@ -791,7 +961,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SqlDatabase }
-     * 
+     *
+     * @return
+     *     the new instance of {@link SqlDatabase }
      */
     public SqlDatabase createSqlDatabase() {
         return new SqlDatabase();
@@ -799,7 +971,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link CustomTruncateConfig }
-     * 
+     *
+     * @return
+     *     the new instance of {@link CustomTruncateConfig }
      */
     public CustomTruncateConfig createCustomTruncateConfig() {
         return new CustomTruncateConfig();
@@ -807,7 +981,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Environment }
-     * 
+     *
+     * @return
+     *     the new instance of {@link Environment }
      */
     public Environment createEnvironment() {
         return new Environment();

@@ -1,126 +1,106 @@
 package com.testlum.report;
 
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.testlum.report.extentreports.ExtentReportsGenerator;
-import com.testlum.testing.model.global_config.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
+import com.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.testlum.testing.model.global_config.HtmlReport;
+import com.testlum.testing.model.global_config.Report;
+import com.testlum.testing.model.global_config.TestlumReportServer;
+import com.testlum.testing.report.ReportConfiguration;
+import com.testlum.testing.report.extentreports.ExtentHtmlReportListener;
+import com.testlum.testing.report.server.TestlumServerReportListener;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.ObjectProvider;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link ReportConfiguration} verifying bean creation
- * and report validation logic.
+ * Unit tests for {@link ReportConfiguration} verifying that only the enabled report listeners are created.
  */
 @ExtendWith(MockitoExtension.class)
 class ReportConfigurationTest {
 
-    @Mock
-    private ExtentReportsGenerator extentReportsGenerator;
+    private final ReportConfiguration reportConfiguration = new ReportConfiguration();
+
     @Mock
     private GlobalTestConfiguration globalTestConfiguration;
+    @Mock
+    private ObjectProvider<ExtentHtmlReportListener> htmlProvider;
+    @Mock
+    private ObjectProvider<TestlumServerReportListener> serverProvider;
+    @Mock
+    private ExtentHtmlReportListener htmlListener;
+    @Mock
+    private TestlumServerReportListener serverListener;
 
-    private ReportConfiguration reportConfiguration;
-
-    @BeforeEach
-    void setUp() {
-        reportConfiguration = new ReportConfiguration(extentReportsGenerator, globalTestConfiguration);
+    private static Report report(final boolean htmlEnabled, final TestlumReportServer server) {
+        final HtmlReport html = new HtmlReport();
+        html.setEnabled(htmlEnabled);
+        final Report report = new Report();
+        report.setProjectName("TestProject");
+        report.setHtmlReport(html);
+        report.setTestlumReportServer(server);
+        return report;
     }
 
-    @Nested
-    class CreateBean {
-
-        @Test
-        void returnsExtentReportsGeneratorWhenReportEnabled() {
-            final Report report = new Report();
-            final ExtentReports extentReports = new ExtentReports();
-            final HtmlReportGenerator html = new HtmlReportGenerator();
-            html.setEnabled(true);
-            extentReports.setHtmlReportGenerator(html);
-            report.setExtentReports(extentReports);
-            when(globalTestConfiguration.getReport()).thenReturn(report);
-
-            final ReportGenerator result = reportConfiguration.create();
-
-            assertSame(extentReportsGenerator, result);
-            assertInstanceOf(ExtentReportsGenerator.class, result);
-        }
-
-        @Test
-        void throwsWhenReportIsNull() {
-            when(globalTestConfiguration.getReport()).thenReturn(null);
-
-            assertThrows(UnsupportedOperationException.class, () -> reportConfiguration.create());
-        }
+    private static TestlumReportServer server(final Boolean enabled) {
+        final TestlumReportServer server = new TestlumReportServer();
+        server.setEnabled(enabled);
+        return server;
     }
 
-    @Nested
-    class ValidateReport {
+    @Test
+    void createsNoListenerWithoutReportSection() {
+        when(globalTestConfiguration.getReport()).thenReturn(null);
 
-        @Test
-        void succeedsWhenHtmlReporterEnabled() {
-            final Report report = new Report();
-            final ExtentReports extentReports = new ExtentReports();
-            final HtmlReportGenerator html = new HtmlReportGenerator();
-            html.setEnabled(true);
-            extentReports.setHtmlReportGenerator(html);
-            report.setExtentReports(extentReports);
-            when(globalTestConfiguration.getReport()).thenReturn(report);
+        reportConfiguration.reportingService(globalTestConfiguration, htmlProvider, serverProvider).onRunStart();
 
-            final ReportGenerator result = reportConfiguration.create();
-            assertSame(extentReportsGenerator, result);
-        }
+        verify(htmlProvider, never()).getObject();
+        verify(serverProvider, never()).getObject();
+    }
 
-        @Test
-        void succeedsWhenOnlyKlovEnabled() {
-            final Report report = new Report();
-            final ExtentReports extentReports = new ExtentReports();
-            final HtmlReportGenerator html = new HtmlReportGenerator();
-            html.setEnabled(false);
-            final KlovServerReportGenerator klov = new KlovServerReportGenerator();
-            klov.setEnabled(true);
-            extentReports.setHtmlReportGenerator(html);
-            extentReports.setKlovServerReportGenerator(klov);
-            report.setExtentReports(extentReports);
-            when(globalTestConfiguration.getReport()).thenReturn(report);
+    @Test
+    void createsOnlyHtmlListenerWhenServerIsAbsent() {
+        when(globalTestConfiguration.getReport()).thenReturn(report(true, null));
+        when(htmlProvider.getObject()).thenReturn(htmlListener);
 
-            final ReportGenerator result = reportConfiguration.create();
-            assertSame(extentReportsGenerator, result);
-        }
+        reportConfiguration.reportingService(globalTestConfiguration, htmlProvider, serverProvider).onRunStart();
 
-        @Test
-        void throwsWhenNoReportersEnabled() {
-            final Report report = new Report();
-            final ExtentReports extentReports = new ExtentReports();
-            final HtmlReportGenerator html = new HtmlReportGenerator();
-            html.setEnabled(false);
-            extentReports.setHtmlReportGenerator(html);
-            extentReports.setKlovServerReportGenerator(null);
-            report.setExtentReports(extentReports);
-            when(globalTestConfiguration.getReport()).thenReturn(report);
+        verify(htmlListener).onRunStart();
+        verify(serverProvider, never()).getObject();
+    }
 
-            assertThrows(DefaultFrameworkException.class, () -> reportConfiguration.create());
-        }
+    @Test
+    void createsBothListenersWhenBothAreEnabled() {
+        when(globalTestConfiguration.getReport()).thenReturn(report(true, server(null)));
+        when(htmlProvider.getObject()).thenReturn(htmlListener);
+        when(serverProvider.getObject()).thenReturn(serverListener);
 
-        @Test
-        void throwsWhenKlovExistsButDisabled() {
-            final Report report = new Report();
-            final ExtentReports extentReports = new ExtentReports();
-            final HtmlReportGenerator html = new HtmlReportGenerator();
-            html.setEnabled(false);
-            final KlovServerReportGenerator klov = new KlovServerReportGenerator();
-            klov.setEnabled(false);
-            extentReports.setHtmlReportGenerator(html);
-            extentReports.setKlovServerReportGenerator(klov);
-            report.setExtentReports(extentReports);
-            when(globalTestConfiguration.getReport()).thenReturn(report);
+        reportConfiguration.reportingService(globalTestConfiguration, htmlProvider, serverProvider).onRunStart();
 
-            assertThrows(DefaultFrameworkException.class, () -> reportConfiguration.create());
-        }
+        verify(htmlListener).onRunStart();
+        verify(serverListener).onRunStart();
+    }
+
+    @Test
+    void skipsDisabledListeners() {
+        when(globalTestConfiguration.getReport()).thenReturn(report(false, server(false)));
+
+        reportConfiguration.reportingService(globalTestConfiguration, htmlProvider, serverProvider).onRunStart();
+
+        verify(htmlProvider, never()).getObject();
+        verify(serverProvider, never()).getObject();
+    }
+
+    @Test
+    void failsFastWhenServerListenerCannotBeCreated() {
+        when(globalTestConfiguration.getReport()).thenReturn(report(false, server(true)));
+        when(serverProvider.getObject()).thenThrow(new DefaultFrameworkException("broker unreachable"));
+
+        assertThrows(DefaultFrameworkException.class,
+                () -> reportConfiguration.reportingService(globalTestConfiguration, htmlProvider, serverProvider));
     }
 }

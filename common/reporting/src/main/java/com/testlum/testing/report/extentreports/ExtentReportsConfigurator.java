@@ -1,14 +1,10 @@
-package com.testlum.report.extentreports;
+package com.testlum.testing.report.extentreports;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.Status;
-import com.aventstack.extentreports.reporter.ExtentKlovReporter;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
-import com.testlum.testing.model.global_config.HtmlReportGenerator;
-import com.testlum.testing.model.global_config.KlovServerReportGenerator;
-import com.testlum.testing.model.global_config.Mongodb;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 
 @Slf4j
@@ -34,24 +29,14 @@ public class ExtentReportsConfigurator {
     private final TestResourceSettings testResourceSettings;
 
     public void configure(final ExtentReports extentReports) {
-        com.testlum.testing.model.global_config.ExtentReports extentReportsConfig =
-                globalTestConfiguration.getReport().getExtentReports();
-        String projectName = extentReportsConfig.getProjectName();
-        HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
-        KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();
-        if (htmlReportGeneratorSettings.isEnabled()) {
-            attachSparkReporter(extentReports, projectName);
-        }
-        if (Objects.nonNull(klovServerGeneratorSettings) && klovServerGeneratorSettings.isEnabled()) {
-            attachKlovServerReporter(extentReports, klovServerGeneratorSettings, projectName);
-        }
+        attachSparkReporter(extentReports, globalTestConfiguration.getReport().getProjectName());
     }
 
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
         String reportPath = buildReportPath(projectName);
         try {
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportPath);
-            if (Boolean.TRUE.equals(globalTestConfiguration.getReport().getExtentReports().isOnlyFailedScenarios())) {
+            if (globalTestConfiguration.getReport().isOnlyFailedScenarios()) {
                 sparkReporter.filter()
                         .statusFilter()
                         .as(new Status[]{Status.FAIL})
@@ -72,16 +57,5 @@ public class ExtentReportsConfigurator {
                 projectName, dateTime.format(DATE_TIME_FORMATTER));
         return String.format(TEMPLATE_FOR_REPORT_SAVING_PATH,
                 pathForReportFolder, File.separator, dateTime.format(DATE_FORMATTER), reportName);
-    }
-
-    private void attachKlovServerReporter(final ExtentReports extentReports,
-                                          final KlovServerReportGenerator klovServerGeneratorSettings,
-                                          final String projectName) {
-        Mongodb mongodbSettings = klovServerGeneratorSettings.getMongoDB();
-        String klovServerURL = klovServerGeneratorSettings.getKlovServer().getUrl();
-        ExtentKlovReporter extentKlovReporter = new ExtentKlovReporter(projectName);
-        extentKlovReporter.initMongoDbConnection(mongodbSettings.getHost(), mongodbSettings.getPort().intValue());
-        extentKlovReporter.initKlovServerConnection(klovServerURL);
-        extentReports.attachReporter(extentKlovReporter);
     }
 }

@@ -353,11 +353,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>klov-reporter</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.twilio.sdk</groupId>
             <artifactId>twilio</artifactId>
         </dependency>

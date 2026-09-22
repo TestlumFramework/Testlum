@@ -5,12 +5,39 @@
           elementFormDefault="qualified"
           xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
 
-    <x:include schemaLocation="extent-reports-config.xsd"/>
+    <x:include schemaLocation="shared-config.xsd"/>
+    <x:include schemaLocation="shared-restrictions.xsd"/>
 
     <x:complexType name="report">
-        <x:choice>
-            <x:element name="extentReports" type="tns:extentReports"/>
-        </x:choice>
+        <x:sequence>
+            <x:element name="htmlReport" type="tns:htmlReport" minOccurs="0"/>
+            <x:element name="testlumReportServer" type="tns:testlumReportServer" minOccurs="0"/>
+        </x:sequence>
+        <x:attribute name="projectName" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="onlyFailedScenarios" type="x:boolean" default="false"/>
+    </x:complexType>
+
+    <x:complexType name="htmlReport">
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="testlumReportServer">
+        <x:sequence>
+            <x:element name="serverUrl" type="tns:url"/>
+            <x:element name="apiKey" type="tns:nonEmptyString"/>
+            <x:element name="rabbitConfig" type="tns:rabbitConfig"/>
+        </x:sequence>
+        <x:attribute name="enabled" type="x:boolean" default="true"/>
+    </x:complexType>
+
+    <x:complexType name="rabbitConfig">
+        <x:sequence>
+            <x:element name="host" type="tns:hostNameOrIPv4"/>
+            <x:element name="port" type="tns:port" default="5672"/>
+            <x:element name="username" type="tns:nonEmptyString"/>
+            <x:element name="password" type="tns:nonEmptyString"/>
+            <x:element name="virtualHost" type="tns:nonEmptyString" default="/"/>
+        </x:sequence>
     </x:complexType>
 
 </x:schema>

@@ -1,5 +1,7 @@
 package com.testlum.report;
 
+import com.testlum.testing.report.GlobalScenarioStatCollector;
+import com.testlum.testing.report.ScenarioResult;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

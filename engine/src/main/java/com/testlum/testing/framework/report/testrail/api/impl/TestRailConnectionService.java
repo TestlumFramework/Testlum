@@ -6,6 +6,7 @@ import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.api.util.TestRailUrlFormatter;
 import com.testlum.testing.model.global_config.TestRailReports;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -89,7 +90,7 @@ public class TestRailConnectionService {
         }
 
         public String getCreateTextRunEndpoint(final String projectId) {
-            return baseUrl + CREATE_NEW_TEST_RUN_URL + projectId;
+            return baseUrl + CREATE_NEW_TEST_RUN_URL + StringUtils.trimToEmpty(projectId);
         }
 
         public String getFetchTestEndpoint(final String testId) {
@@ -97,7 +98,7 @@ public class TestRailConnectionService {
         }
 
         public String getCasesEndpoint(final String projectId, final int offset) {
-            return baseUrl + GET_CASES_URL + projectId
+            return baseUrl + GET_CASES_URL + StringUtils.trimToEmpty(projectId)
                     + "&limit=" + TestRailConstants.CASES_PAGE_LIMIT + "&offset=" + offset;
         }
 

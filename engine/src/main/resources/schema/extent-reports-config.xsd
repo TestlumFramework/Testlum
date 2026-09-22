@@ -45,7 +45,7 @@
             <x:element name="username" type="tns:nonEmptyString"/>
             <x:element name="apiKey" type="tns:nonEmptyString"/>
             <x:element name="url" type="tns:nonEmptyString"/>
-            <x:element name="projectId" type="tns:nonEmptyString"/>
+            <x:element name="projectId" type="tns:testRailProjectId"/>
             <x:element name="caseMatchKey" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="defaultRunName" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="defaultRunDescription" type="tns:nonEmptyString" minOccurs="0"/>
@@ -53,4 +53,14 @@
         <x:attribute name="enabled" type="x:boolean" use="required"/>
         <x:attribute name="addScreenshotForFailure" type="x:boolean" default="false"/>
     </x:complexType>
+
+    <x:simpleType name="testRailProjectId">
+        <x:union memberTypes="tns:positiveIntegerMin1">
+            <x:simpleType>
+                <x:restriction base="x:string">
+                    <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
+                </x:restriction>
+            </x:simpleType>
+        </x:union>
+    </x:simpleType>
 </x:schema>

@@ -15,7 +15,7 @@ import jakarta.xml.bind.annotation.*;
  *         &lt;element name="username" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="apiKey" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="url" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="projectId" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="projectId" type="{http://www.knubisoft.com/testlum/testing/model/global-config}testRailProjectId"/&gt;
  *         &lt;element name="caseMatchKey" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="defaultRunName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="defaultRunDescription" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;

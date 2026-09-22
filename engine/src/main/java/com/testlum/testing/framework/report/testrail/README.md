@@ -24,7 +24,7 @@ To enable TestRail integration, you must add a `<testRailReports>` section insid
 * **username**: Your TestRail account email.
 * **apiKey**: API Key from TestRail.
 * **url**: Base URL of your TestRail instance. The value is formatted automatically.
-* **projectId**: (Optional) Used when creating a new test run.
+* **projectId**: (Optional) Used when creating a new test run. Accepts a positive id (`1`) or an environment variable (`${TESTRAIL_PROJECT_ID}`).
 * **defaultRunName**: (Optional) Name used for new test runs.
 * **defaultRunDescription**: (Optional) Description used for new test runs.
 
@@ -122,7 +122,7 @@ API call that carried it failed.
         <x:element name="username" type="tns:nonEmptyString"/>
         <x:element name="apiKey" type="tns:nonEmptyString"/>
         <x:element name="url" type="tns:nonEmptyString"/>
-        <x:element name="projectId" type="tns:nonEmptyString"/>
+        <x:element name="projectId" type="tns:testRailProjectId"/>
         <x:element name="defaultRunName" type="tns:nonEmptyString" minOccurs="0"/>
         <x:element name="defaultRunDescription" type="tns:nonEmptyString" minOccurs="0"/>
     </x:sequence>

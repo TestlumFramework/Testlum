@@ -6,18 +6,15 @@ import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.context.AliasToStorageOperation;
 import com.testlum.testing.framework.env.service.EnvironmentExecutionService;
 import com.testlum.testing.framework.exception.IntegrationDisabledException;
-import com.testlum.report.GlobalScenarioStatCollector;
-import com.testlum.report.ReportGenerator;
-import com.testlum.report.ScenarioResult;
-import com.testlum.testing.framework.scenario.InvalidScenarioCondition;
-import com.testlum.testing.framework.scenario.ScenarioArguments;
-import com.testlum.testing.framework.scenario.ScenarioRunner;
-import com.testlum.testing.framework.scenario.ScenarioStatusRegistry;
+import com.testlum.testing.framework.scenario.*;
 import com.testlum.testing.framework.util.FileRemover;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.framework.util.UiLogUtil;
 import com.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.testlum.testing.report.GlobalScenarioStatCollector;
+import com.testlum.testing.report.ReportingService;
+import com.testlum.testing.report.ScenarioResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +59,7 @@ public class RootTest {
     public void beforeAll() throws Exception {
         TestResourceSettings testResourceSettings = ctx.getBean(TestResourceSettings.class);
         ctx.getBean(FileRemover.class).clearActualFiles(testResourceSettings.getScenariosFolder());
+        ctx.getBean(ReportingService.class).onRunStart();
     }
 
     @DisplayName("Execution of test scenarios:")
@@ -85,27 +83,25 @@ public class RootTest {
                 systemDataStoreCleaner.clearAll(aliasToStorageOperation);
             }
             runInstructions(args);
+        } else {
+            String cause = args.getException().getMessage();
+            ctx.getBean(ReportingService.class).onScenarioFinished(SkippedScenarioResults.of(args, cause));
         }
     }
 
     private void runInstructions(final ScenarioArguments args) {
         StopWatch stopWatch = StopWatch.createStarted();
-        ScenarioResult result = null;
-        try {
-            ScenarioRunner scenarioRunner = new ScenarioRunner(args, ctx);
-            result = scenarioRunner.run();
-            setTestScenarioResult(result);
-        } finally {
-            stopWatch.stop();
-            if (result != null) {
-                result.setExecutionTime(stopWatch.getDuration().toMillis());
-            }
-        }
+        ScenarioRunner scenarioRunner = new ScenarioRunner(args, ctx);
+        ScenarioResult result = scenarioRunner.run();
+        stopWatch.stop();
+        result.setExecutionTime(stopWatch.getDuration().toMillis());
+        setTestScenarioResult(result);
     }
 
     private void setTestScenarioResult(final ScenarioResult result) {
         GlobalScenarioStatCollector globalScenarioStatCollector = ctx.getBean(GlobalScenarioStatCollector.class);
         globalScenarioStatCollector.addResult(result);
+        ctx.getBean(ReportingService.class).onScenarioFinished(result);
         if (StringUtils.isNotBlank(result.getCause())) {
             String[] lines = result.getCause().split(System.lineSeparator());
             String message = result.getPath() + " - " + lines[0];
@@ -133,9 +129,10 @@ public class RootTest {
         LogUtil logUtil = ctx.getBean(LogUtil.class);
         logUtil.logInvalidScenariosSummary(invalid, skipped);
 
+        ReportingService reportingService = ctx.getBean(ReportingService.class);
+        invalid.forEach((path, reason) -> reportingService.onScenarioFinished(SkippedScenarioResults.of(path, reason)));
         GlobalScenarioStatCollector globalScenarioStatCollector = ctx.getBean(GlobalScenarioStatCollector.class);
-        ReportGenerator reportGenerator = ctx.getBean(ReportGenerator.class);
-        reportGenerator.generateReport(globalScenarioStatCollector);
+        reportingService.onRunFinished(globalScenarioStatCollector);
 
         logInvalidScenariosSummary(invalid);
     }

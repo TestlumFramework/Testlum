@@ -1,6 +1,6 @@
 package com.testlum.report;
 
-import com.testlum.report.extentreports.model.ResultForComparison;
+import com.testlum.testing.report.extentreports.model.ResultForComparison;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

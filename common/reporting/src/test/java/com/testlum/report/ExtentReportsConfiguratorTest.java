@@ -1,14 +1,13 @@
 package com.testlum.report;
 
 import com.aventstack.extentreports.ExtentReports;
-import com.testlum.report.extentreports.ExtentReportsConfigurator;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
-import com.testlum.testing.model.global_config.HtmlReportGenerator;
-import com.testlum.testing.model.global_config.KlovServerReportGenerator;
+import com.testlum.testing.model.global_config.HtmlReport;
 import com.testlum.testing.model.global_config.Report;
+import com.testlum.testing.report.extentreports.ExtentReportsConfigurator;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -17,11 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link ExtentReportsConfigurator} verifying reporter
- * attachment based on configuration settings.
+ * Unit tests for {@link ExtentReportsConfigurator} verifying the Spark (HTML) reporter attachment.
  */
 @ExtendWith(MockitoExtension.class)
 class ExtentReportsConfiguratorTest {
@@ -40,67 +39,32 @@ class ExtentReportsConfiguratorTest {
         configurator = new ExtentReportsConfigurator(globalTestConfiguration, testResourceSettings);
     }
 
-    private void setupConfig(final boolean htmlEnabled,
-                             final KlovServerReportGenerator klov) {
+    @Test
+    void attachesSparkReporter() {
+        setupConfig(false);
+
+        configurator.configure(extentReports);
+
+        verify(extentReports).attachReporter(any(ExtentSparkReporter.class));
+    }
+
+    @Test
+    void attachesSparkReporterWhenOnlyFailedScenariosAreReported() {
+        setupConfig(true);
+
+        configurator.configure(extentReports);
+
+        verify(extentReports).attachReporter(any(ExtentSparkReporter.class));
+    }
+
+    private void setupConfig(final boolean onlyFailedScenarios) {
+        final HtmlReport html = new HtmlReport();
+        html.setEnabled(true);
         final Report report = new Report();
-        final com.testlum.testing.model.global_config.ExtentReports erConfig =
-                new com.testlum.testing.model.global_config.ExtentReports();
-        erConfig.setProjectName("TestProject");
-        final HtmlReportGenerator html = new HtmlReportGenerator();
-        html.setEnabled(htmlEnabled);
-        erConfig.setHtmlReportGenerator(html);
-        erConfig.setOnlyFailedScenarios(true);
-        erConfig.setKlovServerReportGenerator(klov);
-        report.setExtentReports(erConfig);
+        report.setProjectName("TestProject");
+        report.setOnlyFailedScenarios(onlyFailedScenarios);
+        report.setHtmlReport(html);
         when(globalTestConfiguration.getReport()).thenReturn(report);
-    }
-
-    @Nested
-    class ConfigureSparkReporter {
-
-        @Test
-        void attachesSparkReporterWhenHtmlEnabled() {
-            setupConfig(true, null);
-            final File resourcesFolder = new File("/tmp/test-resources");
-            when(testResourceSettings.getTestResourcesFolder()).thenReturn(resourcesFolder);
-
-            configurator.configure(extentReports);
-
-            verify(extentReports).attachReporter(
-                    any(com.aventstack.extentreports.reporter.ExtentSparkReporter.class));
-        }
-
-        @Test
-        void doesNotAttachSparkReporterWhenHtmlDisabled() {
-            setupConfig(false, null);
-
-            configurator.configure(extentReports);
-
-            verify(extentReports, never()).attachReporter(any());
-        }
-    }
-
-    @Nested
-    class ConfigureKlovReporter {
-
-        @Test
-        void doesNotAttachKlovWhenNull() {
-            setupConfig(false, null);
-
-            configurator.configure(extentReports);
-
-            verify(extentReports, never()).attachReporter(any());
-        }
-
-        @Test
-        void doesNotAttachKlovWhenDisabled() {
-            final KlovServerReportGenerator klov = new KlovServerReportGenerator();
-            klov.setEnabled(false);
-            setupConfig(false, klov);
-
-            configurator.configure(extentReports);
-
-            verify(extentReports, never()).attachReporter(any());
-        }
+        when(testResourceSettings.getTestResourcesFolder()).thenReturn(new File("/tmp/test-resources"));
     }
 }

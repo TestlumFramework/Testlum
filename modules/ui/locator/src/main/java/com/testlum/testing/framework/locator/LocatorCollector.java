@@ -3,6 +3,7 @@ package com.testlum.testing.framework.locator;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.constant.DelimiterConstant;
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.model.pages.Component;
@@ -11,16 +12,14 @@ import com.testlum.testing.model.pages.Locator;
 import com.testlum.testing.model.pages.Page;
 
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.testlum.testing.framework.constant.ExceptionMessage;
+import java.util.*;
 
 @org.springframework.stereotype.Component
 public class LocatorCollector {
 
     private final PageValidator pageValidator;
+    private final XMLParsers xmlParsers;
+    private final List<PageDefinition> pageDefinitions = new ArrayList<>();
 
     private final Map<String, File> pageFiles;
     private final Map<String, File> componentFiles;
@@ -31,6 +30,7 @@ public class LocatorCollector {
                             final TestResourceSettings testResourceSettings,
                             final FileSearcher fileSearcher) {
         this.pageValidator = pageValidator;
+        this.xmlParsers = xmlParsers;
         this.pageFiles = fileSearcher.collectFilesFromFolder(testResourceSettings.getPagesFolder());
         this.componentFiles = fileSearcher.collectFilesFromFolder(testResourceSettings.getComponentsFolder());
         this.locatorMap = collect(xmlParsers);
@@ -53,8 +53,10 @@ public class LocatorCollector {
     private Page parseLocatorOrThrow(final XMLParsers xmlParsers, final File each) {
         try {
             Page page = xmlParsers.forPageLocator().process(each);
+            List<Locator> ownLocators = List.copyOf(page.getLocators().getLocator());
             addIncludeLocators(page, xmlParsers);
             pageValidator.validate(page, each);
+            pageDefinitions.add(new PageDefinition(pageName(each), page, ownLocators));
             return page;
         } catch (Exception e) {
             throw new DefaultFrameworkException(
@@ -88,8 +90,29 @@ public class LocatorCollector {
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {
-        String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY);
-        return prefix + DelimiterConstant.DOT + locator.getLocatorId();
+        return pageName(each.getKey()) + DelimiterConstant.DOT + locator.getLocatorId();
+    }
+
+    private String pageName(final File pageFile) {
+        return pageFile.getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY);
+    }
+
+    /**
+     * @return every parsed page, with its own locators kept apart from those of its included components
+     */
+    public List<PageDefinition> getPageDefinitions() {
+        return Collections.unmodifiableList(pageDefinitions);
+    }
+
+    /**
+     * Parses every component file afresh, so callers never share locator instances with the pages.
+     *
+     * @return component name (as referenced by page includes) to parsed component
+     */
+    public Map<String, Component> getComponents() {
+        Map<String, Component> components = new LinkedHashMap<>();
+        componentFiles.forEach((name, file) -> components.put(name, xmlParsers.forComponentLocator().process(file)));
+        return components;
     }
 
     public LocatorData getLocator(final String name) {

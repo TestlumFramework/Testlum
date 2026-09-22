@@ -11,6 +11,7 @@
         <x:restriction base="x:string">
             <x:pattern value="https?://.+"/>
             <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
+            <x:pattern value="\{\{.*\}\}|\$\{.*\}"/>
         </x:restriction>
     </x:simpleType>
 

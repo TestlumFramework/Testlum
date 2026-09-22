@@ -11,13 +11,13 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterScanner;
 import com.testlum.testing.framework.interpreter.lib.ui.MockDriver;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.report.ScenarioResult;
 import com.testlum.testing.framework.util.*;
 import com.testlum.testing.model.global_config.AbstractBrowser;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.Safari;
 import com.testlum.testing.model.scenario.AbstractCommand;
 import com.testlum.testing.model.scenario.Scenario;
+import com.testlum.testing.report.ScenarioResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -110,9 +110,18 @@ public class ScenarioRunner {
                 dependencies.getScenarioContext()));
     }
 
+    /**
+     * @return the next scenario id of the run, unique across every scenario result (executed or skipped)
+     */
+    public static int nextScenarioId() {
+        return SCENARIO_ID_GENERATOR.incrementAndGet();
+    }
+
     private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
+        scenarioResult.setId(nextScenarioId());
+        scenarioResult.setStartedAt(System.currentTimeMillis());
+        scenarioResult.setVariation(scenarioArguments.getVariations());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getSettings().getTags());

@@ -3,6 +3,8 @@ package com.testlum.testing.framework.util;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DefaultTyping;
 import tools.jackson.databind.JavaType;
@@ -10,8 +12,8 @@ import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import tools.jackson.databind.jsontype.PolymorphicTypeValidator;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public final class JacksonService {
@@ -55,6 +57,15 @@ public final class JacksonService {
     public String writeAsStringFieldVisibility(final Object value) {
         try {
             return mapperFieldVisibility.writeValueAsString(value);
+        } catch (JacksonException e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> toMapByFields(final Object value) {
+        try {
+            return mapperFieldVisibility.convertValue(value, Map.class);
         } catch (JacksonException e) {
             throw new DefaultFrameworkException(e);
         }

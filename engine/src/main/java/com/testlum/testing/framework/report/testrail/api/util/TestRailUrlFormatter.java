@@ -39,7 +39,8 @@ public final class TestRailUrlFormatter {
     }
 
     private static String withScheme(final String url) {
-        return url.contains(SCHEME_SEPARATOR) ? url : HTTPS_SCHEME + url;
+        String urlWithScheme = url.contains(SCHEME_SEPARATOR) ? url : HTTPS_SCHEME + url;
+        return urlWithScheme.replaceAll("(?i)(https?://)/+", "$1");
     }
 
     private static String formatApiPath(final String url) {

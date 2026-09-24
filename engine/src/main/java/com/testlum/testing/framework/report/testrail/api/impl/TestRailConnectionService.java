@@ -22,16 +22,15 @@ public class TestRailConnectionService {
 
     private final TestRailReports testRails;
     private final RestTemplate restTemplate;
-    private final ApiEndpoints endpoints;
+    private ApiEndpoints endpoints;
 
     public TestRailConnectionService(final TestRailReports testRails, final RestTemplate restTemplate) {
         this.testRails = testRails;
         this.restTemplate = restTemplate;
-        this.endpoints = new ApiEndpoints(testRails);
     }
 
     public void validateConnection() {
-        String url = endpoints.getFetchProjectsEndpoint();
+        String url = endpoints().getFetchProjectsEndpoint();
         HttpEntity<Void> httpEntity = new HttpEntity<>(authHeaders());
         log.info(TestRailConstants.LOG_VALIDATE_CONNECTION, url);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
@@ -58,7 +57,13 @@ public class TestRailConnectionService {
         return headers;
     }
 
+    /**
+     * Endpoints are built on first use, as the TestRail section may be absent from the global config.
+     */
     public ApiEndpoints endpoints() {
+        if (endpoints == null) {
+            endpoints = new ApiEndpoints(testRails);
+        }
         return endpoints;
     }
 

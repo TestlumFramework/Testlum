@@ -33,7 +33,7 @@ public class TestRailSummaryLogger {
         summary.getReportedCases().forEach(reportedCase -> addReportedRow(table, reportedCase));
         return table.footer(String.format(TestRailConstants.REPORTED_TABLE_FOOTER,
                         summary.getReportedCases().size(), summary.getAttachedScreenshots()))
-                .align(Align.LEFT)
+                .align(Align.CENTER)
                 .color(Color.CYAN)
                 .build();
     }

@@ -24,8 +24,10 @@ public final class TestRailConstants {
     public static final String LOG_VALIDATE_CONNECTION = "Validating TestRail connection: {}";
     public static final String LOG_CONNECTION_SUCCESSFUL =
             "TestRail connection and authentication validated successfully";
-    public static final String LOG_CONNECTION_FAILED = "TestRail connection failed: {}";
-    public static final String LOG_CONNECTION_ERROR = "Error validating TestRail connection: {}";
+    public static final String CONNECTION_FAILED_STATUS = "TestRail responded with HTTP %s";
+    public static final String LOG_CONNECTION_ERROR =
+            "Error validating TestRail connection: {}. Results are not reported to TestRail";
+    public static final String LOG_REPORTING_ERROR = "Failed to report results to TestRail: {}";
     public static final String LOG_CREATING_TEST_RUN = "Creating Test Run: '{}', number of cases: {}";
     public static final String LOG_TEST_RUN_CREATED = "Test Run '{}' created successfully with ID {}";
     public static final String LOG_TEST_RUN_CREATION_FAILED = "Failed to create Test Run '{}': {}";
@@ -79,6 +81,7 @@ public final class TestRailConstants {
     public static final String REASON_MATCH_KEY_VALUE_NOT_FOUND =
             "No TestRail case has value '%s' for custom key '%s'";
     public static final String REASON_RUN_NOT_CREATED = "Test Run could not be created in TestRail";
+    public static final String REASON_CONNECTION_FAILED = "TestRail connection failed: %s";
 
     public static final String RUN_ID_ERROR_RESPONSE = "Failed to parse Run ID '{}' for TestRail.";
 

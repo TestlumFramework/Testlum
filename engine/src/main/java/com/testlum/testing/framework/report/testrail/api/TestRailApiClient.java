@@ -10,7 +10,11 @@ import java.util.Optional;
 
 public interface TestRailApiClient {
 
-    void validateConnection();
+    /**
+     * Checks that TestRail is reachable and the credentials are accepted.
+     * Returns the failure reason, or an empty optional when the connection is valid.
+     */
+    Optional<String> validateConnection();
 
     /**
      * Sends one batch of results to the given run and reports whether they were

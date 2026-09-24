@@ -9,10 +9,13 @@ import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.model.global_config.AbstractBrowser;
 import com.testlum.testing.model.global_config.AppiumCapabilities;
 import com.testlum.testing.model.global_config.AppiumNativeCapabilities;
+import com.testlum.testing.model.global_config.ExtentReports;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.testlum.testing.model.global_config.NativeDevice;
 import com.testlum.testing.model.global_config.Platform;
+import com.testlum.testing.model.global_config.Report;
+import com.testlum.testing.model.global_config.TestRailReports;
 import com.testlum.testing.model.scenario.Overview;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -632,6 +635,26 @@ class ExtentReportsGeneratorTest {
         step.setSuccess(success);
         step.setSkipped(skipped);
         return step;
+    }
+
+    @Nested
+    class TestRailReporting {
+
+        @Test
+        void testRailFailureDoesNotFailReportGeneration() {
+            final TestRailReports testRailReports = new TestRailReports();
+            testRailReports.setEnabled(true);
+            final ExtentReports extentReports = new ExtentReports();
+            extentReports.setTestRailReports(testRailReports);
+            final Report report = new Report();
+            report.setExtentReports(extentReports);
+            when(globalTestConfiguration.getReport()).thenReturn(report);
+            doThrow(new RuntimeException("TestRail is down"))
+                    .when(testRailService).generateTestRailReports(any());
+
+            assertDoesNotThrow(() -> generator.generateReport(new GlobalScenarioStatCollector()));
+            verify(testRailService).generateTestRailReports(any());
+        }
     }
 
     private ScenarioResult createScenarioResult(final int id, final String name, final boolean success) {

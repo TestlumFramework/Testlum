@@ -33,17 +33,13 @@ public class TestRailConnectionService {
     public void validateConnection() {
         String url = endpoints.getFetchProjectsEndpoint();
         HttpEntity<Void> httpEntity = new HttpEntity<>(authHeaders());
-        try {
-            log.info(TestRailConstants.LOG_VALIDATE_CONNECTION, url);
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                log.info(TestRailConstants.LOG_CONNECTION_SUCCESSFUL);
-            } else {
-                throw new DefaultFrameworkException(TestRailConstants.LOG_CONNECTION_FAILED, response.getStatusCode());
-            }
-        } catch (Exception e) {
-            throw new DefaultFrameworkException(TestRailConstants.LOG_CONNECTION_ERROR, e.getMessage(), e);
+        log.info(TestRailConstants.LOG_VALIDATE_CONNECTION, url);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new DefaultFrameworkException(TestRailConstants.CONNECTION_FAILED_STATUS,
+                    response.getStatusCode().value());
         }
+        log.info(TestRailConstants.LOG_CONNECTION_SUCCESSFUL);
     }
 
     public HttpHeaders buildHeaders() {

@@ -48,8 +48,15 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     }
 
     @Override
-    public void validateConnection() {
-        connectionService.validateConnection();
+    public Optional<String> validateConnection() {
+        try {
+            connectionService.validateConnection();
+            return Optional.empty();
+        } catch (Exception e) {
+            String reason = errorDescriber.describe(e);
+            log.error(TestRailConstants.LOG_CONNECTION_ERROR, reason);
+            return Optional.of(reason);
+        }
     }
 
     @Override

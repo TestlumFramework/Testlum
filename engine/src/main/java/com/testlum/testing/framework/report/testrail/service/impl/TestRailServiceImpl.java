@@ -16,6 +16,7 @@ import com.testlum.testing.framework.report.testrail.service.util.TestRailResult
 import com.testlum.testing.framework.report.testrail.summary.TestRailSummaryLogger;
 import com.testlum.testing.framework.util.LogUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,17 +37,24 @@ public class TestRailServiceImpl implements TestRailService {
 
     @Override
     public void generateTestRailReports(final List<ScenarioResult> results) {
-        testRailApiClient.validateConnection();
         List<ScenarioResult> testRailScenarios = scenarioResultDataExtractor
                 .collectScenarioWithTestRailIntegrations(results);
         TestRailReportSummary summary = new TestRailReportSummary();
+        testRailApiClient.validateConnection().ifPresentOrElse(
+                reason -> markAllAsNotReported(testRailScenarios,
+                        String.format(TestRailConstants.REASON_CONNECTION_FAILED, reason), summary),
+                () -> reportScenarios(testRailScenarios, summary));
+        summaryLogger.logSummary(summary);
+    }
+
+    private void reportScenarios(final List<ScenarioResult> testRailScenarios,
+                                 final TestRailReportSummary summary) {
         List<ScenarioCase> scenarioCases = caseIdResolver.resolveCases(testRailScenarios, summary);
         if (!scenarioCases.isEmpty()) {
             sendTestResultToTestRail(scenarioCases, summary);
         } else {
             logUtil.logEmptyScenariosForTestRails();
         }
-        summaryLogger.logSummary(summary);
     }
 
     private void sendTestResultToTestRail(final List<ScenarioCase> scenarioCases,
@@ -109,6 +117,13 @@ public class TestRailServiceImpl implements TestRailService {
                                    final TestRailReportSummary summary) {
         scenarioList.forEach(scenarioCase -> summary.addNotReported(scenarioCase.scenarioResult().getName(),
                 String.valueOf(scenarioCase.caseId()), reason));
+    }
+
+    private void markAllAsNotReported(final List<ScenarioResult> scenarioResults, final String reason,
+                                      final TestRailReportSummary summary) {
+        scenarioResults.forEach(scenarioResult -> summary.addNotReported(scenarioResult.getName(),
+                StringUtils.defaultIfBlank(scenarioResult.getOverview().getTestRail().getTestCaseId(),
+                        TestRailConstants.CASE_ID_UNRESOLVED), reason));
     }
 
     public List<ResultRequest> buildBatchResults(final List<ScenarioCase> scenarioList) {

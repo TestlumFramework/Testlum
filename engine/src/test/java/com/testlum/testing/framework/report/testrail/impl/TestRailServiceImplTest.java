@@ -24,7 +24,9 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -152,6 +154,23 @@ class TestRailServiceImplTest {
 
             service.generateTestRailReports(List.of(scenario("login", true, null, "MISSING")));
 
+            verify(apiClient, never()).sendResultsInBatch(anyInt(), anyList(), any());
+        }
+    }
+
+    @Nested
+    class ConnectionFailure {
+
+        @Test
+        void nothingIsSentAndNoExceptionIsThrownWhenConnectionFails() {
+            when(apiClient.validateConnection()).thenReturn(Optional.of("HTTP 401: Authentication failed"));
+
+            assertDoesNotThrow(() -> service.generateTestRailReports(List.of(
+                    scenario("byId", true, "42", null),
+                    scenario("byKey", true, null, "LOGIN_001"))));
+
+            verify(apiClient, never()).fetchCaseIdsByMatchKey(any());
+            verify(apiClient, never()).createNewTestRailRun(anyList());
             verify(apiClient, never()).sendResultsInBatch(anyInt(), anyList(), any());
         }
     }

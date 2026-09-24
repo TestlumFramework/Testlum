@@ -12,6 +12,7 @@ import com.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.testlum.testing.framework.report.ReportGenerator;
 import com.testlum.testing.framework.report.ScenarioResult;
 import com.testlum.testing.framework.report.extentreports.model.ResultForComparison;
+import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.service.TestRailService;
 import com.testlum.testing.framework.util.BrowserUtil;
 import com.testlum.testing.framework.util.MobileUtil;
@@ -102,7 +103,11 @@ public class ExtentReportsGenerator implements ReportGenerator {
         TestRailReports testRailsReportsSettings = globalTestConfiguration.getReport()
                 .getExtentReports().getTestRailReports();
         if (Objects.nonNull(testRailsReportsSettings) && testRailsReportsSettings.isEnabled()) {
-            testRailService.generateTestRailReports(globalScenarioStatCollector.getResults());
+            try {
+                testRailService.generateTestRailReports(globalScenarioStatCollector.getResults());
+            } catch (Exception e) {
+                log.error(TestRailConstants.LOG_REPORTING_ERROR, e.getMessage(), e);
+            }
         }
     }
 

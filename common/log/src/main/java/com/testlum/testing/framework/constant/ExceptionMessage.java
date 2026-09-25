@@ -203,4 +203,12 @@ public class ExceptionMessage {
     public static final String REPEAT_TYPE_IS_NOT_PROVIDED = """
             <repeat> must specify either 'times' or 'variations'.
             Use 'times' to run the commands a fixed number of times, or 'variations' to run them once per variation""";
+
+    public static final String FAILED_CRYPTO_LOG =
+            "Failed crypto operation for name <{}>, action <{}>";
+    public static final String CRYPTO_NOT_CONFIGURED =
+            "Cryptography integration is not configured for alias <%s> and env <%s>";
+
+    public static final String FAILED_CRYPTO_INPUT_LOG =
+            "Failed crypto input operation for locator <{}>, action <{}>";
 }

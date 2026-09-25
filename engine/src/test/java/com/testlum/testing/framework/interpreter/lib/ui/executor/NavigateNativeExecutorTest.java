@@ -5,6 +5,7 @@ import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.framework.util.ResultUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.model.scenario.NavigateNative;
 import com.testlum.testing.model.scenario.NavigateNativeDestination;
@@ -32,6 +33,8 @@ class NavigateNativeExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private ResultUtil resultUtil;
     @Mock
@@ -114,7 +117,7 @@ class NavigateNativeExecutorTest {
             CommandResult result = new CommandResult();
             executor.execute(nav, result);
 
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 

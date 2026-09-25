@@ -2,6 +2,9 @@ package com.testlum.testing;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
+import com.testlum.testing.framework.util.InjectionService;
+import com.testlum.testing.framework.util.JacksonService;
+import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.framework.xml.XMLParsers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -64,6 +67,35 @@ class TestResourceInfrastructureInitializerTest {
             assertEquals(XMLParsers.class.getName(),
                     bd.getBeanClassName());
             assertEquals(BeanDefinition.SCOPE_SINGLETON, bd.getScope());
+        }
+
+        @Test
+        void registersInjectionServiceBeanWithItsDependencies() {
+            assertTrue(beanFactory.containsBeanDefinition("injectionService"));
+            assertTrue(beanFactory.containsBeanDefinition("jacksonService"));
+            assertTrue(beanFactory.containsBeanDefinition("systemVariableService"));
+            assertEquals(InjectionService.class.getName(),
+                    beanFactory.getBeanDefinition("injectionService")
+                            .getBeanClassName());
+            assertEquals(JacksonService.class.getName(),
+                    beanFactory.getBeanDefinition("jacksonService")
+                            .getBeanClassName());
+            assertEquals(SystemVariableService.class.getName(),
+                    beanFactory.getBeanDefinition("systemVariableService")
+                            .getBeanClassName());
+        }
+
+        @Test
+        void injectionServiceHasConstructorAutowireMode() {
+            BeanDefinition bd = beanFactory.getBeanDefinition("injectionService");
+            assertInstanceOf(GenericBeanDefinition.class, bd);
+            assertEquals(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR,
+                    ((AbstractBeanDefinition) bd).getAutowireMode());
+        }
+
+        @Test
+        void injectionServiceIsResolvableBeforeComponentScan() {
+            assertNotNull(beanFactory.getBean(InjectionService.class));
         }
 
         @Test

@@ -3,6 +3,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.ResultUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.framework.util.check.ElementChecks;
 import com.testlum.testing.model.scenario.Input;
@@ -28,6 +29,8 @@ class InputExecutorTest {
 
     @Mock
     private UiUtil uiUtil;
+    @Mock
+    private ScreenshotUtil screenshotUtil;
     @Mock
     private WebDriver driver;
     @Mock
@@ -59,7 +62,7 @@ class InputExecutorTest {
             input.setValue("testUser");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("username"), any(), eq(ElementChecks.FOR_WRITING)))
+            when(uiUtil.findWebElement(any(), eq("username"), any(), eq(ElementChecks.FOR_WRITING), result))
                     .thenReturn(element);
             when(uiUtil.resolveSendKeysType(eq("testUser"), eq(element), eq(scenarioFile)))
                     .thenReturn("testUser");
@@ -68,7 +71,7 @@ class InputExecutorTest {
 
             verify(element).sendKeys("testUser");
             verify(uiUtil).highlightElementIfRequired(anyBoolean(), eq(element), eq(driver));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
             assertEquals("username", result.getMetadata().get(ResultUtil.INPUT_LOCATOR));
             assertEquals("testUser", result.getMetadata().get(ResultUtil.INPUT_VALUE));
         }

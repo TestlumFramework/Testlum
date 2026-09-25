@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,11 +56,11 @@ public class TestRailResponseJsonDeserializer {
     }
 
     /**
-     * Collects customKeyValue - caseId pairs from one page of the
+     * Collects customKeyValue - caseIds pairs from one page of the
      * get_cases response and returns how many cases that page held.
      */
     public int collectCaseIdsByMatchKey(final String jsonResponse, final String caseMatchKey,
-                                        final Map<String, Integer> target) {
+                                        final Map<String, List<Integer>> target) {
         JsonNode root;
         try {
             root = OBJECT_MAPPER.readTree(jsonResponse);
@@ -75,16 +76,15 @@ public class TestRailResponseJsonDeserializer {
     }
 
     private void collectCase(final JsonNode caseNode, final String caseMatchKey,
-                             final Map<String, Integer> target) {
+                             final Map<String, List<Integer>> target) {
         Integer caseId = readInt(caseNode, TestRailConstants.ID_FIELD);
         String matchKeyValue = readMatchKeyValue(caseNode, caseMatchKey);
         if (caseId == null || StringUtils.isBlank(matchKeyValue)) {
             return;
         }
-        Integer previous = target.putIfAbsent(matchKeyValue, caseId);
-        if (previous != null && !previous.equals(caseId)) {
-            log.error(TestRailConstants.CASE_MATCH_KEY_VALUE_DUPLICATED,
-                    caseMatchKey, matchKeyValue, previous, caseId, previous);
+        List<Integer> caseIds = target.computeIfAbsent(matchKeyValue, key -> new ArrayList<>());
+        if (!caseIds.contains(caseId)) {
+            caseIds.add(caseId);
         }
     }
 

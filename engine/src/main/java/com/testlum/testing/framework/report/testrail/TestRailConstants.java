@@ -58,7 +58,7 @@ public final class TestRailConstants {
             "Fetched {} TestRail cases carrying a value for custom key '{}'";
 
     public static final String CASE_MATCH_KEY_VALUE_DUPLICATED =
-            "Custom key '{}' has value '{}' on more than one TestRail case ({} and {}). Case {} is used.";
+            "Custom key '{}' has value '{}' on more than one TestRail case ({}). Case {} is used.";
 
     public static final String REPORTED_TABLE_TITLE = "TestRail results";
     public static final String NOT_REPORTED_TABLE_TITLE = "TestRail cases not reported";

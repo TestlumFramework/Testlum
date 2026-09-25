@@ -18,9 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -128,19 +130,33 @@ public class TestRailApiClientImpl implements TestRailApiClient {
 
     @Override
     public Map<String, Integer> fetchCaseIdsByMatchKey(final String caseMatchKey) {
-        Map<String, Integer> caseIdsByMatchKeyValue = new HashMap<>();
+        Map<String, List<Integer>> allCaseIdsByMatchKeyValue = new LinkedHashMap<>();
         try {
-            collectAllCasePages(caseMatchKey, caseIdsByMatchKeyValue);
+            collectAllCasePages(caseMatchKey, allCaseIdsByMatchKeyValue);
         } catch (Exception e) {
             log.error(TestRailConstants.LOG_FETCHING_CASES_FAILED, testRails.getProjectId(),
                     errorDescriber.describe(e));
             return Map.of();
         }
+        Map<String, Integer> caseIdsByMatchKeyValue = new HashMap<>();
+        allCaseIdsByMatchKeyValue.forEach((matchKeyValue, caseIds) ->
+                caseIdsByMatchKeyValue.put(matchKeyValue, pickFirstCaseId(caseMatchKey, matchKeyValue, caseIds)));
         log.debug(TestRailConstants.LOG_CASES_FETCHED, caseIdsByMatchKeyValue.size(), caseMatchKey);
         return caseIdsByMatchKeyValue;
     }
 
-    private void collectAllCasePages(final String caseMatchKey, final Map<String, Integer> target) {
+    private Integer pickFirstCaseId(final String caseMatchKey, final String matchKeyValue,
+                                    final List<Integer> caseIds) {
+        Integer firstCaseId = caseIds.get(0);
+        if (caseIds.size() > 1) {
+            String joinedCaseIds = caseIds.stream().map(String::valueOf).collect(Collectors.joining(", "));
+            log.error(TestRailConstants.CASE_MATCH_KEY_VALUE_DUPLICATED,
+                    caseMatchKey, matchKeyValue, joinedCaseIds, firstCaseId);
+        }
+        return firstCaseId;
+    }
+
+    private void collectAllCasePages(final String caseMatchKey, final Map<String, List<Integer>> target) {
         HttpEntity<Void> entity = new HttpEntity<>(connectionService.buildHeaders());
         int offset = 0;
         int fetched;

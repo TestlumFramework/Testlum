@@ -1,15 +1,19 @@
 
 package com.testlum.testing.model.scenario;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for commandWithLocator complex type.
+ * &lt;p&gt;Java class for commandWithLocator complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="commandWithLocator"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}abstractUiCommand"&gt;
@@ -18,7 +22,7 @@ import jakarta.xml.bind.annotation.*;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -29,6 +33,7 @@ import jakarta.xml.bind.annotation.*;
     Visible.class,
     AssertChecked.class,
     AssertPresent.class,
+    OttInput.class,
     Click.class,
     DoubleClick.class,
     Hover.class,

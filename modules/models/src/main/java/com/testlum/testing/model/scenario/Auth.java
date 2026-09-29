@@ -1,18 +1,22 @@
 
 package com.testlum.testing.model.scenario;
 
-import jakarta.xml.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for auth complex type.
+ * &lt;p&gt;Java class for auth complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="auth"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}abstractCommand"&gt;
@@ -42,7 +46,8 @@ import java.util.List;
  *         &lt;element name="twilio" type="{http://www.testlum.com/testing/model/scenario}twilio"/&gt;
  *         &lt;element name="var" type="{http://www.testlum.com/testing/model/scenario}var"/&gt;
  *         &lt;element name="wait" type="{http://www.testlum.com/testing/model/scenario}wait"/&gt;
- *         &lt;element name="ai" type="{http://www.testlum.com/testing/model/scenario}askAi"/&gt;
+ *         &lt;element name="ai" type="{http://www.testlum.com/testing/model/scenario}ai"/&gt;
+ *         &lt;element name="ott" type="{http://www.testlum.com/testing/model/scenario}ott"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="apiAlias" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" default="DEFAULT" /&gt;
  *       &lt;attribute name="credentials" use="required" type="{http://www.testlum.com/testing/model/scenario}jsonFileExtension" /&gt;
@@ -50,7 +55,7 @@ import java.util.List;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -88,10 +93,11 @@ public class Auth
         @XmlElement(name = "twilio", type = Twilio.class),
         @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "wait", type = Wait.class),
-        @XmlElement(name = "ai", type = Ai.class)
+        @XmlElement(name = "ai", type = Ai.class),
+        @XmlElement(name = "ott", type = Ott.class)
     })
     protected List<AbstractCommand> commands;
-    @XmlAttribute(name = "apiAlias", required = true)
+    @XmlAttribute(name = "apiAlias")
     protected String apiAlias;
     @XmlAttribute(name = "credentials", required = true)
     protected String credentials;
@@ -101,53 +107,57 @@ public class Auth
     /**
      * Gets the value of the commands property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
+     * <p>This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the commands property.
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a {@code set} method for the commands property.</p>
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * </p>
      * <pre>
-     *    getCommands().add(newItem);
+     * getCommands().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Include }
-     * {@link Repeat }
-     * {@link Web }
+     * {@link Ai }
+     * {@link Clickhouse }
+     * {@link Dynamo }
+     * {@link Elasticsearch }
+     * {@link Graphql }
      * {@link Http }
+     * {@link Include }
+     * {@link Kafka }
      * {@link Migrate }
-     * {@link Postgres }
-     * {@link SqlDatabase }
+     * {@link Mongo }
      * {@link Mysql }
      * {@link Oracle }
-     * {@link Mongo }
-     * {@link Redis }
+     * {@link Ott }
+     * {@link Postgres }
      * {@link Rabbit }
-     * {@link Kafka }
+     * {@link Redis }
+     * {@link Repeat }
      * {@link S3 }
-     * {@link Sqs }
-     * {@link Clickhouse }
-     * {@link Elasticsearch }
      * {@link Sendgrid }
      * {@link Ses }
-     * {@link Dynamo }
-     * {@link Graphql }
      * {@link Smtp }
+     * {@link SqlDatabase }
+     * {@link Sqs }
      * {@link Twilio }
      * {@link Var }
      * {@link Wait }
-     * {@link Ai }
+     * {@link Web }
+     * </p>
      * 
      * 
+     * @return
+     *     The value of the commands property.
      */
     public List<AbstractCommand> getCommands() {
         if (commands == null) {
-            commands = new ArrayList<AbstractCommand>();
+            commands = new ArrayList<>();
         }
         return this.commands;
     }

@@ -41,6 +41,7 @@
         <module>redis</module>
         <module>rabbit</module>
         <module>postgres</module>
+        <module>ott</module>
         <module>oracle</module>
         <module>mysql</module>
         <module>mongo</module>

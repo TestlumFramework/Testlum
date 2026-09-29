@@ -611,6 +611,11 @@
             <artifactId>testlum-comparator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.testlum</groupId>
+            <artifactId>testlum-ott</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

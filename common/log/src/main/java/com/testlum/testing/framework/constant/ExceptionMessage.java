@@ -138,7 +138,7 @@ public class ExceptionMessage {
     public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
     public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
     public static final String VARIATION_ROW_COLUMNS_MISMATCH = "Variations file %s declares %d columns (%s), "
-                                                                + "but line %d has %d. Every row must contain the same number of comma separated values as the header";
+            + "but line %d has %d. Every row must contain the same number of comma separated values as the header";
     public static final String ENV_VARIABLE_NOT_FOUND = "No such environmental variable as <%s>";
 
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
@@ -197,10 +197,12 @@ public class ExceptionMessage {
     public static final String XSD_FILE_NOT_READABLE = "Cannot read %s. %s";
     public static final String UNEXPECTED_XML_NAMESPACE =
             """
-            File '%s' declares XML namespace '%s', but '%s' is expected.
-            If you are upgrading from an earlier Testlum release, update the xmlns in this file.
-            """;
+                    File '%s' declares XML namespace '%s', but '%s' is expected.
+                    If you are upgrading from an earlier Testlum release, update the xmlns in this file.
+                    """;
     public static final String REPEAT_TYPE_IS_NOT_PROVIDED = """
             <repeat> must specify either 'times' or 'variations'.
             Use 'times' to run the commands a fixed number of times, or 'variations' to run them once per variation""";
+
+    public static final String OTT_SECRET_KEY_BLANK = "OTT secret key must not be blank";
 }

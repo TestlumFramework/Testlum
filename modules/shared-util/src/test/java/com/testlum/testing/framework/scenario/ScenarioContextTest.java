@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,9 +57,9 @@ class ScenarioContextTest {
         void getBodyReturnsLastEntry() {
             context.set("first", "v1");
             context.set("second", "v2");
-            final Map.Entry<String, String> body = context.getBody();
+            final Map.Entry<String, Supplier<String>> body = context.getBody();
             assertEquals("second", body.getKey());
-            assertEquals("v2", body.getValue());
+            assertEquals("v2", body.getValue().get());
         }
 
         @Test
@@ -181,9 +182,9 @@ class ScenarioContextTest {
         @Test
         void singleEntryReturnsThatEntry() {
             context.set("only", "one");
-            final Map.Entry<String, String> body = context.getBody();
+            final Map.Entry<String, Supplier<String>> body = context.getBody();
             assertEquals("only", body.getKey());
-            assertEquals("one", body.getValue());
+            assertEquals("one", body.getValue().get());
         }
     }
 

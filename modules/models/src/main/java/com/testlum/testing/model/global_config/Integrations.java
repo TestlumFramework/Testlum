@@ -8,11 +8,11 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * &lt;p&gt;Java class for anonymous complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
@@ -39,11 +39,12 @@ import jakarta.xml.bind.annotation.XmlType;
  *         &lt;element name="smtpIntegration" type="{http://www.testlum.com/testing/model/global-config}smtpIntegration" minOccurs="0"/&gt;
  *         &lt;element name="twilioIntegration" type="{http://www.testlum.com/testing/model/global-config}twilioIntegration" minOccurs="0"/&gt;
  *         &lt;element name="sqlDatabaseIntegration" type="{http://www.testlum.com/testing/model/global-config}sqlDatabaseIntegration" minOccurs="0"/&gt;
+ *         &lt;element name="ottIntegration" type="{http://www.testlum.com/testing/model/global-config}ottIntegration" minOccurs="0"/&gt;
  *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -76,14 +77,15 @@ public class Integrations {
     protected SmtpIntegration smtpIntegration;
     protected TwilioIntegration twilioIntegration;
     protected SqlDatabaseIntegration sqlDatabaseIntegration;
+    protected OttIntegration ottIntegration;
 
     /**
      * Gets the value of the aiIntegration property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link AiIntegration }
-     *
+     *     
      */
     public AiIntegration getAiIntegration() {
         return aiIntegration;
@@ -91,11 +93,11 @@ public class Integrations {
 
     /**
      * Sets the value of the aiIntegration property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link AiIntegration }
-     *
+     *     
      */
     public void setAiIntegration(AiIntegration value) {
         this.aiIntegration = value;
@@ -603,6 +605,30 @@ public class Integrations {
      */
     public void setSqlDatabaseIntegration(SqlDatabaseIntegration value) {
         this.sqlDatabaseIntegration = value;
+    }
+
+    /**
+     * Gets the value of the ottIntegration property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link OttIntegration }
+     *     
+     */
+    public OttIntegration getOttIntegration() {
+        return ottIntegration;
+    }
+
+    /**
+     * Sets the value of the ottIntegration property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link OttIntegration }
+     *     
+     */
+    public void setOttIntegration(OttIntegration value) {
+        this.ottIntegration = value;
     }
 
 }

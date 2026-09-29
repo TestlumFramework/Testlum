@@ -275,11 +275,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void registerOttValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map,
                                        final Integrations i) {
         map.put(o -> o instanceof Ott, (f, c) -> validateOtt((Ott) c, i));
+        map.put(o -> o instanceof OttInput, (f, c) -> validateOtt(((OttInput) c).getAlias(), i));
     }
 
     private void validateOtt(final Ott ott, final Integrations i) {
+        validateOtt(ott.getAlias(), i);
+    }
+
+    private void validateOtt(final String alias, final Integrations i) {
         checkIntegrationExistence(i.getOttIntegration(), OttIntegration.class);
-        validateAlias(i.getOttIntegration().getOtt(), ott.getAlias());
+        validateAlias(i.getOttIntegration().getOtt(), alias);
     }
 
     private void registerMiscValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {

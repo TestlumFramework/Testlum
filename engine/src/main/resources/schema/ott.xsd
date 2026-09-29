@@ -34,6 +34,7 @@
             <x:extension base="tns:commandWithLocator">
                 <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
                 <x:attribute name="name" type="tns:nonEmptyString"/>
+                <x:attribute name="secret" type="tns:nonEmptyString"/>
                 <x:attribute name="highlight" type="x:boolean" default="true"/>
             </x:extension>
         </x:complexContent>

@@ -18,6 +18,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}commandWithLocator"&gt;
  *       &lt;attribute name="alias" type="{http://www.testlum.com/testing/model/scenario}aliasPattern" default="DEFAULT" /&gt;
  *       &lt;attribute name="name" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="secret" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="highlight" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -36,6 +37,8 @@ public class OttInput
     protected String alias;
     @XmlAttribute(name = "name")
     protected String name;
+    @XmlAttribute(name = "secret")
+    protected String secret;
     @XmlAttribute(name = "highlight")
     protected Boolean highlight;
 
@@ -89,6 +92,30 @@ public class OttInput
      */
     public void setName(String value) {
         this.name = value;
+    }
+
+    /**
+     * Gets the value of the secret property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSecret() {
+        return secret;
+    }
+
+    /**
+     * Sets the value of the secret property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSecret(String value) {
+        this.secret = value;
     }
 
     /**

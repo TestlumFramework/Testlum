@@ -119,5 +119,24 @@ public class OttInputExecutorTest {
             verify(element).sendKeys("111222");
             assertFalse(scenarioContext.containsKey(null));
         }
+
+        @Test
+        void usesSecretDirectlyWhenProvided() {
+            final OttInput ottInput = new OttInput();
+            ottInput.setName("otpCode");
+            ottInput.setSecret("JBSWY3DPEHPK3PXP");
+            ottInput.setLocator("otpField");
+            when(ottGenerator.generateCodeFromSecret("JBSWY3DPEHPK3PXP")).thenReturn("111111");
+            final WebElement element = mock(WebElement.class);
+            when(uiUtil.findWebElement(any(), eq("otpField"), any(), eq(ElementChecks.FOR_WRITING)))
+                    .thenReturn(element);
+            final CommandResult result = new CommandResult();
+
+            executor.execute(ottInput, result);
+
+            verify(element).sendKeys("111111");
+            assertEquals("111111", scenarioContext.get("otpCode"));
+            verify(ottGenerator, never()).generateCode(any());
+        }
     }
 }

@@ -54,10 +54,18 @@ public class ImageComparisonUtil {
             File actualImage = saveActualImage(
                     comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
             uiUtil.putScreenshotToResult(result, actualImage);
+            attachBaseline(comparisonResult, expectedImageFullName, result);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }
         result.put(ResultUtil.ADDITIONAL_INFO, ResultUtil.IMAGE_ATTACHED_TO_STEP);
+    }
+
+    private void attachBaseline(final ImageComparisonResult comparisonResult,
+                                final String expectedImageFullName,
+                                final CommandResult result) {
+        uiUtil.putBaselineScreenshotToResult(result, comparisonResult.getExpected(),
+                FilenameUtils.getExtension(expectedImageFullName));
     }
 
     private void throwMismatchException(final ImageComparisonResult comparisonResult, final CommandResult result) {

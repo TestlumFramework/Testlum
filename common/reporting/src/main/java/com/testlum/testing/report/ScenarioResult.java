@@ -27,6 +27,7 @@ public class ScenarioResult {
     private long executionTime;
     private String environment;
     private Map<String, String> variation;
+    private String variationsFile;
 
     private List<CommandResult> commands = new ArrayList<>();
 }

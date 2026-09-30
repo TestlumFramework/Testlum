@@ -93,6 +93,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         if (StringUtils.isNotBlank(body)) {
             result.setActual(stringPrettifier.asJsonResult(actualBody));
             result.setExpected(stringPrettifier.asJsonResult(body));
+            addComparisonSources(result, expected.getFile());
             httpValidator.validateBody(body, actualBody, Mode.STRICT.equals(expected.getMode()));
         } else {
             logBodyValidationSkipped();

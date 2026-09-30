@@ -27,6 +27,7 @@ public class ScenarioReportMapper {
                 .cause(result.getCause())
                 .startedAt(result.getStartedAt()).executionTime(result.getExecutionTime())
                 .environment(result.getEnvironment()).variation(result.getVariation())
+                .variationsFile(result.getVariationsFile())
                 .commands(mapCommands(result.getCommands()))
                 .build();
     }
@@ -66,6 +67,7 @@ public class ScenarioReportMapper {
                 .error(mapError(command.getException()))
                 .executionTime(command.getExecutionTime())
                 .base64Screenshot(command.getBase64Screenshot())
+                .base64BaselineScreenshot(command.getBase64BaselineScreenshot())
                 .subCommands(mapCommands(command.getSubCommandsResult()))
                 .metadata(mapMetadata(command.getMetadata()))
                 .build();

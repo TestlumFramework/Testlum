@@ -137,9 +137,49 @@ class CommandResultHelperTest {
         }
     }
 
+    @Nested
+    class AddComparisonSources {
+
+        @Test
+        void namesBothDocumentsWhenTheExpectedOneCameFromAFile() {
+            final CommandResult result = new CommandResult();
+
+            CommandResultHelper.addComparisonSources(result, "expected_1.json", "actual.json");
+
+            assertEquals("expected_1.json", result.getMetadata().get(CommandResultHelper.EXPECTED_SOURCE));
+            assertEquals("actual.json", result.getMetadata().get(CommandResultHelper.ACTUAL_SOURCE));
+        }
+
+        /** An inline body has no name a reader would recognise, so none is recorded for it. */
+        @Test
+        void namesOnlyTheActualWhenTheExpectedBodyWasWrittenInline() {
+            final CommandResult result = new CommandResult();
+
+            CommandResultHelper.addComparisonSources(result, "{\"status\":\"ok\"}", "actual.json");
+
+            assertFalse(result.getMetadata().containsKey(CommandResultHelper.EXPECTED_SOURCE));
+            assertEquals("actual.json", result.getMetadata().get(CommandResultHelper.ACTUAL_SOURCE));
+        }
+
+        @Test
+        void toleratesNoExpectedAtAll() {
+            final CommandResult result = new CommandResult();
+
+            CommandResultHelper.addComparisonSources(result, null, "actual.json");
+
+            assertFalse(result.getMetadata().containsKey(CommandResultHelper.EXPECTED_SOURCE));
+        }
+    }
+
+    /**
+     * These two strings are read back by exact text on the reporting side, which has no compile-time
+     * link to them — this is the only thing standing between a rename and a silently unlabelled panel.
+     */
     @Test
     void constantsHaveExpectedValues() {
         assertEquals("%s: %s", CommandResultHelper.HEADER_TEMPLATE);
         assertEquals("Additional headers", CommandResultHelper.ADDITIONAL_HEADERS);
+        assertEquals("Expected body file", CommandResultHelper.EXPECTED_SOURCE);
+        assertEquals("Actual body file", CommandResultHelper.ACTUAL_SOURCE);
     }
 }

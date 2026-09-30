@@ -155,6 +155,7 @@ public abstract class AbstractMessageBrokerInterpreter<T extends AbstractCommand
                 .withActual(actualMessages);
         result.setActual(stringPrettifier.asJsonResult(toString(actualMessages)));
         result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
+        addComparisonSources(result, expectedValue);
         comparator.exec();
     }
 }

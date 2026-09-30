@@ -90,6 +90,27 @@ class ImageComparisonUtilTest {
             verify(resultUtil).addImagesSizeMetaData(comparisonResult, result);
         }
 
+        /**
+         * The reference image travels with the capture so the report can show the two side by side, and
+         * it is taken from the comparison rather than read from disk a second time.
+         */
+        @Test
+        void attachesTheBaselineAlongsideTheCaptureOnMismatch(@TempDir final Path tempDir) {
+            ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
+            when(comparisonResult.getImageComparisonState()).thenReturn(ImageComparisonState.MISMATCH);
+            when(comparisonResult.getDifferencePercent()).thenReturn(5.0f);
+            BufferedImage expectedImg = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+            when(comparisonResult.getActual()).thenReturn(new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB));
+            when(comparisonResult.getExpected()).thenReturn(expectedImg);
+            CommandResult result = new CommandResult();
+
+            assertThrows(ImageComparisonException.class,
+                    () -> imageComparisonUtil.processImageComparisonResult(
+                            comparisonResult, "baseline.png", false, tempDir.toFile(), result));
+
+            verify(uiUtil).putBaselineScreenshotToResult(result, expectedImg, "png");
+        }
+
         @Test
         void savesActualImageWhenHighlightDifferenceIsFalse(@TempDir final Path tempDir) {
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);

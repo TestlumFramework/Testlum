@@ -90,16 +90,25 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         String expectedBody = getContentIfFile(expectedResponse.getFile());
         if (StringUtils.isNotBlank(expectedBody)) {
             try {
-                String actualBody = Objects.nonNull(actual.getEntity())
-                        ? EntityUtils.toString(actual.getEntity()) : null;
-                setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
-                result.setActual(stringPrettifier.asJsonResult(actualBody));
-                result.setExpected(stringPrettifier.asJsonResult(expectedBody));
-                httpValidator.validateBody(expectedBody, actualBody);
+                compareBody(expectedResponse, actual, httpValidator, result, expectedBody);
             } catch (IOException e) {
                 throw new DefaultFrameworkException(e);
             }
         }
+    }
+
+    private void compareBody(final ElasticSearchResponse expectedResponse,
+                             final Response actual,
+                             final HttpValidator httpValidator,
+                             final CommandResult result,
+                             final String expectedBody) throws IOException {
+        String actualBody = Objects.nonNull(actual.getEntity())
+                ? EntityUtils.toString(actual.getEntity()) : null;
+        setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
+        result.setActual(stringPrettifier.asJsonResult(actualBody));
+        result.setExpected(stringPrettifier.asJsonResult(expectedBody));
+        addComparisonSources(result, expectedResponse.getFile());
+        httpValidator.validateBody(expectedBody, actualBody);
     }
 
     private void validateHeadersIfExists(final ElasticSearchResponse expected,

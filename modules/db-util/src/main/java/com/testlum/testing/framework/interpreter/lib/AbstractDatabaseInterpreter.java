@@ -41,6 +41,7 @@ public abstract class AbstractDatabaseInterpreter<T extends AbstractCommand> ext
                 .withExpected(getContentIfFile(getFile(command)));
         result.setExpected(stringPrettifier.asJsonResult(compare.getExpected()));
         result.setActual(stringPrettifier.asJsonResult(actual));
+        addComparisonSources(result, getFile(command));
         compare.exec();
         setContextBody(getContextBodyKey(getFile(command)), actual);
     }

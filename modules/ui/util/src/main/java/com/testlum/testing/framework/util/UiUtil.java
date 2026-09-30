@@ -27,8 +27,10 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -36,7 +38,6 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -57,7 +58,6 @@ public class UiUtil {
     private final WebElementFinder webElementFinder;
     private final FileSearcher fileSearcher;
     private final EnvironmentLoader environmentLoader;
-    private final ImageCompressor imageCompressor;
     private final ConfigProvider configProvider;
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
@@ -226,16 +226,25 @@ public class UiUtil {
     }
 
     public void putScreenshotToResult(final CommandResult result, final File screenshot) {
-        final MultipartFile image = imageCompressor.compress(screenshot);
-        if (Objects.nonNull(image)) {
-            try {
-                byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
-                String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
-                result.setBase64Screenshot(encodedScreenshot);
-            } catch (IOException e) {
-                throw new DefaultFrameworkException(e);
-            }
+        try {
+            result.setBase64Screenshot(encode(FileUtils.readFileToByteArray(screenshot)));
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
         }
+    }
+
+    public void putBaselineScreenshotToResult(final CommandResult result, final BufferedImage baseline,
+                                              final String formatName) {
+        try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
+            ImageIO.write(baseline, formatName, bytes);
+            result.setBase64BaselineScreenshot(encode(bytes.toByteArray()));
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    private static String encode(final byte[] image) {
+        return Base64.getEncoder().encodeToString(image);
     }
 
     public String getElementAttribute(final WebElement element, final String attributeName, final WebDriver driver) {

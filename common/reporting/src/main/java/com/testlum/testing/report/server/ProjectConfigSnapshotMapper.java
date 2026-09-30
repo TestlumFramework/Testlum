@@ -80,7 +80,14 @@ public class ProjectConfigSnapshotMapper {
         }
         return com.testlum.reporting.sdk.model.config.RunScenariosByTag.builder()
                 .enabled(byTag.isEnabled())
-                .tags(byTag.getTag().stream().filter(TagValue::isEnabled).map(TagValue::getName).toList())
+                .tags(byTag.getTag().stream().map(this::tag).toList())
+                .build();
+    }
+
+    private TagConfig tag(final TagValue tag) {
+        return TagConfig.builder()
+                .name(tag.getName())
+                .enabled(tag.isEnabled())
                 .build();
     }
 

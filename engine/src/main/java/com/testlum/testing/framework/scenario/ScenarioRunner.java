@@ -118,19 +118,24 @@ public class ScenarioRunner {
     }
 
     private void prepareScenarioResult() {
-        Scenario scenario = scenarioArguments.getScenario();
         scenarioResult.setId(nextScenarioId());
         scenarioResult.setStartedAt(System.currentTimeMillis());
         scenarioResult.setVariation(scenarioArguments.getVariations());
-        scenarioResult.setOverview(scenario.getOverview());
-        scenarioResult.setName(scenario.getOverview().getName());
-        scenarioResult.setTags(scenario.getSettings().getTags());
+        this.setScenarioDetails();
         scenarioResult.setPath(scenarioArguments.getFile().getPath());
         scenarioResult.setBrowser(scenarioArguments.getBrowser());
         scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobileBrowserDevice());
         scenarioResult.setNativeDevice(scenarioArguments.getNativeDevice());
         scenarioResult.setSuccess(true);
         scenarioResult.setEnvironment(scenarioArguments.getEnvironment());
+    }
+
+    private void setScenarioDetails() {
+        Scenario scenario = scenarioArguments.getScenario();
+        scenarioResult.setVariationsFile(scenario.getSettings().getVariations());
+        scenarioResult.setOverview(scenario.getOverview());
+        scenarioResult.setName(scenario.getOverview().getName());
+        scenarioResult.setTags(scenario.getSettings().getTags());
     }
 
     private void runScenarioCommands() {

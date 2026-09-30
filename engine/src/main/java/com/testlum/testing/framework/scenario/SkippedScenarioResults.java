@@ -18,12 +18,7 @@ public final class SkippedScenarioResults {
      */
     public static ScenarioResult of(final ScenarioArguments args, final String cause) {
         ScenarioResult result = skipped(args.getFile().getPath(), cause);
-        Scenario scenario = args.getScenario();
-        if (scenario != null) {
-            result.setOverview(scenario.getOverview());
-            result.setName(scenario.getOverview() == null ? result.getName() : scenario.getOverview().getName());
-            result.setTags(scenario.getSettings() == null ? null : scenario.getSettings().getTags());
-        }
+        setScenarioDetails(args, result);
         result.setBrowser(args.getBrowser());
         result.setMobilebrowserDevice(args.getMobileBrowserDevice());
         result.setNativeDevice(args.getNativeDevice());
@@ -50,5 +45,15 @@ public final class SkippedScenarioResults {
         result.setCause(cause);
         result.setStartedAt(System.currentTimeMillis());
         return result;
+    }
+
+    private static void setScenarioDetails(final ScenarioArguments args, final ScenarioResult result) {
+        Scenario scenario = args.getScenario();
+        if (scenario != null) {
+            result.setOverview(scenario.getOverview());
+            result.setName(scenario.getOverview() == null ? result.getName() : scenario.getOverview().getName());
+            result.setTags(scenario.getSettings() == null ? null : scenario.getSettings().getTags());
+            result.setVariationsFile(scenario.getSettings() == null ? null : scenario.getSettings().getVariations());
+        }
     }
 }

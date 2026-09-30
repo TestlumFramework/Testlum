@@ -13,14 +13,15 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -29,7 +30,6 @@ public class ScreenshotUtil {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH-mm-ss");
     private final ConfigProvider configProvider;
-    private final ImageCompressor imageCompressor;
 
     public void takeScreenshotAndSaveIfRequired(final CommandResult result, final ExecutorDependencies dependencies) {
         boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
@@ -52,16 +52,25 @@ public class ScreenshotUtil {
     }
 
     public void putScreenshotToResult(final CommandResult result, final File screenshot) {
-        final MultipartFile image = imageCompressor.compress(screenshot);
-        if (Objects.nonNull(image)) {
-            try {
-                byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
-                String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
-                result.setBase64Screenshot(encodedScreenshot);
-            } catch (IOException e) {
-                throw new DefaultFrameworkException(e);
-            }
+        try {
+            result.setBase64Screenshot(encode(FileUtils.readFileToByteArray(screenshot)));
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
         }
+    }
+
+    public void putBaselineScreenshotToResult(final CommandResult result, final BufferedImage baseline,
+                                              final String formatName) {
+        try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
+            ImageIO.write(baseline, formatName, bytes);
+            result.setBase64BaselineScreenshot(encode(bytes.toByteArray()));
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    private static String encode(final byte[] image) {
+        return Base64.getEncoder().encodeToString(image);
     }
 
     private void tryToCopyScreenshotFileToFolder(final File screenshot,

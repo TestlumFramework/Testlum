@@ -97,6 +97,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
                 : getContentIfFile(expected.getFile());
         result.setActual(stringPrettifier.asJsonResult(actualBody));
         result.setExpected(stringPrettifier.asJsonResult(body));
+        addComparisonSources(result, expected.getFile());
         httpValidator.validateBody(body, actualBody);
     }
 

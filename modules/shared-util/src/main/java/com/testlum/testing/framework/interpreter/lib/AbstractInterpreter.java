@@ -94,6 +94,10 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     protected abstract void acceptImpl(T o, CommandResult result);
 
+    protected void addComparisonSources(final CommandResult result, final String expectedFileOrContent) {
+        CommandResultHelper.addComparisonSources(result, expectedFileOrContent, ACTUAL_FILENAME);
+    }
+
     public CompareBuilder newCompare() {
         return new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get(),
                 jacksonService, stringPrettifier);

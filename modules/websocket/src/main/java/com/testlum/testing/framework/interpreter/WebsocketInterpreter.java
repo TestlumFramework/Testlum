@@ -149,6 +149,7 @@ public class WebsocketInterpreter extends AbstractMessageBrokerInterpreter<Webso
         final List<Object> actualContent = getMessagesToCompare(wsReceive, aliasEnv);
         result.setActual(stringPrettifier.asJsonResult(toString(actualContent)));
         result.setExpected(stringPrettifier.asJsonResult(expectedContent));
+        addComparisonSources(result, expectedContent);
 
         executeComparison(actualContent, expectedContent);
     }

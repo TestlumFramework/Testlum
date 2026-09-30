@@ -31,6 +31,7 @@ class ScenarioReportMapperTest {
         result.setExecutionTime(1500);
         result.setStartedAt(1_000L);
         result.setVariation(Map.of("user", "admin"));
+        result.setVariationsFile("users.csv");
         result.setOverview(overview);
         result.setCommands(List.of(container()));
         return result;
@@ -65,6 +66,7 @@ class ScenarioReportMapperTest {
         assertEquals("JIRA-1", report.getOverview().getJira());
         assertEquals(1_000L, report.getStartedAt());
         assertEquals(Map.of("user", "admin"), report.getVariation());
+        assertEquals("users.csv", report.getVariationsFile());
         assertFalse(report.isSkipped());
     }
 

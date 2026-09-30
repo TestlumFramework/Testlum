@@ -21,6 +21,8 @@ public class CommandResult {
 
     private String base64Screenshot;
 
+    private String base64BaselineScreenshot;
+
     private List<CommandResult> subCommandsResult;
 
     private LinkedHashMap<String, Object> metadata = new LinkedHashMap<>();

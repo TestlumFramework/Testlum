@@ -9,6 +9,7 @@ import com.testlum.testing.model.global_config.Environment;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.RunScenariosByTag;
 import com.testlum.testing.model.global_config.TagValue;
+import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.report.GlobalScenarioStatCollector;
 import com.testlum.testing.report.ReportListener;
 import com.testlum.testing.report.ScenarioResult;
@@ -176,6 +177,7 @@ public class TestlumServerReportListener implements ReportListener {
                 .testlumVersion(getClass().getPackage().getImplementationVersion())
                 .environments(enabledEnvironments())
                 .tags(enabledTags())
+                .configFile(TestResourceSettings.getConfigFileName())
                 .build();
     }
 

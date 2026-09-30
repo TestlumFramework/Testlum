@@ -2,6 +2,7 @@ package com.testlum.testing.report.server;
 
 import com.testlum.reporting.sdk.model.config.EnvironmentConfig;
 import com.testlum.reporting.sdk.model.config.ProjectConfigSnapshot;
+import com.testlum.reporting.sdk.model.config.TagConfig;
 import com.testlum.testing.framework.EnvToIntegrationMap;
 import com.testlum.testing.framework.UIConfiguration;
 import com.testlum.testing.framework.util.JacksonService;
@@ -39,6 +40,21 @@ class ProjectConfigSnapshotMapperTest {
         return vault;
     }
 
+    private static RunScenariosByTag runByTag() {
+        RunScenariosByTag byTag = new RunScenariosByTag();
+        byTag.setEnabled(true);
+        byTag.getTag().add(tag("web", true));
+        byTag.getTag().add(tag("mobile", false));
+        return byTag;
+    }
+
+    private static TagValue tag(final String name, final boolean enabled) {
+        TagValue tag = new TagValue();
+        tag.setName(name);
+        tag.setEnabled(enabled);
+        return tag;
+    }
+
     private static Environments environments() {
         Environments environments = new Environments();
         environments.getEnv().add(environment("staging", true));
@@ -66,6 +82,7 @@ class ProjectConfigSnapshotMapperTest {
     void setUp() {
         config.setReport(report());
         config.setVault(vault());
+        config.setRunScenariosByTag(runByTag());
         config.setEnvironments(environments());
         when(locatorSnapshotMapper.pages()).thenReturn(List.of());
         when(locatorSnapshotMapper.components()).thenReturn(List.of());
@@ -83,6 +100,14 @@ class ProjectConfigSnapshotMapperTest {
         assertEquals("demo", snapshot.getProjectName());
         assertTrue(snapshot.getGlobalConfig().getReport().isOnlyFailedScenarios());
         assertEquals("s.token", snapshot.getGlobalConfig().getVault().getToken());
+    }
+
+    @Test
+    void mapsEveryTagWithItsOwnSwitch() {
+        List<TagConfig> tags = mapper.map().getGlobalConfig().getRunScenariosByTag().getTags();
+
+        assertEquals(List.of(TagConfig.builder().name("web").enabled(true).build(),
+                TagConfig.builder().name("mobile").enabled(false).build()), tags);
     }
 
     @Test

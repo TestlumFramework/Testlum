@@ -1,6 +1,7 @@
 package com.testlum.testing.framework.interpreter;
 
 import com.testlum.log.LogFormat;
+import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -165,8 +166,9 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private String createFullUrl(final String endpoint, final String alias) {
         List<Api> apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
         Api apiIntegration = integrationsProvider.findApiForAlias(apiList, alias);
-        String baseUrl = StringUtils.stripEnd(apiIntegration.getUrl(), "/");
-        String normalizedEndpoint = "/" + StringUtils.stripStart(endpoint, "/");
+        String baseUrl = StringUtils.stripEnd(apiIntegration.getUrl(), DelimiterConstant.SLASH_SEPARATOR);
+        String normalizedEndpoint = DelimiterConstant.SLASH_SEPARATOR
+                + StringUtils.stripStart(endpoint, DelimiterConstant.SLASH_SEPARATOR);
         return baseUrl + normalizedEndpoint;
     }
 

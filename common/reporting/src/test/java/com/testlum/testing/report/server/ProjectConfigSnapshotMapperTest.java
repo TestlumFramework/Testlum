@@ -86,11 +86,10 @@ class ProjectConfigSnapshotMapperTest {
         config.setEnvironments(environments());
         when(locatorSnapshotMapper.pages()).thenReturn(List.of());
         when(locatorSnapshotMapper.components()).thenReturn(List.of());
-        JacksonService jacksonService = new JacksonService();
         mapper = new ProjectConfigSnapshotMapper(config,
                 new EnvToIntegrationMap(Map.of("staging", new Integrations())),
                 new UIConfiguration(Map.of("staging", uiConfig())),
-                new IntegrationConfigMapper(jacksonService), locatorSnapshotMapper, jacksonService);
+                new IntegrationConfigMapper(new JacksonService()), locatorSnapshotMapper, new UiConfigMapper());
     }
 
     @Test
@@ -118,7 +117,8 @@ class ProjectConfigSnapshotMapperTest {
         EnvironmentConfig staging = environments.get(0);
         assertEquals("staging", staging.getFolder());
         assertEquals("https://app.test", staging.getUi().getWeb().getBaseUrl());
-        assertEquals("https://app.test", staging.getUi().getWeb().getDetails().get("baseUrl"));
+        assertTrue(staging.getUi().getWeb().isEnabled());
+        assertTrue(staging.getUi().getWeb().getBrowsers().isEmpty());
         EnvironmentConfig disabled = environments.get(1);
         assertTrue(disabled.getIntegrations().isEmpty());
         assertNull(disabled.getUi());

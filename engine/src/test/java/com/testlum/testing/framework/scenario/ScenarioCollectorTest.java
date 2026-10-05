@@ -405,9 +405,9 @@ class ScenarioCollectorTest {
             overview.setTestRail(raw);
             when(injectionService.injectFromSystem(raw)).thenReturn(injected);
 
-            ScenarioCollector.Result result = collector.collect();
-
             Scenario scenario = prepareScenario(overview);
+
+            ScenarioCollector.Result result = collector.collect();
             assertEquals(1, result.size());
             assertNull(result.get(0).exception);
             assertSame(injected, scenario.getOverview().getTestRail());

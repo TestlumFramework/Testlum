@@ -58,6 +58,9 @@ class ExtentReportsGeneratorTest {
     void setUp() {
         generator = new ExtentReportsGenerator(extentReportsConfigurator, browserUtil, mobileUtil,
                 testRailService, globalTestConfiguration);
+        final Report report = new Report();
+        report.setExtentReports(new ExtentReports());
+        lenient().when(globalTestConfiguration.getReport()).thenReturn(report);
     }
 
     @Nested

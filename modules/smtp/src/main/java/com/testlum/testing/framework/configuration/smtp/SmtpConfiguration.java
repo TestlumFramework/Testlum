@@ -25,6 +25,7 @@ public class SmtpConfiguration {
 
     private static final String SMTP_PROTOCOL = "smtp";
     private static final int TIMEOUT = 5000;
+    private static final int SSL_PORT = 465;
 
     private final ConnectionTemplate connectionTemplate;
 
@@ -66,7 +67,10 @@ public class SmtpConfiguration {
         properties.put("mail.transport.protocol", SMTP_PROTOCOL);
         properties.put("mail.smtp.auth", smtpSettings.isSmtpAuth());
         properties.put("mail.smtp.starttls.enable", smtpSettings.isSmtpStarttlsEnable());
-        properties.put("mail.smtp.connectiontimout", TIMEOUT);
+        if (smtpSettings.getPort().intValue() == SSL_PORT) {
+            properties.put("mail.smtp.ssl.enable", true);
+        }
+        properties.put("mail.smtp.connectiontimeout", TIMEOUT);
         properties.put("mail.smtp.timeout", TIMEOUT);
     }
 

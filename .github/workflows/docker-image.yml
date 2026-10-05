@@ -2,25 +2,92 @@ name: Docker Image Manual Build & Push
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to publish (defaults to the pom version; does not change the built artifact)"
+        required: false
+        type: string
+      overwrite:
+        description: "Overwrite the tag if it is already published"
+        required: false
+        type: boolean
+        default: false
+      push_latest:
+        description: "Move :latest to this tag"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/testlumframework/testlum
 
 jobs:
-  prepare-version:
+  prepare-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     outputs:
-      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.tag.outputs.tag }}
+      pom_version: ${{ steps.tag.outputs.pom_version }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract project version
-        id: version
+      - name: Resolve tag
+        id: tag
         run: |
-          VERSION=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-          VERSION=$(echo "$VERSION" | tail -n 1)
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y -qq xmlstarlet
+          POM_VERSION="$(xmlstarlet sel -N x='http://maven.apache.org/POM/4.0.0' -t -v '/x:project/x:version' pom.xml | xargs)"
+          if [ -z "$POM_VERSION" ]; then
+            echo "::error::Could not read the version from the root pom.xml"
+            exit 1
+          fi
+
+          TAG='${{ inputs.tag }}'
+          [ -n "$TAG" ] || TAG="$POM_VERSION"
+
+          # The tag names the release; it does not change what Maven builds.
+          if [ "$TAG" != "$POM_VERSION" ]; then
+            echo "::notice::Publishing tag ${TAG} from pom version ${POM_VERSION}"
+          else
+            echo "Publishing tag ${TAG}"
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "pom_version=$POM_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Ensure the tag is free
+        run: |
+          set -uo pipefail
+          TAG='${{ steps.tag.outputs.tag }}'
+          if docker manifest inspect "${IMAGE}:${TAG}" > /dev/null 2>&1; then
+            if [ '${{ inputs.overwrite }}' != 'true' ]; then
+              echo "::error::Tag ${TAG} is already published. Re-run with overwrite=true to replace it."
+              exit 1
+            fi
+            echo "::warning::Tag ${TAG} already exists and will be overwritten."
+          else
+            echo "Tag ${TAG} is free."
+          fi
 
   build-jar:
     runs-on: ubuntu-latest
-    needs: prepare-version
+    needs: prepare-tag
     steps:
       - uses: actions/checkout@v4
 
@@ -34,20 +101,29 @@ jobs:
       - name: Build JAR
         run: mvn clean install -DskipTests
 
-      - name: Verify JAR exists
+      - name: Stage JAR for the Windows image
         run: |
-          JAR="engine/target/testlum-${{ needs.prepare-version.outputs.version }}.jar"
-          test -f "$JAR" || { echo "Missing $JAR"; ls -R engine/target || true; exit 1; }
+          set -euo pipefail
+          shopt -s nullglob
+          jars=(engine/target/testlum-*.jar)
+          if [ ${#jars[@]} -ne 1 ]; then
+            echo "::error::Expected exactly one engine/target/testlum-*.jar, found ${#jars[@]}"
+            ls -l engine/target || true
+            exit 1
+          fi
+          mkdir -p build-artifacts
+          cp "${jars[0]}" build-artifacts/testlum.jar
+          echo "Staged ${jars[0]} as build-artifacts/testlum.jar"
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: testlum-jar
-          path: engine/target/testlum-${{ needs.prepare-version.outputs.version }}.jar
+          path: build-artifacts/testlum.jar
 
   build-linux:
     runs-on: ubuntu-latest
-    needs: prepare-version
+    needs: prepare-tag
     permissions:
       contents: read
       packages: write
@@ -72,20 +148,21 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          build-args: |
-            APP_VERSION=${{ needs.prepare-version.outputs.version }}
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/testlumframework/testlum:${{ needs.prepare-version.outputs.version }}-linux
-            ghcr.io/testlumframework/testlum:latest-linux
+          tags: ${{ env.IMAGE }}:${{ needs.prepare-tag.outputs.tag }}-linux
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.version=${{ needs.prepare-tag.outputs.tag }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=Apache-2.0
           provenance: false
           sbom: false
 
   build-windows-amd64:
     runs-on: windows-2025
-    needs: [prepare-version, build-jar]
+    needs: [ prepare-tag, build-jar ]
     permissions:
       contents: read
       packages: write
@@ -98,19 +175,6 @@ jobs:
         with:
           name: testlum-jar
           path: build-artifacts
-
-      - name: Prepare JAR for Docker build context
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path engine/target | Out-Null
-          $version = "${{ needs.prepare-version.outputs.version }}"
-          $jar = "build-artifacts/testlum-$version.jar"
-          if (-not (Test-Path $jar)) {
-            Write-Error "Missing $jar"
-            Get-ChildItem -Recurse build-artifacts
-            exit 1
-          }
-          Copy-Item $jar "engine/target/testlum-$version.jar"
 
       - name: Set up Docker Engine
         uses: docker/setup-docker-action@v4
@@ -125,17 +189,28 @@ jobs:
       - name: Build and push Windows AMD64 image
         shell: pwsh
         run: |
-          $version = "${{ needs.prepare-version.outputs.version }}"
-          $imageVersion = "ghcr.io/testlumframework/testlum:$version-windows-amd64"
-          $imageLatest = "ghcr.io/testlumframework/testlum:latest-windows-amd64"
+          $ErrorActionPreference = "Stop"
+          $image = "${{ env.IMAGE }}:${{ needs.prepare-tag.outputs.tag }}-windows-amd64"
 
-          docker build -f Dockerfile.windows --build-arg APP_VERSION=$version -t $imageVersion -t $imageLatest .
-          docker push $imageVersion
-          docker push $imageLatest
+          if (-not (Test-Path "build-artifacts/testlum.jar")) {
+            Get-ChildItem -Recurse build-artifacts
+            throw "Missing build-artifacts/testlum.jar"
+          }
+
+          docker build -f Dockerfile.windows `
+            --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" `
+            --label "org.opencontainers.image.version=${{ needs.prepare-tag.outputs.tag }}" `
+            --label "org.opencontainers.image.revision=${{ github.sha }}" `
+            --label "org.opencontainers.image.licenses=Apache-2.0" `
+            -t $image .
+          if ($LASTEXITCODE -ne 0) { throw "docker build failed" }
+
+          docker push $image
+          if ($LASTEXITCODE -ne 0) { throw "docker push failed" }
 
   publish-manifest:
     runs-on: ubuntu-latest
-    needs: [prepare-version, build-linux, build-windows-amd64]
+    needs: [ prepare-tag, build-linux, build-windows-amd64 ]
     permissions:
       contents: read
       packages: write
@@ -151,19 +226,53 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish unified version and latest tags
+      - name: Publish unified tag
         run: |
-          VERSION='${{ needs.prepare-version.outputs.version }}'
-
+          set -euo pipefail
+          TAG='${{ needs.prepare-tag.outputs.tag }}'
           docker buildx imagetools create \
-            -t ghcr.io/testlumframework/testlum:${VERSION} \
-            ghcr.io/testlumframework/testlum:${VERSION}-linux \
-            ghcr.io/testlumframework/testlum:${VERSION}-windows-amd64
+            -t "${IMAGE}:${TAG}" \
+            "${IMAGE}:${TAG}-linux" \
+            "${IMAGE}:${TAG}-windows-amd64"
 
+      - name: Publish latest tag
+        if: ${{ inputs.push_latest }}
+        run: |
+          set -euo pipefail
+          TAG='${{ needs.prepare-tag.outputs.tag }}'
           docker buildx imagetools create \
-            -t ghcr.io/testlumframework/testlum:latest \
-            ghcr.io/testlumframework/testlum:latest-linux \
-            ghcr.io/testlumframework/testlum:latest-windows-amd64
+            -t "${IMAGE}:latest" \
+            "${IMAGE}:${TAG}-linux" \
+            "${IMAGE}:${TAG}-windows-amd64"
 
-      - name: Inspect unified latest manifest
-        run: docker buildx imagetools inspect ghcr.io/testlumframework/testlum:latest
+      - name: Summarise the release
+        if: ${{ always() && needs.prepare-tag.result == 'success' }}
+        run: |
+          set -uo pipefail
+          TAG='${{ needs.prepare-tag.outputs.tag }}'
+          POM_VERSION='${{ needs.prepare-tag.outputs.pom_version }}'
+          {
+            echo "## Docker publish: \`${TAG}\`"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Image | \`${IMAGE}\` |"
+            echo "| Tag | \`${TAG}\` |"
+            echo "| Built from pom version | \`${POM_VERSION}\` |"
+            echo "| Commit | \`${{ github.sha }}\` |"
+            echo "| Overwrote existing tag | \`${{ inputs.overwrite }}\` |"
+            echo "| Moved \`:latest\` | \`${{ inputs.push_latest }}\` |"
+            echo
+            echo "### Published tags"
+            echo "- \`${IMAGE}:${TAG}\`"
+            if [ '${{ inputs.push_latest }}' = 'true' ]; then
+              echo "- \`${IMAGE}:latest\`"
+            fi
+            echo "- \`${IMAGE}:${TAG}-linux\`"
+            echo "- \`${IMAGE}:${TAG}-windows-amd64\`"
+            echo
+            echo "### Manifest"
+            echo '```'
+            docker buildx imagetools inspect "${IMAGE}:${TAG}" 2>&1 || echo "inspect failed"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

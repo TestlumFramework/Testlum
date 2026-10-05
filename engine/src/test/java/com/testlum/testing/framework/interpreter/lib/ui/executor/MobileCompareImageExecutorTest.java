@@ -71,6 +71,7 @@ class MobileCompareImageExecutorTest {
                 .build();
         executor = new MobileCompareImageExecutor(deps);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);

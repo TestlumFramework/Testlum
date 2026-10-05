@@ -184,9 +184,9 @@ class NativeAssertExecutorTest {
             attr.setContent("expected");
             nativeAssert.getAttributeOrEqualOrNotEqual().add(attr);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(), result))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(), any()))
                     .thenReturn(mockElement);
             when(mockElement.getAttribute("value")).thenReturn("expected");
 
@@ -206,9 +206,9 @@ class NativeAssertExecutorTest {
             attr.setContent("expected");
             nativeAssert.getAttributeOrEqualOrNotEqual().add(attr);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(), result))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("inputField"), any(), any()))
                     .thenReturn(mockElement);
             when(mockElement.getAttribute("value")).thenReturn("different");
 

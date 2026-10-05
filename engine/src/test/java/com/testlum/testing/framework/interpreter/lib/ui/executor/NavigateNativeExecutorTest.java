@@ -50,6 +50,7 @@ class NavigateNativeExecutorTest {
                 .build();
         NavigateNativeExecutor executor = new NavigateNativeExecutor(deps);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         return executor;

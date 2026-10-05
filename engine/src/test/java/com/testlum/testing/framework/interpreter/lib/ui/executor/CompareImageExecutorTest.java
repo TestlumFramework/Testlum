@@ -74,6 +74,7 @@ class CompareImageExecutorTest {
                 .build();
         executor = new CompareImageExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
@@ -169,10 +170,10 @@ class CompareImageExecutorTest {
 
             when(fileSearcher.searchFileFromDir(any(), eq("expected.png"))).thenReturn(tempFile);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement partElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("partLocator"), any(),
-                    eq(ElementChecks.FOR_POSITIONING), result)).thenReturn(partElement);
+                    eq(ElementChecks.FOR_POSITIONING), any())).thenReturn(partElement);
 
             File partScreenshot = File.createTempFile("part-screenshot", ".png");
             partScreenshot.deleteOnExit();

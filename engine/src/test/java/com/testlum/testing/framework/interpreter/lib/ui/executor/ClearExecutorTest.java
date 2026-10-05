@@ -45,6 +45,7 @@ class ClearExecutorTest {
                 .build();
         executor = new ClearExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
     }
 
     @Nested
@@ -56,7 +57,7 @@ class ClearExecutorTest {
             clear.setLocator("input-field");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_WRITING), result))
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_WRITING), any()))
                     .thenReturn(element);
 
             executor.execute(clear, result);

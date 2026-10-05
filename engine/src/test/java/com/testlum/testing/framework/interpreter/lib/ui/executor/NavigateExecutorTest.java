@@ -51,6 +51,7 @@ class NavigateExecutorTest {
                 .build();
         executor = new NavigateExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
     }
 
     @Nested

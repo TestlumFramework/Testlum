@@ -48,6 +48,7 @@ class DoubleClickExecutorTest {
                 .build();
         executor = new DoubleClickExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
     }
 
     @Nested
@@ -59,7 +60,7 @@ class DoubleClickExecutorTest {
             click.setLocator("row-item");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("row-item"), any(), eq(ElementChecks.FOR_INTERACTION), result))
+            when(uiUtil.findWebElement(any(), eq("row-item"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
                     .thenReturn(element);
 
             executor.execute(click, result);

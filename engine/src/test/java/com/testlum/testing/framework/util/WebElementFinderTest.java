@@ -46,6 +46,9 @@ class WebElementFinderTest {
     @Mock
     private AutoHealerFactory autoHealerFactory;
 
+    @Mock
+    private ScreenshotUtil screenshotUtil;
+
     @InjectMocks
     private WebElementFinder webElementFinder;
 

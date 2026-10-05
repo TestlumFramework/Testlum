@@ -47,6 +47,7 @@ class ScrollToWebExecutorTest {
                 .build();
         executor = new ScrollToWebExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "javascriptUtil", javascriptUtil);
     }
 
@@ -59,7 +60,7 @@ class ScrollToWebExecutorTest {
             scrollTo.setLocator("footer-section");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("footer-section"), any(), result)).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("footer-section"), any(), any())).thenReturn(element);
 
             executor.execute(scrollTo, result);
 

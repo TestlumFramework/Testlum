@@ -149,13 +149,13 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION), result))
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
                     .thenReturn(element);
 
             executor.execute(hotKey, result);
 
             assertNotNull(result.getSubCommandsResult());
-            verify(uiUtil).findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION), result);
+            verify(uiUtil).findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION), any());
         }
 
         @Test
@@ -190,12 +190,12 @@ class HotKeyExecutorTest {
             CommandResult subResult = new CommandResult();
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("text-area"), any(), eq(ElementChecks.FOR_INTERACTION), result))
+            when(uiUtil.findWebElement(any(), eq("text-area"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
                     .thenReturn(element);
 
             executor.execute(hotKey, result);
 
-            verify(uiUtil).findWebElement(any(), eq("text-area"), any(), eq(ElementChecks.FOR_INTERACTION), result);
+            verify(uiUtil).findWebElement(any(), eq("text-area"), any(), eq(ElementChecks.FOR_INTERACTION), any());
         }
 
         @Test

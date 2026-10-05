@@ -118,10 +118,10 @@ class WebVariableExecutorTest {
             dom.setLocator("main-content");
             webVar.setDom(dom);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getAttribute("outerHTML")).thenReturn("<div>content</div>");
-            when(uiUtil.findWebElement(any(), eq("main-content"), any(), eq(ElementChecks.FOR_READING), result))
+            when(uiUtil.findWebElement(any(), eq("main-content"), any(), eq(ElementChecks.FOR_READING), any()))
                     .thenReturn(element);
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
@@ -226,9 +226,9 @@ class WebVariableExecutorTest {
             fromElement.setAttribute(attr);
             webVar.setElement(fromElement);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("my-link"), any(), eq(ElementChecks.FOR_READING), result))
+            when(uiUtil.findWebElement(any(), eq("my-link"), any(), eq(ElementChecks.FOR_READING), any()))
                     .thenReturn(element);
             when(uiUtil.getElementAttribute(eq(element), eq("href"), eq(driver))).thenReturn("/path/to");
 
@@ -263,7 +263,7 @@ class WebVariableExecutorTest {
             CommandResult result = new CommandResult();
 
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("existing-el"), any(), result)).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("existing-el"), any(), any())).thenReturn(element);
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {
                 @SuppressWarnings("unchecked")
@@ -295,7 +295,7 @@ class WebVariableExecutorTest {
             webVar.setElement(fromElement);
             CommandResult result = new CommandResult();
 
-            when(uiUtil.findWebElement(any(), eq("missing-el"), any(), result))
+            when(uiUtil.findWebElement(any(), eq("missing-el"), any(), any()))
                     .thenThrow(new DefaultFrameworkException("element not found"));
 
             when(variableHelper.lookupVarMethod(any(), any())).thenAnswer(inv -> {

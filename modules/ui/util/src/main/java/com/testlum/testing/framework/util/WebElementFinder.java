@@ -3,7 +3,6 @@ package com.testlum.testing.framework.util;
 import com.testlum.testing.framework.EnvironmentLoader;
 import com.testlum.testing.framework.autohealing.AutoHealer;
 import com.testlum.testing.framework.autohealing.AutoHealerFactory;
-import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -226,12 +225,7 @@ public final class WebElementFinder {
     private DefaultFrameworkException unableToFindElementException(final String locatorId,
                                                                    final ExecutorDependencies dependencies,
                                                                    final CommandResult result) {
-        ConfigProvider configProvider = dependencies.getContext().getBean(ConfigProvider.class);
-        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
-                .getTakeScreenshots().isEnabled();
-        if (isTakeScreenshots) {
-            screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-        }
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         return new DefaultFrameworkException(
                 String.format(LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
     }

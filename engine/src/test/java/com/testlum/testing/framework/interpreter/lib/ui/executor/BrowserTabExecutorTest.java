@@ -59,6 +59,7 @@ class BrowserTabExecutorTest {
                 .build();
         BrowserTabExecutor exec = new BrowserTabExecutor(dependencies);
         ReflectionTestUtils.setField(exec, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(exec, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(exec, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(exec, "javascriptUtil", javascriptUtil);
         ReflectionTestUtils.setField(exec, "logUtil", logUtil);

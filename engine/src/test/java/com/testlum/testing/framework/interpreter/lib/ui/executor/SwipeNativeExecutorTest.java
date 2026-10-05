@@ -55,6 +55,7 @@ class SwipeNativeExecutorTest {
                 .build();
         SwipeNativeExecutor executor = new SwipeNativeExecutor(deps);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
@@ -192,10 +193,10 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 300));
-            when(uiUtil.findWebElement(any(), eq("scrollable-list"), any(), result)).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("scrollable-list"), any(), any())).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
@@ -215,10 +216,10 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(150, 200));
-            when(uiUtil.findWebElement(any(), eq("carousel"), any(), result)).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("carousel"), any(), any())).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
@@ -239,10 +240,10 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 100));
-            when(uiUtil.findWebElement(any(), eq("swipe-el"), any(), result)).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("swipe-el"), any(), any())).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);

@@ -58,6 +58,7 @@ class HoverExecutorTest {
                 .build();
         executor = new HoverExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "conditionUtil", conditionUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
@@ -88,12 +89,12 @@ class HoverExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
-            when(uiUtil.findWebElement(any(), eq("link-hover"), any(), eq(ElementChecks.FOR_READING), result))
+            when(uiUtil.findWebElement(any(), eq("link-hover"), any(), eq(ElementChecks.FOR_READING), any()))
                     .thenReturn(element);
 
             executor.execute(hover, result);
 
-            verify(uiUtil).findWebElement(any(), eq("link-hover"), any(), eq(ElementChecks.FOR_READING), result);
+            verify(uiUtil).findWebElement(any(), eq("link-hover"), any(), eq(ElementChecks.FOR_READING), any());
         }
 
         @Test
@@ -105,7 +106,7 @@ class HoverExecutorTest {
 
             executor.execute(hover, result);
 
-            verify(uiUtil, never()).findWebElement(any(), any(), any(), any(), result);
+            verify(uiUtil, never()).findWebElement(any(), any(), any(), any(), any());
         }
     }
 
@@ -120,7 +121,7 @@ class HoverExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
-            when(uiUtil.findWebElement(any(), eq("tooltip-trigger"), any(), eq(ElementChecks.FOR_READING), result))
+            when(uiUtil.findWebElement(any(), eq("tooltip-trigger"), any(), eq(ElementChecks.FOR_READING), any()))
                     .thenReturn(element);
 
             WebElement htmlElement = mock(WebElement.class);
@@ -139,7 +140,7 @@ class HoverExecutorTest {
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
-            when(uiUtil.findWebElement(any(), eq("simple-hover"), any(), eq(ElementChecks.FOR_READING), result))
+            when(uiUtil.findWebElement(any(), eq("simple-hover"), any(), eq(ElementChecks.FOR_READING), any()))
                     .thenReturn(element);
 
             executor.execute(hover, result);
@@ -161,7 +162,7 @@ class HoverExecutorTest {
             executor.execute(hover, result);
 
             verify(driver).findElement(any());
-            verify(uiUtil, never()).findWebElement(any(), any(), any(), any(), result);
+            verify(uiUtil, never()).findWebElement(any(), any(), any(), any(), any());
         }
     }
 }

@@ -50,6 +50,7 @@ class InputExecutorTest {
                 .build();
         executor = new InputExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
     }
 
     @Nested
@@ -62,7 +63,7 @@ class InputExecutorTest {
             input.setValue("testUser");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("username"), any(), eq(ElementChecks.FOR_WRITING), result))
+            when(uiUtil.findWebElement(any(), eq("username"), any(), eq(ElementChecks.FOR_WRITING), any()))
                     .thenReturn(element);
             when(uiUtil.resolveSendKeysType(eq("testUser"), eq(element), eq(scenarioFile)))
                     .thenReturn("testUser");

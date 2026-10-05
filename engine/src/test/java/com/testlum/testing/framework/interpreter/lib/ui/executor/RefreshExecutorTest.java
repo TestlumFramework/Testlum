@@ -52,6 +52,7 @@ class RefreshExecutorTest {
                 .build();
         executor = new RefreshExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
     }
 
     @Nested

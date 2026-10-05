@@ -69,6 +69,7 @@ class NativeCompareImageExecutorTest {
                 .build();
         executor = new NativeCompareImageExecutor(deps);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
@@ -288,9 +289,9 @@ class NativeCompareImageExecutorTest {
 
             when(fileSearcher.searchFileFromDir(any(), eq("expected.png"))).thenReturn(tempFile);
 
-            CommandResult result = new CommandResult();
+            final CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("elementLocator"), any(), result))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("elementLocator"), any(), any()))
                     .thenReturn(mockElement);
             when(mockElement.getLocation()).thenReturn(new Point(10, 10));
             when(mockElement.getSize()).thenReturn(new Dimension(50, 50));

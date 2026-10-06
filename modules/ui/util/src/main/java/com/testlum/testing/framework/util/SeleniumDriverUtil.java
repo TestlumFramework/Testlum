@@ -49,8 +49,19 @@ public class SeleniumDriverUtil {
         Capabilities capabilities = abstractDevice.getCapabilities();
         if (Objects.nonNull(capabilities)) {
             capabilities.getCapability()
-                    .forEach(cap -> desiredCapabilities.setCapability(cap.getName(), cap.getValue()));
+                    .forEach(cap -> desiredCapabilities.setCapability(
+                            cap.getName(), parseCapabilityValue(cap.getValue())));
         }
+    }
+
+    public Object parseCapabilityValue(final String value) {
+        if ("true".equalsIgnoreCase(value)) {
+            return Boolean.TRUE;
+        }
+        if ("false".equalsIgnoreCase(value)) {
+            return Boolean.FALSE;
+        }
+        return value;
     }
 
     public URL toURL(final String url) {

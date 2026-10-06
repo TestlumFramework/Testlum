@@ -430,35 +430,22 @@ public class VariableHelperImpl implements VariableHelper {
         logUtil.logAllQueries(fromSQL.getDbType().name(), singleQuery, alias);
         AbstractStorageOperation.StorageOperationResult queryResult = storageOperation.apply(
                 new ListSource(singleQuery), alias);
-        return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));
+        return getResultValue(queryResult);
     }
 
     @SuppressWarnings("unchecked")
-    private String getResultValue(final AbstractStorageOperation.StorageOperationResult storageOperationResult,
-                                  final String key) {
+    private String getResultValue(final AbstractStorageOperation.StorageOperationResult storageOperationResult) {
         List<AbstractStorageOperation.QueryResult<?>> rawList =
                 (List<AbstractStorageOperation.QueryResult<?>>) storageOperationResult.getRaw();
-        List<LinkedCaseInsensitiveMap<String>> content =
-                (List<LinkedCaseInsensitiveMap<String>>) rawList.get(0).getContent();
+        List<LinkedCaseInsensitiveMap<Object>> content =
+                (List<LinkedCaseInsensitiveMap<Object>>) rawList.get(0).getContent();
         verifyIfContentNotEmpty(content);
-        Map<String, String> mapWithContent = content.get(0);
-        return String.valueOf(mapWithContent.get(key));
+        return String.valueOf(content.get(0).values().iterator().next());
     }
 
-    private void verifyIfContentNotEmpty(final List<LinkedCaseInsensitiveMap<String>> content) {
-        if (content.isEmpty()) {
+    private void verifyIfContentNotEmpty(final List<LinkedCaseInsensitiveMap<Object>> content) {
+        if (content.isEmpty() || content.get(0).isEmpty()) {
             throw new DefaultFrameworkException(ExceptionMessage.VAR_QUERY_RESULT_ERROR);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private String getKeyOfQueryResultValue(final AbstractStorageOperation.StorageOperationResult applyRelationalDb) {
-        List<AbstractStorageOperation.QueryResult<?>> rawList =
-                (List<AbstractStorageOperation.QueryResult<?>>) applyRelationalDb.getRaw();
-        String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
-        if (queryParts.length < 2) {
-            throw new DefaultFrameworkException("Unable to extract key from query: expected at least two parts");
-        }
-        return queryParts[1];
     }
 }

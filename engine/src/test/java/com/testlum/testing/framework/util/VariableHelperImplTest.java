@@ -522,7 +522,7 @@ class VariableHelperImplTest {
 
         @SuppressWarnings("unchecked")
         @Test
-        void throwsWhenQueryHasFewerThanTwoParts() {
+        void returnsValueRegardlessOfQueryText() {
             FromSQL fromSQL = new FromSQL();
             fromSQL.setDbType(RelationalDB.CLICKHOUSE);
             fromSQL.setAlias("chAlias");
@@ -548,8 +548,9 @@ class VariableHelperImplTest {
 
             CommandResult result = new CommandResult();
 
-            assertThrows(DefaultFrameworkException.class,
-                    () -> variableHelper.getSQLResult(fromSQL, "badQueryVar", result));
+            String value = variableHelper.getSQLResult(fromSQL, "singleWordVar", result);
+
+            assertEquals("val", value);
         }
     }
 
@@ -722,37 +723,100 @@ class VariableHelperImplTest {
     }
 
     @Nested
-    class GetKeyOfQueryResultValueTests {
+    class GetFirstColumnValueTests {
 
         @SuppressWarnings("unchecked")
-        @Test
-        void extractsKeyFromSelectQuery() {
+        private String runQuery(final String query, final LinkedCaseInsensitiveMap<Object> row) {
             FromSQL fromSQL = new FromSQL();
             fromSQL.setDbType(RelationalDB.POSTGRES);
             fromSQL.setAlias("alias");
-            fromSQL.setQuery("SELECT email FROM users WHERE id = 1");
+            fromSQL.setQuery(query);
 
             AbstractStorageOperation storageOperation = mock(AbstractStorageOperation.class);
             when(aliasToStorageOperation.getByNameOrThrow("POSTGRES_alias")).thenReturn(storageOperation);
 
-            LinkedCaseInsensitiveMap<String> row = new LinkedCaseInsensitiveMap<>();
-            row.put("email", "test@example.com");
-            List<LinkedCaseInsensitiveMap<String>> content = new ArrayList<>();
+            List<LinkedCaseInsensitiveMap<Object>> content = new ArrayList<>();
             content.add(row);
 
-            AbstractStorageOperation.QueryResult<Object> qr =
-                    new AbstractStorageOperation.QueryResult<>("SELECT email FROM users WHERE id = 1");
-            qr.setContent(content);
+            AbstractStorageOperation.QueryResult<Object> queryResult =
+                    new AbstractStorageOperation.QueryResult<>(query);
+            queryResult.setContent(content);
             List<AbstractStorageOperation.QueryResult<?>> rawList = new ArrayList<>();
-            rawList.add(qr);
+            rawList.add(queryResult);
 
-            AbstractStorageOperation.StorageOperationResult opResult =
-                    new AbstractStorageOperation.StorageOperationResult(rawList);
-            when(storageOperation.apply(any(ListSource.class), eq("alias"))).thenReturn(opResult);
+            when(storageOperation.apply(any(ListSource.class), eq("alias")))
+                    .thenReturn(new AbstractStorageOperation.StorageOperationResult(rawList));
 
-            CommandResult result = new CommandResult();
+            return variableHelper.getSQLResult(fromSQL, "var", new CommandResult());
+        }
 
-            String value = variableHelper.getSQLResult(fromSQL, "emailVar", result);
+        @Test
+        void returnsCountValueWhenColumnNameDiffersFromQueryText() {
+            LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
+            row.put("count", 2L);
+
+            String value = runQuery("SELECT COUNT(email) FROM users WHERE email = 'test@example.com'", row);
+
+            assertEquals("2", value);
+        }
+
+        @Test
+        void returnsZeroCount() {
+            LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
+            row.put("count", 0L);
+
+            String value = runQuery("SELECT COUNT(email) FROM users WHERE email = 'nobody@example.com'", row);
+
+            assertEquals("0", value);
+        }
+
+        @Test
+        void returnsValueForQueryWithColumnAlias() {
+            LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
+            row.put("total", 4L);
+
+            String value = runQuery("SELECT COUNT(1) AS total FROM users WHERE 1 = 1", row);
+
+            assertEquals("4", value);
+        }
+
+        @Test
+        void returnsFirstColumnWhenResultHasSeveralColumns() {
+            LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
+            row.put("name", "Alice");
+            row.put("email", "alice@example.com");
+
+            // The row intentionally has several columns: only the first one is taken.
+            // (The scenario schema doesn't allow this, but the helper must not depend on query text.)
+            String value = runQuery("SELECT name FROM users WHERE id = 1", row);
+
+            assertEquals("Alice", value);
+        }
+
+        @Test
+        void returnsNullTextWhenColumnValueIsNull() {
+            LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
+            row.put("email", null);
+
+            String value = runQuery("SELECT email FROM users WHERE id = 4", row);
+
+            assertEquals("null", value);
+        }
+
+        @Test
+        void throwsWhenRowHasNoColumns() {
+            LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> runQuery("SELECT email FROM users WHERE id = 1", row));
+        }
+
+        @Test
+        void returnsPlainColumnValue() {
+            LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
+            row.put("email", "test@example.com");
+
+            String value = runQuery("SELECT email FROM users WHERE id = 1", row);
 
             assertEquals("test@example.com", value);
         }

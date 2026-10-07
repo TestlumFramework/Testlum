@@ -5,7 +5,6 @@ import com.testlum.reporting.sdk.model.config.ProjectConfigSnapshot;
 import com.testlum.reporting.sdk.model.config.TagConfig;
 import com.testlum.testing.framework.EnvToIntegrationMap;
 import com.testlum.testing.framework.UIConfiguration;
-import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.model.global_config.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,7 +88,7 @@ class ProjectConfigSnapshotMapperTest {
         mapper = new ProjectConfigSnapshotMapper(config,
                 new EnvToIntegrationMap(Map.of("staging", new Integrations())),
                 new UIConfiguration(Map.of("staging", uiConfig())),
-                new IntegrationConfigMapper(new JacksonService()), locatorSnapshotMapper, new UiConfigMapper());
+                new IntegrationConfigMapper(), locatorSnapshotMapper, new UiConfigMapper());
     }
 
     @Test

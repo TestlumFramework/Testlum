@@ -1,7 +1,6 @@
 package com.testlum.testing.report.server;
 
 import com.testlum.reporting.sdk.model.config.BrowserConfig;
-import com.testlum.reporting.sdk.model.config.BrowserKind;
 import com.testlum.reporting.sdk.model.config.BrowserTypeConfig;
 import com.testlum.reporting.sdk.model.config.BrowserTypeKind;
 import com.testlum.reporting.sdk.model.config.ConnectionConfig;
@@ -269,7 +268,10 @@ class UiConfigMapperTest {
 
         List<BrowserConfig> browsers = mapWeb(web(chrome, firefox, safari, edge)).getBrowsers();
 
-        assertEquals(List.of(BrowserKind.CHROME, BrowserKind.FIREFOX, BrowserKind.SAFARI, BrowserKind.EDGE),
+        assertEquals(List.of(com.testlum.reporting.sdk.model.config.BrowserType.CHROME,
+                        com.testlum.reporting.sdk.model.config.BrowserType.FIREFOX,
+                        com.testlum.reporting.sdk.model.config.BrowserType.SAFARI,
+                        com.testlum.reporting.sdk.model.config.BrowserType.EDGE),
                 browsers.stream().map(BrowserConfig::getKind).toList());
         BrowserConfig chromeConfig = browsers.get(0);
         assertEquals("chrome", chromeConfig.getAlias());

@@ -204,18 +204,9 @@ public class WebDriverFactory {
         Capabilities capabilities = browser.getCapabilities();
         if (Objects.nonNull(capabilities)) {
             capabilities.getCapability().forEach(cap ->
-                    driverOptions.setCapability(cap.getName(), parseCapabilityValue(cap.getValue())));
+                    driverOptions.setCapability(cap.getName(),
+                            seleniumDriverUtil.parseCapabilityValue(cap.getValue())));
         }
-    }
-
-    private Object parseCapabilityValue(final String value) {
-        if ("true".equalsIgnoreCase(value)) {
-            return Boolean.TRUE;
-        }
-        if ("false".equalsIgnoreCase(value)) {
-            return Boolean.FALSE;
-        }
-        return value;
     }
 
     private interface WebDriverInitializer { }

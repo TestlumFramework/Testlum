@@ -131,7 +131,7 @@ jobs:
       - name: Build Testlum Docker image
         shell: bash
         working-directory: testlum-core
-        run: docker build --no-cache --build-arg "APP_VERSION=${VERSION}" -t "testlum:${VERSION}" .
+        run: docker build --no-cache -t "testlum:${VERSION}" .
 
       - name: Run Regression
         id: run-regression-main

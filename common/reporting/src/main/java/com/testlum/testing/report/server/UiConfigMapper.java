@@ -3,7 +3,6 @@ package com.testlum.testing.report.server;
 import com.testlum.reporting.sdk.model.config.AutoHealingConfig;
 import com.testlum.reporting.sdk.model.config.AutoHealingMode;
 import com.testlum.reporting.sdk.model.config.BrowserConfig;
-import com.testlum.reporting.sdk.model.config.BrowserKind;
 import com.testlum.reporting.sdk.model.config.BrowserTypeConfig;
 import com.testlum.reporting.sdk.model.config.BrowserTypeKind;
 import com.testlum.reporting.sdk.model.config.Capability;
@@ -49,6 +48,11 @@ import com.testlum.testing.model.global_config.Web;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+
+import static com.testlum.reporting.sdk.model.config.BrowserType.CHROME;
+import static com.testlum.reporting.sdk.model.config.BrowserType.EDGE;
+import static com.testlum.reporting.sdk.model.config.BrowserType.FIREFOX;
+import static com.testlum.reporting.sdk.model.config.BrowserType.SAFARI;
 
 /**
  * Maps an environment's JAXB {@code ui.xml} config onto the typed reporting-SDK UI config: web browsers with their
@@ -112,7 +116,7 @@ public class UiConfigMapper {
 
     private BrowserConfig browser(final AbstractBrowser browser) {
         BrowserConfig.BrowserConfigBuilder builder = BrowserConfig.builder()
-                .kind(BrowserKind.SAFARI)
+                .kind(SAFARI)
                 .enabled(browser.isEnabled())
                 .maximizedBrowserWindow(browser.isMaximizedBrowserWindow())
                 .browserWindowSize(browser.getBrowserWindowSize())
@@ -126,15 +130,16 @@ public class UiConfigMapper {
 
     private void engine(final BrowserConfig.BrowserConfigBuilder builder, final AbstractBrowser browser) {
         if (browser instanceof Chrome chrome) {
-            engine(builder, BrowserKind.CHROME, chrome.isHeadlessMode(), chrome.getChromeOptionsArguments());
+            engine(builder, CHROME, chrome.isHeadlessMode(), chrome.getChromeOptionsArguments());
         } else if (browser instanceof Firefox firefox) {
-            engine(builder, BrowserKind.FIREFOX, firefox.isHeadlessMode(), firefox.getFirefoxOptionsArguments());
+            engine(builder, FIREFOX, firefox.isHeadlessMode(), firefox.getFirefoxOptionsArguments());
         } else if (browser instanceof Edge edge) {
-            engine(builder, BrowserKind.EDGE, edge.isHeadlessMode(), edge.getEdgeOptionsArguments());
+            engine(builder, EDGE, edge.isHeadlessMode(), edge.getEdgeOptionsArguments());
         }
     }
 
-    private void engine(final BrowserConfig.BrowserConfigBuilder builder, final BrowserKind kind,
+    private void engine(final BrowserConfig.BrowserConfigBuilder builder,
+                        final com.testlum.reporting.sdk.model.config.BrowserType kind,
                         final boolean headlessMode, final BrowserOptionsArguments arguments) {
         builder.kind(kind)
                 .headlessMode(headlessMode)

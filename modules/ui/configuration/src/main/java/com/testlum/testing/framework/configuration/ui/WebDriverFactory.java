@@ -203,7 +203,9 @@ public class WebDriverFactory {
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
         if (Objects.nonNull(capabilities)) {
-            capabilities.getCapability().forEach(cap -> driverOptions.setCapability(cap.getName(), cap.getValue()));
+            capabilities.getCapability().forEach(cap ->
+                    driverOptions.setCapability(cap.getName(),
+                            seleniumDriverUtil.parseCapabilityValue(cap.getValue())));
         }
     }
 

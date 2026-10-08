@@ -85,5 +85,7 @@ public final class TestRailConstants {
 
     public static final String RUN_ID_ERROR_RESPONSE = "Failed to parse Run ID '{}' for TestRail.";
 
+    public static final String RESPONSE_NOT_PARSABLE = "TestRail response is not valid JSON: %s";
+
     public static final String ID_FETCH_ERROR_RESPONSE = "Failed to obtain field '{}' from JSON response.";
 }

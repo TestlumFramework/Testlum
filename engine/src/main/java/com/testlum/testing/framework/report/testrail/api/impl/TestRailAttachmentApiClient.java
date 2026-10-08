@@ -4,8 +4,6 @@ import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.api.dto.ResultResponse;
 import com.testlum.testing.framework.report.testrail.summary.util.TestRailErrorDescriber;
 import com.testlum.testing.framework.report.testrail.api.util.TestRailResponseJsonDeserializer;
-import com.testlum.testing.model.global_config.GlobalTestConfiguration;
-import com.testlum.testing.model.global_config.TestRailReports;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -32,15 +30,14 @@ public class TestRailAttachmentApiClient {
     private final TestRailConnectionService connectionService;
     private final RestTemplate restTemplate;
 
-    public TestRailAttachmentApiClient(final GlobalTestConfiguration globalTestConfiguration,
-                                       final TestRailResponseJsonDeserializer jsonDeserializer,
+    public TestRailAttachmentApiClient(final TestRailResponseJsonDeserializer jsonDeserializer,
                                        final TestRailErrorDescriber errorDescriber,
+                                       final TestRailConnectionService connectionService,
                                        final RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         this.jsonDeserializer = jsonDeserializer;
         this.errorDescriber = errorDescriber;
-        TestRailReports testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
-        this.connectionService = new TestRailConnectionService(testRails, restTemplate);
+        this.connectionService = connectionService;
     }
 
     /**
@@ -72,7 +69,7 @@ public class TestRailAttachmentApiClient {
     }
 
     private String fetchTest(final Integer testId) {
-        String getTestUrl = connectionService.endpoints().getFetchTestEndpoint(String.valueOf(testId));
+        String getTestUrl = connectionService.endpoints().getFetchTestEndpoint(testId);
         log.debug(TestRailConstants.LOG_FETCHING_TEST, testId);
         ResponseEntity<String> response = restTemplate.exchange(getTestUrl, HttpMethod.GET,
                 new HttpEntity<>(connectionService.buildHeaders()), String.class);

@@ -3,7 +3,7 @@ package com.testlum.testing.framework.report.testrail.api.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.testlum.testing.framework.constant.ExceptionMessage;
+import com.fasterxml.jackson.databind.node.MissingNode;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.api.dto.ResultResponse;
@@ -24,12 +24,7 @@ public class TestRailResponseJsonDeserializer {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public List<ResultResponse> extractResultsDTOs(final String jsonResponse) {
-        JsonNode root;
-        try {
-            root = OBJECT_MAPPER.readTree(jsonResponse);
-        } catch (JsonProcessingException e) {
-            throw new DefaultFrameworkException(ExceptionMessage.ERROR_ON_PARSING_JSON, e);
-        }
+        JsonNode root = readTree(jsonResponse);
         if (!root.isArray()) {
            return List.of();
         }
@@ -61,12 +56,7 @@ public class TestRailResponseJsonDeserializer {
      */
     public int collectCaseIdsByMatchKey(final String jsonResponse, final String caseMatchKey,
                                         final Map<String, List<Integer>> target) {
-        JsonNode root;
-        try {
-            root = OBJECT_MAPPER.readTree(jsonResponse);
-        } catch (JsonProcessingException e) {
-            throw new DefaultFrameworkException(ExceptionMessage.ERROR_ON_PARSING_JSON, e);
-        }
+        JsonNode root = readTree(jsonResponse);
         JsonNode cases = root.isArray() ? root : root.get(TestRailConstants.CASES_FIELD);
         if (cases == null || !cases.isArray()) {
             return 0;
@@ -108,6 +98,18 @@ public class TestRailResponseJsonDeserializer {
                 .testId(testId)
                 .statusId(statusId)
                 .build());
+    }
+
+    private static JsonNode readTree(final String jsonResponse) {
+        if (jsonResponse == null) {
+            return MissingNode.getInstance();
+        }
+        try {
+            return OBJECT_MAPPER.readTree(jsonResponse);
+        } catch (JsonProcessingException e) {
+            throw new DefaultFrameworkException(
+                    String.format(TestRailConstants.RESPONSE_NOT_PARSABLE, e.getOriginalMessage()), e);
+        }
     }
 
     private static Integer readInt(final JsonNode node, final String fieldName) {

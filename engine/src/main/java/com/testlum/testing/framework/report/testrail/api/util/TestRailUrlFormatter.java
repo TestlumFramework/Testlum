@@ -4,9 +4,11 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-public final class TestRailUrlFormatter {
+@Component
+public class TestRailUrlFormatter {
 
     private static final String API_PATH = "index.php?/api/v2/";
     private static final String INDEX_PHP = "index.php";
@@ -15,10 +17,7 @@ public final class TestRailUrlFormatter {
     private static final String SCHEME_SEPARATOR = "://";
     private static final String SLASH = "/";
 
-    private TestRailUrlFormatter() {
-    }
-
-    public static String format(final String url) {
+    public String format(final String url) {
         String instanceUrl = StringUtils.isBlank(url) ? StringUtils.EMPTY : cutTrailingSlashes(url.trim());
         if (StringUtils.isBlank(instanceUrl)) {
             throw new DefaultFrameworkException(TestRailConstants.URL_NOT_CONFIGURED);

@@ -4,6 +4,7 @@ import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.api.util.TestRailUrlFormatter;
+import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.TestRailReports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,21 +13,27 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Slf4j
+@Component
 public class TestRailConnectionService {
 
     private final TestRailReports testRails;
     private final RestTemplate restTemplate;
+    private final TestRailUrlFormatter urlFormatter;
     private ApiEndpoints endpoints;
 
-    public TestRailConnectionService(final TestRailReports testRails, final RestTemplate restTemplate) {
-        this.testRails = testRails;
+    public TestRailConnectionService(final GlobalTestConfiguration globalTestConfiguration,
+                                     final RestTemplate restTemplate,
+                                     final TestRailUrlFormatter urlFormatter) {
+        this.testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
         this.restTemplate = restTemplate;
+        this.urlFormatter = urlFormatter;
     }
 
     public void validateConnection() {
@@ -62,7 +69,7 @@ public class TestRailConnectionService {
      */
     public ApiEndpoints endpoints() {
         if (endpoints == null) {
-            endpoints = new ApiEndpoints(testRails);
+            endpoints = new ApiEndpoints(urlFormatter.format(testRails.getUrl()));
         }
         return endpoints;
     }
@@ -70,16 +77,16 @@ public class TestRailConnectionService {
     public static class ApiEndpoints {
 
         private static final String GET_PROJECTS_URL = "get_projects";
-        private static final String ADD_RESULTS_FOR_CASES_URL = "add_results_for_cases/";
-        private static final String CREATE_NEW_TEST_RUN_URL = "add_run/";
-        private static final String GET_TEST_URL = "get_test/";
-        private static final String GET_CASES_URL = "get_cases/";
-        private static final String ADD_ATTACHMENT_TO_RESULT_URL = "add_attachment_to_result/";
+        private static final String ADD_RESULTS_FOR_CASES_URL = "add_results_for_cases/%d";
+        private static final String CREATE_NEW_TEST_RUN_URL = "add_run/%s";
+        private static final String GET_TEST_URL = "get_test/%d";
+        private static final String GET_CASES_URL = "get_cases/%s&limit=%s&offset=%d";
+        private static final String ADD_ATTACHMENT_TO_RESULT_URL = "add_attachment_to_result/%d";
 
         private final String baseUrl;
 
-        private ApiEndpoints(final TestRailReports testRails) {
-            this.baseUrl = TestRailUrlFormatter.format(testRails.getUrl());
+        private ApiEndpoints(final String baseUrl) {
+            this.baseUrl = baseUrl;
         }
 
         public String getFetchProjectsEndpoint() {
@@ -87,24 +94,24 @@ public class TestRailConnectionService {
         }
 
         public String getAddResultsForCaseEndpoint(final int runId) {
-            return baseUrl + ADD_RESULTS_FOR_CASES_URL + runId;
+            return baseUrl + String.format(ADD_RESULTS_FOR_CASES_URL, runId);
         }
 
         public String getCreateTextRunEndpoint(final String projectId) {
-            return baseUrl + CREATE_NEW_TEST_RUN_URL + StringUtils.trimToEmpty(projectId);
+            return baseUrl + String.format(CREATE_NEW_TEST_RUN_URL, StringUtils.trimToEmpty(projectId));
         }
 
-        public String getFetchTestEndpoint(final String testId) {
-            return baseUrl + GET_TEST_URL + testId;
+        public String getFetchTestEndpoint(final int testId) {
+            return baseUrl + String.format(GET_TEST_URL, testId);
         }
 
         public String getCasesEndpoint(final String projectId, final int offset) {
-            return baseUrl + GET_CASES_URL + StringUtils.trimToEmpty(projectId)
-                    + "&limit=" + TestRailConstants.CASES_PAGE_LIMIT + "&offset=" + offset;
+            return baseUrl + String.format(GET_CASES_URL, StringUtils.trimToEmpty(projectId),
+                    TestRailConstants.CASES_PAGE_LIMIT, offset);
         }
 
         public String getAddAttachmentEndpoint(final int resultId) {
-            return baseUrl + ADD_ATTACHMENT_TO_RESULT_URL + resultId;
+            return baseUrl + String.format(ADD_ATTACHMENT_TO_RESULT_URL, resultId);
         }
 
     }

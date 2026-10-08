@@ -15,6 +15,8 @@ class TestRailUrlFormatterTest {
 
     private static final String EXPECTED = "https://testlum.testrail.io/index.php?/api/v2/";
 
+    private final TestRailUrlFormatter urlFormatter = new TestRailUrlFormatter();
+
     @ParameterizedTest
     @ValueSource(strings = {
             "https://testlum.testrail.io",
@@ -29,7 +31,7 @@ class TestRailUrlFormatterTest {
             "https://testlum.testrail.io/INDEX.PHP"
     })
     void anyFormOfInstanceUrlIsFormattedToApiUrl(final String url) {
-        assertEquals(EXPECTED, TestRailUrlFormatter.format(url));
+        assertEquals(EXPECTED, urlFormatter.format(url));
     }
 
     @ParameterizedTest
@@ -39,18 +41,18 @@ class TestRailUrlFormatterTest {
             "https://testlum.testrail.io/tr/index.php, https://testlum.testrail.io/tr/index.php?/api/v2/"
     })
     void instanceHostedInSubDirectoryKeepsItsPath(final String url, final String expected) {
-        assertEquals(expected, TestRailUrlFormatter.format(url));
+        assertEquals(expected, urlFormatter.format(url));
     }
 
     @Test
     void urlAlreadyPointingToApiIsKeptAsItIs() {
-        assertEquals(EXPECTED, TestRailUrlFormatter.format(EXPECTED));
+        assertEquals(EXPECTED, urlFormatter.format(EXPECTED));
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "/", "///"})
     void blankUrlIsRejected(final String url) {
-        assertThrows(DefaultFrameworkException.class, () -> TestRailUrlFormatter.format(url));
+        assertThrows(DefaultFrameworkException.class, () -> urlFormatter.format(url));
     }
 }

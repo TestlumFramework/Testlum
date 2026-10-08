@@ -40,13 +40,14 @@ public class TestRailApiClientImpl implements TestRailApiClient {
                                  final TestRailAttachmentApiClient attachmentApiClient,
                                  final TestRailResponseJsonDeserializer jsonDeserializer,
                                  final TestRailErrorDescriber errorDescriber,
+                                 final TestRailConnectionService connectionService,
                                  final RestTemplate restTemplate) {
         this.testRails = globalTestConfiguration.getReport().getExtentReports().getTestRailReports();
         this.attachmentApiClient = attachmentApiClient;
         this.jsonDeserializer = jsonDeserializer;
         this.errorDescriber = errorDescriber;
         this.restTemplate = restTemplate;
-        this.connectionService = new TestRailConnectionService(testRails, restTemplate);
+        this.connectionService = connectionService;
     }
 
     @Override

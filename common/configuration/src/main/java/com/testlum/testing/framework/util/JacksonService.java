@@ -83,11 +83,12 @@ public final class JacksonService {
 
     public Object toJsonObject(final String content) {
         if (StringUtils.isNotBlank(content)) {
-            if (content.startsWith("{") && content.endsWith("}")) {
-                return readValue(content, Object.class);
+            final String trimmed = content.trim();
+            if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+                return readValue(trimmed, Object.class);
             }
-            if (content.startsWith("[") && content.endsWith("]")) {
-                return readValue(content, Object.class);
+            if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+                return readValue(trimmed, Object.class);
             }
         }
         return content;

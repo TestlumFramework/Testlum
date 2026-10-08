@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -35,6 +36,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
     private static final String BODY_LOG = LogFormat.table("Body");
+    private static final String QUERY_PARAMS_LOG = LogFormat.table("Query parameters");
 
     private static final String CONTENT_TO_SEND = "Content to send";
     private static final String EXPECTED_CODE = "Expected code";
@@ -42,6 +44,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
+    private static final String QUERY_PARAMS = "Query parameters";
+
     private final Map<AliasEnv, SendGrid> sendGrid;
     private final HttpUtil httpUtil;
     private final SendGridUtil sendGridUtil;
@@ -62,7 +66,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
         Map<String, String> headers = getHeaders(sendgridInfo);
-        addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint, result);
+        addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint,
+                getQueryParams(sendgridInfo), result);
         Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, result);
         ApiResponse expected = getExpected(sendgridInfo, headers);
         compare(expected, actual, result);
@@ -85,7 +90,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         String body = getBody(sendgridInfo, method);
         Request request = getRequest(body, method, sendgridInfo, endpoint);
         result.put(CONTENT_TO_SEND, stringPrettifier.asJsonResult(body));
-        logHttpInfo(alias, method.name(), endpoint);
+        logHttpInfo(alias, method.name(), endpoint, getQueryParams(sendgridInfo));
         logBody(request.getBody());
         try {
             return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
@@ -140,10 +145,23 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         return request;
     }
 
-    private void logHttpInfo(final String alias, final String method, final String endpoint) {
+    private List<String> getQueryParams(final SendgridInfo sendgridInfo) {
+        return sendgridInfo.getQueryParam().stream()
+                .map(queryParam -> queryParam.getKey() + "=" + queryParam.getValue())
+                .toList();
+    }
+
+    private void logHttpInfo(final String alias,
+                             final String method,
+                             final String endpoint,
+                             final List<String> queryParams) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
+        if (!queryParams.isEmpty()) {
+            log.info(QUERY_PARAMS_LOG, String.join("\n", queryParams)
+                    .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+        }
     }
 
     private void logBody(final String body) {
@@ -157,10 +175,14 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
                                      final String httpMethodName,
                                      final Map<String, String> headers,
                                      final String endpoint,
+                                     final List<String> queryParams,
                                      final CommandResult result) {
         result.put(ALIAS, alias);
         result.put(ENDPOINT, endpoint);
         result.put(HTTP_METHOD, httpMethodName);
+        if (!queryParams.isEmpty()) {
+            result.put(QUERY_PARAMS, String.join("&", queryParams));
+        }
         if (!headers.isEmpty()) {
             addHeadersMetaData(headers, result);
         }

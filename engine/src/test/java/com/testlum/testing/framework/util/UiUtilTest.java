@@ -25,9 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Sequence;
@@ -455,35 +453,6 @@ class UiUtilTest {
             Point center = uiUtil.getCenterPoint(driver);
             assertEquals(1, center.getX());
             assertEquals(1, center.getY());
-        }
-    }
-
-    // ================================================================
-    // TakeScreenshot
-    // ================================================================
-
-    @Nested
-    class TakeScreenshot {
-
-        private interface ScreenshotDriver extends WebDriver, TakesScreenshot {
-        }
-
-        @Test
-        void takeScreenshotFromDriver() {
-            ScreenshotDriver driver = mock(ScreenshotDriver.class);
-            File screenshotFile = new File("/tmp/screenshot.png");
-            when(driver.getScreenshotAs(OutputType.FILE)).thenReturn(screenshotFile);
-            File result = uiUtil.takeScreenshot((WebDriver) driver);
-            assertEquals(screenshotFile, result);
-        }
-
-        @Test
-        void takeScreenshotFromElement() {
-            WebElement element = mock(WebElement.class);
-            File screenshotFile = new File("/tmp/element-screenshot.png");
-            when(element.getScreenshotAs(OutputType.FILE)).thenReturn(screenshotFile);
-            File result = uiUtil.takeScreenshot(element);
-            assertEquals(screenshotFile, result);
         }
     }
 

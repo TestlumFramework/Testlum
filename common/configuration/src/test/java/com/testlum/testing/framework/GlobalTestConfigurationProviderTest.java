@@ -60,11 +60,14 @@ class GlobalTestConfigurationProviderTest {
             when(testResourceSettings.getConfigFile()).thenReturn(configFile);
             XMLParser<GlobalTestConfiguration> parser = mock(XMLParser.class);
             when(xmlParsers.forGlobalTestConfiguration()).thenReturn(parser);
+            GlobalTestConfiguration parsed = new GlobalTestConfiguration();
+            when(parser.process(configFile)).thenReturn(parsed);
             GlobalTestConfiguration expected = new GlobalTestConfiguration();
-            when(parser.process(configFile)).thenReturn(expected);
+            when(injectionService.injectFromSystem(parsed)).thenReturn(expected);
 
             GlobalTestConfiguration result = provider.globalTestConfiguration();
             assertEquals(expected, result);
+            verify(injectionService).injectFromSystem(parsed);
         }
     }
 

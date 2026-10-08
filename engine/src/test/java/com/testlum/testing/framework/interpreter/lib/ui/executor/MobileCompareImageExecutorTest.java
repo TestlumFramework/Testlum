@@ -44,6 +44,8 @@ class MobileCompareImageExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ImageComparator imageComparator;
     @Mock
     private ImageComparisonUtil imageComparisonUtil;
@@ -69,6 +71,7 @@ class MobileCompareImageExecutorTest {
                 .build();
         executor = new MobileCompareImageExecutor(deps);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
@@ -161,7 +164,7 @@ class MobileCompareImageExecutorTest {
             File screenshotFile = File.createTempFile("screenshot", ".png");
             screenshotFile.deleteOnExit();
             ImageIO.write(testImage, "png", screenshotFile);
-            when(uiUtil.takeScreenshot((WebDriver) driver)).thenReturn(screenshotFile);
+            when(screenshotUtil.takeScreenshot((WebDriver) driver)).thenReturn(screenshotFile);
 
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(imageComparator.compare(any(MobileImage.class), any(BufferedImage.class),

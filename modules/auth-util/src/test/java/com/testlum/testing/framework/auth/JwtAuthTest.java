@@ -5,6 +5,7 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.IntegrationsProvider;
+import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.scenario.Auth;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,19 +41,24 @@ class JwtAuthTest {
     private InterpreterDependencies dependencies;
     private IntegrationsProvider integrationsProvider;
     private FileSearcher fileSearcher;
+    private SystemVariableService systemVariableService;
     private JwtAuth jwtAuth;
 
     @BeforeEach
     void setUp() {
         dependencies = mock(InterpreterDependencies.class);
-        ApplicationContext context = mock(ApplicationContext.class);
         integrationsProvider = mock(IntegrationsProvider.class);
         fileSearcher = mock(FileSearcher.class);
+        systemVariableService = mock(SystemVariableService.class);
 
+        ApplicationContext context = mock(ApplicationContext.class);
         when(dependencies.getContext()).thenReturn(context);
         when(dependencies.getEnvironment()).thenReturn("test");
         when(context.getBean(IntegrationsProvider.class)).thenReturn(integrationsProvider);
         when(context.getBean(FileSearcher.class)).thenReturn(fileSearcher);
+        when(context.getBean(SystemVariableService.class)).thenReturn(systemVariableService);
+        lenient().when(systemVariableService.inject(anyString()))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         List<Api> apiList = List.of(buildApi("myApi", "http://localhost:8080", null));
         when(integrationsProvider.findListByEnv(Api.class, "test")).thenReturn(apiList);
@@ -366,6 +372,58 @@ class JwtAuthTest {
                     .thenReturn(new File("/nonexistent/path/missing.json"));
 
             Auth auth = buildAuth("myApi", "missing.json", "/auth/login");
+            CommandResult result = new CommandResult();
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> jwtAuth.authenticate(auth, result));
+        }
+    }
+
+    @Nested
+    class EnvironmentVariableInjection {
+
+        @Test
+        void sendsRequestBodyWithResolvedEnvVariables() throws IOException {
+            String rawBody = "{\"username\":\"${API_USER}\",\"password\":\"${API_PASS}\"}";
+            String injectedBody = "{\"username\":\"admin\",\"password\":\"secret\"}";
+            File credFile = createCredentialsFile(rawBody);
+            when(fileSearcher.searchFileFromDataFolder("env-creds.json")).thenReturn(credFile);
+            when(systemVariableService.inject(rawBody)).thenReturn(injectedBody);
+
+            Api api = buildApi("myApi", "http://localhost:8080", null);
+            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
+
+            Auth auth = buildAuth("myApi", "env-creds.json", "/auth/login");
+            CommandResult result = new CommandResult();
+
+            RestClient restClient = mock(RestClient.class);
+            RestClient.RequestBodyUriSpec bodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            RestClient.RequestBodySpec bodySpec = mock(RestClient.RequestBodySpec.class);
+            RestClient.ResponseSpec responseSpec = mock(RestClient.ResponseSpec.class);
+
+            try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
+                mockedRestClient.when(RestClient::create).thenReturn(restClient);
+                when(restClient.post()).thenReturn(bodyUriSpec);
+                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodySpec.headers(any())).thenReturn(bodySpec);
+                when(bodySpec.body(anyString())).thenReturn(bodySpec);
+                when(bodySpec.retrieve()).thenReturn(responseSpec);
+                when(responseSpec.body(String.class)).thenReturn("{\"token\":\"jwt-abc-123\"}");
+
+                jwtAuth.authenticate(auth, result);
+
+                verify(bodySpec).body(injectedBody);
+            }
+        }
+
+        @Test
+        void propagatesExceptionWhenEnvVariableIsMissing() throws IOException {
+            File credFile = createCredentialsFile("{\"username\":\"${MISSING_VAR}\"}");
+            when(fileSearcher.searchFileFromDataFolder("env-creds.json")).thenReturn(credFile);
+            when(systemVariableService.inject(anyString()))
+                    .thenThrow(new DefaultFrameworkException("Environment variable <MISSING_VAR> not found"));
+
+            Auth auth = buildAuth("myApi", "env-creds.json", "/auth/login");
             CommandResult result = new CommandResult();
 
             assertThrows(DefaultFrameworkException.class,

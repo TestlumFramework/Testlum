@@ -80,10 +80,10 @@ class ElementCheckTest {
         }
 
         @Test
-        void appliesToEveryUiType() {
-            for (UiType uiType : UiType.values()) {
-                assertTrue(ElementCheck.VISIBILITY.supports(uiType));
-            }
+        void isNotApplicableToNative() {
+            assertFalse(ElementCheck.VISIBILITY.supports(UiType.NATIVE));
+            assertTrue(ElementCheck.VISIBILITY.supports(UiType.WEB));
+            assertTrue(ElementCheck.VISIBILITY.supports(UiType.MOBILE_BROWSER));
         }
     }
 
@@ -170,6 +170,13 @@ class ElementCheckTest {
 
             assertDoesNotThrow(() -> ElementCheck.ENABLED.check(
                     deps(mock(WebDriver.class), UiType.WEB), element));
+        }
+
+        @Test
+        void isNotApplicableToNative() {
+            assertFalse(ElementCheck.ENABLED.supports(UiType.NATIVE));
+            assertTrue(ElementCheck.ENABLED.supports(UiType.WEB));
+            assertTrue(ElementCheck.ENABLED.supports(UiType.MOBILE_BROWSER));
         }
     }
 

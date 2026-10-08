@@ -26,6 +26,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     protected final JacksonService jacksonService;
     protected final StringPrettifier stringPrettifier;
     protected final WebDownloadUtil webDownloadUtil;
+    protected final ScreenshotUtil screenshotUtil;
 
     public AbstractUiExecutor(final ExecutorDependencies dependencies) {
         this.dependencies = dependencies;
@@ -42,6 +43,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
         this.jacksonService = dependencies.getContext().getBean(JacksonService.class);
         this.stringPrettifier = dependencies.getContext().getBean(StringPrettifier.class);
         this.webDownloadUtil = dependencies.getContext().getBean(WebDownloadUtil.class);
+        this.screenshotUtil = dependencies.getContext().getBean(ScreenshotUtil.class);
     }
 
     public final void apply(final T o, final CommandResult result) {

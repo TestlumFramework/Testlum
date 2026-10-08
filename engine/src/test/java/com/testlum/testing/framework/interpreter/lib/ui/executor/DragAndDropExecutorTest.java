@@ -36,6 +36,8 @@ class DragAndDropExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ResultUtil resultUtil;
     @Mock
     private LogUtil logUtil;
@@ -66,6 +68,7 @@ class DragAndDropExecutorTest {
                 .build();
         executor = new DragAndDropExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
@@ -84,16 +87,16 @@ class DragAndDropExecutorTest {
             CommandResult result = new CommandResult();
             WebElement target = mock(WebElement.class);
             WebElement source = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("target-box"), any(), eq(ElementChecks.FOR_POSITIONING)))
+            when(uiUtil.findWebElement(any(), eq("target-box"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
                     .thenReturn(target);
-            when(uiUtil.findWebElement(any(), eq("source-box"), any(), eq(ElementChecks.FOR_POSITIONING)))
+            when(uiUtil.findWebElement(any(), eq("source-box"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
                     .thenReturn(source);
 
             executor.execute(dragAndDrop, result);
 
             verify(uiLogUtil).logDragAndDropInfo(eq(dragAndDrop));
             verify(resultUtil).addDragAndDropMetaDada(eq(dragAndDrop), eq(result));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
 
         @Test
@@ -103,11 +106,11 @@ class DragAndDropExecutorTest {
             dragAndDrop.setFromLocator("from");
             WebElement target = mock(WebElement.class);
             WebElement source = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("to"), any(), eq(ElementChecks.FOR_POSITIONING)))
-                    .thenReturn(target);
-            when(uiUtil.findWebElement(any(), eq("from"), any(), eq(ElementChecks.FOR_POSITIONING)))
-                    .thenReturn(source);
             CommandResult result = new CommandResult();
+            when(uiUtil.findWebElement(any(), eq("to"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
+                    .thenReturn(target);
+            when(uiUtil.findWebElement(any(), eq("from"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
+                    .thenReturn(source);
 
             executor.execute(dragAndDrop, result);
 
@@ -124,15 +127,15 @@ class DragAndDropExecutorTest {
             dragAndDrop.setToLocator("drop-zone");
             dragAndDrop.setFileName("test.png");
 
+            final CommandResult result = new CommandResult();
             WebElement target = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("drop-zone"), any(), eq(ElementChecks.FOR_POSITIONING)))
+            when(uiUtil.findWebElement(any(), eq("drop-zone"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
                     .thenReturn(target);
             File fakeFile = mock(File.class);
             when(fakeFile.exists()).thenReturn(false);
             when(fakeFile.getName()).thenReturn("test.png");
             when(fileSearcher.searchFileFromDir(any(), eq("test.png"))).thenReturn(fakeFile);
 
-            CommandResult result = new CommandResult();
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(dragAndDrop, result));
         }
 
@@ -142,8 +145,9 @@ class DragAndDropExecutorTest {
             dragAndDrop.setToLocator("drop-zone");
             dragAndDrop.setFileName("dir-name");
 
+            final CommandResult result = new CommandResult();
             WebElement target = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("drop-zone"), any(), eq(ElementChecks.FOR_POSITIONING)))
+            when(uiUtil.findWebElement(any(), eq("drop-zone"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
                     .thenReturn(target);
             File fakeFile = mock(File.class);
             when(fakeFile.exists()).thenReturn(true);
@@ -151,7 +155,6 @@ class DragAndDropExecutorTest {
             when(fakeFile.getName()).thenReturn("dir-name");
             when(fileSearcher.searchFileFromDir(any(), eq("dir-name"))).thenReturn(fakeFile);
 
-            CommandResult result = new CommandResult();
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(dragAndDrop, result));
         }
 
@@ -161,9 +164,10 @@ class DragAndDropExecutorTest {
             dragAndDrop.setToLocator("file-input");
             dragAndDrop.setFileName("upload.txt");
 
+            final CommandResult result = new CommandResult();
             WebElement inputTarget = mock(WebElement.class);
             when(inputTarget.getTagName()).thenReturn("input");
-            when(uiUtil.findWebElement(any(), eq("file-input"), any(), eq(ElementChecks.FOR_POSITIONING)))
+            when(uiUtil.findWebElement(any(), eq("file-input"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
                     .thenReturn(inputTarget);
 
             File realFile = mock(File.class);
@@ -172,7 +176,6 @@ class DragAndDropExecutorTest {
             when(realFile.getAbsolutePath()).thenReturn("/tmp/upload.txt");
             when(fileSearcher.searchFileFromDir(any(), eq("upload.txt"))).thenReturn(realFile);
 
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(dragAndDrop, result));
             verify(inputTarget).sendKeys("/tmp/upload.txt");
         }
@@ -183,9 +186,10 @@ class DragAndDropExecutorTest {
             dragAndDrop.setToLocator("drop-div");
             dragAndDrop.setFileName("image.png");
 
+            final CommandResult result = new CommandResult();
             WebElement divTarget = mock(WebElement.class);
             when(divTarget.getTagName()).thenReturn("div");
-            when(uiUtil.findWebElement(any(), eq("drop-div"), any(), eq(ElementChecks.FOR_POSITIONING)))
+            when(uiUtil.findWebElement(any(), eq("drop-div"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
                     .thenReturn(divTarget);
 
             WebElement inputCreated = mock(WebElement.class);
@@ -197,7 +201,6 @@ class DragAndDropExecutorTest {
             when(realFile.getAbsolutePath()).thenReturn("/tmp/image.png");
             when(fileSearcher.searchFileFromDir(any(), eq("image.png"))).thenReturn(realFile);
 
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(dragAndDrop, result));
             verify(inputCreated).sendKeys("/tmp/image.png");
         }
@@ -208,9 +211,10 @@ class DragAndDropExecutorTest {
             dragAndDrop.setToLocator("remote-input");
             dragAndDrop.setFileName("doc.pdf");
 
+            final CommandResult result = new CommandResult();
             WebElement inputTarget = mock(org.openqa.selenium.remote.RemoteWebElement.class);
             when(inputTarget.getTagName()).thenReturn("input");
-            when(uiUtil.findWebElement(any(), eq("remote-input"), any(), eq(ElementChecks.FOR_POSITIONING)))
+            when(uiUtil.findWebElement(any(), eq("remote-input"), any(), eq(ElementChecks.FOR_POSITIONING), any()))
                     .thenReturn(inputTarget);
             doThrow(new InvalidArgumentException("invalid"))
                     .doNothing()
@@ -222,7 +226,6 @@ class DragAndDropExecutorTest {
             when(realFile.getAbsolutePath()).thenReturn("/tmp/doc.pdf");
             when(fileSearcher.searchFileFromDir(any(), eq("doc.pdf"))).thenReturn(realFile);
 
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(dragAndDrop, result));
             verify(inputTarget, times(2)).sendKeys(eq("/tmp/doc.pdf"));
         }

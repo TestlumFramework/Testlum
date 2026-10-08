@@ -41,7 +41,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         String locatorId = dropDown.getLocator();
         result.put(ResultUtil.DROP_DOWN_LOCATOR, locatorId);
         WebElement dropDownElement = uiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy(),
-                ElementChecks.FOR_INTERACTION);
+                ElementChecks.FOR_INTERACTION, result);
         if (dropDownElement.getTagName().equals("select")) {
             processSelectDropDown(dropDown, result, dropDownElement);
         } else {
@@ -135,7 +135,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         } else {
             deselectByMethod(select, method, value);
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void validateByMethodForCustomDropDown(final SelectOrDeselectBy method) {
@@ -213,7 +213,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         WebElement option = findMatchingOption(panel, value);
         clickMatOption(dependencies, option);
         uiUtil.waitForMatSelectToClose(dependencies, matSelect);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void openMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect) {

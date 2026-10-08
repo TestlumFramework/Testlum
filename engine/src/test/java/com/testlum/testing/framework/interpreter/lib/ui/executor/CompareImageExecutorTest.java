@@ -40,6 +40,8 @@ class CompareImageExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ResultUtil resultUtil;
     @Mock
     private LogUtil logUtil;
@@ -72,6 +74,7 @@ class CompareImageExecutorTest {
                 .build();
         executor = new CompareImageExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
@@ -140,7 +143,7 @@ class CompareImageExecutorTest {
             java.io.File screenshotFile = File.createTempFile("screenshot", ".png");
             screenshotFile.deleteOnExit();
             ImageIO.write(testImage, "png", screenshotFile);
-            when(uiUtil.takeScreenshot(driver)).thenReturn(screenshotFile);
+            when(screenshotUtil.takeScreenshot(driver)).thenReturn(screenshotFile);
 
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(imageComparator.compare(any(Image.class), any(BufferedImage.class),
@@ -167,20 +170,20 @@ class CompareImageExecutorTest {
 
             when(fileSearcher.searchFileFromDir(any(), eq("expected.png"))).thenReturn(tempFile);
 
+            final CommandResult result = new CommandResult();
             WebElement partElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("partLocator"), any(),
-                    eq(ElementChecks.FOR_POSITIONING))).thenReturn(partElement);
+                    eq(ElementChecks.FOR_POSITIONING), any())).thenReturn(partElement);
 
             File partScreenshot = File.createTempFile("part-screenshot", ".png");
             partScreenshot.deleteOnExit();
             ImageIO.write(testImage, "png", partScreenshot);
-            when(uiUtil.takeScreenshot(partElement)).thenReturn(partScreenshot);
+            when(screenshotUtil.takeScreenshot(partElement)).thenReturn(partScreenshot);
 
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(imageComparator.compare(any(Image.class), any(BufferedImage.class),
                     any(BufferedImage.class), anyList())).thenReturn(comparisonResult);
 
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(image, result));
         }
 
@@ -216,7 +219,7 @@ class CompareImageExecutorTest {
             File screenshotFile = File.createTempFile("screenshot", ".png");
             screenshotFile.deleteOnExit();
             ImageIO.write(testImage, "png", screenshotFile);
-            when(uiUtil.takeScreenshot(driver)).thenReturn(screenshotFile);
+            when(screenshotUtil.takeScreenshot(driver)).thenReturn(screenshotFile);
 
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(imageComparator.compare(any(Image.class), any(BufferedImage.class),
@@ -246,7 +249,7 @@ class CompareImageExecutorTest {
             File screenshotFile = File.createTempFile("screenshot", ".png");
             screenshotFile.deleteOnExit();
             ImageIO.write(testImage, "png", screenshotFile);
-            when(uiUtil.takeScreenshot(driver)).thenReturn(screenshotFile);
+            when(screenshotUtil.takeScreenshot(driver)).thenReturn(screenshotFile);
 
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(imageComparator.compare(any(Image.class), any(BufferedImage.class),

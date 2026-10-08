@@ -39,7 +39,9 @@ public class GlobalTestConfigurationProvider {
 
     @Bean
     public GlobalTestConfiguration globalTestConfiguration() {
-        return xmlParsers.forGlobalTestConfiguration().process(testResourceSettings.getConfigFile());
+        GlobalTestConfiguration globalTestConfiguration =
+                xmlParsers.forGlobalTestConfiguration().process(testResourceSettings.getConfigFile());
+        return injectionService.injectFromSystem(globalTestConfiguration);
     }
 
     @Bean

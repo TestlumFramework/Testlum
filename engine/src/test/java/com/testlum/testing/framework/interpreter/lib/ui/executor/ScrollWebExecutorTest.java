@@ -6,6 +6,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.InnerScrollScript;
 import com.testlum.testing.framework.util.JavascriptUtil;
 import com.testlum.testing.framework.util.LogUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiLogUtil;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.framework.util.UiUtil;
@@ -33,6 +34,8 @@ class ScrollWebExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ResultUtil resultUtil;
     @Mock
     private LogUtil logUtil;
@@ -58,6 +61,7 @@ class ScrollWebExecutorTest {
                 .build();
         executor = new ScrollWebExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
@@ -80,7 +84,7 @@ class ScrollWebExecutorTest {
             verify(javascriptUtil).executeJsScript(anyString(), eq(driver));
             verify(resultUtil).addScrollMetaData(eq(scroll), eq(result));
             verify(uiLogUtil).logScrollInfo(eq(scroll));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
 
         @Test
@@ -92,7 +96,7 @@ class ScrollWebExecutorTest {
 
             executor.execute(scroll, result);
 
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 

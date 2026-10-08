@@ -32,7 +32,7 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
             default -> throw new DefaultFrameworkException(
                     ExceptionMessage.NAVIGATE_NOT_SUPPORTED, navigateCommand.value());
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void navigateTo(final String path, final CommandResult result) {

@@ -50,7 +50,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
         if (dependencies.getDriver() instanceof IOSDriver iosDriver) {
             performIOSNavigation(navigateNative, iosDriver);
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void performIOSNavigation(final NavigateNative navigateNative, final IOSDriver driver) {

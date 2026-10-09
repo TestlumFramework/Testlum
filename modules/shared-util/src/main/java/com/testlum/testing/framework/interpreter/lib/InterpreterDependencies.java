@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @RequiredArgsConstructor

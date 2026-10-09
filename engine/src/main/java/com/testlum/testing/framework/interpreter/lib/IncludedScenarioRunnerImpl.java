@@ -67,9 +67,12 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
                                      final InterpreterDependencies dependencies,
                                      final CommandResult result) {
         Scenario includedScenario = xmlParsers.forScenario().process(includedFile, scenarioValidator);
+        InterpreterDependencies includedDependencies = dependencies.toBuilder()
+                .file(includedFile)
+                .build();
         List<CommandResult> subCommandsResult = result.getSubCommandsResult();
         for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
-            processEachCommand(command, dependencies, subCommandsResult);
+            processEachCommand(command, includedDependencies, subCommandsResult);
         }
         resultUtil.setExecutionResultIfSubCommandsFailed(result);
     }

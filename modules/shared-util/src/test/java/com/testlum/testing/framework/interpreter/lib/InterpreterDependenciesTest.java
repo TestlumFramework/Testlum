@@ -90,4 +90,33 @@ class InterpreterDependenciesTest {
         assertNotNull(deps.getAuthorization());
         assertEquals("Bearer token", deps.getAuthorization().getHeaders().get("Authorization"));
     }
+
+    @Test
+    void toBuilderCopiesFieldsWithNewFile() {
+        final ApplicationContext ctx = mock(ApplicationContext.class);
+        final ScenarioContext scenarioCtx = new ScenarioContext(new HashMap<>());
+        final AtomicInteger pos = new AtomicInteger(5);
+        final InterpreterDependencies.Authorization auth =
+                new InterpreterDependencies.Authorization(Map.of("Auth", "token"));
+        final InterpreterDependencies original = InterpreterDependencies.builder()
+                .context(ctx)
+                .file(new File("main.xml"))
+                .scenarioContext(scenarioCtx)
+                .position(pos)
+                .environment("test")
+                .authorization(auth)
+                .build();
+
+        final File includedFile = new File("included.xml");
+        final InterpreterDependencies copy = original.toBuilder()
+                .file(includedFile)
+                .build();
+
+        assertEquals(includedFile, copy.getFile());
+        assertEquals(ctx, copy.getContext());
+        assertEquals(scenarioCtx, copy.getScenarioContext());
+        assertEquals(pos, copy.getPosition());
+        assertEquals("test", copy.getEnvironment());
+        assertEquals(auth, copy.getAuthorization());
+    }
 }

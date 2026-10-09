@@ -147,7 +147,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private List<String> getQueryParams(final SendgridInfo sendgridInfo) {
         return sendgridInfo.getQueryParam().stream()
-                .map(queryParam -> queryParam.getKey() + "=" + queryParam.getValue())
+                .map(queryParam -> queryParam.getKey() + DelimiterConstant.EQUALS_MARK + queryParam.getValue())
                 .toList();
     }
 
@@ -159,8 +159,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
         if (!queryParams.isEmpty()) {
-            log.info(QUERY_PARAMS_LOG, String.join("\n", queryParams)
-                    .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
+            log.info(QUERY_PARAMS_LOG, String.join(LogFormat.contentFormat(), queryParams));
         }
     }
 
@@ -181,7 +180,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         result.put(ENDPOINT, endpoint);
         result.put(HTTP_METHOD, httpMethodName);
         if (!queryParams.isEmpty()) {
-            result.put(QUERY_PARAMS, String.join("&", queryParams));
+            result.put(QUERY_PARAMS, String.join(DelimiterConstant.AMPERSAND, queryParams));
         }
         if (!headers.isEmpty()) {
             addHeadersMetaData(headers, result);

@@ -27,4 +27,5 @@ public class DelimiterConstant {
     public static final String SPACE_WITH_PLUS = " +";
     public static final String X = "x";
     public static final String DOLLAR_SIGN = "$";
+    public static final String AMPERSAND = "&";
 }

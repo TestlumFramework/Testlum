@@ -29,5 +29,6 @@ class DelimiterConstantTest {
         assertEquals(" +", DelimiterConstant.SPACE_WITH_PLUS);
         assertEquals("x", DelimiterConstant.X);
         assertEquals("$", DelimiterConstant.DOLLAR_SIGN);
+        assertEquals("&", DelimiterConstant.AMPERSAND);
     }
 }

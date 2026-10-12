@@ -1,12 +1,15 @@
 package com.testlum.testing.framework.util;
 
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.model.scenario.Include;
+import com.testlum.testing.model.scenario.Wait;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,6 +36,24 @@ class ResultUtilTest {
             final CommandResult result = resultUtil.newCommandResultInstance(5);
             assertEquals(5, result.getId());
             assertTrue(result.isSuccess());
+        }
+
+        @Test
+        void incrementsPositionForRegularCommand() {
+            final AtomicInteger position = new AtomicInteger(3);
+            final CommandResult result = resultUtil.newCommandResultInstance(position, new Wait());
+            assertEquals(4, result.getId());
+            assertEquals(4, position.get());
+            assertEquals("Wait", result.getCommandKey());
+        }
+
+        @Test
+        void doesNotIncrementPositionForInclude() {
+            final AtomicInteger position = new AtomicInteger(3);
+            final CommandResult result = resultUtil.newCommandResultInstance(position, new Include());
+            assertEquals(0, result.getId());
+            assertEquals(3, position.get());
+            assertEquals("Include", result.getCommandKey());
         }
     }
 

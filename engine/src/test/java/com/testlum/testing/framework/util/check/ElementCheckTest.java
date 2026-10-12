@@ -10,16 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ElementCheckTest {
@@ -79,11 +77,77 @@ class ElementCheckTest {
             assertEquals(LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE, ex.getMessage());
         }
 
+        @ParameterizedTest
+        @ValueSource(strings = {"option", "OPTION", "optgroup"})
+        void passesForCollapsedOptionWhenParentSelectIsVisible(final String tagName) {
+            WebElement option = mock(WebElement.class);
+            when(option.getTagName()).thenReturn(tagName);
+            WebElement select = visibleElement();
+            when(option.findElements(any(By.class))).thenReturn(List.of(select));
+
+            assertDoesNotThrow(() -> ElementCheck.VISIBILITY.check(
+                    deps(mock(WebDriver.class), UiType.WEB), option));
+            verify(option, never()).isDisplayed();
+            verify(option, never()).getSize();
+        }
+
         @Test
-        void appliesToEveryUiType() {
-            for (UiType uiType : UiType.values()) {
-                assertTrue(ElementCheck.VISIBILITY.supports(uiType));
-            }
+        void failsForOptionWhenParentSelectIsNotDisplayed() {
+            WebElement option = mock(WebElement.class);
+            when(option.getTagName()).thenReturn("option");
+            WebElement select = mock(WebElement.class);
+            when(select.isDisplayed()).thenReturn(false);
+            when(option.findElements(any(By.class))).thenReturn(List.of(select));
+
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> ElementCheck.VISIBILITY.check(deps(mock(WebDriver.class), UiType.WEB), option));
+            assertEquals(String.format(LogMessage.UI_OPTION_PARENT_SELECT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE,
+                    LogMessage.UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE), ex.getMessage());
+        }
+
+        @Test
+        void failsForOptionWhenParentSelectHasZeroSize() {
+            WebElement option = mock(WebElement.class);
+            when(option.getTagName()).thenReturn("option");
+            WebElement select = mock(WebElement.class);
+            when(select.isDisplayed()).thenReturn(true);
+            when(select.getSize()).thenReturn(new Dimension(1, 0));
+            when(option.findElements(any(By.class))).thenReturn(List.of(select));
+
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> ElementCheck.VISIBILITY.check(deps(mock(WebDriver.class), UiType.WEB), option));
+            assertEquals(String.format(LogMessage.UI_OPTION_PARENT_SELECT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE,
+                    LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE), ex.getMessage());
+        }
+
+        @Test
+        void checksOptionItselfWhenThereIsNoParentSelect() {
+            WebElement option = mock(WebElement.class);
+            when(option.getTagName()).thenReturn("option");
+            when(option.findElements(any(By.class))).thenReturn(List.of());
+            when(option.isDisplayed()).thenReturn(true);
+            when(option.getSize()).thenReturn(new Dimension(0, 0));
+
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> ElementCheck.VISIBILITY.check(deps(mock(WebDriver.class), UiType.WEB), option));
+            assertEquals(LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE, ex.getMessage());
+        }
+
+        @Test
+        void doesNotLookForParentSelectForOtherTags() {
+            WebElement element = visibleElement();
+            when(element.getTagName()).thenReturn("input");
+
+            assertDoesNotThrow(() -> ElementCheck.VISIBILITY.check(
+                    deps(mock(WebDriver.class), UiType.WEB), element));
+            verify(element, never()).findElements(any(By.class));
+        }
+
+        @Test
+        void isNotApplicableToNative() {
+            assertFalse(ElementCheck.VISIBILITY.supports(UiType.NATIVE));
+            assertTrue(ElementCheck.VISIBILITY.supports(UiType.WEB));
+            assertTrue(ElementCheck.VISIBILITY.supports(UiType.MOBILE_BROWSER));
         }
     }
 

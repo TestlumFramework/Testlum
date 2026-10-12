@@ -4,21 +4,32 @@ import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.interpreter.lib.ui.UiType;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 public enum ElementCheck {
 
     VISIBILITY {
         @Override
         public void check(final ExecutorDependencies dependencies, final WebElement element) {
-            if (!element.isDisplayed()) {
-                throw new DefaultFrameworkException(LogMessage.UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE);
+            // Options of a collapsed native <select> are not rendered and report a zero size,
+            // so their visibility is the visibility of the enclosing <select>
+            Optional<WebElement> parentSelect = findParentSelect(element);
+            if (parentSelect.isEmpty()) {
+                checkVisible(element);
+                return;
             }
-            Dimension size = element.getSize();
-            if (size.getWidth() == 0 || size.getHeight() == 0) {
-                throw new DefaultFrameworkException(LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE);
+            try {
+                checkVisible(parentSelect.get());
+            } catch (DefaultFrameworkException e) {
+                throw new DefaultFrameworkException(String.format(
+                        LogMessage.UI_OPTION_PARENT_SELECT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE, e.getMessage()));
             }
         }
     },
@@ -71,6 +82,27 @@ public enum ElementCheck {
             + "e.scrollIntoView({block: 'center'});"
             + "var r = e.getBoundingClientRect();"
             + "return e.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));";
+
+    private static final Set<String> SELECT_CHILD_TAGS = Set.of("option", "optgroup");
+    private static final By PARENT_SELECT = By.xpath("./ancestor::select[1]");
+
+    private static Optional<WebElement> findParentSelect(final WebElement element) {
+        String tagName = element.getTagName();
+        if (!SELECT_CHILD_TAGS.contains(tagName.toLowerCase(Locale.ROOT))) {
+            return Optional.empty();
+        }
+        return element.findElements(PARENT_SELECT).stream().findFirst();
+    }
+
+    private static void checkVisible(final WebElement element) {
+        if (!element.isDisplayed()) {
+            throw new DefaultFrameworkException(LogMessage.UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE);
+        }
+        Dimension size = element.getSize();
+        if (size.getWidth() == 0 || size.getHeight() == 0) {
+            throw new DefaultFrameworkException(LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE);
+        }
+    }
 
     private static boolean isFlagSet(final WebElement element, final String attribute) {
         String value = element.getAttribute(attribute);

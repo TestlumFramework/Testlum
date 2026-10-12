@@ -80,10 +80,10 @@ class ElementCheckTest {
         }
 
         @Test
-        void appliesToEveryUiType() {
-            for (UiType uiType : UiType.values()) {
-                assertTrue(ElementCheck.VISIBILITY.supports(uiType));
-            }
+        void isNotApplicableToNative() {
+            assertFalse(ElementCheck.VISIBILITY.supports(UiType.NATIVE));
+            assertTrue(ElementCheck.VISIBILITY.supports(UiType.WEB));
+            assertTrue(ElementCheck.VISIBILITY.supports(UiType.MOBILE_BROWSER));
         }
     }
 

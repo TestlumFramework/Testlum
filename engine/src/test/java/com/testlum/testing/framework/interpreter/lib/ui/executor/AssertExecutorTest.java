@@ -409,7 +409,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.NONE))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(true);
 
             CommandResult result = new CommandResult();
@@ -430,7 +430,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.NONE))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(false);
 
             CommandResult result = new CommandResult();
@@ -451,7 +451,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.NONE))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(false);
 
             CommandResult result = new CommandResult();
@@ -472,7 +472,7 @@ class AssertExecutorTest {
 
             WebElement mockElement = mock(WebElement.class);
             when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("checkbox"), any(),
-                    eq(ElementChecks.FOR_READING))).thenReturn(mockElement);
+                    eq(ElementChecks.NONE))).thenReturn(mockElement);
             when(mockElement.isSelected()).thenReturn(true);
 
             CommandResult result = new CommandResult();

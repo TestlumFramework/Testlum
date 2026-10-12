@@ -230,6 +230,8 @@ public final class LogMessage {
             "Element is not visible: it may have 'display:none' or 'visibility:hidden' applied";
     public static final String UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE =
             "Element has zero dimensions and cannot be interacted with";
+    public static final String UI_OPTION_PARENT_SELECT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE =
+            "Element is an <option> and its parent <select> is not visible: %s";
     public static final String XSD_SCHEMA_WARNING_LOG = "Schema warning in {} at line {}: {}";
 
     public static final String UNRESOLVED_INCLUDE_PATH_LOG = LogFormat.withYellow(

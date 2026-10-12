@@ -13,8 +13,8 @@ import com.testlum.testing.framework.interpreter.lib.ui.MockDriver;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.report.ScenarioResult;
 import com.testlum.testing.framework.util.*;
-import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.AbstractBrowser;
+import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.Safari;
 import com.testlum.testing.model.scenario.AbstractCommand;
 import com.testlum.testing.model.scenario.Scenario;
@@ -31,11 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.testlum.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
-import static com.testlum.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
-import static com.testlum.testing.framework.constant.ExceptionMessage.MOBILEBROWSER_DRIVER_NOT_INIT;
-import static com.testlum.testing.framework.constant.ExceptionMessage.NATIVE_DRIVER_NOT_INIT;
-import static com.testlum.testing.framework.constant.ExceptionMessage.WEB_DRIVER_NOT_INIT;
+import static com.testlum.testing.framework.constant.ExceptionMessage.*;
 import static com.testlum.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
 import static java.util.Objects.nonNull;
 
@@ -193,7 +189,7 @@ public class ScenarioRunner {
     }
 
     private CommandResult prepareCommandResult(final AbstractCommand command) {
-        return resultUtil.newCommandResultInstance(idGenerator.incrementAndGet(), command);
+        return this.resultUtil.newCommandResultInstance(this.idGenerator, command);
     }
 
     @SuppressWarnings("unchecked")

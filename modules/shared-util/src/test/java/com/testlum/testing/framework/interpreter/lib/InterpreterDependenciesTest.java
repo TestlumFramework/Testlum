@@ -119,4 +119,38 @@ class InterpreterDependenciesTest {
         assertEquals("test", copy.getEnvironment());
         assertEquals(auth, copy.getAuthorization());
     }
+
+    @Test
+    void getRootFileReturnsFileWhenRootFileIsNull() {
+        final File file = new File("main.xml");
+        final InterpreterDependencies deps = InterpreterDependencies.builder()
+                .file(file)
+                .build();
+        assertEquals(file, deps.getRootFile());
+    }
+
+    @Test
+    void getRootFileReturnsRootFileWhenSet() {
+        final File file = new File("included.xml");
+        final File rootFile = new File("main.xml");
+        final InterpreterDependencies deps = InterpreterDependencies.builder()
+                .file(file)
+                .rootFile(rootFile)
+                .build();
+        assertEquals(rootFile, deps.getRootFile());
+    }
+
+    @Test
+    void getPrefixReturnsEmptyStringWhenNull() {
+        final InterpreterDependencies deps = InterpreterDependencies.builder().build();
+        assertEquals("", deps.getPrefix());
+    }
+
+    @Test
+    void getPrefixReturnsPrefixWhenSet() {
+        final InterpreterDependencies deps = InterpreterDependencies.builder()
+                .prefix("included_sub")
+                .build();
+        assertEquals("included_sub", deps.getPrefix());
+    }
 }

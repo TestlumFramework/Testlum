@@ -50,6 +50,25 @@ class FileRemoverTest {
         }
 
         @Test
+        void deletesIncludedActualImageFiles() throws IOException {
+            File actualImage = Files.createFile(
+                    tempDir.resolve("included_login_" + TestResourceSettings.ACTUAL_IMAGE_PREFIX + "test.png"))
+                    .toFile();
+            assertTrue(actualImage.exists());
+            fileRemover.clearActualFiles(tempDir.toFile());
+            assertFalse(actualImage.exists());
+        }
+
+        @Test
+        void deletesIncludedActualFiles() throws IOException {
+            File actual = Files.createFile(
+                    tempDir.resolve("included_login_action_1" + TestResourceSettings.ACTUAL_FILENAME)).toFile();
+            assertTrue(actual.exists());
+            fileRemover.clearActualFiles(tempDir.toFile());
+            assertFalse(actual.exists());
+        }
+
+        @Test
         void doesNotDeleteNonMatchingFiles() throws IOException {
             File regular = Files.createFile(tempDir.resolve("regular.txt")).toFile();
             assertTrue(regular.exists());

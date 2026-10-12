@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -68,7 +69,7 @@ class RepeatCommandsRunnerImplTest {
             final InterpreterDependencies dependencies = mock(InterpreterDependencies.class);
             final AtomicInteger position = new AtomicInteger(0);
             when(dependencies.getPosition()).thenReturn(position);
-            when(resultUtil.newCommandResultInstance(anyInt(), any(AbstractCommand.class)))
+            when(resultUtil.newCommandResultInstance(any(AtomicInteger.class), any(AbstractCommand.class)))
                     .thenReturn(stepResult);
 
             @SuppressWarnings("unchecked")
@@ -85,7 +86,7 @@ class RepeatCommandsRunnerImplTest {
             runner.runCommands(commands, dependencies, result, subResults);
 
             verify(resultUtil, times(2))
-                    .newCommandResultInstance(anyInt(), any(AbstractCommand.class));
+                    .newCommandResultInstance(any(AtomicInteger.class), any(AbstractCommand.class));
             verify(resultUtil).setExecutionResultIfSubCommandsFailed(result);
             assertEquals(2, subResults.size());
         }
@@ -99,7 +100,7 @@ class RepeatCommandsRunnerImplTest {
             final InterpreterDependencies dependencies = mock(InterpreterDependencies.class);
             final AtomicInteger position = new AtomicInteger(0);
             when(dependencies.getPosition()).thenReturn(position);
-            when(resultUtil.newCommandResultInstance(anyInt(), any(AbstractCommand.class)))
+            when(resultUtil.newCommandResultInstance(any(AtomicInteger.class), any(AbstractCommand.class)))
                     .thenReturn(stepResult);
 
             @SuppressWarnings("unchecked")
@@ -131,7 +132,7 @@ class RepeatCommandsRunnerImplTest {
             final InterpreterDependencies dependencies = mock(InterpreterDependencies.class);
             final AtomicInteger position = new AtomicInteger(0);
             when(dependencies.getPosition()).thenReturn(position);
-            when(resultUtil.newCommandResultInstance(anyInt(), any(AbstractCommand.class)))
+            when(resultUtil.newCommandResultInstance(any(AtomicInteger.class), any(AbstractCommand.class)))
                     .thenReturn(stepResult);
 
             @SuppressWarnings("unchecked")
@@ -151,7 +152,7 @@ class RepeatCommandsRunnerImplTest {
         }
 
         @Test
-        void positionIsIncremented() {
+        void sharedPositionIsPassedForEachCommand() {
             final AbstractCommand cmd1 = mock(AbstractCommand.class);
             final AbstractCommand cmd2 = mock(AbstractCommand.class);
             final List<AbstractCommand> commands = List.of(cmd1, cmd2);
@@ -160,7 +161,7 @@ class RepeatCommandsRunnerImplTest {
             final InterpreterDependencies dependencies = mock(InterpreterDependencies.class);
             final AtomicInteger position = new AtomicInteger(0);
             when(dependencies.getPosition()).thenReturn(position);
-            when(resultUtil.newCommandResultInstance(anyInt(), any(AbstractCommand.class)))
+            when(resultUtil.newCommandResultInstance(any(AtomicInteger.class), any(AbstractCommand.class)))
                     .thenReturn(stepResult);
 
             @SuppressWarnings("unchecked")
@@ -176,8 +177,8 @@ class RepeatCommandsRunnerImplTest {
             final List<CommandResult> subResults = new ArrayList<>();
             runner.runCommands(commands, dependencies, result, subResults);
 
-            verify(resultUtil).newCommandResultInstance(eq(1), eq(cmd1));
-            verify(resultUtil).newCommandResultInstance(eq(2), eq(cmd2));
+            verify(resultUtil).newCommandResultInstance(same(position), eq(cmd1));
+            verify(resultUtil).newCommandResultInstance(same(position), eq(cmd2));
         }
     }
 }

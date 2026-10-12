@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Component
@@ -123,6 +124,11 @@ public class ResultUtil {
             commandResult.setCommandKey(command[0].getClass().getSimpleName());
         }
         return commandResult;
+    }
+
+    public CommandResult newCommandResultInstance(final AtomicInteger position, final AbstractCommand command) {
+        int number = command instanceof Include ? 0 : position.incrementAndGet();
+        return newCommandResultInstance(number, command);
     }
 
     public CommandResult newUiCommandResultInstance(final int number, final AbstractCommand command) {

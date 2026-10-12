@@ -67,14 +67,26 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
                                      final InterpreterDependencies dependencies,
                                      final CommandResult result) {
         Scenario includedScenario = xmlParsers.forScenario().process(includedFile, scenarioValidator);
-        InterpreterDependencies includedDependencies = dependencies.toBuilder()
-                .file(includedFile)
-                .build();
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
-            processEachCommand(command, includedDependencies, subCommandsResult);
+        InterpreterDependencies includedDeps = buildIncludedDependencies(includedFile, dependencies);
+        try {
+            List<CommandResult> subCommandsResult = result.getSubCommandsResult();
+            for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
+                processEachCommand(command, includedDeps, subCommandsResult);
+            }
+            resultUtil.setExecutionResultIfSubCommandsFailed(result);
+        } finally {
+            dependencies.setAuthorization(includedDeps.getAuthorization());
         }
-        resultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private InterpreterDependencies buildIncludedDependencies(final File includedFile,
+                                                              final InterpreterDependencies dependencies) {
+        String prefix = "included_" + includedFile.getParentFile().getName();
+        return dependencies.toBuilder()
+                .file(includedFile)
+                .rootFile(dependencies.getRootFile())
+                .prefix(prefix)
+                .build();
     }
 
     private void popStack(final Deque<File> stack) {

@@ -26,6 +26,8 @@ public class CompareBuilder {
     private static final String FILENAME_FORMAT_TO_SAVE = "action_%s_actual.json";
 
     private final File scenarioFile;
+    private final File rootScenarioFile;
+    private final String prefix;
     private final int position;
     private final JacksonService jacksonService;
     private final StringPrettifier stringPrettifier;
@@ -38,8 +40,19 @@ public class CompareBuilder {
                           final int position,
                           final JacksonService jacksonService,
                           final StringPrettifier stringPrettifier) {
+        this(scenarioFile, scenarioFile, position, null, jacksonService, stringPrettifier);
+    }
+
+    public CompareBuilder(final File scenarioFile,
+                          final File rootScenarioFile,
+                          final int position,
+                          final String prefix,
+                          final JacksonService jacksonService,
+                          final StringPrettifier stringPrettifier) {
         this.scenarioFile = scenarioFile;
+        this.rootScenarioFile = rootScenarioFile != null ? rootScenarioFile : scenarioFile;
         this.position = position;
+        this.prefix = prefix;
         this.isStrict = true;
         this.jacksonService = jacksonService;
         this.stringPrettifier = stringPrettifier;
@@ -104,7 +117,10 @@ public class CompareBuilder {
 
     private void save(final String actual) {
         try {
-            File target = new File(scenarioFile.getParent(), String.format(FILENAME_FORMAT_TO_SAVE, position));
+            String fileName = StringUtils.isNotBlank(prefix)
+                    ? String.format("%s_action_%s_actual.json", prefix, position)
+                    : String.format(FILENAME_FORMAT_TO_SAVE, position);
+            File target = new File(rootScenarioFile.getParent(), fileName);
             FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());

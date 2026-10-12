@@ -95,14 +95,18 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected abstract void acceptImpl(T o, CommandResult result);
 
     public CompareBuilder newCompare() {
-        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get(),
+        return new CompareBuilder(dependencies.getFile(), dependencies.getRootFile(),
+                dependencies.getPosition().get(), dependencies.getPrefix(),
                 jacksonService, stringPrettifier);
     }
 
     public void save(final String actual) {
         try {
-            File target = new File(dependencies.getFile().getParent(),
-                    String.format(FILENAME_TO_SAVE, dependencies.getPosition().get()));
+            String prefix = dependencies.getPrefix();
+            String fileName = StringUtils.isNotBlank(prefix)
+                    ? String.format("%s_action_%s_actual.json", prefix, dependencies.getPosition().get())
+                    : String.format(FILENAME_TO_SAVE, dependencies.getPosition().get());
+            File target = new File(dependencies.getRootFile().getParent(), fileName);
             FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());

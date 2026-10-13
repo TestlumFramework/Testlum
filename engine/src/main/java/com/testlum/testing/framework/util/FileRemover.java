@@ -65,7 +65,8 @@ public final class FileRemover {
             }
             String fileName = path.toString();
             return fileName.startsWith(TestResourceSettings.ACTUAL_IMAGE_PREFIX)
-                    || fileName.startsWith("included_") && fileName.contains(TestResourceSettings.ACTUAL_IMAGE_PREFIX);
+                    || fileName.startsWith(TestResourceSettings.INCLUDED_PREFIX)
+                    && fileName.contains(TestResourceSettings.ACTUAL_IMAGE_PREFIX);
         }
 
         private boolean isFileWithSuffix(final Path file, final String suffix) {

@@ -8,6 +8,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.report.CommandResultHelper;
 import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
+import com.testlum.testing.framework.util.PrefixUtil;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.scenario.AbstractCommand;
@@ -102,10 +103,8 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     public void save(final String actual) {
         try {
-            String prefix = dependencies.getPrefix();
-            String fileName = StringUtils.isNotBlank(prefix)
-                    ? String.format("%s_action_%s_actual.json", prefix, dependencies.getPosition().get())
-                    : String.format(FILENAME_TO_SAVE, dependencies.getPosition().get());
+            String fileName = PrefixUtil.applyPrefix(dependencies.getPrefix(),
+                    String.format(FILENAME_TO_SAVE, dependencies.getPosition().get()));
             File target = new File(dependencies.getRootFile().getParent(), fileName);
             FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {

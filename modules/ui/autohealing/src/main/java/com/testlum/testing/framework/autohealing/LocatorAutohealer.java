@@ -20,8 +20,8 @@ import com.testlum.testing.model.pages.Xpath;
 import com.testlum.testing.model.scenario.LocatorStrategy;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import com.testlum.testing.framework.util.PrefixUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.openqa.selenium.By;
@@ -317,9 +317,8 @@ public class LocatorAutohealer implements AutoHealer {
             return new File(locatorData.getFile().getParentFile(),
                     PATCH_FILE_PREFIX + locatorData.getLocator().getLocatorId() + PATCH_FILE_EXTENSION);
         }
-        String prefix = dependencies.getPrefix();
-        String prefixPart = StringUtils.isNotBlank(prefix) ? prefix + "_" : "";
-        String fileName = prefixPart + PATCH_FILE_PREFIX + dependencies.getPosition().get() + PATCH_FILE_EXTENSION;
+        String baseName = PATCH_FILE_PREFIX + dependencies.getPosition().get() + PATCH_FILE_EXTENSION;
+        String fileName = PrefixUtil.applyPrefix(dependencies.getPrefix(), baseName);
         return new File(dependencies.getRootFile().getParentFile(), fileName);
     }
 

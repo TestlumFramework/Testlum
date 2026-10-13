@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
 @Component
@@ -81,11 +82,12 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
 
     private InterpreterDependencies buildIncludedDependencies(final File includedFile,
                                                               final InterpreterDependencies dependencies) {
-        String prefix = "included_" + includedFile.getParentFile().getName();
+        String prefix = TestResourceSettings.INCLUDED_PREFIX + includedFile.getParentFile().getName();
         return dependencies.toBuilder()
                 .file(includedFile)
                 .rootFile(dependencies.getRootFile())
                 .prefix(prefix)
+                .position(new AtomicInteger(0))
                 .build();
     }
 

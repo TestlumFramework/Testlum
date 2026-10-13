@@ -10,7 +10,6 @@ import com.testlum.testing.model.scenario.ByArea;
 import com.testlum.testing.model.scenario.Exclude;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -125,10 +124,10 @@ public class ImageComparisonUtil {
     }
 
     private String getImageNameToSave(final String expectedImageFullName, final String prefix) {
-        String prefixPart = StringUtils.isNotBlank(prefix) ? prefix + "_" : "";
-        return String.format("%s%s%s.%s", prefixPart, TestResourceSettings.ACTUAL_IMAGE_PREFIX,
+        String baseName = String.format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
+        return PrefixUtil.applyPrefix(prefix, baseName);
     }
 
     public int getStatusBarHeight(final WebDriver driver) {

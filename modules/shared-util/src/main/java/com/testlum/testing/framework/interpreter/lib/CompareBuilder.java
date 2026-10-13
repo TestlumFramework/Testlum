@@ -5,6 +5,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.exception.ComparisonException;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.util.JacksonService;
+import com.testlum.testing.framework.util.PrefixUtil;
 import com.testlum.testing.framework.util.StringPrettifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -117,9 +118,7 @@ public class CompareBuilder {
 
     private void save(final String actual) {
         try {
-            String fileName = StringUtils.isNotBlank(prefix)
-                    ? String.format("%s_action_%s_actual.json", prefix, position)
-                    : String.format(FILENAME_FORMAT_TO_SAVE, position);
+            String fileName = PrefixUtil.applyPrefix(prefix, String.format(FILENAME_FORMAT_TO_SAVE, position));
             File target = new File(rootScenarioFile.getParent(), fileName);
             FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {

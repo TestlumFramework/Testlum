@@ -135,7 +135,8 @@ class IncludedScenarioRunnerImplTest {
             assertEquals(mainFile, capturedDeps.getRootFile());
             assertEquals("included_included_folder", capturedDeps.getPrefix());
             assertEquals(mainDeps.getContext(), capturedDeps.getContext());
-            assertEquals(mainDeps.getPosition(), capturedDeps.getPosition());
+            assertEquals(1, capturedDeps.getPosition().get(),
+                    "Included scenario must use its own isolated step position starting from 1");
             assertEquals(mainDeps.getScenarioContext(), capturedDeps.getScenarioContext());
             verify(resultUtil).setExecutionResultIfSubCommandsFailed(result);
         }

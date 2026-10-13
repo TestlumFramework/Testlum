@@ -15,6 +15,7 @@ public class TestResourceSettings {
     public static final String INTEGRATION_CONFIG_FILENAME = "integration.xml";
     public static final String UI_CONFIG_FILENAME = "ui.xml";
     public static final String ACTUAL_FILENAME = "actual.json";
+    public static final String INCLUDED_PREFIX = "included_";
     public static final String ACTUAL_IMAGE_PREFIX = "actual_image_compared_to_";
     public static final String PATCH_FILE_PREFIX = "patch_";
     public static final String SCREENSHOT_FILENAME = "screenshot.jpg";

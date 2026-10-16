@@ -149,7 +149,7 @@ class CompareImageExecutorTest {
             CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(image, result));
             verify(imageComparisonUtil).processImageComparisonResult(eq(comparisonResult),
-                    eq("expected.png"), eq(false), any(), eq(result));
+                    eq("expected.png"), eq(false), any(), any(), eq(result));
         }
 
         @Test

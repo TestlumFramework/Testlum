@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
 @Component
@@ -67,11 +68,27 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
                                      final InterpreterDependencies dependencies,
                                      final CommandResult result) {
         Scenario includedScenario = xmlParsers.forScenario().process(includedFile, scenarioValidator);
-        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
-            processEachCommand(command, dependencies, subCommandsResult);
+        InterpreterDependencies includedDeps = buildIncludedDependencies(includedFile, dependencies);
+        try {
+            List<CommandResult> subCommandsResult = result.getSubCommandsResult();
+            for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
+                processEachCommand(command, includedDeps, subCommandsResult);
+            }
+            resultUtil.setExecutionResultIfSubCommandsFailed(result);
+        } finally {
+            dependencies.setAuthorization(includedDeps.getAuthorization());
         }
-        resultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private InterpreterDependencies buildIncludedDependencies(final File includedFile,
+                                                              final InterpreterDependencies dependencies) {
+        String prefix = TestResourceSettings.INCLUDED_PREFIX + includedFile.getParentFile().getName();
+        return dependencies.toBuilder()
+                .file(includedFile)
+                .rootFile(dependencies.getRootFile())
+                .prefix(prefix)
+                .position(new AtomicInteger(0))
+                .build();
     }
 
     private void popStack(final Deque<File> stack) {

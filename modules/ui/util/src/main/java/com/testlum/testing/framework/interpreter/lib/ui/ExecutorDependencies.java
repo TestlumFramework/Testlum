@@ -15,9 +15,19 @@ public class ExecutorDependencies {
 
     private final ApplicationContext context;
     private final File file;
+    private final File rootFile;
+    private final String prefix;
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;
     private final WebDriver driver;
     private final UiType uiType;
     private final String environment;
+
+    public File getRootFile() {
+        return rootFile != null ? rootFile : file;
+    }
+
+    public String getPrefix() {
+        return prefix != null ? prefix : "";
+    }
 }

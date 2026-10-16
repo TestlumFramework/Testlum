@@ -20,6 +20,7 @@ import com.testlum.testing.model.pages.Xpath;
 import com.testlum.testing.model.scenario.LocatorStrategy;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import com.testlum.testing.framework.util.PrefixUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.apache.commons.text.similarity.LevenshteinDistance;
@@ -304,19 +305,21 @@ public class LocatorAutohealer implements AutoHealer {
                                                           final HealedLocators healedLocators,
                                                           final boolean isLocatorDefinedInLocatorFile,
                                                           final LocatorData locatorData) {
-        File directory;
-        String fileName;
-        if (isLocatorDefinedInLocatorFile) {
-            directory = locatorData.getFile().getParentFile();
-            fileName = PATCH_FILE_PREFIX + locatorData.getLocator().getLocatorId() + PATCH_FILE_EXTENSION;
-        } else {
-            directory = dependencies.getFile().getParentFile();
-            int position = dependencies.getPosition().get();
-            fileName = PATCH_FILE_PREFIX + position + PATCH_FILE_EXTENSION;
-        }
-        File patch = new File(directory, fileName);
+        File patch = resolvePatchFile(dependencies, isLocatorDefinedInLocatorFile, locatorData);
         writeHealedLocatorsToFile(healedLocators, patch);
         return patch;
+    }
+
+    private File resolvePatchFile(final ExecutorDependencies dependencies,
+                                  final boolean isLocatorDefinedInLocatorFile,
+                                  final LocatorData locatorData) {
+        if (isLocatorDefinedInLocatorFile) {
+            return new File(locatorData.getFile().getParentFile(),
+                    PATCH_FILE_PREFIX + locatorData.getLocator().getLocatorId() + PATCH_FILE_EXTENSION);
+        }
+        String baseName = PATCH_FILE_PREFIX + dependencies.getPosition().get() + PATCH_FILE_EXTENSION;
+        String fileName = PrefixUtil.applyPrefix(dependencies.getPrefix(), baseName);
+        return new File(dependencies.getRootFile().getParentFile(), fileName);
     }
 
     private void writeHealedLocatorsToFile(final HealedLocators healedLocators, final File patch) {

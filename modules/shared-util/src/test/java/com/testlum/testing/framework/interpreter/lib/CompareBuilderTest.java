@@ -88,6 +88,24 @@ class CompareBuilderTest {
             final File saved = new File(tempDir, "action_1_actual.json");
             assertTrue(saved.exists());
         }
+
+        @Test
+        void mismatchWithPrefixSavesActualToRootFolderWithPrefix() {
+            final File rootDir = new File(tempDir, "root");
+            rootDir.mkdir();
+            final File rootFile = new File(rootDir, "main.xml");
+            final File includedFile = new File(tempDir, "included.xml");
+            final CompareBuilder customBuilder = new CompareBuilder(includedFile, rootFile, 2, "included_sub",
+                    jacksonService, stringPrettifier);
+            customBuilder.withExpected("{\"a\":1}").withActual("{\"a\":2}");
+            try {
+                customBuilder.exec();
+            } catch (ComparisonException ignored) {
+                // expected
+            }
+            final File saved = new File(rootDir, "included_sub_action_2_actual.json");
+            assertTrue(saved.exists());
+        }
     }
 
     @Nested

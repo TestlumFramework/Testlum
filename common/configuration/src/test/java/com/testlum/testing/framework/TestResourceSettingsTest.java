@@ -95,6 +95,11 @@ class TestResourceSettingsTest {
         }
 
         @Test
+        void includedPrefixIsCorrect() {
+            assertEquals("included_", TestResourceSettings.INCLUDED_PREFIX);
+        }
+
+        @Test
         void screenshotFilenameIsCorrect() {
             assertEquals("screenshot.jpg", TestResourceSettings.SCREENSHOT_FILENAME);
         }

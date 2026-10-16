@@ -197,6 +197,27 @@ abstract class AbstractInterpreterTest {
             assertEquals("content",
                     org.apache.commons.io.FileUtils.readFileToString(saved, StandardCharsets.UTF_8));
         }
+
+        @Test
+        void savesFileWithPrefixAndRootFolder() throws IOException {
+            when(stringPrettifier.prettifyToSave(anyString())).thenAnswer(inv -> inv.getArgument(0));
+            File rootDir = new File(tempDir, "root");
+            rootDir.mkdir();
+            File rootFile = new File(rootDir, "main.xml");
+            InterpreterDependencies customDeps = dependencies.toBuilder()
+                    .rootFile(rootFile)
+                    .prefix("included_sub")
+                    .build();
+            TestInterpreter customInterpreter = new TestInterpreter(customDeps);
+            customDeps.getPosition().set(2);
+
+            customInterpreter.save("content");
+
+            File saved = new File(rootDir, "included_sub_action_2_actual.json");
+            assertTrue(saved.exists());
+            assertEquals("content",
+                    org.apache.commons.io.FileUtils.readFileToString(saved, StandardCharsets.UTF_8));
+        }
     }
 
     @Nested

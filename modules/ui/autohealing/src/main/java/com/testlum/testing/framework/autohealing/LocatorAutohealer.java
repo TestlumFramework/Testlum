@@ -343,7 +343,7 @@ public class LocatorAutohealer implements AutoHealer {
     }
 
     private void generateText(final WebElement healedElement, final HealedLocators healedLocators) {
-        String text = normalize(healedElement.getText());
+        String text = cleanText(healedElement.getText());
         if (!text.isEmpty()) {
             healedLocators.setText(text);
         }
@@ -502,11 +502,15 @@ public class LocatorAutohealer implements AutoHealer {
     }
     // CHECKSTYLE:ON
 
-    private String normalize(final String value) {
+    private String cleanText(final String value) {
         if (value == null) {
             return "";
         }
-        return value.trim().replaceAll("\\s+", " ").toLowerCase();
+        return value.trim().replaceAll("\\s+", " ");
+    }
+
+    private String normalize(final String value) {
+        return cleanText(value).toLowerCase();
     }
 
     private double boundToUnitInterval(final double value) {

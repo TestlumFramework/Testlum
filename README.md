@@ -92,7 +92,7 @@ Make sure you have the following installed:
 After cloning repository to your local machine: 
 - navigate to root project folder
 - build executable jar file ```mvn clean install -DskipTests```
-- and run it by passing test resources location
+- and run it by passing test resources location (-c or --config, -p or --path). -s or --scenarios can be added as optional parameter to run test(s) in specific folder (-s=/apiTests)
   ```java -jar engine/target/testlum-<version>.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
 - examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/wiki)
 

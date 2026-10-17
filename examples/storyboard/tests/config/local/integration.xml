@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<integrations xmlns="http://www.testlum.com/testing/model/global-config">
+    <apis>
+        <api alias="DEFAULT" enabled="true" url="http://host.docker.internal:18080"/>
+    </apis>
+    <postgresIntegration>
+        <postgres alias="DEFAULT" enabled="true">
+            <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+            <username>storyboard</username>
+            <password>storyboard</password>
+            <connectionUrl>jdbc:postgresql://host.docker.internal:15432/storyboard</connectionUrl>
+            <hikari>
+                <connectionTimeout>30000</connectionTimeout>
+                <idleTimeout>600000</idleTimeout>
+                <maxLifetime>1800000</maxLifetime>
+                <maximumPoolSize>5</maximumPoolSize>
+                <minimumIdle>1</minimumIdle>
+                <connectionInitSql>SELECT 1</connectionInitSql>
+                <connectionTestQuery>SELECT 1</connectionTestQuery>
+                <poolName>storyboard</poolName>
+                <autoCommit>true</autoCommit>
+            </hikari>
+        </postgres>
+    </postgresIntegration>
+</integrations>

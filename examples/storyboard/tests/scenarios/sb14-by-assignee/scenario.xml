@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <name>sb14-by-assignee</name>
+        <description>The assignee filter returns exactly that person's stories, in any spelling</description>
+    </overview>
+    <settings>
+        <variations>sb14-assignees.csv</variations>
+        <tags>SB-14,api</tags>
+    </settings>
+    <http alias="DEFAULT" comment="List stories with the filter">
+        <get endpoint="/api/stories?assignee={{who}}">
+            <response code="200"/>
+        </get>
+    </http>
+    <assert comment="Check the filtered list">
+        <jsonPath comment="Check $.length()" equals="{{count}}" path="$.length()"/>
+        <jsonPath comment="Check $[?(@.assignee=='{{name}}')]" exists="true" path="$[?(@.assignee=='{{name}}')]"/>
+        <jsonPath comment="Check $[?(@.assignee!='{{name}}')]" exists="false" path="$[?(@.assignee!='{{name}}')]"/>
+    </assert>
+</scenario>

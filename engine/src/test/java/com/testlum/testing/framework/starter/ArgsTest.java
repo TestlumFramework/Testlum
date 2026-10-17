@@ -112,8 +112,8 @@ class ArgsTest {
     class ParamEnumValues {
 
         @Test
-        void shouldHaveThreeValues() {
-            assertEquals(3, Param.values().length);
+        void shouldHaveFourValues() {
+            assertEquals(4, Param.values().length);
         }
 
         @Test

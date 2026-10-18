@@ -18,7 +18,6 @@ COPY --from=build /testlum-final.jar /testlum/testlum-final.jar
 COPY --from=build /testlum-mcp.jar /opt/testlum-mcp/testlum-mcp.jar
 COPY --from=build /src/engine/src/main/resources/schema /testlum/schema
 ENV TESTLUM_ENGINE_JAR=/testlum/testlum-final.jar \
-    TESTLUM_XSD_DIR=/testlum/schema \
-    TESTLUM_MCP_IDLE_SECONDS=900
+    TESTLUM_XSD_DIR=/testlum/schema
 WORKDIR /work
 ENTRYPOINT ["java", "-jar", "/opt/testlum-mcp/testlum-mcp.jar"]

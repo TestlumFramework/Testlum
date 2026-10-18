@@ -1,7 +1,6 @@
 package com.testlum.testing.framework.mcp;
 
 import com.testlum.testing.framework.mcp.exception.ToolException;
-import com.testlum.testing.framework.mcp.constant.LogMessage;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -15,17 +14,12 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Minimal MCP server over stdio (newline-delimited JSON-RPC). Handles initialize, ping, tools/list and
- * tools/call and nothing else. Ends when stdin closes or, with no
- * traffic and no call in flight, after the idle limit, so a forgotten session never lingers.
+ * tools/call and nothing else. Ends when stdin closes, which is how a client ends its session.
  */
-@Slf4j
 @RequiredArgsConstructor
 public final class McpStdioServer {
 
@@ -38,100 +32,20 @@ public final class McpStdioServer {
     private static final String JSON_RPC = "2.0";
     private static final int PARSE_ERROR = -32700;
     private static final int METHOD_NOT_FOUND = -32601;
-    private static final long NANOS_PER_SECOND = 1_000_000_000L;
-    private static final long MIN_POLL_MILLIS = 50;
-    private static final long MAX_POLL_MILLIS = 1000;
-    private static final long POLL_PER_IDLE_SECOND = 250;
     private static final JsonMapper JSON = JsonMapper.builder().build();
 
     private final List<McpTool> tools;
     private final InputStream in;
     private final PrintStream out;
-    private final int idleSeconds;
-    private final AtomicLong lastActivity = new AtomicLong(System.nanoTime());
-    private final AtomicBoolean busy = new AtomicBoolean();
-    private final AtomicBoolean idleExit = new AtomicBoolean();
-    private volatile Thread reader;
-
-    /** True when the last {@link #serve()} ended because of the idle timeout. */
-    public boolean endedIdle() {
-        return idleExit.get();
-    }
 
     public void serve() throws IOException {
-        reader = Thread.currentThread();
-        Thread watchdog = startWatchdog();
         try (BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-            readLines(r);
-        } catch (IOException e) {
-            if (!idleExit.get()) {
-                throw e;
+            String line;
+            while ((line = r.readLine()) != null) {
+                if (!line.isBlank()) {
+                    handle(line);
+                }
             }
-        } finally {
-            watchdog.interrupt();
-        }
-    }
-
-    private Thread startWatchdog() {
-        Thread watchdog = new Thread(this::watch, "idle-watchdog");
-        watchdog.setDaemon(true);
-        if (idleSeconds > 0) {
-            watchdog.start();
-        }
-        return watchdog;
-    }
-
-    private void readLines(final BufferedReader r) throws IOException {
-        String line;
-        while (!idleExit.get() && (line = r.readLine()) != null) {
-            if (!line.isBlank()) {
-                handleBusy(line);
-            }
-        }
-    }
-
-    private void handleBusy(final String line) {
-        lastActivity.set(System.nanoTime());
-        busy.set(true);
-        try {
-            handle(line);
-        } finally {
-            busy.set(false);
-            lastActivity.set(System.nanoTime());
-        }
-    }
-
-    private void watch() {
-        long limit = idleSeconds * NANOS_PER_SECOND;
-        long poll = Math.max(MIN_POLL_MILLIS, Math.min(MAX_POLL_MILLIS, idleSeconds * POLL_PER_IDLE_SECOND));
-        try {
-            while (!isIdleFor(limit)) {
-                Thread.sleep(poll);
-            }
-            idleExit.set(true);
-            log.info(LogMessage.IDLE_EXIT, idleSeconds);
-            closeQuietly();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    private boolean isIdleFor(final long limit) {
-        return !busy.get() && System.nanoTime() - lastActivity.get() > limit;
-    }
-
-    private void closeQuietly() {
-        try {
-            if (in == System.in) {
-                System.exit(0); // the reader is blocked on System.in, which cannot be interrupted
-            }
-            in.close();
-        } catch (IOException ignored) {
-            // closing only unblocks the reader
-        }
-        Thread t = reader;
-        if (t != null) {
-            t.interrupt();
         }
     }
 

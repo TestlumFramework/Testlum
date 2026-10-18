@@ -8,17 +8,20 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class McpStdioServerTest {
 
-    private static final int MAX_IDLE_WAIT_SECONDS = 10;
+    private static final int QUIET_MILLIS = 1500;
     private static final JsonMapper JSON = JsonMapper.builder().build();
 
     @Test
@@ -35,7 +38,7 @@ class McpStdioServerTest {
                 """;
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         new McpStdioServer(tools.all(), new ByteArrayInputStream(in.getBytes(StandardCharsets.UTF_8)),
-                new PrintStream(buf, true, StandardCharsets.UTF_8), 0).serve();
+                new PrintStream(buf, true, StandardCharsets.UTF_8)).serve();
         List<String> lines = buf.toString(StandardCharsets.UTF_8).lines().toList();
         assertEquals(5, lines.size(), "the notification gets no reply");
         assertEquals("testlum-mcp", JSON.readTree(lines.get(0)).at("/result/serverInfo/name").asText());
@@ -55,7 +58,7 @@ class McpStdioServerTest {
                 """;
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         new McpStdioServer(List.of(), new ByteArrayInputStream(in.getBytes(StandardCharsets.UTF_8)),
-                new PrintStream(buf, true, StandardCharsets.UTF_8), 0).serve();
+                new PrintStream(buf, true, StandardCharsets.UTF_8)).serve();
         List<String> lines = buf.toString(StandardCharsets.UTF_8).lines().toList();
         assertEquals("2024-11-05", JSON.readTree(lines.get(0)).at("/result/protocolVersion").asText());
         assertEquals("2025-06-18", JSON.readTree(lines.get(1)).at("/result/protocolVersion").asText());
@@ -63,13 +66,28 @@ class McpStdioServerTest {
     }
 
     @Test
-    void exitsWhenIdle() throws Exception {
+    void staysUpWithoutTrafficAndEndsOnEof() throws Exception {
         PipedOutputStream feed = new PipedOutputStream();
-        PipedInputStream in = new PipedInputStream(feed);
-        McpStdioServer server = new McpStdioServer(List.of(), in, new PrintStream(new ByteArrayOutputStream()), 1);
-        long start = System.nanoTime();
-        server.serve();
-        assertTrue(server.endedIdle());
-        assertTrue(Duration.ofNanos(System.nanoTime() - start).toSeconds() < MAX_IDLE_WAIT_SECONDS);
+        ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        McpStdioServer server = new McpStdioServer(List.of(), new PipedInputStream(feed),
+                new PrintStream(buf, true, StandardCharsets.UTF_8));
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+        Thread serving = new Thread(() -> {
+            try {
+                server.serve();
+            } catch (IOException e) {
+                failure.set(e);
+            }
+        });
+        serving.start();
+        serving.join(QUIET_MILLIS);
+        assertTrue(serving.isAlive(), "no traffic must not end the session");
+        feed.write("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"ping\"}\n".getBytes(StandardCharsets.UTF_8));
+        feed.flush();
+        feed.close();
+        serving.join(QUIET_MILLIS * 4);
+        assertFalse(serving.isAlive(), "closing stdin ends the session");
+        assertNull(failure.get(), "the session ends cleanly");
+        assertEquals(1, buf.toString(StandardCharsets.UTF_8).lines().count(), "the late ping was answered");
     }
 }

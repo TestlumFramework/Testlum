@@ -33,7 +33,7 @@ threading.Thread(target=httpd.serve_forever, daemon=True).start()
 port = httpd.server_address[1]
 
 xsd_dir = Path(__file__).resolve().parents[3] / "engine" / "src" / "main" / "resources" / "schema"
-env = dict(os.environ, TESTLUM_ENGINE_JAR=engine_jar, TESTLUM_XSD_DIR=str(xsd_dir), TESTLUM_MCP_IDLE_SECONDS="120")
+env = dict(os.environ, TESTLUM_ENGINE_JAR=engine_jar, TESTLUM_XSD_DIR=str(xsd_dir))
 proc = subprocess.Popen(["java", "-jar", server_jar], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                         stderr=subprocess.PIPE, text=True, env=env)
 _id = 0

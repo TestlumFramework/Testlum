@@ -5,7 +5,7 @@
 #
 #   start-testlum-mcp.sh [TESTS_DIR]   TESTS_DIR is mounted at /work; defaults to $TESTLUM_WORKDIR, then $PWD
 #
-# Env: TESTLUM_MCP_IMAGE (default testlum-mcp:0.5.0), TESTLUM_MCP_IDLE_SECONDS (default 900).
+# Env: TESTLUM_MCP_IMAGE (default testlum-mcp:0.5.0).
 set -eu
 
 image=${TESTLUM_MCP_IMAGE:-testlum-mcp:0.5.0}
@@ -19,5 +19,5 @@ fi
 
 exec docker run --rm -i --name "testlum-mcp-$$" --label app=testlum-mcp --memory 2g --cpus 2 \
   --add-host=host.docker.internal:host-gateway \
-  -e TESTLUM_MCP_IDLE_SECONDS="${TESTLUM_MCP_IDLE_SECONDS:-900}" -e TESTLUM_HOST_WORKDIR="$tests" \
+  -e TESTLUM_HOST_WORKDIR="$tests" \
   -v "$tests:/work" "$image"

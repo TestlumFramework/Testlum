@@ -18,7 +18,7 @@ An argument a tool does not know is an error, not ignored.
 
 - `TESTLUM_ENGINE_JAR`: path to the engine jar. `testlum_run` runs it.
 - `TESTLUM_XSD_DIR`: a folder of the engine's `schema/*.xsd`. The image sets both.
-- `TESTLUM_MCP_IDLE_SECONDS`: exit after this long with no traffic and no call running (default 900). The server also exits when the client closes stdin.
+- The server runs until the client closes stdin, which also ends and removes its container.
 
 The engine reads `--tags=a,b` (or `-t=a,b`) and then ignores the tag setting in the global config. It writes the JUnit report to `report/junit.xml` under the tests folder when the global config has `<junit enabled="true"/>` in `<report>`, which `testlum_scaffold` writes.
 
@@ -42,6 +42,10 @@ MCP client config (Windows example):
 macOS or Linux:
 
     { "command": "/path/to/modules/mcp/launch/start-testlum-mcp.sh" }
+
+Claude Code gives an MCP server 30 seconds to start (`MCP_TIMEOUT`, in milliseconds). The launcher exits at once when Docker is not running, so a start that runs past the limit is the container and the JVM coming up. If the server shows as failed on the first start after a reboot and works when retried, raise the limit in the `env` block of the user settings file `~/.claude/settings.json` (`%USERPROFILE%\.claude\settings.json` on Windows), the same syntax on every system, and restart Claude Code:
+
+    { "env": { "MCP_TIMEOUT": "60000" } }
 
 Inside the container `127.0.0.1` is the container itself. A stub on the host must bind `0.0.0.0` and the tests must reach it at `host.docker.internal`. The launchers add the host mapping, so the name also works on Linux.
 

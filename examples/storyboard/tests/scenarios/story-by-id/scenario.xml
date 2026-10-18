@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <description>Each seeded story can be read back by id</description>
+        <name>story-by-id</name>
+    </overview>
+    <settings>
+        <variations>seed-stories.csv</variations>
+        <tags>SB-2,api</tags>
+    </settings>
+    <http alias="DEFAULT" comment="Get one story by id">
+        <get endpoint="/api/stories/{{id}}">
+            <response code="200"/>
+        </get>
+    </http>
+    <assert comment="Check the fields of the story">
+        <jsonPath comment="Title matches the table" equals="{{title}}" path="$.title"/>
+        <jsonPath comment="Status matches the table" equals="{{status}}" path="$.status"/>
+        <jsonPath comment="Points match the table" equals="{{points}}" path="$.points"/>
+        <jsonPath comment="Owner field is present" exists="true" path="$.assignee"/>
+    </assert>
+</scenario>

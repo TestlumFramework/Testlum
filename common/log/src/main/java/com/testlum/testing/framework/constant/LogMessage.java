@@ -248,6 +248,9 @@ public final class LogMessage {
             scenarios rather than relying on this functionality."""
     );
 
+    public static final String UNABLE_TO_WRITE_JUNIT_REPORT = "Unable to write JUnit report to {}";
+    public static final String UNABLE_TO_REMOVE_OLD_JUNIT_REPORT = "Unable to remove the old JUnit report {}";
+
     private LogMessage() {
         // nop
     }

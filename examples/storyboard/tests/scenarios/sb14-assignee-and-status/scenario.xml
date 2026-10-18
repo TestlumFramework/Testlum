@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <name>sb14-assignee-and-status</name>
+        <description>Assignee and status must both match</description>
+    </overview>
+    <settings>
+        <variations>sb14-assignee-status.csv</variations>
+        <tags>SB-14,api</tags>
+    </settings>
+    <http alias="DEFAULT" comment="List stories with the filter">
+        <get endpoint="/api/stories?assignee={{who}}&amp;status={{status}}">
+            <response code="200"/>
+        </get>
+    </http>
+    <assert comment="Check the filtered list">
+        <jsonPath comment="Check $.length()" equals="{{count}}" path="$.length()"/>
+        <jsonPath comment="Every story matches both filters" exists="false" path="$[?(@.assignee!='{{who}}' || @.status!='{{status}}')]"/>
+    </assert>
+</scenario>

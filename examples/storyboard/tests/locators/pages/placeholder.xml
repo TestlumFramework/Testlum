@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://www.testlum.com/testing/model/pages">
+    <details>
+        <name>placeholder</name>
+        <url>/</url>
+        <description>Placeholder page so the engine finds valid XML</description>
+    </details>
+    <locators>
+        <locator locatorId="placeholder">
+            <id>placeholder</id>
+        </locator>
+    </locators>
+</page>

@@ -1,0 +1,6 @@
+id,title,status,points
+1,Login page,done,3
+2,Password reset email,doing,5
+3,Dashboard totals,todo,8
+4,Export to CSV,todo,2
+5,Dark mode,todo,1

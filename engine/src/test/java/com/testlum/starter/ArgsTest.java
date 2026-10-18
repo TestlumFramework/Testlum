@@ -37,6 +37,17 @@ class ArgsTest {
     }
 
     @Nested
+    class Tags {
+
+        @Test
+        void parsesShortAndLongFlags() {
+            assertEquals("smoke,api", Args.read(new String[] {"--tags=smoke,api"}, Args.Param.TAGS).orElseThrow());
+            assertEquals("smoke", Args.read(new String[] {"-t=smoke"}, Args.Param.TAGS).orElseThrow());
+            assertFalse(Args.read(new String[] {"-c=x.xml"}, Args.Param.TAGS).isPresent());
+        }
+    }
+
+    @Nested
     class PathToTestResources {
 
         @Test
@@ -123,8 +134,8 @@ class ArgsTest {
         }
 
         @Test
-        void hasThreeValues() {
-            assertEquals(3, Args.Param.values().length);
+        void hasFourValues() {
+            assertEquals(4, Args.Param.values().length);
         }
     }
 }

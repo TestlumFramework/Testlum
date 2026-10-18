@@ -63,6 +63,20 @@ class FileSearcherTest {
         }
 
         @Test
+        void theStaticSearchWalksUpToButNotIntoTheTestResourcesFolder() throws IOException {
+            File subDir = new File(scenariosFolder, "sub/deeper");
+            subDir.mkdirs();
+            Files.writeString(new File(scenariosFolder, "scenario.xml").toPath(), "<x/>", StandardCharsets.UTF_8);
+            Files.writeString(new File(tempDir, "scenario.xml").toPath(), "<x/>", StandardCharsets.UTF_8);
+
+            File found = FileSearcher.find(subDir, tempDir, (dir, name) -> name.equals("scenario.xml")).orElseThrow();
+
+            assertEquals(scenariosFolder, found.getParentFile());
+            assertEquals(java.util.Optional.empty(),
+                    FileSearcher.find(tempDir, tempDir, (dir, name) -> name.equals("scenario.xml")));
+        }
+
+        @Test
         void throwsWhenFileNotFound() {
             assertThrows(FileLinkingException.class,
                     () -> fileSearcher.searchFileFromDir(scenariosFolder, "nonexistent.json"));

@@ -114,6 +114,18 @@ public class HtmlTagRegistry {
     );
 
     public static String resolveTagName(final String tagNameFromLocatorId) {
-        return tagAssociations.get(tagNameFromLocatorId);
+        if (tagNameFromLocatorId == null) {
+            return null;
+        }
+        return tagAssociations.get(tagNameFromLocatorId.toLowerCase());
+    }
+
+    public static boolean isDirectHtmlTag(final String tagName) {
+        if (tagName == null) {
+            return false;
+        }
+        String lower = tagName.toLowerCase();
+        String resolved = tagAssociations.get(lower);
+        return resolved != null && resolved.equals(lower);
     }
 }

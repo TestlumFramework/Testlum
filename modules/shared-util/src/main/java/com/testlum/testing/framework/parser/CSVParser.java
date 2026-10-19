@@ -1,10 +1,10 @@
 package com.testlum.testing.framework.parser;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +86,7 @@ public final class CSVParser {
 
     private Map<String, String> getRowMap(final String[] headerRow,
                                           final String[] dataRow) {
-        Map<String, String> rowMap = new HashMap<>(headerRow.length);
+        Map<String, String> rowMap = new LinkedHashMap<>(headerRow.length);
         for (int columnNumber = 0; columnNumber < headerRow.length; columnNumber++) {
             rowMap.put(headerRow[columnNumber], dataRow[columnNumber]);
         }

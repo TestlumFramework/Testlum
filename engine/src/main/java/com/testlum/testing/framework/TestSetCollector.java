@@ -21,10 +21,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -199,7 +196,7 @@ public class TestSetCollector {
                 .browser(base.getBrowser())
                 .mobileBrowserDevice(base.getMobileBrowserDevice())
                 .nativeDevice(base.getNativeDevice())
-                .variations(base.getVariations() == null ? null : new HashMap<>(base.getVariations()))
+                .variations(base.getVariations() == null ? null : new LinkedHashMap<>(base.getVariations()))
                 .containsUiSteps(base.isContainsUiSteps())
                 .build();
         cloned.setEnvironment(environment);

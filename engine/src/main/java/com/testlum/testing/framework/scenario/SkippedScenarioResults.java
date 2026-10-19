@@ -4,7 +4,8 @@ import com.testlum.testing.model.scenario.Scenario;
 import com.testlum.testing.report.ScenarioResult;
 
 /**
- * Builds results for scenarios that were not executed, so reporting can show them as skipped with the reason.
+ * Builds results for scenarios that were not executed, so reporting can show them with the reason: as skipped
+ * when the scenario was deliberately left out, as failed when it was expected to run but could not.
  */
 public final class SkippedScenarioResults {
 
@@ -28,20 +29,27 @@ public final class SkippedScenarioResults {
     }
 
     /**
-     * @param path  path of a scenario file that could not be run (e.g. it failed validation)
-     * @param cause why the scenario was not run
-     * @return a skipped result identified by the scenario path only
+     * An invalid scenario is a misconfiguration (e.g. it names an integration that does not exist), not a
+     * deliberate exclusion, so it is reported as failed: hiding it among the skipped would let the launch pass.
+     *
+     * @param path  path of a scenario file that was expected to run but could not (e.g. it failed validation)
+     * @param cause why the scenario could not run
+     * @return a failed result identified by the scenario path only
      */
-    public static ScenarioResult of(final String path, final String cause) {
-        return skipped(path, cause);
+    public static ScenarioResult invalid(final String path, final String cause) {
+        return notRun(path, cause, false);
     }
 
     private static ScenarioResult skipped(final String path, final String cause) {
+        return notRun(path, cause, true);
+    }
+
+    private static ScenarioResult notRun(final String path, final String cause, final boolean skipped) {
         ScenarioResult result = new ScenarioResult();
         result.setId(ScenarioRunner.nextScenarioId());
         result.setPath(path);
         result.setName(path);
-        result.setSkipped(true);
+        result.setSkipped(skipped);
         result.setCause(cause);
         result.setStartedAt(System.currentTimeMillis());
         return result;

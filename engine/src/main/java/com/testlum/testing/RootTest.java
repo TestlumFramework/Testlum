@@ -130,7 +130,8 @@ public class RootTest {
         logUtil.logInvalidScenariosSummary(invalid, skipped);
 
         ReportingService reportingService = ctx.getBean(ReportingService.class);
-        invalid.forEach((path, reason) -> reportingService.onScenarioFinished(SkippedScenarioResults.of(path, reason)));
+        invalid.forEach((path, reason) ->
+                reportingService.onScenarioFinished(SkippedScenarioResults.invalid(path, reason)));
         GlobalScenarioStatCollector globalScenarioStatCollector = ctx.getBean(GlobalScenarioStatCollector.class);
         reportingService.onRunFinished(globalScenarioStatCollector);
 

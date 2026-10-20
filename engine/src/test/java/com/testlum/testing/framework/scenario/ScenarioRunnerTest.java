@@ -174,7 +174,7 @@ class ScenarioRunnerTest {
 
             CommandResult cmdResult = new CommandResult();
             cmdResult.setCommandKey("unknown");
-            when(resultUtil.newCommandResultInstance(anyInt(), any())).thenReturn(cmdResult);
+            when(resultUtil.newCommandResultInstance(any(), any())).thenReturn(cmdResult);
 
             ScenarioRunner cmdRunner = new ScenarioRunner(scenarioArguments, ctx);
             ScenarioResult result = cmdRunner.run();
@@ -194,7 +194,7 @@ class ScenarioRunnerTest {
             cmdResult1.setCommandKey("cmd1");
             CommandResult cmdResult2 = new CommandResult();
             cmdResult2.setCommandKey("cmd2");
-            when(resultUtil.newCommandResultInstance(anyInt(), any()))
+            when(resultUtil.newCommandResultInstance(any(), any()))
                     .thenReturn(cmdResult1).thenReturn(cmdResult2);
 
             ScenarioRunner cmdRunner = new ScenarioRunner(scenarioArguments, ctx);
@@ -295,7 +295,7 @@ class ScenarioRunnerTest {
             CommandResult failResult = new CommandResult();
             failResult.setCommandKey("fail");
             failResult.setException(new RuntimeException("fail"));
-            when(resultUtil.newCommandResultInstance(anyInt(), any())).thenReturn(failResult);
+            when(resultUtil.newCommandResultInstance(any(), any())).thenReturn(failResult);
             doAnswer(invocation -> {
                 CommandResult r = invocation.getArgument(0);
                 r.setException(new RuntimeException("fail"));

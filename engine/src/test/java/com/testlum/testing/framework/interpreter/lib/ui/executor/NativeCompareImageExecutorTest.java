@@ -42,6 +42,8 @@ class NativeCompareImageExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ImageComparator imageComparator;
     @Mock
     private ImageComparisonUtil imageComparisonUtil;
@@ -67,6 +69,7 @@ class NativeCompareImageExecutorTest {
                 .build();
         executor = new NativeCompareImageExecutor(deps);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
@@ -258,7 +261,7 @@ class NativeCompareImageExecutorTest {
             File screenshotFile = File.createTempFile("screenshot", ".png");
             screenshotFile.deleteOnExit();
             ImageIO.write(testImage, "png", screenshotFile);
-            when(uiUtil.takeScreenshot((WebDriver) driver)).thenReturn(screenshotFile);
+            when(screenshotUtil.takeScreenshot((WebDriver) driver)).thenReturn(screenshotFile);
 
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(imageComparator.compare(any(NativeImage.class), any(BufferedImage.class),
@@ -286,8 +289,9 @@ class NativeCompareImageExecutorTest {
 
             when(fileSearcher.searchFileFromDir(any(), eq("expected.png"))).thenReturn(tempFile);
 
+            final CommandResult result = new CommandResult();
             WebElement mockElement = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("elementLocator"), any()))
+            when(uiUtil.findWebElement(any(ExecutorDependencies.class), eq("elementLocator"), any(), any()))
                     .thenReturn(mockElement);
             when(mockElement.getLocation()).thenReturn(new Point(10, 10));
             when(mockElement.getSize()).thenReturn(new Dimension(50, 50));
@@ -303,7 +307,6 @@ class NativeCompareImageExecutorTest {
             when(imageComparator.compare(any(NativeImage.class), any(BufferedImage.class),
                     any(BufferedImage.class))).thenReturn(comparisonResult);
 
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(image, result));
         }
     }

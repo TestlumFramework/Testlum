@@ -3,6 +3,7 @@ package com.testlum.testing.framework.condition;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.util.InjectionService;
 import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.model.global_config.Environment;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
@@ -45,8 +46,9 @@ public abstract class AbstractCondition<T extends Integration> implements Condit
             FileSearcher fileSearcher = getBean(context, FileSearcher.class);
             XMLParsers xmlParsers = getBean(context, XMLParsers.class);
             TestResourceSettings settings = getBean(context, TestResourceSettings.class);
-            GlobalTestConfiguration globalCfg = xmlParsers.forGlobalTestConfiguration().
-                    process(settings.getConfigFile());
+            InjectionService injectionService = getBean(context, InjectionService.class);
+            GlobalTestConfiguration globalCfg = injectionService.injectFromSystem(
+                    xmlParsers.forGlobalTestConfiguration().process(settings.getConfigFile()));
             String envFolder = getCurrentEnv(filterEnabledEnvironments(globalCfg));
             return loadIntegrations(fileSearcher, xmlParsers, envFolder);
         } catch (Exception e) {

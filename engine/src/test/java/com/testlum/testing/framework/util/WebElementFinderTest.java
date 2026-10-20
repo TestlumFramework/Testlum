@@ -649,6 +649,7 @@ class WebElementFinderTest {
 
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(false);
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(2);
@@ -672,6 +673,7 @@ class WebElementFinderTest {
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(false, true);
             when(element.getSize()).thenReturn(new Dimension(10, 10));
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(5);
@@ -694,6 +696,7 @@ class WebElementFinderTest {
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(true);
             when(element.getSize()).thenReturn(new Dimension(0, 0));
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(1);
@@ -718,6 +721,7 @@ class WebElementFinderTest {
 
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(false);
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(1);
@@ -746,6 +750,7 @@ class WebElementFinderTest {
             WebElement healed = mock(WebElement.class);
             when(healed.isDisplayed()).thenReturn(true);
             when(healed.getSize()).thenReturn(new Dimension(10, 10));
+            when(healed.getTagName()).thenReturn("button");
             AutoHealer autoHealer = mock(AutoHealer.class);
             when(autoHealer.heal(locator)).thenReturn(Optional.of(healed));
             when(autoHealerFactory.create(any())).thenReturn(autoHealer);
@@ -773,6 +778,7 @@ class WebElementFinderTest {
 
             WebElement healed = mock(WebElement.class);
             when(healed.isDisplayed()).thenReturn(false);
+            when(healed.getTagName()).thenReturn("button");
             AutoHealer autoHealer = mock(AutoHealer.class);
             when(autoHealer.heal(locator)).thenReturn(Optional.of(healed));
             when(autoHealerFactory.create(any())).thenReturn(autoHealer);
@@ -823,6 +829,7 @@ class WebElementFinderTest {
             when(element.isEnabled()).thenReturn(true);
             when(element.getAttribute("aria-disabled")).thenReturn(null);
             when(element.getAttribute("readonly")).thenReturn("true");
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             when(driver.executeScript(anyString(), any())).thenReturn(Boolean.TRUE);

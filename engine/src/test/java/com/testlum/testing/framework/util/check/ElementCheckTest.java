@@ -41,14 +41,17 @@ class ElementCheckTest {
 
         @Test
         void passesForDisplayedElementWithSize() {
+            WebElement element = visibleElement();
+            when(element.getTagName()).thenReturn("button");
             assertDoesNotThrow(() -> ElementCheck.VISIBILITY.check(
-                    deps(mock(WebDriver.class), UiType.WEB), visibleElement()));
+                    deps(mock(WebDriver.class), UiType.WEB), element));
         }
 
         @Test
         void failsWhenElementIsNotDisplayed() {
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(false);
+            when(element.getTagName()).thenReturn("button");
 
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                     () -> ElementCheck.VISIBILITY.check(deps(mock(WebDriver.class), UiType.WEB), element));
@@ -60,6 +63,7 @@ class ElementCheckTest {
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(true);
             when(element.getSize()).thenReturn(new Dimension(0, 20));
+            when(element.getTagName()).thenReturn("button");
 
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                     () -> ElementCheck.VISIBILITY.check(deps(mock(WebDriver.class), UiType.WEB), element));
@@ -71,6 +75,7 @@ class ElementCheckTest {
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(true);
             when(element.getSize()).thenReturn(new Dimension(10, 0));
+            when(element.getTagName()).thenReturn("button");
 
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                     () -> ElementCheck.VISIBILITY.check(deps(mock(WebDriver.class), UiType.WEB), element));

@@ -18,8 +18,6 @@ public enum ElementCheck {
     VISIBILITY {
         @Override
         public void check(final ExecutorDependencies dependencies, final WebElement element) {
-            // Options of a collapsed native <select> are not rendered and report a zero size,
-            // so their visibility is the visibility of the enclosing <select>
             Optional<WebElement> parentSelect = findParentSelect(element);
             if (parentSelect.isEmpty()) {
                 checkVisible(element);
@@ -88,6 +86,9 @@ public enum ElementCheck {
 
     private static Optional<WebElement> findParentSelect(final WebElement element) {
         String tagName = element.getTagName();
+//        if (tagName == null) {
+//            return Optional.empty();
+//        }
         if (!SELECT_CHILD_TAGS.contains(tagName.toLowerCase(Locale.ROOT))) {
             return Optional.empty();
         }

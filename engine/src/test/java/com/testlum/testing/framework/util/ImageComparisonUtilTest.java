@@ -36,6 +36,9 @@ class ImageComparisonUtilTest {
     @Mock
     private JavascriptUtil javascriptUtil;
 
+    @Mock
+    private ScreenshotUtil screenshotUtil;
+
     @InjectMocks
     private ImageComparisonUtil imageComparisonUtil;
 

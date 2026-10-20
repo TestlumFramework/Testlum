@@ -240,6 +240,13 @@ class ElementCheckTest {
             assertDoesNotThrow(() -> ElementCheck.ENABLED.check(
                     deps(mock(WebDriver.class), UiType.WEB), element));
         }
+
+        @Test
+        void isNotApplicableToNative() {
+            assertFalse(ElementCheck.ENABLED.supports(UiType.NATIVE));
+            assertTrue(ElementCheck.ENABLED.supports(UiType.WEB));
+            assertTrue(ElementCheck.ENABLED.supports(UiType.MOBILE_BROWSER));
+        }
     }
 
     @Nested

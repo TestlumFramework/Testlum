@@ -6,6 +6,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.model.scenario.Auth;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,10 +20,12 @@ import java.util.Base64;
 public class BasicAuth extends AbstractAuthStrategy {
 
     private final FileSearcher fileSearcher;
+    private final SystemVariableService systemVariableService;
 
     public BasicAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
+        this.systemVariableService = dependencies.getContext().getBean(SystemVariableService.class);
     }
 
     @Override
@@ -43,7 +46,9 @@ public class BasicAuth extends AbstractAuthStrategy {
 
     private String getCredentialsFromFile(final String fileName) {
         try {
-            return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+            String content = FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName),
+                    StandardCharsets.UTF_8);
+            return systemVariableService.inject(content);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }

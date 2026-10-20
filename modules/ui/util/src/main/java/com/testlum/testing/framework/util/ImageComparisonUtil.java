@@ -30,9 +30,9 @@ public class ImageComparisonUtil {
     private static final String WINDOW_INNER_HEIGHT = "return window.innerHeight;";
     private static final String STATUS_BAR_HEIGHT = "statBarHeight";
 
-    private final UiUtil uiUtil;
     private final ResultUtil resultUtil;
     private final JavascriptUtil javascriptUtil;
+    private final ScreenshotUtil screenshotUtil;
 
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
                                              final String expectedImageFullName,
@@ -53,7 +53,7 @@ public class ImageComparisonUtil {
         try {
             File actualImage = saveActualImage(
                     comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
-            uiUtil.putScreenshotToResult(result, actualImage);
+            screenshotUtil.putScreenshotToResult(result, actualImage);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }

@@ -8,22 +8,22 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for scroll complex type.
+ * &lt;p&gt;Java class for scroll complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="scroll"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}commandWithOptionalLocator"&gt;
  *       &lt;attribute name="type" use="required" type="{http://www.testlum.com/testing/model/scenario}scrollType" /&gt;
  *       &lt;attribute name="direction" type="{http://www.testlum.com/testing/model/scenario}scrollDirection" default="down" /&gt;
- *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="value" use="required" type="{http://www.testlum.com/testing/model/scenario}scrollValuePattern" /&gt;
  *       &lt;attribute name="measure" type="{http://www.testlum.com/testing/model/scenario}scrollMeasure" default="pixel" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -38,7 +38,7 @@ public class Scroll
     @XmlAttribute(name = "direction")
     protected ScrollDirection direction;
     @XmlAttribute(name = "value", required = true)
-    protected int value;
+    protected String value;
     @XmlAttribute(name = "measure")
     protected ScrollMeasure measure;
 
@@ -97,16 +97,24 @@ public class Scroll
     /**
      * Gets the value of the value property.
      * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     /**
      * Sets the value of the value property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

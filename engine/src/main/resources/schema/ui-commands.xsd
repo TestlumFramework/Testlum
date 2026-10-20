@@ -167,7 +167,7 @@
             <x:extension base="tns:commandWithOptionalLocator">
                 <x:attribute name="type" type="tns:scrollType" use="required"/>
                 <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
-                <x:attribute name="value" type="x:int" use="required"/>
+                <x:attribute name="value" type="tns:scrollValuePattern" use="required"/>
                 <x:attribute name="measure" type="tns:scrollMeasure" default="pixel"/>
             </x:extension>
         </x:complexContent>
@@ -456,6 +456,12 @@
         <x:restriction base="x:double">
             <x:minInclusive value="0"/>
             <x:maxInclusive value="100"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="scrollValuePattern">
+        <x:restriction base="x:string">
+            <x:pattern value="-?\d+|\{{2}\s*[^\s&quot;&amp;&apos;&lt;&gt;{}]+\s*\}{2}"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

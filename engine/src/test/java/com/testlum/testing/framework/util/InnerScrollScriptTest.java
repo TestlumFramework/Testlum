@@ -221,7 +221,7 @@ class InnerScrollScriptTest {
 
     private Scroll createScroll(final int value, final ScrollDirection direction, final ScrollMeasure measure) {
         Scroll scroll = new Scroll();
-        scroll.setValue(value);
+        scroll.setValue(String.valueOf(value));
         scroll.setDirection(direction);
         scroll.setMeasure(measure);
         return scroll;

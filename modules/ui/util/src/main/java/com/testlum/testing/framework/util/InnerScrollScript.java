@@ -80,7 +80,7 @@ public class InnerScrollScript {
                                             final Scroll scroll,
                                             final List<String> selectorList,
                                             final UiUtil uiUtil) {
-        int value = scroll.getValue();
+        int value = Integer.parseInt(scroll.getValue());
         ScrollDirection scrollDirection = scroll.getDirection();
         return selectorList.stream()
                 .map(selector -> ScrollMeasure.PERCENT == scroll.getMeasure()

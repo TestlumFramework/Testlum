@@ -72,7 +72,7 @@ class ScrollWebExecutorTest {
         void executesPageScrollScript() {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.PAGE);
-            scroll.setValue(300);
+            scroll.setValue("300");
             CommandResult result = new CommandResult();
 
             executor.execute(scroll, result);
@@ -87,7 +87,7 @@ class ScrollWebExecutorTest {
         void takesScreenshotAfterPageScroll() {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.PAGE);
-            scroll.setValue(500);
+            scroll.setValue("500");
             CommandResult result = new CommandResult();
 
             executor.execute(scroll, result);
@@ -103,7 +103,7 @@ class ScrollWebExecutorTest {
         void executesInnerScrollScripts() {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.INNER);
-            scroll.setValue(200);
+            scroll.setValue("200");
             CommandResult result = new CommandResult();
             when(innerScrollScript.getInnerScrollScript(eq(scroll), eq(uiUtil)))
                     .thenReturn(List.of("document.querySelector('.container').scrollTop += 200"));
@@ -117,7 +117,7 @@ class ScrollWebExecutorTest {
         void throwsWhenAllInnerScrollScriptsFail() {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.INNER);
-            scroll.setValue(200);
+            scroll.setValue("200");
             CommandResult result = new CommandResult();
             when(innerScrollScript.getInnerScrollScript(eq(scroll), eq(uiUtil)))
                     .thenReturn(List.of("failing-script"));
@@ -131,7 +131,7 @@ class ScrollWebExecutorTest {
         void succeedsIfAtLeastOneScriptWorks() {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.INNER);
-            scroll.setValue(100);
+            scroll.setValue("100");
             when(innerScrollScript.getInnerScrollScript(eq(scroll), eq(uiUtil)))
                     .thenReturn(List.of("failing-script", "working-script"));
             when(javascriptUtil.executeJsScript(eq("failing-script"), eq(driver)))
@@ -149,7 +149,7 @@ class ScrollWebExecutorTest {
         void addsMetadataForInnerScroll() {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.INNER);
-            scroll.setValue(150);
+            scroll.setValue("150");
             CommandResult result = new CommandResult();
             when(innerScrollScript.getInnerScrollScript(eq(scroll), eq(uiUtil)))
                     .thenReturn(List.of("script1"));

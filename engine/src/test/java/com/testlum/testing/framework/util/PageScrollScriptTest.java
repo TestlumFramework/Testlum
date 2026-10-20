@@ -26,7 +26,7 @@ class PageScrollScriptTest {
         @Test
         void scrollDownByPixel() {
             final Scroll scroll = new Scroll();
-            scroll.setValue(300);
+            scroll.setValue("300");
             scroll.setDirection(ScrollDirection.DOWN);
             scroll.setMeasure(ScrollMeasure.PIXEL);
 
@@ -37,7 +37,7 @@ class PageScrollScriptTest {
         @Test
         void scrollUpByPixel() {
             final Scroll scroll = new Scroll();
-            scroll.setValue(200);
+            scroll.setValue("200");
             scroll.setDirection(ScrollDirection.UP);
             scroll.setMeasure(ScrollMeasure.PIXEL);
 
@@ -51,7 +51,7 @@ class PageScrollScriptTest {
         @Test
         void scrollDownByPercent() {
             final Scroll scroll = new Scroll();
-            scroll.setValue(50);
+            scroll.setValue("50");
             scroll.setDirection(ScrollDirection.DOWN);
             scroll.setMeasure(ScrollMeasure.PERCENT);
             when(uiUtil.calculatePercentageValue(50)).thenReturn(0.5f);
@@ -63,7 +63,7 @@ class PageScrollScriptTest {
         @Test
         void scrollUpByPercent() {
             final Scroll scroll = new Scroll();
-            scroll.setValue(25);
+            scroll.setValue("25");
             scroll.setDirection(ScrollDirection.UP);
             scroll.setMeasure(ScrollMeasure.PERCENT);
             when(uiUtil.calculatePercentageValue(25)).thenReturn(0.25f);
@@ -78,7 +78,7 @@ class PageScrollScriptTest {
         @Test
         void defaultDirectionIsDown() {
             final Scroll scroll = new Scroll();
-            scroll.setValue(100);
+            scroll.setValue("100");
             scroll.setMeasure(ScrollMeasure.PIXEL);
 
             final String script = PageScrollScript.getPageScrollScript(scroll, uiUtil);
@@ -88,7 +88,7 @@ class PageScrollScriptTest {
         @Test
         void defaultMeasureIsPixel() {
             final Scroll scroll = new Scroll();
-            scroll.setValue(150);
+            scroll.setValue("150");
             scroll.setDirection(ScrollDirection.DOWN);
 
             final String script = PageScrollScript.getPageScrollScript(scroll, uiUtil);

@@ -148,7 +148,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private void logBody(final String body) {
         if (StringUtils.isNotBlank(body)) {
-            log.info(BODY_LOG, stringPrettifier.asJsonResult(stringPrettifier.cut(body))
+            log.info(BODY_LOG, stringPrettifier.cut(stringPrettifier.asJsonResult(body))
                     .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
     }

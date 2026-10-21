@@ -67,7 +67,7 @@ public final class SendGridUtil {
     }
 
     private String getFromRaw(final Body body) {
-        return body.getRaw();
+        return body.getRaw().trim();
     }
 
     private String getFromFile(final Body body, final AbstractInterpreter<?> interpreter) {

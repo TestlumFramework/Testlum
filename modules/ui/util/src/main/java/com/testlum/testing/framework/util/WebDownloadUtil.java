@@ -195,13 +195,23 @@ public class WebDownloadUtil {
 
     private boolean shouldFileBeDeleted(final Set<String> existingFiles, final Path path) {
         String fileName = path.getFileName().toString();
-        boolean isActual = fileName.startsWith(FINAL_ACTUAL_FILENAME);
-        boolean isImage = fileName.startsWith(ACTUAL_IMAGE_PREFIX);
-        boolean isHealingPatch = fileName.startsWith(TestResourceSettings.PATCH_FILE_PREFIX);
-        if (isActual || isImage || isHealingPatch) {
+        if (isTestArtifact(fileName)) {
             return false;
         }
         return !existingFiles.contains(fileName);
+    }
+
+    private boolean isTestArtifact(final String fileName) {
+        boolean isActual = fileName.startsWith(FINAL_ACTUAL_FILENAME)
+                || fileName.startsWith(TestResourceSettings.INCLUDED_PREFIX)
+                && fileName.endsWith(TestResourceSettings.ACTUAL_FILENAME);
+        boolean isImage = fileName.startsWith(ACTUAL_IMAGE_PREFIX)
+                || fileName.startsWith(TestResourceSettings.INCLUDED_PREFIX)
+                && fileName.contains(ACTUAL_IMAGE_PREFIX);
+        boolean isHealingPatch = fileName.startsWith(TestResourceSettings.PATCH_FILE_PREFIX)
+                || fileName.startsWith(TestResourceSettings.INCLUDED_PREFIX)
+                && fileName.contains(TestResourceSettings.PATCH_FILE_PREFIX);
+        return isActual || isImage || isHealingPatch;
     }
 
     private void deleteFile(final Path path) {

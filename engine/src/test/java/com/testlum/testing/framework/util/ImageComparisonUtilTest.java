@@ -108,6 +108,25 @@ class ImageComparisonUtilTest {
                     () -> imageComparisonUtil.processImageComparisonResult(
                             comparisonResult, "expected.png", false, tempDir.toFile(), result));
         }
+
+        @Test
+        void savesActualImageWithPrefixOnMismatch(@TempDir final Path tempDir) {
+            ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
+            when(comparisonResult.getImageComparisonState()).thenReturn(ImageComparisonState.MISMATCH);
+            when(comparisonResult.getDifferencePercent()).thenReturn(5.0f);
+
+            BufferedImage actualImg = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+            when(comparisonResult.getActual()).thenReturn(actualImg);
+
+            CommandResult result = new CommandResult();
+
+            assertThrows(ImageComparisonException.class,
+                    () -> imageComparisonUtil.processImageComparisonResult(
+                            comparisonResult, "expected.png", false, tempDir.toFile(), "included_sub", result));
+
+            File expectedFile = new File(tempDir.toFile(), "included_sub_actual_image_compared_to_expected.png");
+            assertTrue(expectedFile.exists());
+        }
     }
 
     @Nested
@@ -223,6 +242,17 @@ class ImageComparisonUtilTest {
             String result = (String) method.invoke(imageComparisonUtil, "screenshot.jpg");
 
             assertEquals("actual_image_compared_to_screenshot.jpg", result);
+        }
+
+        @Test
+        void handlesPrefix() throws Exception {
+            Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
+                    String.class, String.class);
+            method.setAccessible(true);
+
+            String result = (String) method.invoke(imageComparisonUtil, "logo.png", "included_login");
+
+            assertEquals("included_login_actual_image_compared_to_logo.png", result);
         }
     }
 }

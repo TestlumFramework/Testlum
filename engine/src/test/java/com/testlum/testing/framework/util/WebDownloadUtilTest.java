@@ -26,6 +26,9 @@ class WebDownloadUtilTest {
         create("patch_2.xml");
         create("action_1_actual.json");
         create("actual_image_compared_to_expected.png");
+        create("included_login_patch_2.xml");
+        create("included_login_action_1_actual.json");
+        create("included_login_actual_image_compared_to_expected.png");
 
         webDownloadUtil.cleanupDownloadedFiles(tempDir, snapshot, false);
 
@@ -33,6 +36,9 @@ class WebDownloadUtilTest {
         assertTrue(exists("patch_2.xml"));
         assertTrue(exists("action_1_actual.json"));
         assertTrue(exists("actual_image_compared_to_expected.png"));
+        assertTrue(exists("included_login_patch_2.xml"));
+        assertTrue(exists("included_login_action_1_actual.json"));
+        assertTrue(exists("included_login_actual_image_compared_to_expected.png"));
         assertFalse(exists("downloaded.pdf"));
     }
 

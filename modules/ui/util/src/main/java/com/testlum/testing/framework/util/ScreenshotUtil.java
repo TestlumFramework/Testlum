@@ -36,7 +36,7 @@ public class ScreenshotUtil {
                 .getTakeScreenshots().isEnabled();
         if (isTakeScreenshots) {
             File screenshot = takeScreenshot(dependencies.getDriver());
-            File screenshotsFolder = new File(dependencies.getFile().getParent(),
+            File screenshotsFolder = new File(dependencies.getRootFile().getParent(),
                     TestResourceSettings.SCREENSHOT_FOLDER);
             tryToCopyScreenshotFileToFolder(screenshot, screenshotsFolder, dependencies);
             putScreenshotToResult(result, screenshot);
@@ -78,9 +78,10 @@ public class ScreenshotUtil {
                                             final File screenshotsFolder,
                                             final ExecutorDependencies dependencies) throws IOException {
         LocalTime dateTime = LocalTime.now();
-        String screenshotFileName = String.format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,
+        String baseName = String.format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,
                 dateTime.format(TIME_FORMATTER),
                 dependencies.getPosition().get());
+        String screenshotFileName = PrefixUtil.applyPrefix(dependencies.getPrefix(), baseName);
         File newScreenshot = new File(screenshotsFolder.getPath(), screenshotFileName);
         FileUtils.copyFile(screenshot, newScreenshot);
     }

@@ -176,6 +176,7 @@ public class UiUtil {
         return new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(secondsToWait));
     }
 
+
     public String getElementAttribute(final WebElement element, final String attributeName, final WebDriver driver) {
         String attribute = (String) javascriptUtil.executeJsScript(
                 JavascriptConstant.ELEMENT_ARGUMENTS_SCRIPT, driver, element, attributeName);

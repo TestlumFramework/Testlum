@@ -8,6 +8,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.report.CommandResultHelper;
 import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
+import com.testlum.testing.framework.util.PrefixUtil;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.scenario.AbstractCommand;
@@ -95,14 +96,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected abstract void acceptImpl(T o, CommandResult result);
 
     public CompareBuilder newCompare() {
-        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get(),
+        return new CompareBuilder(dependencies.getFile(), dependencies.getRootFile(),
+                dependencies.getPosition().get(), dependencies.getPrefix(),
                 jacksonService, stringPrettifier);
     }
 
     public void save(final String actual) {
         try {
-            File target = new File(dependencies.getFile().getParent(),
+            String fileName = PrefixUtil.applyPrefix(dependencies.getPrefix(),
                     String.format(FILENAME_TO_SAVE, dependencies.getPosition().get()));
+            File target = new File(dependencies.getRootFile().getParent(), fileName);
             FileUtils.writeStringToFile(target, stringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());

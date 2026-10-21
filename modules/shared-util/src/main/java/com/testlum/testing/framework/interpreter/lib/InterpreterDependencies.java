@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -19,6 +19,8 @@ public class InterpreterDependencies {
 
     private final ApplicationContext context;
     private final File file;
+    private final File rootFile;
+    private final String prefix;
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;
     private final String environment;
@@ -28,6 +30,14 @@ public class InterpreterDependencies {
     private final WebDriver nativeDriver;
 
     private Authorization authorization;
+
+    public File getRootFile() {
+        return rootFile != null ? rootFile : file;
+    }
+
+    public String getPrefix() {
+        return prefix != null ? prefix : "";
+    }
 
     public <T> T getOptionalBean(final String beanName, final Class<T> clazz, final Supplier<T> defaultValue) {
         return this.context.containsBean(beanName)

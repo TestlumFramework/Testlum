@@ -39,8 +39,19 @@ public class ImageComparisonUtil {
                                              final boolean isHighlightDifference,
                                              final File directoryToSave,
                                              final CommandResult result) {
+        processImageComparisonResult(comparisonResult, expectedImageFullName, isHighlightDifference,
+                directoryToSave, null, result);
+    }
+
+    public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
+                                             final String expectedImageFullName,
+                                             final boolean isHighlightDifference,
+                                             final File directoryToSave,
+                                             final String prefix,
+                                             final CommandResult result) {
         if (comparisonResult.getImageComparisonState() != ImageComparisonState.MATCH) {
-            saveAndAttachImage(comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave, result);
+            saveAndAttachImage(comparisonResult, expectedImageFullName, isHighlightDifference,
+                    directoryToSave, prefix, result);
             throwMismatchException(comparisonResult, result);
         }
     }
@@ -49,10 +60,11 @@ public class ImageComparisonUtil {
                                     final String expectedImageFullName,
                                     final boolean isHighlightDifference,
                                     final File directoryToSave,
+                                    final String prefix,
                                     final CommandResult result) {
         try {
             File actualImage = saveActualImage(
-                    comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
+                    comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave, prefix);
             screenshotUtil.putScreenshotToResult(result, actualImage);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
@@ -81,9 +93,10 @@ public class ImageComparisonUtil {
     private File saveActualImage(final ImageComparisonResult comparisonResult,
                                  final String expectedImageFullName,
                                  final boolean isHighlightDifference,
-                                 final File directoryToSave) throws IOException {
+                                 final File directoryToSave,
+                                 final String prefix) throws IOException {
         String imageExtension = FilenameUtils.getExtension(expectedImageFullName);
-        File fileToSave = getFileToSave(directoryToSave, expectedImageFullName);
+        File fileToSave = getFileToSave(directoryToSave, expectedImageFullName, prefix);
         if (isHighlightDifference) {
             ImageIO.write(comparisonResult.getResult(), imageExtension, fileToSave);
         } else {
@@ -92,9 +105,11 @@ public class ImageComparisonUtil {
         return fileToSave;
     }
 
-    private File getFileToSave(final File directoryToSave, final String expectedImageFullName) {
+    private File getFileToSave(final File directoryToSave,
+                               final String expectedImageFullName,
+                               final String prefix) {
         verifyDirectoryToSave(directoryToSave);
-        return new File(directoryToSave.getAbsolutePath(), getImageNameToSave(expectedImageFullName));
+        return new File(directoryToSave.getAbsolutePath(), getImageNameToSave(expectedImageFullName, prefix));
     }
 
     private void verifyDirectoryToSave(final File directoryToSave) {
@@ -105,9 +120,14 @@ public class ImageComparisonUtil {
     }
 
     private String getImageNameToSave(final String expectedImageFullName) {
-        return String.format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
+        return getImageNameToSave(expectedImageFullName, null);
+    }
+
+    private String getImageNameToSave(final String expectedImageFullName, final String prefix) {
+        String baseName = String.format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
+        return PrefixUtil.applyPrefix(prefix, baseName);
     }
 
     public int getStatusBarHeight(final WebDriver driver) {

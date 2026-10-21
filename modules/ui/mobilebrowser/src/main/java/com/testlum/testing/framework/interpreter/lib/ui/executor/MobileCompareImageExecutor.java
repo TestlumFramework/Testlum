@@ -21,7 +21,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
@@ -42,16 +41,20 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
         try {
             uiLogUtil.logImageComparisonInfo(image);
             resultUtil.addImageComparisonMetaData(image, result);
-            File scenarioFile = dependencies.getFile();
-            BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+            BufferedImage expected = readExpectedImage(image);
             BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
             ImageComparisonResult comparisonResult = imageComparator.compare(image, expected,
                     cutStatusBar(image.getFullScreen(), actual, dependencies.getDriver()));
             imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                    image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+                    image.isHighlightDifference(), dependencies.getRootFile().getParentFile(),
+                    dependencies.getPrefix(), result);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }
+    }
+
+    private BufferedImage readExpectedImage(final MobileImage image) throws IOException {
+        return ImageIO.read(fileSearcher.searchFileFromDir(dependencies.getFile(), image.getFile()));
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,

@@ -23,6 +23,8 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         return ExecutorDependencies.builder()
                 .context(dependencies.getContext())
                 .file(dependencies.getFile())
+                .rootFile(dependencies.getRootFile())
+                .prefix(dependencies.getPrefix())
                 .driver(uiType.getAppropriateDriver(dependencies))
                 .scenarioContext(dependencies.getScenarioContext())
                 .position(dependencies.getPosition())

@@ -10,6 +10,7 @@
     <x:simpleType name="url" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="https?://.+"/>
+            <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
         </x:restriction>
     </x:simpleType>
 
@@ -18,6 +19,14 @@
             <x:pattern value="https?://.+"/>
             <x:pattern value="chrome-extension://.+"/>
             <x:pattern value="\{\{.*\}\}"/>
+            <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="configAlias">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z_\-/\d]+"/>
+            <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
         </x:restriction>
     </x:simpleType>
 
@@ -36,12 +45,14 @@
     <x:simpleType name="urlWebsocket" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="((wss?|https?)://.+)"/>
+            <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
         </x:restriction>
     </x:simpleType>
 
     <x:simpleType name="windowSize">
         <x:restriction base="x:string">
             <x:pattern value="(\d+)x(\d+)"/>
+            <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
         </x:restriction>
     </x:simpleType>
 
@@ -71,7 +82,7 @@
     </x:complexType>
 
     <x:complexType name="integration" abstract="true">
-        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+        <x:attribute name="alias" type="tns:configAlias" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
@@ -119,7 +130,7 @@
         </x:choice>
         <x:attribute name="platformName" type="tns:platform" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
-        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+        <x:attribute name="alias" type="tns:configAlias" use="required"/>
     </x:complexType>
 
     <x:simpleType name="platform">

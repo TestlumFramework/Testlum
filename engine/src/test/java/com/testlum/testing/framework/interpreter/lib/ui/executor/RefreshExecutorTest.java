@@ -2,6 +2,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.model.scenario.Refresh;
 import io.appium.java_client.AppiumDriver;
@@ -26,6 +27,8 @@ class RefreshExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private AppiumDriver appiumDriver;
     @Mock
     private ApplicationContext context;
@@ -49,6 +52,7 @@ class RefreshExecutorTest {
                 .build();
         executor = new RefreshExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
     }
 
     @Nested
@@ -61,7 +65,7 @@ class RefreshExecutorTest {
 
             executor.execute(refresh, result);
 
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 }

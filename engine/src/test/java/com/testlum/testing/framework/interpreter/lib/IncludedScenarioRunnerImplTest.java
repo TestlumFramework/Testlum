@@ -116,7 +116,11 @@ class IncludedScenarioRunnerImplTest {
 
             final CommandResult result = new CommandResult();
             result.setSubCommandsResult(new ArrayList<>());
-            when(resultUtil.newCommandResultInstance(anyInt(), eq(mockCommand))).thenReturn(new CommandResult());
+            when(resultUtil.newCommandResultInstance(any(AtomicInteger.class), eq(mockCommand)))
+                    .thenAnswer(inv -> {
+                        inv.getArgument(0, AtomicInteger.class).incrementAndGet();
+                        return new CommandResult();
+                    });
 
             @SuppressWarnings("unchecked")
             final AbstractInterpreter<AbstractCommand> mockInterpreter = mock(AbstractInterpreter.class);
@@ -178,7 +182,11 @@ class IncludedScenarioRunnerImplTest {
 
             final CommandResult result = new CommandResult();
             result.setSubCommandsResult(new ArrayList<>());
-            when(resultUtil.newCommandResultInstance(anyInt(), eq(mockCommand))).thenReturn(new CommandResult());
+            when(resultUtil.newCommandResultInstance(any(AtomicInteger.class), eq(mockCommand)))
+                    .thenAnswer(inv -> {
+                        inv.getArgument(0, AtomicInteger.class).incrementAndGet();
+                        return new CommandResult();
+                    });
 
             @SuppressWarnings("unchecked")
             final AbstractInterpreter<AbstractCommand> mockInterpreter = mock(AbstractInterpreter.class);

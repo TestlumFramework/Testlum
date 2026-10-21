@@ -45,17 +45,17 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     }
 
     @Override
-    public void execute(final Image image, final CommandResult result) {
+    public void execute(final Image image, final CommandResult r) {
         try {
             uiLogUtil.logImageComparisonInfo(image);
-            resultUtil.addImageComparisonMetaData(image, result);
+            resultUtil.addImageComparisonMetaData(image, r);
             BufferedImage expected = readExpectedImage(image);
-            BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
-            List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
+            BufferedImage actual = getActualImage(dependencies.getDriver(), image, r);
+            List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver(), r);
             ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual, excludeList);
             imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                     image.isHighlightDifference(), dependencies.getRootFile().getParentFile(),
-                    dependencies.getPrefix(), result);
+                    dependencies.getPrefix(), r);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }
@@ -72,23 +72,23 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
             return getImageFromPicture(image, result);
         }
         if (Objects.nonNull(image.getPart())) {
-            return getImageFromPart(image);
+            return getImageFromPart(image, result);
         }
-        return ImageIO.read(uiUtil.takeScreenshot(webDriver));
+        return ImageIO.read(screenshotUtil.takeScreenshot(webDriver));
     }
 
     private BufferedImage getImageFromPicture(final Image image, final CommandResult result) throws IOException {
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
                 image.getPicture().getLocatorStrategy(),
-                ElementChecks.FOR_POSITIONING);
+                ElementChecks.FOR_POSITIONING, result);
         return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
     }
 
-    private BufferedImage getImageFromPart(final Image image) throws IOException {
+    private BufferedImage getImageFromPart(final Image image, final CommandResult result) throws IOException {
         WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                 image.getPart().getLocatorStrategy(),
-                ElementChecks.FOR_POSITIONING);
-        return ImageIO.read(uiUtil.takeScreenshot(webElement));
+                ElementChecks.FOR_POSITIONING, result);
+        return ImageIO.read(screenshotUtil.takeScreenshot(webElement));
     }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
@@ -109,20 +109,21 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     private List<Rectangle> getExcludeList(final WebFullScreen fullScreen,
                                            final BufferedImage expected,
-                                           final WebDriver driver) {
+                                           final WebDriver driver,
+                                           final CommandResult result) {
         if (Objects.nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
             Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
-                    .map(element -> getExcludeArea(element, scale))
+                    .map(element -> getExcludeArea(element, scale, result))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
 
-    private Rectangle getExcludeArea(final Exclude exclude, final Scale scale) {
+    private Rectangle getExcludeArea(final Exclude exclude, final Scale scale, final CommandResult result) {
         if (exclude.getByLocator() != null) {
             ByLocator byLocator = exclude.getByLocator();
-            return getElementArea(byLocator.getLocator(), scale, byLocator.getLocatorStrategy());
+            return getElementArea(byLocator.getLocator(), scale, byLocator.getLocatorStrategy(), result);
         } else {
             return getAreaByCoordinates(exclude);
         }
@@ -137,10 +138,11 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return new Scale(1, 1);
     }
 
-    private Rectangle getElementArea(final String locatorId, final Scale scale, final LocatorStrategy locatorStrategy) {
+    private Rectangle getElementArea(final String locatorId, final Scale scale,
+                                     final LocatorStrategy locatorStrategy, final CommandResult result) {
         org.openqa.selenium.Rectangle seleniumRectangle =
                 uiUtil.findWebElement(dependencies, locatorId, locatorStrategy,
-                        ElementChecks.FOR_POSITIONING).getRect();
+                        ElementChecks.FOR_POSITIONING, result).getRect();
         double x = seleniumRectangle.getX() * scale.getScaleX();
         double y = seleniumRectangle.getY() * scale.getScaleY();
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();

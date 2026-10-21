@@ -108,7 +108,7 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
                                     final InterpreterDependencies dependencies,
                                     final List<CommandResult> subCommandsResult) {
         CommandResult commandResult =
-                resultUtil.newCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+          resultUtil.newCommandResultInstance(dependencies.getPosition(), command);
         subCommandsResult.add(commandResult);
         executeCommand(command, dependencies, commandResult);
     }

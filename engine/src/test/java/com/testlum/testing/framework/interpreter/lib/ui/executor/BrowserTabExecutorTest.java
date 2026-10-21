@@ -6,6 +6,7 @@ import com.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.JavascriptUtil;
 import com.testlum.testing.framework.util.LogUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiLogUtil;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.framework.util.UiUtil;
@@ -36,6 +37,8 @@ class BrowserTabExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ResultUtil resultUtil;
     @Mock
     private JavascriptUtil javascriptUtil;
@@ -56,6 +59,7 @@ class BrowserTabExecutorTest {
                 .build();
         BrowserTabExecutor exec = new BrowserTabExecutor(dependencies);
         ReflectionTestUtils.setField(exec, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(exec, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(exec, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(exec, "javascriptUtil", javascriptUtil);
         ReflectionTestUtils.setField(exec, "logUtil", logUtil);
@@ -94,7 +98,7 @@ class BrowserTabExecutorTest {
 
             verify(driver.switchTo()).newWindow(WindowType.TAB);
             verify(resultUtil).addOpenTabMetadata(any(), eq(result));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
 
         @Test

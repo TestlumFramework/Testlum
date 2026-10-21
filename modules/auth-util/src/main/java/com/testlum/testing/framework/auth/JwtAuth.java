@@ -8,6 +8,7 @@ import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.IntegrationsProvider;
+import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.scenario.Auth;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -36,12 +37,14 @@ public class JwtAuth extends AbstractAuthStrategy {
     private final IntegrationsProvider integrationsProvider;
     private final List<Api> apiList;
     private final FileSearcher fileSearcher;
+    private final SystemVariableService systemVariableService;
 
     public JwtAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
         this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
         this.apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
+        this.systemVariableService = dependencies.getContext().getBean(SystemVariableService.class);
     }
 
     @Override
@@ -103,7 +106,9 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     private String getCredentialsFromFile(final String fileName) {
         try {
-            return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+            String content = FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName),
+                    StandardCharsets.UTF_8);
+            return systemVariableService.inject(content);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }

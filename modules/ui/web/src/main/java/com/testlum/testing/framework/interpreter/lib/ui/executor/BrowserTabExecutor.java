@@ -41,7 +41,7 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
         } else if (Objects.nonNull(browserTab.getSwitch())) {
             switchToTab(browserTab.getSwitch().getIndex(), result);
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        screenshotUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void closeTab(final Integer tabIndex, final CommandResult result) {

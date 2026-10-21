@@ -3,6 +3,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.LogUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiLogUtil;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.framework.util.UiUtil;
@@ -36,6 +37,8 @@ class SwipeNativeExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ResultUtil resultUtil;
     @Mock
     private LogUtil logUtil;
@@ -52,6 +55,7 @@ class SwipeNativeExecutorTest {
                 .build();
         SwipeNativeExecutor executor = new SwipeNativeExecutor(deps);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
@@ -189,13 +193,13 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 300));
-            when(uiUtil.findWebElement(any(), eq("scrollable-list"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("scrollable-list"), any(), any())).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
-            CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(swipeNative, result));
             verify(appiumDriver).perform(any());
         }
@@ -212,13 +216,13 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(150, 200));
-            when(uiUtil.findWebElement(any(), eq("carousel"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("carousel"), any(), any())).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
-            CommandResult result = new CommandResult();
             executor.execute(swipeNative, result);
 
             verify(appiumDriver, times(2)).perform(any());
@@ -236,18 +240,18 @@ class SwipeNativeExecutorTest {
             SwipeNative swipeNative = new SwipeNative();
             swipeNative.setElement(swipeElement);
 
+            final CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
             when(element.getLocation()).thenReturn(new Point(100, 100));
-            when(uiUtil.findWebElement(any(), eq("swipe-el"), any())).thenReturn(element);
+            when(uiUtil.findWebElement(any(), eq("swipe-el"), any(), any())).thenReturn(element);
             mockDriverWindow(appiumDriver, new Dimension(400, 800));
 
             SwipeNativeExecutor executor = createExecutor(appiumDriver);
-            CommandResult result = new CommandResult();
             executor.execute(swipeNative, result);
 
             verify(resultUtil).addSwipeMetaData(eq(swipeNative), eq(result));
             verify(uiLogUtil).logSwipeNativeInfo(eq(swipeNative));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
     }
 }

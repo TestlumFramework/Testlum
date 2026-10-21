@@ -131,7 +131,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         result.put(ResultUtil.HOTKEY_LOCATOR, locatorId);
         log.info(LogMessage.HOTKEY_COMMAND_LOCATOR, locatorId);
         return uiUtil.findWebElement(dependencies, locatorId, locatorStrategy,
-                ElementChecks.FOR_INTERACTION);
+                ElementChecks.FOR_INTERACTION, result);
     }
 
     private Keys chooseKeyForOperatingSystem() {

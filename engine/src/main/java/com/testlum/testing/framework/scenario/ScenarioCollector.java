@@ -1,9 +1,11 @@
 package com.testlum.testing.framework.scenario;
 
 import com.testlum.testing.framework.TestResourceSettings;
+import com.testlum.testing.framework.util.InjectionService;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.Overview;
 import com.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class ScenarioCollector {
     private final TestResourceSettings testResourceSettings;
     private final GlobalVariationsProvider globalVariationsProvider;
     private final AuthCommandExpander authCommandExpander;
+    private final InjectionService injectionService;
 
     public Result collect() {
         List<File> scenarios = new ArrayList<>();
@@ -62,12 +65,20 @@ public class ScenarioCollector {
         Scenario scenario = null;
         try {
             scenario = xmlParsers.forScenario().process(xmlFile);
+            injectTestRailVariables(scenario);
             processScenarioVariations(xmlFile, scenario);
             updateScenario(scenario);
             scenarioValidator.validate(scenario, xmlFile);
             result.add(new MappingResult(xmlFile, scenario, null));
         } catch (Exception e) {
             result.add(new MappingResult(xmlFile, scenario, e));
+        }
+    }
+
+    private void injectTestRailVariables(final Scenario scenario) {
+        Overview overview = scenario.getOverview();
+        if (Objects.nonNull(overview) && Objects.nonNull(overview.getTestRail())) {
+            overview.setTestRail(injectionService.injectFromSystem(overview.getTestRail()));
         }
     }
 

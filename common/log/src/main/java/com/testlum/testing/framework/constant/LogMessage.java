@@ -60,6 +60,12 @@ public final class LogMessage {
             + LogFormat.newLogLine()
             + LINE);
 
+    public static final String EMPTY_SCENARIOS_FOR_TESTRAIL = LogFormat.withYellow(LINE
+            + LogFormat.newLogLine()
+            + "There is not scenarios to push to TestRail."
+            + LogFormat.newLogLine()
+            + LINE);
+
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
 
     public static final String NAME_LOG = LogFormat.table("Name");
@@ -230,6 +236,8 @@ public final class LogMessage {
             "Element is not visible: it may have 'display:none' or 'visibility:hidden' applied";
     public static final String UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE =
             "Element has zero dimensions and cannot be interacted with";
+    public static final String UI_OPTION_PARENT_SELECT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE =
+            "Element is an <option> and its parent <select> is not visible: %s";
     public static final String XSD_SCHEMA_WARNING_LOG = "Schema warning in {} at line {}: {}";
 
     public static final String UNRESOLVED_INCLUDE_PATH_LOG = LogFormat.withYellow(

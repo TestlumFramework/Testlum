@@ -217,6 +217,23 @@ class InnerScrollScriptTest {
             assertNotNull(innerScrollScript.getVerticalByClass());
             assertNotNull(innerScrollScript.getVerticalByXpath());
         }
+
+        @Test
+        void throwsDefaultFrameworkExceptionForInvalidValue() {
+            CssSelector css = new CssSelector();
+            css.setValue(".container");
+            when(uiUtil.getLocatorByStrategy(any(), any())).thenReturn(locatorData);
+            when(locatorData.getLocator()).thenReturn(locator);
+            when(webElementFinder.getLocatorsByType(eq(locator), eq(CssSelector.class)))
+                    .thenReturn(List.of(css));
+            final Scroll scroll = new Scroll();
+            scroll.setValue("invalid_number");
+            scroll.setDirection(ScrollDirection.DOWN);
+            scroll.setMeasure(ScrollMeasure.PIXEL);
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> innerScrollScript.getInnerScrollScript(scroll, uiUtil));
+        }
     }
 
     private Scroll createScroll(final int value, final ScrollDirection direction, final ScrollMeasure measure) {

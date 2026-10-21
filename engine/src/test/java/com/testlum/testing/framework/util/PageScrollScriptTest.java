@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.util;
 
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.scenario.Scroll;
 import com.testlum.testing.model.scenario.ScrollDirection;
 import com.testlum.testing.model.scenario.ScrollMeasure;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -93,6 +95,16 @@ class PageScrollScriptTest {
 
             final String script = PageScrollScript.getPageScrollScript(scroll, uiUtil);
             assertEquals("window.scrollBy(0, 150)", script);
+        }
+
+        @Test
+        void throwsDefaultFrameworkExceptionForInvalidValue() {
+            final Scroll scroll = new Scroll();
+            scroll.setValue("not_a_number");
+            scroll.setDirection(ScrollDirection.DOWN);
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> PageScrollScript.getPageScrollScript(scroll, uiUtil));
         }
     }
 

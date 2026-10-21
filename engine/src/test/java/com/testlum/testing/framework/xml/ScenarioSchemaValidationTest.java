@@ -87,7 +87,7 @@ class ScenarioSchemaValidationTest {
     }
 
     @Test
-    void acceptsWaitWithSpecialCharacterVariables(@TempDir final Path tempDir) throws IOException {
+    void acceptsWaitWithVariables(@TempDir final Path tempDir) throws IOException {
         File file = createScenarioFile(tempDir,
                 "    <wait comment=\"" + COMMENT + "\" time=\"{{wait.timeout}}\"/>\n"
                 + "    <wait comment=\"" + COMMENT + "\" time=\"{{wait-sec}}\"/>\n"
@@ -98,8 +98,24 @@ class ScenarioSchemaValidationTest {
         assertEquals(4, scenario.getCommands().size());
         assertEquals("{{wait.timeout}}", ((Wait) scenario.getCommands().get(0)).getTime());
         assertEquals("{{wait-sec}}", ((Wait) scenario.getCommands().get(1)).getTime());
-        assertEquals("{{ wait_val }}", ((Wait) scenario.getCommands().get(2)).getTime());
+        assertEquals("{{wait_val}}", ((Wait) scenario.getCommands().get(2)).getTime().replaceAll("\\s+", ""));
         assertEquals("10", ((Wait) scenario.getCommands().get(3)).getTime());
+    }
+
+    @Test
+    void rejectsWaitWithSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <wait comment=\"" + COMMENT + "\" time=\"{{var&TestName!}}\"/>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsScrollWithSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <web comment=\"" + COMMENT + "\">\n"
+                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{var&TestName!}}\"/>\n"
+                + "    </web>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
     }
 
     @Test

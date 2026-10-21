@@ -71,7 +71,7 @@ public class SwitchToFrame
             @XmlElement(name = "var", type = WebVar.class),
             @XmlElement(name = "condition", type = UiCondition.class),
             @XmlElement(name = "doubleClick", type = DoubleClick.class),
-            @XmlElement(name = "ai", type = UiAi.class)
+            @XmlElement(name = "alert", type = Alert.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "index")
@@ -114,7 +114,7 @@ public class SwitchToFrame
      * {@link WebVar }
      * {@link UiCondition }
      * {@link DoubleClick }
-     * {@link UiAi }
+     * {@link Alert }
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {
         if (clickOrInputOrAssert == null) {

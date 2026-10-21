@@ -73,7 +73,8 @@ public class MobilebrowserRepeat
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = MobilebrowserRepeat.class),
-        @XmlElement(name = "ai", type = UiAi.class)
+        @XmlElement(name = "ai", type = UiAi.class),
+        @XmlElement(name = "alert", type = Alert.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "times")
@@ -118,6 +119,7 @@ public class MobilebrowserRepeat
      * {@link UiCondition }
      * {@link MobilebrowserRepeat }
      * {@link UiAi }
+     * {@link Alert }
      * 
      * 
      */

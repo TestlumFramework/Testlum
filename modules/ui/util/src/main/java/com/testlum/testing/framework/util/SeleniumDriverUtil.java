@@ -3,6 +3,7 @@ package com.testlum.testing.framework.util;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.global_config.*;
+import org.apache.commons.lang3.BooleanUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.stereotype.Component;
 
@@ -49,8 +50,14 @@ public class SeleniumDriverUtil {
         Capabilities capabilities = abstractDevice.getCapabilities();
         if (Objects.nonNull(capabilities)) {
             capabilities.getCapability()
-                    .forEach(cap -> desiredCapabilities.setCapability(cap.getName(), cap.getValue()));
+                    .forEach(cap -> desiredCapabilities.setCapability(
+                            cap.getName(), parseCapabilityValue(cap.getValue())));
         }
+    }
+
+    public Object parseCapabilityValue(final String value) {
+        Boolean booleanValue = BooleanUtils.toBooleanObject(value);
+        return Objects.nonNull(booleanValue) ? booleanValue : value;
     }
 
     public URL toURL(final String url) {

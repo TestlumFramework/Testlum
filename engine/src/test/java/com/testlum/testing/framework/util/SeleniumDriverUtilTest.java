@@ -98,4 +98,20 @@ class SeleniumDriverUtilTest {
             assertTrue((Boolean) bstackOptions.get("local"));
         }
     }
+
+    @Nested
+    class ParseCapabilityValue {
+        @Test
+        void parsesBooleanValues() {
+            assertEquals(Boolean.TRUE, util.parseCapabilityValue("true"));
+            assertEquals(Boolean.TRUE, util.parseCapabilityValue("True"));
+            assertEquals(Boolean.FALSE, util.parseCapabilityValue("false"));
+            assertEquals(Boolean.FALSE, util.parseCapabilityValue("False"));
+        }
+
+        @Test
+        void returnsOriginalValueIfNotBoolean() {
+            assertEquals("customValue", util.parseCapabilityValue("customValue"));
+        }
+    }
 }

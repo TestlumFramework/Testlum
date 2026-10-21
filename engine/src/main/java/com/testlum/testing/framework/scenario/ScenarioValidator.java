@@ -278,7 +278,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVarCommand(xmlFile, var.getFile(), var.getSql());
         });
         map.put(o -> o instanceof Repeat, (xmlFile, command) ->
-                validateRepeatCommand(((Repeat) command).getVariations()));
+                validateRepeatCommand(xmlFile, ((Repeat) command).getVariations()));
     }
 
     private void registerUiValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {
@@ -309,10 +309,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void registerUiRepeatValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {
-        map.put(o -> o instanceof WebRepeat, (f, c) -> validateRepeatCommand(((WebRepeat) c).getVariations()));
-        map.put(o -> o instanceof NativeRepeat, (f, c) -> validateRepeatCommand(((NativeRepeat) c).getVariations()));
+        map.put(o -> o instanceof WebRepeat,
+                (f, c) -> validateRepeatCommand(f, ((WebRepeat) c).getVariations()));
+        map.put(o -> o instanceof NativeRepeat,
+                (f, c) -> validateRepeatCommand(f, ((NativeRepeat) c).getVariations()));
         map.put(o -> o instanceof MobilebrowserRepeat,
-                (f, c) -> validateRepeatCommand(((MobilebrowserRepeat) c).getVariations()));
+                (f, c) -> validateRepeatCommand(f, ((MobilebrowserRepeat) c).getVariations()));
     }
 
     private void registerUiFileValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {
@@ -646,10 +648,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateRepeatCommand(final String variationsFileName) {
+    private void validateRepeatCommand(final File xmlFile, final String variationsFileName) {
         if (StringUtils.isNotBlank(variationsFileName)) {
             globalVariationsProvider.process(variationsFileName);
-            variationList.get().addAll(globalVariationsProvider.getVariations(variationsFileName));
+            List<Map<String, String>> repeatVariations = globalVariationsProvider.getVariations(variationsFileName);
+            if (repeatVariations.isEmpty()) {
+                throw new DefaultFrameworkException(ExceptionMessage.VARIATION_FILE_IS_EMPTY,
+                        variationsFileName, xmlFile.getAbsolutePath());
+            }
+            variationList.get().addAll(repeatVariations);
         }
     }
 

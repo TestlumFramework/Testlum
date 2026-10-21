@@ -1077,6 +1077,19 @@ class ScenarioValidatorTest {
             verify(globalVariationsProvider).process("repeat_vars.csv");
             verify(globalVariationsProvider).getVariations("repeat_vars.csv");
         }
+
+        @Test
+        void repeatWithEmptyVariationsFileThrows() {
+            when(globalVariationsProvider.getVariations("empty.csv")).thenReturn(List.of());
+
+            Repeat repeat = new Repeat();
+            repeat.setVariations("empty.csv");
+
+            Scenario scenario = createScenario(true, repeat);
+            DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(scenario, xmlFile()));
+            assertTrue(exception.getMessage().contains("empty.csv"));
+        }
     }
 
     @Nested

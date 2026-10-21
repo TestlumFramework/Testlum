@@ -53,13 +53,15 @@ public class LocatorAutohealer implements AutoHealer {
     private static final double STRUCTURAL_MAX_WEIGHT = 0.3;
     private static final double STRUCTURAL_WEIGHT_PER_SIGNAL = 0.10;
     private static final int MAX_CANDIDATES_FOR_STRUCTURAL_CHECK = 40;
+    private static final double CONTAINER_PENALTY_MULTIPLIER = 0.7;
+    private static final double SCORE_EPSILON = 0.001;
     private static final Pattern DYNAMIC_VALUE_PATTERN = Pattern.compile(
             ".*[_-][a-f0-9]{5,}$"
             + "|^[a-f0-9]{8,}$"
             + "|.*\\d{10,}.*"
             + "|.*__[A-Za-z0-9]{5,}$");
     private static final List<String> FALLBACK_TAGS =
-            List.of("input", "button", "a", "select", "textarea", "div", "span", "label");
+            List.of("button", "a", "input", "select", "textarea", "label", "span", "p", "div");
 
     private static final String PATCH_FILE_PREFIX = TestResourceSettings.PATCH_FILE_PREFIX;
     private static final String PATCH_FILE_EXTENSION = ".xml";
@@ -100,7 +102,7 @@ public class LocatorAutohealer implements AutoHealer {
             if (finalScore < MIN_ACCEPTABLE_SCORE) {
                 continue;
             }
-            if (best == null || finalScore > best.score) {
+            if (best == null || isBetterCandidate(scored.element, finalScore, best.element, best.score)) {
                 best = new ScoredElement(scored.element, finalScore);
             }
         }
@@ -298,6 +300,36 @@ public class LocatorAutohealer implements AutoHealer {
 
         return new StructuralInfo(matchedChecks, checksPerformed);
     }
+
+    private boolean isBetterCandidate(final WebElement candidate, final double candidateScore,
+                                      final WebElement currentBest, final double bestScore) {
+        if (candidateScore > bestScore + SCORE_EPSILON) {
+            if (isAncestorOf(candidate, currentBest)) {
+                return false;
+            }
+            return true;
+        }
+        if (Math.abs(candidateScore - bestScore) <= SCORE_EPSILON) {
+            if (isAncestorOf(currentBest, candidate)) {
+                return true;
+            }
+            if (isAncestorOf(candidate, currentBest)) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private boolean isAncestorOf(final WebElement potentialAncestor, final WebElement potentialDescendant) {
+        try {
+            Boolean result = (Boolean) ((JavascriptExecutor) driver).executeScript(
+                    "return arguments[0] !== arguments[1] && arguments[0].contains(arguments[1]);",
+                    potentialAncestor, potentialDescendant);
+            return Boolean.TRUE.equals(result);
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
     // CHECKSTYLE:ON
 
     private File generatePatchForLocatorDefinedInScenario(final ExecutorDependencies dependencies,
@@ -389,7 +421,31 @@ public class LocatorAutohealer implements AutoHealer {
         if (candidateText.isEmpty()) {
             return 0;
         }
-        return maxSimilarity(texts, candidateText);
+        double score = maxSimilarity(texts, candidateText);
+        if (score > 0 && hasChildWithSameText(candidate, candidateText)) {
+            score *= CONTAINER_PENALTY_MULTIPLIER;
+        }
+        return score;
+    }
+
+    private boolean hasChildWithSameText(final WebElement candidate, final String normalizedText) {
+        try {
+            Boolean hasChild = (Boolean) ((JavascriptExecutor) driver).executeScript(
+                    "var el = arguments[0];"
+                    + "var targetText = arguments[1];"
+                    + "var all = el.querySelectorAll('*');"
+                    + "for (var i = 0; i < all.length; i++) {"
+                    + "  var child = all[i];"
+                    + "  var raw = child.innerText || child.textContent || '';"
+                    + "  var ct = raw.trim().replace(/\\s+/g, ' ').toLowerCase();"
+                    + "  if (ct === targetText) return true;"
+                    + "}"
+                    + "return false;",
+                    candidate, normalizedText);
+            return Boolean.TRUE.equals(hasChild);
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 
     private double calculateIdScore(final Collection<String> ids, final WebElement candidate) {

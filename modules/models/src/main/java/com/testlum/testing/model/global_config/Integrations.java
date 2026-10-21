@@ -8,16 +8,17 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
- * <pre>
+ * &lt;p&gt;Java class for anonymous complex type&lt;/p&gt;.
+ *
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
+ *
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;all&gt;
  *         &lt;element name="aiIntegration" type="{http://www.testlum.com/testing/model/global-config}aiIntegration" minOccurs="0"/&gt;
+ *         &lt;element name="authStrategies" type="{http://www.testlum.com/testing/model/global-config}authStrategies" minOccurs="0"/&gt;
  *         &lt;element name="apis" type="{http://www.testlum.com/testing/model/global-config}apis" minOccurs="0"/&gt;
  *         &lt;element name="websockets" type="{http://www.testlum.com/testing/model/global-config}websockets" minOccurs="0"/&gt;
  *         &lt;element name="graphqlIntegration" type="{http://www.testlum.com/testing/model/global-config}graphqlIntegration" minOccurs="0"/&gt;
@@ -43,9 +44,9 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
- * 
- * 
+ * }&lt;/pre&gt;
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -55,6 +56,7 @@ import jakarta.xml.bind.annotation.XmlType;
 public class Integrations {
 
     protected AiIntegration aiIntegration;
+    protected AuthStrategies authStrategies;
     protected Apis apis;
     protected Websockets websockets;
     protected GraphqlIntegration graphqlIntegration;
@@ -102,12 +104,36 @@ public class Integrations {
     }
 
     /**
+     * Gets the value of the authStrategies property.
+     *
+     * @return
+     *     possible object is
+     *     {@link AuthStrategies }
+     *
+     */
+    public AuthStrategies getAuthStrategies() {
+        return authStrategies;
+    }
+
+    /**
+     * Sets the value of the authStrategies property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link AuthStrategies }
+     *
+     */
+    public void setAuthStrategies(AuthStrategies value) {
+        this.authStrategies = value;
+    }
+
+    /**
      * Gets the value of the apis property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Apis }
-     *     
+     *
      */
     public Apis getApis() {
         return apis;
@@ -115,11 +141,11 @@ public class Integrations {
 
     /**
      * Sets the value of the apis property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Apis }
-     *     
+     *
      */
     public void setApis(Apis value) {
         this.apis = value;
@@ -127,11 +153,11 @@ public class Integrations {
 
     /**
      * Gets the value of the websockets property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link Websockets }
-     *     
+     *
      */
     public Websockets getWebsockets() {
         return websockets;
@@ -139,11 +165,11 @@ public class Integrations {
 
     /**
      * Sets the value of the websockets property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link Websockets }
-     *     
+     *
      */
     public void setWebsockets(Websockets value) {
         this.websockets = value;
@@ -151,11 +177,11 @@ public class Integrations {
 
     /**
      * Gets the value of the graphqlIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link GraphqlIntegration }
-     *     
+     *
      */
     public GraphqlIntegration getGraphqlIntegration() {
         return graphqlIntegration;
@@ -163,11 +189,11 @@ public class Integrations {
 
     /**
      * Sets the value of the graphqlIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link GraphqlIntegration }
-     *     
+     *
      */
     public void setGraphqlIntegration(GraphqlIntegration value) {
         this.graphqlIntegration = value;
@@ -175,11 +201,11 @@ public class Integrations {
 
     /**
      * Gets the value of the postgresIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link PostgresIntegration }
-     *     
+     *
      */
     public PostgresIntegration getPostgresIntegration() {
         return postgresIntegration;
@@ -187,11 +213,11 @@ public class Integrations {
 
     /**
      * Sets the value of the postgresIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link PostgresIntegration }
-     *     
+     *
      */
     public void setPostgresIntegration(PostgresIntegration value) {
         this.postgresIntegration = value;
@@ -199,11 +225,11 @@ public class Integrations {
 
     /**
      * Gets the value of the clickhouseIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link ClickhouseIntegration }
-     *     
+     *
      */
     public ClickhouseIntegration getClickhouseIntegration() {
         return clickhouseIntegration;
@@ -211,11 +237,11 @@ public class Integrations {
 
     /**
      * Sets the value of the clickhouseIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link ClickhouseIntegration }
-     *     
+     *
      */
     public void setClickhouseIntegration(ClickhouseIntegration value) {
         this.clickhouseIntegration = value;
@@ -223,11 +249,11 @@ public class Integrations {
 
     /**
      * Gets the value of the mysqlIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link MysqlIntegration }
-     *     
+     *
      */
     public MysqlIntegration getMysqlIntegration() {
         return mysqlIntegration;
@@ -235,11 +261,11 @@ public class Integrations {
 
     /**
      * Sets the value of the mysqlIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link MysqlIntegration }
-     *     
+     *
      */
     public void setMysqlIntegration(MysqlIntegration value) {
         this.mysqlIntegration = value;
@@ -247,11 +273,11 @@ public class Integrations {
 
     /**
      * Gets the value of the oracleIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link OracleIntegration }
-     *     
+     *
      */
     public OracleIntegration getOracleIntegration() {
         return oracleIntegration;
@@ -259,11 +285,11 @@ public class Integrations {
 
     /**
      * Sets the value of the oracleIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link OracleIntegration }
-     *     
+     *
      */
     public void setOracleIntegration(OracleIntegration value) {
         this.oracleIntegration = value;
@@ -271,11 +297,11 @@ public class Integrations {
 
     /**
      * Gets the value of the redisIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link RedisIntegration }
-     *     
+     *
      */
     public RedisIntegration getRedisIntegration() {
         return redisIntegration;
@@ -283,11 +309,11 @@ public class Integrations {
 
     /**
      * Sets the value of the redisIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link RedisIntegration }
-     *     
+     *
      */
     public void setRedisIntegration(RedisIntegration value) {
         this.redisIntegration = value;
@@ -295,11 +321,11 @@ public class Integrations {
 
     /**
      * Gets the value of the mongoIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link MongoIntegration }
-     *     
+     *
      */
     public MongoIntegration getMongoIntegration() {
         return mongoIntegration;
@@ -307,11 +333,11 @@ public class Integrations {
 
     /**
      * Sets the value of the mongoIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link MongoIntegration }
-     *     
+     *
      */
     public void setMongoIntegration(MongoIntegration value) {
         this.mongoIntegration = value;
@@ -319,11 +345,11 @@ public class Integrations {
 
     /**
      * Gets the value of the s3Integration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link S3Integration }
-     *     
+     *
      */
     public S3Integration getS3Integration() {
         return s3Integration;
@@ -331,11 +357,11 @@ public class Integrations {
 
     /**
      * Sets the value of the s3Integration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link S3Integration }
-     *     
+     *
      */
     public void setS3Integration(S3Integration value) {
         this.s3Integration = value;
@@ -343,11 +369,11 @@ public class Integrations {
 
     /**
      * Gets the value of the sqsIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link SqsIntegration }
-     *     
+     *
      */
     public SqsIntegration getSqsIntegration() {
         return sqsIntegration;
@@ -355,11 +381,11 @@ public class Integrations {
 
     /**
      * Sets the value of the sqsIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link SqsIntegration }
-     *     
+     *
      */
     public void setSqsIntegration(SqsIntegration value) {
         this.sqsIntegration = value;
@@ -367,11 +393,11 @@ public class Integrations {
 
     /**
      * Gets the value of the kafkaIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link KafkaIntegration }
-     *     
+     *
      */
     public KafkaIntegration getKafkaIntegration() {
         return kafkaIntegration;
@@ -379,11 +405,11 @@ public class Integrations {
 
     /**
      * Sets the value of the kafkaIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link KafkaIntegration }
-     *     
+     *
      */
     public void setKafkaIntegration(KafkaIntegration value) {
         this.kafkaIntegration = value;
@@ -391,11 +417,11 @@ public class Integrations {
 
     /**
      * Gets the value of the rabbitmqIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link RabbitmqIntegration }
-     *     
+     *
      */
     public RabbitmqIntegration getRabbitmqIntegration() {
         return rabbitmqIntegration;
@@ -403,11 +429,11 @@ public class Integrations {
 
     /**
      * Sets the value of the rabbitmqIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link RabbitmqIntegration }
-     *     
+     *
      */
     public void setRabbitmqIntegration(RabbitmqIntegration value) {
         this.rabbitmqIntegration = value;
@@ -415,11 +441,11 @@ public class Integrations {
 
     /**
      * Gets the value of the dynamoIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link DynamoIntegration }
-     *     
+     *
      */
     public DynamoIntegration getDynamoIntegration() {
         return dynamoIntegration;
@@ -427,11 +453,11 @@ public class Integrations {
 
     /**
      * Sets the value of the dynamoIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link DynamoIntegration }
-     *     
+     *
      */
     public void setDynamoIntegration(DynamoIntegration value) {
         this.dynamoIntegration = value;
@@ -439,11 +465,11 @@ public class Integrations {
 
     /**
      * Gets the value of the elasticsearchIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link ElasticsearchIntegration }
-     *     
+     *
      */
     public ElasticsearchIntegration getElasticsearchIntegration() {
         return elasticsearchIntegration;
@@ -451,11 +477,11 @@ public class Integrations {
 
     /**
      * Sets the value of the elasticsearchIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link ElasticsearchIntegration }
-     *     
+     *
      */
     public void setElasticsearchIntegration(ElasticsearchIntegration value) {
         this.elasticsearchIntegration = value;
@@ -463,11 +489,11 @@ public class Integrations {
 
     /**
      * Gets the value of the lambdaIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link LambdaIntegration }
-     *     
+     *
      */
     public LambdaIntegration getLambdaIntegration() {
         return lambdaIntegration;
@@ -475,11 +501,11 @@ public class Integrations {
 
     /**
      * Sets the value of the lambdaIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link LambdaIntegration }
-     *     
+     *
      */
     public void setLambdaIntegration(LambdaIntegration value) {
         this.lambdaIntegration = value;
@@ -487,11 +513,11 @@ public class Integrations {
 
     /**
      * Gets the value of the sendgridIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link SendgridIntegration }
-     *     
+     *
      */
     public SendgridIntegration getSendgridIntegration() {
         return sendgridIntegration;
@@ -499,11 +525,11 @@ public class Integrations {
 
     /**
      * Sets the value of the sendgridIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link SendgridIntegration }
-     *     
+     *
      */
     public void setSendgridIntegration(SendgridIntegration value) {
         this.sendgridIntegration = value;
@@ -511,11 +537,11 @@ public class Integrations {
 
     /**
      * Gets the value of the sesIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link SesIntegration }
-     *     
+     *
      */
     public SesIntegration getSesIntegration() {
         return sesIntegration;
@@ -523,11 +549,11 @@ public class Integrations {
 
     /**
      * Sets the value of the sesIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link SesIntegration }
-     *     
+     *
      */
     public void setSesIntegration(SesIntegration value) {
         this.sesIntegration = value;
@@ -535,11 +561,11 @@ public class Integrations {
 
     /**
      * Gets the value of the smtpIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link SmtpIntegration }
-     *     
+     *
      */
     public SmtpIntegration getSmtpIntegration() {
         return smtpIntegration;
@@ -547,11 +573,11 @@ public class Integrations {
 
     /**
      * Sets the value of the smtpIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link SmtpIntegration }
-     *     
+     *
      */
     public void setSmtpIntegration(SmtpIntegration value) {
         this.smtpIntegration = value;
@@ -559,11 +585,11 @@ public class Integrations {
 
     /**
      * Gets the value of the twilioIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link TwilioIntegration }
-     *     
+     *
      */
     public TwilioIntegration getTwilioIntegration() {
         return twilioIntegration;
@@ -571,11 +597,11 @@ public class Integrations {
 
     /**
      * Sets the value of the twilioIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link TwilioIntegration }
-     *     
+     *
      */
     public void setTwilioIntegration(TwilioIntegration value) {
         this.twilioIntegration = value;
@@ -583,11 +609,11 @@ public class Integrations {
 
     /**
      * Gets the value of the sqlDatabaseIntegration property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link SqlDatabaseIntegration }
-     *     
+     *
      */
     public SqlDatabaseIntegration getSqlDatabaseIntegration() {
         return sqlDatabaseIntegration;
@@ -595,11 +621,11 @@ public class Integrations {
 
     /**
      * Sets the value of the sqlDatabaseIntegration property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link SqlDatabaseIntegration }
-     *     
+     *
      */
     public void setSqlDatabaseIntegration(SqlDatabaseIntegration value) {
         this.sqlDatabaseIntegration = value;

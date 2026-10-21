@@ -109,6 +109,18 @@ class JacksonServiceTest {
         }
 
         @Test
+        void convertsJsonObjectWithSurroundingWhitespace() {
+            final Object result = service.toJsonObject("\n  {\"a\":1}\n  ");
+            assertInstanceOf(Map.class, result);
+        }
+
+        @Test
+        void convertsJsonArrayWithSurroundingWhitespace() {
+            final Object result = service.toJsonObject("\n  [1,2,3]\n  ");
+            assertInstanceOf(List.class, result);
+        }
+
+        @Test
         void returnsPlainStringAsIs() {
             final Object result = service.toJsonObject("plain text");
             assertEquals("plain text", result);

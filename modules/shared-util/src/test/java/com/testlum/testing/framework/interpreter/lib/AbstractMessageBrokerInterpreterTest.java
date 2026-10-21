@@ -252,6 +252,12 @@ abstract class AbstractMessageBrokerInterpreterTest {
         void returnsMessageWhenBothPresent() {
             assertEquals("msg", interpreter.callGetValue("msg", "file.json"));
         }
+
+        @Test
+        void returnsNormalizedMessageWhenHasXmlIndentationAndNewlines() {
+            final String indented = "\n                ping\n            ";
+            assertEquals("ping", interpreter.callGetValue(indented, null));
+        }
     }
 
     @Nested

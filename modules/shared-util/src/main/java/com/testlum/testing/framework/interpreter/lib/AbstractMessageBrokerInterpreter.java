@@ -123,7 +123,11 @@ public abstract class AbstractMessageBrokerInterpreter<T extends AbstractCommand
     }
 
     protected String getValue(final String message, final String file) {
-        return StringUtils.isNotBlank(message) ? message : getContentIfFile(file);
+        return StringUtils.isNotBlank(message) ? normalizeMessage(message) : getContentIfFile(file);
+    }
+
+    private String normalizeMessage(final String message) {
+        return message.stripIndent().trim();
     }
 
     protected void logMessageBrokerMetaData(final String action,

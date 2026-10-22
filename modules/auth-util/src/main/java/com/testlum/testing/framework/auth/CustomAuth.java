@@ -5,11 +5,13 @@ import com.jayway.jsonpath.JsonPath;
 import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.constant.DelimiterConstant;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.global_config.CustomAuthStrategy;
 import com.testlum.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -34,16 +36,15 @@ public class CustomAuth extends AbstractAuthStrategy {
     private static final String AUTHENTICATION_TYPE = "Authentication type";
     private static final String CUSTOM_PREFIX = "Custom ";
 
-    private final IntegrationsProvider integrationsProvider;
-    private final List<Api> apiList;
     private final FileSearcher fileSearcher;
     private final SystemVariableService systemVariableService;
     private final RestTemplate restTemplate;
+    private final CustomAuthStrategy configuration;
 
-    public CustomAuth(final InterpreterDependencies dependencies) {
+    public CustomAuth(final InterpreterDependencies dependencies,
+                      final CustomAuthStrategy configuration) {
         super(dependencies);
-        this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
-        this.apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
+        this.configuration = configuration;
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
         this.systemVariableService = dependencies.getContext().getBean(SystemVariableService.class);
         this.restTemplate = dependencies.getContext().getBean(RestTemplate.class);
@@ -60,20 +61,22 @@ public class CustomAuth extends AbstractAuthStrategy {
     private String getCustomToken(final Auth auth) {
         final String body = getCredentialsFromFile(auth.getCredentials());
         final HttpEntity<String> request = new HttpEntity<>(body, getHeaders());
-        final String response = restTemplate.postForObject(getFullApiUrl(auth), request, String.class);
+        final String response = restTemplate.postForObject(getLoginEndpoint(), request, String.class);
         if (StringUtils.isBlank(response)) {
-            return DelimiterConstant.EMPTY;
+            throw new DefaultFrameworkException(
+                    "Login response is empty for auth strategy <%s>", configuration.getAlias());
         }
-        return extractToken(auth, response);
+        return extractToken(response);
     }
 
-    private String extractToken(final Auth auth, final String response) {
+    private String extractToken(final String response) {
         final DocumentContext context = JsonPath.parse(response);
-        final Api apiIntegration = integrationsProvider.findApiForAlias(apiList, auth.getApiAlias());
-        final String tokenName = StringUtils.isNotBlank(apiIntegration.getAuth().getTokenName())
-                ? apiIntegration.getAuth().getTokenName()
-                : "customToken";
-        return context.read("$." + tokenName);
+        final Object value = context.read("$.customToken");
+        if (!(value instanceof String token) || StringUtils.isBlank(token)) {
+            throw new DefaultFrameworkException("Login response must contain a non-empty customToken "
+                    + "for auth strategy <%s>", configuration.getAlias());
+        }
+        return token;
     }
 
     private HttpHeaders getHeaders() {
@@ -83,9 +86,13 @@ public class CustomAuth extends AbstractAuthStrategy {
         return headers;
     }
 
-    private String getFullApiUrl(final Auth auth) {
-        final Api apiIntegration = integrationsProvider.findApiForAlias(apiList, auth.getApiAlias());
-        return apiIntegration.getUrl() + auth.getLoginEndpoint();
+    private String getLoginEndpoint() {
+        final String endpoint = configuration.getLoginEndpoint();
+        if (StringUtils.isBlank(endpoint)) {
+            throw new DefaultFrameworkException(
+                    "Login endpoint is required by CustomAuth for strategy <%s>", configuration.getAlias());
+        }
+        return endpoint;
     }
 
     @SneakyThrows
@@ -96,8 +103,8 @@ public class CustomAuth extends AbstractAuthStrategy {
     }
 
     private void logAuthInfo(final Auth auth) {
-        log.info(ALIAS_LOG, auth.getApiAlias());
-        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(ALIAS_LOG, configuration.getAlias());
+        log.info(ENDPOINT_LOG, configuration.getLoginEndpoint());
         log.info(CREDENTIALS_LOG, auth.getCredentials());
     }
 }

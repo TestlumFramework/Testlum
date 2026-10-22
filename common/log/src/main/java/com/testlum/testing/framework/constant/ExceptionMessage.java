@@ -53,7 +53,7 @@ public class ExceptionMessage {
     public static final String API_NOT_FOUND =
             "Cannot find api with alias <%s>";
     public static final String AUTH_NOT_FOUND =
-            "Cannot find <auth> configuration for <api> with alias <%s>";
+            "Cannot find auth strategy with alias <%s>";
     public static final String AUTH_ALIASES_DOESNT_MATCH =
             "<Http> command alias doesn't match with <auth> alias";
 
@@ -207,4 +207,6 @@ public class ExceptionMessage {
     public static final String REPEAT_TYPE_IS_NOT_PROVIDED = """
             <repeat> must specify either 'times' or 'variations'.
             Use 'times' to run the commands a fixed number of times, or 'variations' to run them once per variation""";
+    public static final String AUTH_STRATEGIES_NOT_CONFIGURED = "Section <authStrategies> is not configured";
+    public static final String AUTH_DUPLICATE_ALIAS = "More than one auth strategy was found with alias <%s>";
 }

@@ -4,7 +4,6 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.scenario.AuthCommandExpander;
 import com.testlum.testing.framework.scenario.ScenarioValidator;
 import com.testlum.testing.framework.util.ConfigUtil;
 import com.testlum.testing.framework.util.LogUtil;
@@ -37,7 +36,6 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
     private final LogUtil logUtil;
     private final InterpreterProvider interpreterProvider;
     private final ScenarioValidator scenarioValidator;
-    private final AuthCommandExpander authCommandExpander;
 
     private final ThreadLocal<Deque<File>> includeStack = ThreadLocal.withInitial(ArrayDeque::new);
 
@@ -68,7 +66,7 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
                                      final CommandResult result) {
         Scenario includedScenario = xmlParsers.forScenario().process(includedFile, scenarioValidator);
         List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
+        for (AbstractCommand command : includedScenario.getCommands()) {
             processEachCommand(command, dependencies, subCommandsResult);
         }
         resultUtil.setExecutionResultIfSubCommandsFailed(result);

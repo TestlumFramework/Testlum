@@ -4,12 +4,10 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.FileSearcher;
-import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.framework.util.SystemVariableService;
-import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.global_config.JwtAuthStrategy;
 import com.testlum.testing.model.scenario.Auth;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,32 +15,26 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
 
-    private static final String INVALID_CREDENTIALS_LOG = LogFormat.table("Invalid credentials");
-    private static final String SERVER_BAD_GATEWAY_RESPONSE_LOG = LogFormat.table("Server is shutdown");
     private static final String SERVER_ERROR_RESPONSE_LOG = LogFormat.table("Request failed");
-
-    private final IntegrationsProvider integrationsProvider;
-    private final List<Api> apiList;
     private final FileSearcher fileSearcher;
     private final SystemVariableService systemVariableService;
+    private final JwtAuthStrategy configuration;
 
-    public JwtAuth(final InterpreterDependencies dependencies) {
+    public JwtAuth(final InterpreterDependencies dependencies,
+                   final JwtAuthStrategy configuration) {
         super(dependencies);
-        this.integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
-        this.apiList = integrationsProvider.findListByEnv(Api.class, dependencies.getEnvironment());
+        this.configuration = configuration;
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
         this.systemVariableService = dependencies.getContext().getBean(SystemVariableService.class);
     }
@@ -59,18 +51,33 @@ public class JwtAuth extends AbstractAuthStrategy {
         String body = prepareBody(auth);
         HttpHeaders headers = getHeaders();
         HttpEntity<String> request = new HttpEntity<>(body, headers);
-        String response = doRequest(auth, request);
-        if (StringUtils.isNotBlank(response)) {
-            return getTokenFromResponse(auth, response);
+        String response = doRequest(request);
+        if (StringUtils.isBlank(response)) {
+            throw new DefaultFrameworkException(
+                    "Login response is empty for auth strategy <%s>", configuration.getAlias());
         }
-        return DelimiterConstant.EMPTY;
+        return getTokenFromResponse(response);
     }
 
-    private String getTokenFromResponse(final Auth auth, final String response) {
+    private String getTokenFromResponse(final String response) {
         DocumentContext context = JsonPath.parse(response);
-        Api apiIntegration = integrationsProvider.findApiForAlias(apiList, auth.getApiAlias());
-        return context.read(StringUtils.isNotBlank(apiIntegration.getAuth().getTokenName())
-                ? apiIntegration.getAuth().getTokenName() : AuthorizationConstant.CONTENT_KEY_TOKEN);
+        Object value = context.read(getTokenPath());
+        if (!(value instanceof String token) || StringUtils.isBlank(token)) {
+            throw new DefaultFrameworkException("Login response must contain a non-empty string token "
+                    + "for auth strategy <%s>", configuration.getAlias());
+        }
+        return token;
+    }
+
+    private String getTokenPath() {
+        String tokenName = StringUtils.defaultIfBlank(configuration.getTokenName(), AuthorizationConstant.CONTENT_KEY_TOKEN);
+        if (tokenName.startsWith("$")) {
+            return tokenName;
+        }
+        String escapedName = tokenName
+                .replace("\\", "\\\\")
+                .replace("'", "\\'");
+        return "$['" + escapedName + "']";
     }
 
     private String prepareBody(final Auth auth) {
@@ -84,24 +91,20 @@ public class JwtAuth extends AbstractAuthStrategy {
         return headers;
     }
 
-    private String doRequest(final Auth auth, final HttpEntity<String> request) {
+    private String doRequest(final HttpEntity<String> request) {
         RestClient restClient = RestClient.create();
         try {
             return restClient.post()
-                    .uri(getFullApiUrl(auth))
+                    .uri(configuration.getLoginEndpoint())
                     .headers(h -> h.addAll(request.getHeaders()))
                     .body(request.getBody())
                     .retrieve()
                     .body(String.class);
-        } catch (HttpClientErrorException exception) {
+        } catch (RestClientResponseException exception) {
             logResponseStatusError(exception);
+            throw new DefaultFrameworkException(
+                    "JWT login failed for auth strategy <" + configuration.getAlias() + ">", exception);
         }
-        return DelimiterConstant.EMPTY;
-    }
-
-    private String getFullApiUrl(final Auth auth) {
-        Api apiIntegration = integrationsProvider.findApiForAlias(apiList, auth.getApiAlias());
-        return apiIntegration.getUrl() + auth.getLoginEndpoint();
     }
 
     private String getCredentialsFromFile(final String fileName) {
@@ -115,19 +118,12 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private void logAuthInfo(final Auth auth) {
-        log.info(ALIAS_LOG, auth.getApiAlias());
-        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(ALIAS_LOG, configuration.getAlias());
+        log.info(ENDPOINT_LOG, configuration.getLoginEndpoint());
         log.info(CREDENTIALS_LOG, auth.getCredentials());
     }
 
-    private void logResponseStatusError(final HttpClientErrorException exception) {
-        int code = exception.getStatusCode().value();
-        if (HttpStatus.NOT_FOUND.value() == code) {
-            log.info(INVALID_CREDENTIALS_LOG, code);
-        } else if (HttpStatus.BAD_GATEWAY.value() == code) {
-            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, code);
-        } else {
-            log.info(SERVER_ERROR_RESPONSE_LOG, code);
-        }
+    private void logResponseStatusError(final RestClientResponseException exception) {
+        log.info(SERVER_ERROR_RESPONSE_LOG, exception.getStatusCode().value());
     }
 }

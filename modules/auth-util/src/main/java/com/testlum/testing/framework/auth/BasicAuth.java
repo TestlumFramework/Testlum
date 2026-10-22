@@ -7,6 +7,7 @@ import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.SystemVariableService;
+import com.testlum.testing.model.global_config.BasicAuthStrategy;
 import com.testlum.testing.model.scenario.Auth;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +22,11 @@ public class BasicAuth extends AbstractAuthStrategy {
 
     private final FileSearcher fileSearcher;
     private final SystemVariableService systemVariableService;
+    private final BasicAuthStrategy configuration;
 
-    public BasicAuth(final InterpreterDependencies dependencies) {
+    public BasicAuth(final InterpreterDependencies dependencies, final BasicAuthStrategy configuration) {
         super(dependencies);
+        this.configuration = configuration;
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
         this.systemVariableService = dependencies.getContext().getBean(SystemVariableService.class);
     }
@@ -55,8 +58,7 @@ public class BasicAuth extends AbstractAuthStrategy {
     }
 
     private void logAuthInfo(final Auth auth) {
-        log.info(ALIAS_LOG, auth.getApiAlias());
-        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(ALIAS_LOG, configuration.getAlias());
         log.info(CREDENTIALS_LOG, auth.getCredentials());
     }
 }

@@ -14,7 +14,6 @@ import com.testlum.testing.framework.util.IntegrationsUtil;
 import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLValidator;
-import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.global_config.Apis;
 import com.testlum.testing.model.global_config.AppiumCapabilities;
 import com.testlum.testing.model.global_config.ClickhouseIntegration;
@@ -109,17 +108,22 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void registerApiValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map,
                                        final Integrations integrations) {
-        map.put(o -> o instanceof Auth, (f, c) -> validateAuth((Auth) c, integrations));
+        map.put(o -> o instanceof Auth, (f, c) -> validateAuth((Auth) c, integrations, f));
         map.put(o -> o instanceof Http, (f, c) -> validateHttp(f, (Http) c, integrations));
         map.put(o -> o instanceof Graphql, (f, c) -> validateGraphql(f, (Graphql) c, integrations));
         map.put(o -> o instanceof Websocket, (f, c) -> validateWs(f, (Websocket) c, integrations));
         map.put(o -> o instanceof Elasticsearch, (f, c) -> validateEs(f, (Elasticsearch) c, integrations));
     }
 
-    private void validateAuth(final Auth auth, final Integrations i) {
-        checkIntegrationExistence(i.getApis(), Apis.class);
+    private void validateAuth(final Auth auth,
+                              final Integrations integrations,
+                              final File xmlFile) {
+        if (integrations.getAuthStrategies() == null) {
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_STRATEGIES_NOT_CONFIGURED);
+        }
         validateFileExistenceInDataFolder(auth.getCredentials());
-        validateAuthCommand(auth);
+        validateAuthCommand(auth, integrations);
+        auth.getCommands().forEach(command -> validateCommand(command, xmlFile));
     }
 
     private void validateHttp(final File f, final Http http, final Integrations i) {
@@ -192,8 +196,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private <I> void validateDbCmd(final File xmlFile, final String alias, final String file,
-                                    final I integration, final Class<I> intClass,
-                                    final java.util.function.Function<I, List<? extends Integration>> listFn) {
+                                   final I integration, final Class<I> intClass,
+                                   final java.util.function.Function<I, List<? extends Integration>> listFn) {
         checkIntegrationExistence(integration, intClass);
         validateAlias(listFn.apply(integration), alias);
         validateFileIfExist(xmlFile, file);
@@ -277,8 +281,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             Var var = (Var) command;
             validateVarCommand(xmlFile, var.getFile(), var.getSql());
         });
-        map.put(o -> o instanceof Repeat, (xmlFile, command) ->
-                validateRepeatCommand(((Repeat) command).getVariations()));
+        map.put(o -> o instanceof Repeat, (xmlFile, command) -> {
+            Repeat repeat = (Repeat) command;
+            validateRepeatCommand(repeat.getVariations());
+            repeat.getCommands().forEach(child -> validateCommand(child, xmlFile));
+        });
     }
 
     private void registerUiValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {
@@ -489,16 +496,17 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         return listFn.apply(integration);
     }
 
-    private void validateAuthCommand(final Auth auth) {
-        Api apiIntegration = integrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
-        if (Objects.isNull(apiIntegration.getAuth())) {
-            throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, apiIntegration.getAlias());
+    private void validateAuthCommand(final Auth auth,
+                                     final Integrations integrations) {
+        String alias = auth.getStrategyAlias();
+        if (alias.contains(DelimiterConstant.DOUBLE_OPEN_BRACE)) {
+            return;
         }
-        boolean authCmdAliasNotMatch = auth.getCommands().stream()
-                .anyMatch(command -> command instanceof Http
-                        && !((Http) command).getAlias().equalsIgnoreCase(auth.getApiAlias()));
-        if (authCmdAliasNotMatch) {
-            throw new DefaultFrameworkException(ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH);
+        boolean found = integrations.getAuthStrategies().getJwtOrBasicOrCustom()
+                .stream()
+                .anyMatch(strategy -> alias.equals(strategy.getAlias()));
+        if (!found) {
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, alias);
         }
     }
 

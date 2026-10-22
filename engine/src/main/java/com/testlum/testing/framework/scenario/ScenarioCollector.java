@@ -25,7 +25,6 @@ public class ScenarioCollector {
     private final XMLParsers xmlParsers;
     private final TestResourceSettings testResourceSettings;
     private final GlobalVariationsProvider globalVariationsProvider;
-    private final AuthCommandExpander authCommandExpander;
     private final InjectionService injectionService;
 
     public Result collect() {
@@ -67,7 +66,6 @@ public class ScenarioCollector {
             scenario = xmlParsers.forScenario().process(xmlFile);
             injectTestRailVariables(scenario);
             processScenarioVariations(xmlFile, scenario);
-            updateScenario(scenario);
             scenarioValidator.validate(scenario, xmlFile);
             result.add(new MappingResult(xmlFile, scenario, null));
         } catch (Exception e) {
@@ -87,12 +85,6 @@ public class ScenarioCollector {
                 && Objects.nonNull(scenario.getSettings().getVariations())) {
             globalVariationsProvider.process(scenario, xmlFile);
         }
-    }
-
-    private void updateScenario(final Scenario scenario) {
-        List<AbstractCommand> updatedCommands = authCommandExpander.expand(scenario.getCommands());
-        scenario.getCommands().clear();
-        scenario.getCommands().addAll(updatedCommands);
     }
 
     public static class Result extends ArrayList<MappingResult> {

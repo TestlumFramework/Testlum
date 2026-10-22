@@ -11,6 +11,7 @@ import com.testlum.testing.model.pages.Locator;
 import com.testlum.testing.model.pages.Page;
 
 import java.io.File;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class LocatorCollector {
     private final Map<String, File> pageFiles;
     private final Map<String, File> componentFiles;
     private final Map<String, LocatorData> locatorMap;
+    private final Map<Locator, File> includedLocatorFiles = new IdentityHashMap<>();
 
     public LocatorCollector(final XMLParsers xmlParsers,
                             final PageValidator pageValidator,
@@ -66,13 +68,14 @@ public class LocatorCollector {
         List<Locator> includes = page.getLocators().getLocator();
 
         for (Include include : page.getInclude()) {
-            Component component = parseComponent(include, xmlParsers);
-            includes.addAll(component.getLocators().getLocator());
+            File componentFile = componentFiles.get(include.getComponent());
+            List<Locator> componentLocators = parseComponent(componentFile, xmlParsers).getLocators().getLocator();
+            componentLocators.forEach(locator -> includedLocatorFiles.put(locator, componentFile));
+            includes.addAll(componentLocators);
         }
     }
 
-    private Component parseComponent(final Include include, final XMLParsers xmlParsers) {
-        File file = componentFiles.get(include.getComponent());
+    private Component parseComponent(final File file, final XMLParsers xmlParsers) {
         return xmlParsers.forComponentLocator().process(file);
     }
 
@@ -81,10 +84,15 @@ public class LocatorCollector {
 
         for (Map.Entry<File, Page> each : fileToPage.entrySet()) {
             for (Locator locator : each.getValue().getLocators().getLocator()) {
-                result.put(getKeyName(each, locator), new LocatorData(each.getKey(), locator));
+                File sourceFile = resolveSourceFile(each.getKey(), locator);
+                result.put(getKeyName(each, locator), new LocatorData(sourceFile, locator));
             }
         }
         return result;
+    }
+
+    private File resolveSourceFile(final File pageFile, final Locator locator) {
+        return includedLocatorFiles.getOrDefault(locator, pageFile);
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {

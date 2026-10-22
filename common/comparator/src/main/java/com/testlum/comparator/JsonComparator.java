@@ -22,6 +22,15 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
 
     @Override
     public void compare(final JsonNode expected, final JsonNode actual) throws MatchException {
+        try {
+            compareNode(expected, actual);
+        } catch (MatchException e) {
+            e.prependPath("$");
+            throw e;
+        }
+    }
+
+    private void compareNode(final JsonNode expected, final JsonNode actual) throws MatchException {
         JsonNodeType expectedType = expected.getNodeType();
         JsonNodeType actualType = actual.getNodeType();
         compareByType(expected, actual, expectedType, actualType);
@@ -96,23 +105,59 @@ public class JsonComparator extends AbstractObjectComparator<JsonNode> {
             JsonNode expectedItem = expected.get(i);
             JsonNode actualItem = actual.get(i);
 
-            compare(expectedItem, actualItem);
+            try {
+                compareNode(expectedItem, actualItem);
+            } catch (MatchException e) {
+                e.prependPath("[" + i + "]");
+                throw e;
+            }
         }
     }
 
     private void compareFields(final List<Map.Entry<String, JsonNode>> expected,
                                final List<Map.Entry<String, JsonNode>> actual) throws MatchException {
-        mode.onStrict(() -> ErrorHelper.raise(expected.size() != actual.size(),
-                "Difference in properties or count Missing"));
-
         Map<String, JsonNode> actualMap = toMap(actual);
-        for (Map.Entry<String, JsonNode> expectedEntry : expected) {
-            JsonNode actualValue = actualMap.get(expectedEntry.getKey());
-            if (actualValue == null) {
-                ErrorHelper.raise(String.format("Property with name [%s] not found", expectedEntry.getKey()));
+        mode.onStrict(() -> {
+            String difference = differenceInProperties(expected, actualMap);
+            if (difference != null) {
+                ErrorHelper.raise(difference);
             }
-            compare(expectedEntry.getValue(), actualValue);
+        });
+
+        for (Map.Entry<String, JsonNode> expectedEntry : expected) {
+            compareField(expectedEntry, actualMap.get(expectedEntry.getKey()));
         }
+    }
+
+    private void compareField(final Map.Entry<String, JsonNode> expected, final JsonNode actualValue) {
+        if (actualValue == null) {
+            ErrorHelper.raise(String.format("Property with name [%s] not found", expected.getKey()));
+        }
+        try {
+            compareNode(expected.getValue(), actualValue);
+        } catch (MatchException e) {
+            e.prependPath(segment(expected.getKey()));
+            throw e;
+        }
+    }
+
+    private static String differenceInProperties(final List<Map.Entry<String, JsonNode>> expected,
+                                                 final Map<String, JsonNode> actual) {
+        List<String> missing = expected.stream().map(Map.Entry::getKey).filter(k -> !actual.containsKey(k)).toList();
+        List<String> known = expected.stream().map(Map.Entry::getKey).toList();
+        List<String> unexpected = actual.keySet().stream().filter(k -> !known.contains(k)).toList();
+        if (missing.isEmpty() && unexpected.isEmpty()) {
+            return null;
+        }
+        return String.format("Difference in properties: expected %d actual %d, missing %s, unexpected %s",
+                expected.size(), actual.size(), missing, unexpected);
+    }
+
+    private static String segment(final String key) {
+        if (key.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            return "." + key;
+        }
+        return "['" + key.replace("\\", "\\\\").replace("'", "\\'") + "']";
     }
 
     private Map<String, JsonNode> toMap(final List<Map.Entry<String, JsonNode>> entries) {

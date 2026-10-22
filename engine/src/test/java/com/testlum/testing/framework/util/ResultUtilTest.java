@@ -202,7 +202,7 @@ class ResultUtilTest {
                     new com.testlum.testing.model.scenario.Scroll();
             scroll.setDirection(com.testlum.testing.model.scenario.ScrollDirection.DOWN);
             scroll.setMeasure(com.testlum.testing.model.scenario.ScrollMeasure.PIXEL);
-            scroll.setValue(300);
+            scroll.setValue("300");
             scroll.setType(com.testlum.testing.model.scenario.ScrollType.PAGE);
 
             resultUtil.addScrollMetaData(scroll, result);
@@ -211,7 +211,7 @@ class ResultUtilTest {
                     result.getMetadata().get("Scroll direction"));
             assertEquals(com.testlum.testing.model.scenario.ScrollMeasure.PIXEL,
                     result.getMetadata().get("Scroll measure"));
-            assertEquals(300, result.getMetadata().get("Value"));
+            assertEquals("300", result.getMetadata().get("Value"));
         }
     }
 

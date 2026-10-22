@@ -80,13 +80,22 @@ public class InnerScrollScript {
                                             final Scroll scroll,
                                             final List<String> selectorList,
                                             final UiUtil uiUtil) {
-        int value = scroll.getValue();
+        int value = parseScrollValue(scroll.getValue());
         ScrollDirection scrollDirection = scroll.getDirection();
         return selectorList.stream()
                 .map(selector -> ScrollMeasure.PERCENT == scroll.getMeasure()
                         ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection, uiUtil)
                         : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection))
                 .toList();
+    }
+
+    private int parseScrollValue(final String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            throw new DefaultFrameworkException(
+                    String.format("Invalid scroll value: '%s'. Expected a valid integer.", value));
+        }
     }
 
     private String formatInnerPixelScript(final String script,

@@ -124,7 +124,7 @@
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">
             <x:pattern
-                    value="(\s|\n)*([Ss][Ee][Ll][Ee][Cc][Tt]|[Ww][Ii][Tt][Hh]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Dd][Ee][Ll][Ee][Tt][Ee])(\s|\n)(.|\n)+"/>
+                    value="(\s|\n)*([Ss][Ee][Ll][Ee][Cc][Tt]|[Ww][Ii][Tt][Hh]|[Ii][Nn][Ss][Ee][Rr][Tt]|[Uu][Pp][Dd][Aa][Tt][Ee]|[Dd][Ee][Ll][Ee][Tt][Ee])[^A-Za-z0-9_](.|\n)+"/>
         </x:restriction>
     </x:simpleType>
 

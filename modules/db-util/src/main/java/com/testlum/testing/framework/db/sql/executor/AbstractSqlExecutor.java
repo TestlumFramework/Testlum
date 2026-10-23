@@ -46,6 +46,8 @@ public abstract class AbstractSqlExecutor {
             Pattern.DOTALL | Pattern.MULTILINE
     );
     private static final Pattern RETURNING = Pattern.compile("\\bRETURNING\\b", Pattern.CASE_INSENSITIVE);
+    private static final Pattern BLOCK_COMMENT = Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL);
+    private static final Pattern STRING_LITERAL = Pattern.compile("'(?:[^']|'')*'");
 
     protected final JdbcTemplate template;
 
@@ -169,7 +171,9 @@ public abstract class AbstractSqlExecutor {
     }
 
     private boolean hasReturningClause(final String query) {
-        return RETURNING.matcher(query).find();
+        String cleaned = BLOCK_COMMENT.matcher(query).replaceAll(" ");
+        cleaned = STRING_LITERAL.matcher(cleaned).replaceAll("''");
+        return RETURNING.matcher(cleaned).find();
     }
 
     private static class SQLUtil {

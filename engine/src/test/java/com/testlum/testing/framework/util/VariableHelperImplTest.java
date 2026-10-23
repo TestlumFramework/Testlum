@@ -552,6 +552,57 @@ class VariableHelperImplTest {
 
             assertEquals("val", value);
         }
+
+        private String runSql(final String query, final Object content) {
+            FromSQL fromSQL = new FromSQL();
+            fromSQL.setDbType(RelationalDB.POSTGRES);
+            fromSQL.setAlias("a");
+            fromSQL.setQuery(query);
+            AbstractStorageOperation storageOperation = mock(AbstractStorageOperation.class);
+            when(aliasToStorageOperation.getByNameOrThrow("POSTGRES_a")).thenReturn(storageOperation);
+            AbstractStorageOperation.QueryResult<Object> queryResult = new AbstractStorageOperation
+                    .QueryResult<>(query);
+            queryResult.setContent(content);
+            List<AbstractStorageOperation.QueryResult<?>> rawList = new ArrayList<>();
+            rawList.add(queryResult);
+            when(storageOperation.apply(any(ListSource.class), eq("a")))
+                    .thenReturn(new AbstractStorageOperation.StorageOperationResult(rawList));
+            return variableHelper.getSQLResult(fromSQL, "v", new CommandResult());
+        }
+
+        @Test
+        void storesMultipleColumnsAsJsonArray() {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("name", "John");
+            row.put("email", "john@email.com");
+            assertEquals("[{\"name\":\"John\",\"email\":\"john@email.com\"}]",
+                    runSql("SELECT name, email FROM users", List.of(row)));
+        }
+
+        @Test
+        void storesMultipleRowsAsJsonArray() {
+            assertEquals("[{\"id\":1},{\"id\":2}]",
+                    runSql("SELECT id FROM users", List.of(Map.of("id", 1), Map.of("id", 2))));
+        }
+
+        @Test
+        void encodesBinaryValueAsBase64() {
+            assertEquals("AQID",
+                    runSql("SELECT data FROM files", List.of(Map.of("data", new byte[]{1, 2, 3}))));
+        }
+
+        @Test
+        void keepsNullInJson() {
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("a", null);
+            row.put("b", "x");
+            assertEquals("[{\"a\":null,\"b\":\"x\"}]", runSql("SELECT a, b FROM t", List.of(row)));
+        }
+
+        @Test
+        void returnsAffectedCountForDml() {
+            assertEquals("3", runSql("UPDATE t SET a = 1", Collections.singletonMap("count", 3)));
+        }
     }
 
     @Nested
@@ -781,16 +832,14 @@ class VariableHelperImplTest {
         }
 
         @Test
-        void returnsFirstColumnWhenResultHasSeveralColumns() {
+        void returnsJsonWhenResultHasSeveralColumns() {
             LinkedCaseInsensitiveMap<Object> row = new LinkedCaseInsensitiveMap<>();
             row.put("name", "Alice");
             row.put("email", "alice@example.com");
 
-            // The row intentionally has several columns: only the first one is taken.
-            // (The scenario schema doesn't allow this, but the helper must not depend on query text.)
             String value = runQuery("SELECT name FROM users WHERE id = 1", row);
 
-            assertEquals("Alice", value);
+            assertEquals("[{\"name\":\"Alice\",\"email\":\"alice@example.com\"}]", value);
         }
 
         @Test

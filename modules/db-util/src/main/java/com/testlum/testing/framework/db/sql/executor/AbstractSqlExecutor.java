@@ -45,6 +45,9 @@ public abstract class AbstractSqlExecutor {
                     + "(?:insert\\s+into|update|delete|create|alter|drop|with|do)\\b)",
             Pattern.DOTALL | Pattern.MULTILINE
     );
+    private static final Pattern RETURNING = Pattern.compile("\\bRETURNING\\b", Pattern.CASE_INSENSITIVE);
+    private static final Pattern BLOCK_COMMENT = Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL);
+    private static final Pattern STRING_LITERAL = Pattern.compile("'(?:[^']|'')*'");
 
     protected final JdbcTemplate template;
 
@@ -137,7 +140,7 @@ public abstract class AbstractSqlExecutor {
     }
 
     private Object executeAppropriateQuery(final String query) {
-        if (checkMatchQuery(query, INSERT, UPDATE, DELETE)) {
+        if (checkMatchQuery(query, INSERT, UPDATE, DELETE) && !hasReturningClause(query)) {
             return executeDMLQuery(query);
         } else if (checkMatchQuery(query, ALTER, CREATE, TRUNCATE, DROP, SET, DO, CALL)) {
             return executeDDLQuery(query);
@@ -165,6 +168,12 @@ public abstract class AbstractSqlExecutor {
                 query.toUpperCase().startsWith(s)
                         || query.toUpperCase().startsWith(StringUtils.SPACE + s);
         return Stream.of(operations).anyMatch(validatedQuery);
+    }
+
+    private boolean hasReturningClause(final String query) {
+        String cleaned = BLOCK_COMMENT.matcher(query).replaceAll(" ");
+        cleaned = STRING_LITERAL.matcher(cleaned).replaceAll("''");
+        return RETURNING.matcher(cleaned).find();
     }
 
     private static class SQLUtil {

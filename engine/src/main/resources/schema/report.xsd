@@ -8,9 +8,14 @@
     <x:include schemaLocation="extent-reports-config.xsd"/>
 
     <x:complexType name="report">
-        <x:choice>
+        <x:sequence>
             <x:element name="extentReports" type="tns:extentReports"/>
-        </x:choice>
+            <x:element name="junit" type="tns:junitReport" minOccurs="0"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="junitReport">
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
 </x:schema>

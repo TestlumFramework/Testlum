@@ -4,6 +4,7 @@ import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.JavascriptUtil;
 import com.testlum.testing.framework.util.ResultUtil;
+import com.testlum.testing.framework.util.ScreenshotUtil;
 import com.testlum.testing.framework.util.UiUtil;
 import com.testlum.testing.framework.util.check.ElementChecks;
 import com.testlum.testing.model.scenario.Click;
@@ -28,6 +29,8 @@ class ClickExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ScreenshotUtil screenshotUtil;
+    @Mock
     private ResultUtil resultUtil;
     @Mock
     private JavascriptUtil javascriptUtil;
@@ -47,6 +50,7 @@ class ClickExecutorTest {
                 .build();
         executor = new ClickExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "screenshotUtil", screenshotUtil);
         ReflectionTestUtils.setField(executor, "resultUtil", resultUtil);
         ReflectionTestUtils.setField(executor, "javascriptUtil", javascriptUtil);
     }
@@ -61,14 +65,14 @@ class ClickExecutorTest {
             click.setMethod(null);
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("btn-submit"), any(), eq(ElementChecks.FOR_INTERACTION)))
+            when(uiUtil.findWebElement(any(), eq("btn-submit"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
                     .thenReturn(element);
 
             executor.execute(click, result);
 
             verify(element).click();
             verify(uiUtil).highlightElementIfRequired(anyBoolean(), eq(element), eq(driver));
-            verify(uiUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
+            verify(screenshotUtil).takeScreenshotAndSaveIfRequired(eq(result), any());
         }
 
         @Test
@@ -78,7 +82,7 @@ class ClickExecutorTest {
             click.setMethod(ClickMethod.SELENIUM);
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("btn-ok"), any(), eq(ElementChecks.FOR_INTERACTION)))
+            when(uiUtil.findWebElement(any(), eq("btn-ok"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
                     .thenReturn(element);
 
             executor.execute(click, result);
@@ -97,7 +101,7 @@ class ClickExecutorTest {
             click.setMethod(ClickMethod.JS);
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("btn-js"), any(), eq(ElementChecks.FOR_INTERACTION)))
+            when(uiUtil.findWebElement(any(), eq("btn-js"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
                     .thenReturn(element);
 
             executor.execute(click, result);
@@ -115,7 +119,7 @@ class ClickExecutorTest {
             click.setLocator("my-locator");
             CommandResult result = new CommandResult();
             WebElement element = mock(WebElement.class);
-            when(uiUtil.findWebElement(any(), eq("my-locator"), any(), eq(ElementChecks.FOR_INTERACTION)))
+            when(uiUtil.findWebElement(any(), eq("my-locator"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
                     .thenReturn(element);
 
             executor.execute(click, result);

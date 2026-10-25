@@ -8,6 +8,7 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.testlum.testing.framework.locator.LocatorData;
+import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.check.ElementCheck;
 import com.testlum.testing.framework.util.check.ElementChecks;
 import com.testlum.testing.framework.util.check.PageLoadCheck;
@@ -44,6 +45,9 @@ class WebElementFinderTest {
 
     @Mock
     private AutoHealerFactory autoHealerFactory;
+
+    @Mock
+    private ScreenshotUtil screenshotUtil;
 
     @InjectMocks
     private WebElementFinder webElementFinder;
@@ -327,7 +331,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator),
+                    deps, ElementChecks.NONE, commandResult);
             assertNotNull(result);
             assertEquals(mockElement, result);
         }
@@ -360,7 +366,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator),
+                    deps, ElementChecks.NONE, commandResult);
             assertEquals(mockElement, result);
         }
 
@@ -384,7 +392,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator),
+                    deps, ElementChecks.NONE, commandResult);
             assertEquals(mockElement, result);
         }
 
@@ -407,7 +417,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator),
+                    deps, ElementChecks.NONE, commandResult);
             assertEquals(mockElement, result);
             verify(pageLoadCheck).waitUntilDomReady(deps);
         }
@@ -440,7 +452,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator),
+                    deps, ElementChecks.NONE, commandResult);
             assertEquals(mockElement, result);
             verify(mockDriver, times(1)).findElement(expectedBy);
         }
@@ -470,7 +484,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            WebElement result = webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            WebElement result = webElementFinder.find(new LocatorData(null, locator),
+                    deps, ElementChecks.NONE, commandResult);
             assertEquals(mockElement, result);
         }
     }
@@ -500,7 +516,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE, commandResult);
             verify(pageLoadCheck).waitUntilDomReady(deps);
         }
 
@@ -523,7 +540,8 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE);
+            CommandResult commandResult = new CommandResult();
+            webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE, commandResult);
             verify(pageLoadCheck).waitUntilDomReady(deps);
         }
     }
@@ -555,8 +573,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.WEB).build();
 
-            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE));
+            CommandResult commandResult = new CommandResult();
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class, () ->
+                    webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE, commandResult));
             assertTrue(ex.getMessage().contains("testLocator"));
         }
 
@@ -580,8 +599,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE));
+            CommandResult commandResult = new CommandResult();
+            assertThrows(DefaultFrameworkException.class, () -> webElementFinder.find(
+                    new LocatorData(null, locator), deps, ElementChecks.NONE, commandResult));
         }
     }
 
@@ -611,8 +631,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(mockDriver).uiType(UiType.NATIVE).build();
 
-            assertThrows(DefaultFrameworkException.class,
-                    () -> webElementFinder.find(new LocatorData(null, locator), deps, ElementChecks.NONE));
+            CommandResult commandResult = new CommandResult();
+            assertThrows(DefaultFrameworkException.class, () -> webElementFinder.find(
+                    new LocatorData(null, locator), deps, ElementChecks.NONE, commandResult));
         }
     }
 
@@ -649,6 +670,7 @@ class WebElementFinderTest {
 
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(false);
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(2);
@@ -656,9 +678,10 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.WEB).build();
 
+            CommandResult commandResult = new CommandResult();
             assertThrows(DefaultFrameworkException.class,
                     () -> webElementFinder.find(new LocatorData(null, locator), deps,
-                            ElementChecks.FOR_READING));
+                            ElementChecks.FOR_READING, commandResult));
             verify(driver, atLeast(2)).findElement(by);
         }
 
@@ -672,6 +695,7 @@ class WebElementFinderTest {
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(false, true);
             when(element.getSize()).thenReturn(new Dimension(10, 10));
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(5);
@@ -679,8 +703,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.WEB).build();
 
+            CommandResult commandResult = new CommandResult();
             WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
-                    ElementChecks.FOR_READING);
+                    ElementChecks.FOR_READING, commandResult);
             assertEquals(element, result);
         }
 
@@ -694,6 +719,7 @@ class WebElementFinderTest {
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(true);
             when(element.getSize()).thenReturn(new Dimension(0, 0));
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(1);
@@ -701,9 +727,10 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.WEB).build();
 
+            CommandResult commandResult = new CommandResult();
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                     () -> webElementFinder.find(new LocatorData(null, locator), deps,
-                            ElementChecks.FOR_READING));
+                            ElementChecks.FOR_READING, commandResult));
             assertTrue(ex.getMessage().contains("zeroSizeBtn"));
             assertTrue(ex.getMessage().contains(LogMessage.UI_ELEMENT_HAS_ZERO_SIZE_EXCEPTION_MESSAGE));
         }
@@ -718,6 +745,7 @@ class WebElementFinderTest {
 
             WebElement element = mock(WebElement.class);
             when(element.isDisplayed()).thenReturn(false);
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             stubWebSettings(1);
@@ -725,9 +753,10 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.WEB).build();
 
+            CommandResult commandResult = new CommandResult();
             assertThrows(DefaultFrameworkException.class,
                     () -> webElementFinder.find(new LocatorData(null, locator), deps,
-                            ElementChecks.FOR_READING));
+                            ElementChecks.FOR_READING, commandResult));
             verifyNoInteractions(autoHealerFactory);
         }
 
@@ -746,6 +775,7 @@ class WebElementFinderTest {
             WebElement healed = mock(WebElement.class);
             when(healed.isDisplayed()).thenReturn(true);
             when(healed.getSize()).thenReturn(new Dimension(10, 10));
+            when(healed.getTagName()).thenReturn("button");
             AutoHealer autoHealer = mock(AutoHealer.class);
             when(autoHealer.heal(locator)).thenReturn(Optional.of(healed));
             when(autoHealerFactory.create(any())).thenReturn(autoHealer);
@@ -753,8 +783,9 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.WEB).build();
 
+            CommandResult commandResult = new CommandResult();
             WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
-                    ElementChecks.FOR_READING);
+                    ElementChecks.FOR_READING, commandResult);
             assertEquals(healed, result);
             verify(healed).isDisplayed();
         }
@@ -773,6 +804,7 @@ class WebElementFinderTest {
 
             WebElement healed = mock(WebElement.class);
             when(healed.isDisplayed()).thenReturn(false);
+            when(healed.getTagName()).thenReturn("button");
             AutoHealer autoHealer = mock(AutoHealer.class);
             when(autoHealer.heal(locator)).thenReturn(Optional.of(healed));
             when(autoHealerFactory.create(any())).thenReturn(autoHealer);
@@ -780,9 +812,10 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.WEB).build();
 
+            CommandResult commandResult = new CommandResult();
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                     () -> webElementFinder.find(new LocatorData(null, locator), deps,
-                            ElementChecks.FOR_READING));
+                            ElementChecks.FOR_READING, commandResult));
             assertTrue(ex.getMessage().contains(LogMessage.UI_ELEMENT_IS_NOT_VISIBLE_EXCEPTION_MESSAGE));
         }
 
@@ -794,9 +827,6 @@ class WebElementFinderTest {
             when(byService.xpath(anyList())).thenReturn(List.of(by));
 
             WebElement element = mock(WebElement.class);
-            when(element.isDisplayed()).thenReturn(true);
-            when(element.getSize()).thenReturn(new Dimension(10, 10));
-            when(element.isEnabled()).thenReturn(true);
             // A plain WebDriver mock is not a JavascriptExecutor: if the JS based check were not
             // skipped for NATIVE, the cast inside it would blow up instead of returning the element.
             WebDriver driver = mock(WebDriver.class);
@@ -806,9 +836,11 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.NATIVE).build();
 
+            CommandResult commandResult = new CommandResult();
             WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
-                    ElementChecks.FOR_INTERACTION);
+                    ElementChecks.FOR_INTERACTION, commandResult);
             assertEquals(element, result);
+            verifyNoInteractions(element);
         }
 
         @Test
@@ -825,6 +857,7 @@ class WebElementFinderTest {
             when(element.isEnabled()).thenReturn(true);
             when(element.getAttribute("aria-disabled")).thenReturn(null);
             when(element.getAttribute("readonly")).thenReturn("true");
+            when(element.getTagName()).thenReturn("button");
             JsWebDriver driver = createJsDriver();
             when(driver.findElement(by)).thenReturn(element);
             when(driver.executeScript(anyString(), any())).thenReturn(Boolean.TRUE);
@@ -833,9 +866,10 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.WEB).build();
 
+            CommandResult commandResult = new CommandResult();
             DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                     () -> webElementFinder.find(new LocatorData(null, locator), deps,
-                            ElementChecks.FOR_WRITING));
+                            ElementChecks.FOR_WRITING, commandResult));
             assertTrue(ex.getMessage().contains("lockedField"));
             assertTrue(ex.getMessage().contains("read-only"));
             verifyNoInteractions(autoHealerFactory);
@@ -849,10 +883,6 @@ class WebElementFinderTest {
             when(byService.xpath(anyList())).thenReturn(List.of(by));
 
             WebElement element = mock(WebElement.class);
-            when(element.isDisplayed()).thenReturn(true);
-            when(element.getSize()).thenReturn(new Dimension(120, 30));
-            when(element.isEnabled()).thenReturn(true);
-            when(element.getAttribute("aria-disabled")).thenReturn(null);
             WebDriver driver = mock(WebDriver.class);
             when(driver.findElement(by)).thenReturn(element);
             stubNativeSettings(5);
@@ -860,10 +890,11 @@ class WebElementFinderTest {
             ExecutorDependencies deps = ExecutorDependencies.builder()
                     .driver(driver).uiType(UiType.NATIVE).build();
 
+            CommandResult commandResult = new CommandResult();
             WebElement result = webElementFinder.find(new LocatorData(null, locator), deps,
-                    ElementChecks.FOR_WRITING);
+                    ElementChecks.FOR_WRITING, commandResult);
             assertEquals(element, result);
-            verify(element, never()).getAttribute("readonly");
+            verifyNoInteractions(element);
         }
 
         @Test

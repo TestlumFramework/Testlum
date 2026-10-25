@@ -21,9 +21,11 @@ import java.util.stream.Collectors;
 public class AssertInterpreter extends AbstractInterpreter<Assert> {
 
     private static final String CONTENT = "Content";
+    private static final String PATH = "Path";
 
     private static final String COMMENT_LOG = LogFormat.table("Comment");
     private static final String CONTENT_LOG = LogFormat.table("Content");
+    private static final String PATH_LOG = LogFormat.table("Path");
 
     private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
     private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
@@ -37,24 +39,35 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         Assert anAssert = injectCommand(o);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        anAssert.getEqualOrNotEqual().forEach(action -> {
+        anAssert.getEqualOrNotEqualOrJsonPath().forEach(action -> {
             processAssertAction(action, subCommandsResult);
         });
         setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processAssertAction(final AssertEquality action, final List<CommandResult> subCommandsResult) {
+    private void processAssertAction(final AbstractCommand action, final List<CommandResult> subCommandsResult) {
         int commandId = dependencies.getPosition().incrementAndGet();
         CommandResult commandResult = newCommandResultInstance(commandId, action);
         subCommandsResult.add(commandResult);
-        logAssertEqualityCommand(action, commandId);
-        addAssertEqualityMetaData(action, commandResult);
+        describe(action, commandId, commandResult);
         if (conditionProvider.isTrue(action.getCondition(), dependencies.getScenarioContext(), commandResult)) {
             processEachAction(action, commandResult);
         }
     }
 
-    private void processEachAction(final AssertEquality action, final CommandResult result) {
+    private void describe(final AbstractCommand action, final int commandId, final CommandResult commandResult) {
+        if (action instanceof AssertJsonPath jsonPath) {
+            logJsonPathCommand(jsonPath, commandId);
+            commandResult.setComment(jsonPath.getComment());
+            commandResult.put(PATH, jsonPath.getPath());
+        } else {
+            AssertEquality equality = (AssertEquality) action;
+            logAssertEqualityCommand(equality, commandId);
+            addAssertEqualityMetaData(equality, commandResult);
+        }
+    }
+
+    private void processEachAction(final AbstractCommand action, final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             executeEqualityAction(action);
@@ -68,12 +81,30 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         }
     }
 
-    private void executeEqualityAction(final AssertEquality action) {
+    private void executeEqualityAction(final AbstractCommand action) {
         if (action instanceof AssertEqual assertEqual) {
             checkContentIsEqual(assertEqual);
+        } else if (action instanceof AssertJsonPath jsonPath) {
+            checkJsonPath(jsonPath);
         } else {
             checkContentNotEqual((AssertNotEqual) action);
         }
+    }
+
+    private void checkJsonPath(final AssertJsonPath jsonPath) {
+        String body = jsonPath.getFromVar() != null
+                ? dependencies.getScenarioContext().get(jsonPath.getFromVar())
+                : dependencies.getScenarioContext().getBody().getValue();
+        String failure = JsonPathAssertion.check(body, jsonPath);
+        if (failure != null) {
+            throw new DefaultFrameworkException(failure);
+        }
+    }
+
+    private void logJsonPathCommand(final AssertJsonPath command, final int position) {
+        log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
+        log.info(PATH_LOG, command.getPath());
     }
 
     private void checkContentIsEqual(final AssertEqual equal) {

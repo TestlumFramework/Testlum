@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <description>An unknown story id gives a 404 with a message</description>
+        <name>story-not-found</name>
+    </overview>
+    <settings>
+        <tags>SB-2,api</tags>
+    </settings>
+    <http comment="Get a story that does not exist" alias="DEFAULT">
+        <get endpoint="/api/stories/999">
+            <response code="404"/>
+        </get>
+    </http>
+    <assert comment="Check the error text">
+        <jsonPath comment="Error says the story was not found" path="$.error" equals="Story not found"/>
+    </assert>
+</scenario>

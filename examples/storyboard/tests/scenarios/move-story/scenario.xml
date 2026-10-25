@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <description>A story can be moved between columns</description>
+        <name>move-story</name>
+    </overview>
+    <settings>
+        <variations>statuses.csv</variations>
+        <tags>SB-4,api,db</tags>
+    </settings>
+    <http alias="DEFAULT" comment="Create a story to move">
+        <post endpoint="/api/stories">
+            <response code="201"/>
+            <body>
+                <raw>{"title": "Move me", "points": 2}</raw>
+            </body>
+        </post>
+    </http>
+    <var comment="Remember the new id" name="newId">
+        <path value="$.id"/>
+    </var>
+    <http alias="DEFAULT" comment="Move the story">
+        <patch endpoint="/api/stories/{{newId}}">
+            <response code="200"/>
+            <body>
+                <raw>{"status": "{{status}}"}</raw>
+            </body>
+        </patch>
+    </http>
+    <assert comment="Check the response">
+        <jsonPath comment="Status was changed" equals="{{status}}" path="$.status"/>
+    </assert>
+    <var comment="Read the status from the database" name="dbStatus">
+        <sql alias="DEFAULT" dbType="POSTGRES">
+            <query>SELECT status FROM stories WHERE id = {{newId}}</query>
+        </sql>
+    </var>
+    <assert comment="Database agrees with the response">
+        <equal comment="Stored status is the requested one">
+            <content>{{dbStatus}}</content>
+            <content>{{status}}</content>
+        </equal>
+    </assert>
+    <http alias="DEFAULT" comment="Clean up the story">
+        <delete endpoint="/api/stories/{{newId}}">
+            <response code="204"/>
+        </delete>
+    </http>
+</scenario>

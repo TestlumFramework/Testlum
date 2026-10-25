@@ -1,0 +1,13 @@
+<configuration>
+    <!-- stdout carries the MCP protocol, so every log line goes to stderr -->
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>testlum-mcp %5p | %m%n%ex</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.springframework" level="WARN"/>
+    <root level="INFO">
+        <appender-ref ref="STDERR"/>
+    </root>
+</configuration>

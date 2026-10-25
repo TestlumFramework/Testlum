@@ -12,6 +12,7 @@ import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.RunScenariosByTag;
 import com.testlum.testing.model.global_config.TagValue;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -23,9 +24,13 @@ import java.util.stream.Collectors;
 @Component
 public class ScenarioFilter {
 
+    /** Set by the starter from --tags, because the JUnit launch has no command line of its own. */
+    public static final String TAGS_PROPERTY = "testlum.tags";
+
     private final GlobalTestConfiguration globalTestConfiguration;
     private final LogUtil logUtil;
     private final ConfigurationLogger configurationLogger;
+    private final Environment environment;
 
     public List<MappingResult> filterScenarios(final List<MappingResult> original) {
         configurationLogger.logTagConfiguration(globalTestConfiguration.getRunScenariosByTag(),
@@ -100,6 +105,11 @@ public class ScenarioFilter {
     }
 
     private List<MappingResult> filterScenariosByTags(final List<MappingResult> activeScenarios) {
+        String tagsFromCommandLine = environment.getProperty(TAGS_PROPERTY);
+        if (tagsFromCommandLine != null) {
+            return filterByTags(activeScenarios, Arrays.stream(tagsFromCommandLine.split(","))
+                    .map(String::trim).filter(t -> !t.isEmpty()).toList());
+        }
         RunScenariosByTag runScenariosByTag = globalTestConfiguration.getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))

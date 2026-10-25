@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.core.env.Environment;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ class ScenarioFilterTest {
     private GlobalTestConfiguration config;
     private LogUtil logUtil;
     private ConfigurationLogger configurationLogger;
+    private Environment environment;
     private ScenarioFilter filter;
 
     @BeforeEach
@@ -40,7 +42,8 @@ class ScenarioFilterTest {
         doNothing().when(logUtil).logNonParsedScenarioInfo(anyString(), anyString());
         doNothing().when(logUtil).logScenarioWithoutTags(anyString());
         configurationLogger = mock(ConfigurationLogger.class);
-        filter = new ScenarioFilter(config, logUtil, configurationLogger);
+        environment = mock(Environment.class);
+        filter = new ScenarioFilter(config, logUtil, configurationLogger, environment);
         ScenarioStatusRegistry.clear();
 
         final RunScenariosByTag runByTag = new RunScenariosByTag();
@@ -171,6 +174,30 @@ class ScenarioFilterTest {
             final List<MappingResult> result = filter.filterScenarios(input);
             assertEquals(1, result.size());
             assertEquals("b.xml", result.get(0).file.getName());
+        }
+    }
+
+    @Nested
+    class FilterByCommandLineTags {
+        @Test
+        void commandLineTagsWinOverTheConfig() {
+            when(environment.getProperty(ScenarioFilter.TAGS_PROPERTY)).thenReturn("smoke, api");
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "smoke"));
+            input.add(validResult("b.xml", true, false, "api"));
+            input.add(validResult("c.xml", true, false, "regression"));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(List.of("b.xml", "a.xml"), result.stream().map(r -> r.file.getName()).toList());
+        }
+
+        @Test
+        void commandLineTagsThatMatchNothingThrow() {
+            when(environment.getProperty(ScenarioFilter.TAGS_PROPERTY)).thenReturn("nothing");
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "smoke"));
+
+            assertThrows(DefaultFrameworkException.class, () -> filter.filterScenarios(input));
         }
     }
 

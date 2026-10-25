@@ -430,6 +430,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JunitReport }
+     * 
+     */
+    public JunitReport createJunitReport() {
+        return new JunitReport();
+    }
+
+    /**
      * Create an instance of {@link KlovServerReportGenerator }
      * 
      */

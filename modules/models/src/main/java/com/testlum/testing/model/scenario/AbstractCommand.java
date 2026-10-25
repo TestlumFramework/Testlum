@@ -59,6 +59,7 @@ import jakarta.xml.bind.annotation.*;
     Ai.class,
     Ui.class,
     AssertEquality.class,
+    AssertJsonPath.class,
     AbstractUiCommand.class,
     S3Bucket.class,
     S3File.class,

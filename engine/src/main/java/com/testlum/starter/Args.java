@@ -16,7 +16,8 @@ public class Args {
     public enum Param {
         CONFIG_FILE("^(?:-c|--config)=(.*)$"),
         PATH_TO_TEST_RESOURCES("^(?:-p|--path)=(.*)$"),
-        PATH_TO_SPECIFIC_SCENARIOS("^(?:-s|--scenarios)=(.*)$");
+        PATH_TO_SPECIFIC_SCENARIOS("^(?:-s|--scenarios)=(.*)$"),
+        TAGS("^(?:-t|--tags)=(.*)$");
 
         private final String regexp;
     }

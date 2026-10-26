@@ -4,13 +4,10 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.FileSearcher;
-import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.framework.util.SystemVariableService;
-import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.global_config.CustomAuthStrategy;
 import com.testlum.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
@@ -24,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 public class CustomAuth extends AbstractAuthStrategy {
@@ -71,7 +67,7 @@ public class CustomAuth extends AbstractAuthStrategy {
 
     private String extractToken(final String response) {
         final DocumentContext context = JsonPath.parse(response);
-        final Object value = context.read("$.customToken");
+        final Object value = context.read("$.token");
         if (!(value instanceof String token) || StringUtils.isBlank(token)) {
             throw new DefaultFrameworkException("Login response must contain a non-empty customToken "
                     + "for auth strategy <%s>", configuration.getAlias());

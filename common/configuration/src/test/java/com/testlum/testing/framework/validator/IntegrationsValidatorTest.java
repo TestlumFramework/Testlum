@@ -105,53 +105,82 @@ class IntegrationsValidatorTest {
     @Nested
     class ValidateAuthConsistency {
         @Test
-        void matchingAuthDoesNotThrow() {
-            final Map<String, Integrations> map = new LinkedHashMap<>();
-            map.put("dev", createIntegrationsWithApiAuth("api1", true, AuthStrategies.DEFAULT, null));
-            map.put("staging", createIntegrationsWithApiAuth("api1", true, AuthStrategies.DEFAULT, null));
-            assertDoesNotThrow(() -> validator.validate(map));
+        void matchingStrategiesWithDifferentEndpointsDoNotThrow() {
+            assertDoesNotThrow(() -> validator.validate(Map.of(
+                    "dev", authConfig(jwt("JWT", "http://dev/login")),
+                    "staging", authConfig(jwt("JWT", "http://staging/login")))));
         }
 
         @Test
-        void mismatchedLogoutThrows() {
-            final Map<String, Integrations> map = new LinkedHashMap<>();
-            map.put("dev", createIntegrationsWithApiAuth("api1", true, AuthStrategies.DEFAULT, null));
-            map.put("staging", createIntegrationsWithApiAuth("api1", false, AuthStrategies.DEFAULT, null));
-            assertThrows(DefaultFrameworkException.class,
-                    () -> validator.validate(map));
+        void missingStrategyInAnotherEnvironmentThrows() {
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "dev", authConfig(jwt("JWT", "http://dev/login")), "staging", new Integrations())));
         }
 
         @Test
-        void mismatchedStrategyThrows() {
-            final Map<String, Integrations> map = new LinkedHashMap<>();
-            map.put("dev", createIntegrationsWithApiAuth("api1", true, AuthStrategies.DEFAULT, null));
-            map.put("staging", createIntegrationsWithApiAuth("api1", true, AuthStrategies.CUSTOM, null));
-            assertThrows(DefaultFrameworkException.class,
-                    () -> validator.validate(map));
+        void mismatchedStrategyTypeThrows() {
+            BasicAuthStrategy basic = new BasicAuthStrategy();
+            basic.setAlias("JWT");
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "dev", authConfig(jwt("JWT", "http://dev/login")), "staging", authConfig(basic))));
         }
+
+        @Test
+        void duplicateAliasesAcrossTypesThrowEvenInOneEnvironment() {
+            BasicAuthStrategy basic = new BasicAuthStrategy();
+            basic.setAlias("JWT");
+            Integrations config = authConfig(jwt("JWT", "http://dev/login"), basic);
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of("dev", config)));
+        }
+
+        @Test
+        void mismatchedAliasesThrow() {
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "dev", authConfig(jwt("FIRST", "http://dev/login")),
+                    "staging", authConfig(jwt("SECOND", "http://staging/login")))));
+        }
+
+        @Test
+        void mismatchedCustomClassesThrow() {
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "dev", authConfig(custom("example.FirstAuth")),
+                    "staging", authConfig(custom("example.SecondAuth")))));
+        }
+
+        @Test
+        void matchingCustomClassesDoNotThrow() {
+            assertDoesNotThrow(() -> validator.validate(Map.of(
+                    "dev", authConfig(custom("example.CustomAuth")),
+                    "staging", authConfig(custom("example.CustomAuth")))));
+        }
+    }
+
+    private Integrations authConfig(final AuthStrategy... strategies) {
+        Integrations config = new Integrations();
+        AuthStrategies registry = new AuthStrategies();
+        registry.getJwtOrBasicOrCustom().addAll(java.util.List.of(strategies));
+        config.setAuthStrategies(registry);
+        return config;
+    }
+
+    private JwtAuthStrategy jwt(final String alias, final String endpoint) {
+        JwtAuthStrategy strategy = new JwtAuthStrategy();
+        strategy.setAlias(alias);
+        strategy.setLoginEndpoint(endpoint);
+        return strategy;
+    }
+
+    private CustomAuthStrategy custom(final String className) {
+        CustomAuthStrategy strategy = new CustomAuthStrategy();
+        strategy.setAlias("CUSTOM");
+        strategy.setClassName(className);
+        return strategy;
     }
 
     private Integrations createIntegrationsWithApi(final String alias) {
         final Integrations integrations = new Integrations();
         final Apis apis = new Apis();
         apis.getApi().add(createApi(alias, true));
-        integrations.setApis(apis);
-        return integrations;
-    }
-
-    private Integrations createIntegrationsWithApiAuth(final String alias,
-                                                        final boolean autoLogout,
-                                                        final AuthStrategies strategy,
-                                                        final String customClass) {
-        final Integrations integrations = new Integrations();
-        final Apis apis = new Apis();
-        final Api api = createApi(alias, true);
-        final Auth auth = new Auth();
-        auth.setAutoLogout(autoLogout);
-        auth.setAuthStrategy(strategy);
-        auth.setAuthCustomClassName(customClass);
-        api.setAuth(auth);
-        apis.getApi().add(api);
         integrations.setApis(apis);
         return integrations;
     }

@@ -4,7 +4,6 @@ import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.util.InjectionService;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLParsers;
-import com.testlum.testing.model.scenario.AbstractCommand;
 import com.testlum.testing.model.scenario.Overview;
 import com.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;

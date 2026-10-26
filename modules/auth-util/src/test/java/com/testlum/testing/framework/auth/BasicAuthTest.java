@@ -6,6 +6,7 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.SystemVariableService;
 import com.testlum.testing.model.scenario.Auth;
+import com.testlum.testing.model.global_config.BasicAuthStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,9 @@ class BasicAuthTest {
         lenient().when(systemVariableService.inject(anyString()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        basicAuth = new BasicAuth(dependencies);
+        BasicAuthStrategy configuration = new BasicAuthStrategy();
+        configuration.setAlias("BASIC");
+        basicAuth = new BasicAuth(dependencies, configuration);
     }
 
     @Nested
@@ -61,7 +64,7 @@ class BasicAuthTest {
             File credFile = createCredentialsFile("admin", "secret");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             basicAuth.authenticate(auth, result);
@@ -82,7 +85,7 @@ class BasicAuthTest {
             File credFile = createCredentialsFile("user", "pass");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             basicAuth.authenticate(auth, result);
@@ -96,7 +99,7 @@ class BasicAuthTest {
             File credFile = createCredentialsFile("user@domain.com", "p@ss:w0rd!");
             when(fileSearcher.searchFileFromDataFolder("special.json")).thenReturn(credFile);
 
-            Auth auth = buildAuth("myApi", "special.json", "/login");
+            Auth auth = buildAuth("myApi", "special.json");
             CommandResult result = new CommandResult();
 
             basicAuth.authenticate(auth, result);
@@ -121,7 +124,7 @@ class BasicAuthTest {
             when(fileSearcher.searchFileFromDataFolder("missing.json"))
                     .thenReturn(new File("/nonexistent/path/missing.json"));
 
-            Auth auth = buildAuth("myApi", "missing.json", "/login");
+            Auth auth = buildAuth("myApi", "missing.json");
             CommandResult result = new CommandResult();
 
             assertThrows(DefaultFrameworkException.class,
@@ -137,7 +140,7 @@ class BasicAuthTest {
             File credFile = createCredentialsFile("admin", "secret");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Auth auth = buildAuth("testAlias", "creds.json", "/api/login");
+            Auth auth = buildAuth("testAlias", "creds.json");
             CommandResult result = new CommandResult();
 
             assertDoesNotThrow(() -> basicAuth.authenticate(auth, result));
@@ -154,7 +157,7 @@ class BasicAuthTest {
             when(systemVariableService.inject("{\"username\":\"${API_USER}\",\"password\":\"${API_PASS}\"}"))
                     .thenReturn("{\"username\":\"admin\",\"password\":\"secret\"}");
 
-            Auth auth = buildAuth("myApi", "env-creds.json", "/login");
+            Auth auth = buildAuth("myApi", "env-creds.json");
             CommandResult result = new CommandResult();
 
             basicAuth.authenticate(auth, result);
@@ -177,7 +180,7 @@ class BasicAuthTest {
             when(systemVariableService.inject(anyString()))
                     .thenThrow(new DefaultFrameworkException("Environment variable <MISSING_VAR> not found"));
 
-            Auth auth = buildAuth("myApi", "env-creds.json", "/login");
+            Auth auth = buildAuth("myApi", "env-creds.json");
             CommandResult result = new CommandResult();
 
             assertThrows(DefaultFrameworkException.class,
@@ -192,11 +195,10 @@ class BasicAuthTest {
         return file.toFile();
     }
 
-    private Auth buildAuth(final String alias, final String credentials, final String endpoint) {
+    private Auth buildAuth(final String alias, final String credentials) {
         Auth auth = new Auth();
-        auth.setApiAlias(alias);
+        auth.setStrategyAlias(alias);
         auth.setCredentials(credentials);
-        auth.setLoginEndpoint(endpoint);
         return auth;
     }
 }

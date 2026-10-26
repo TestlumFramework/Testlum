@@ -3,9 +3,10 @@ package com.testlum.testing.framework.auth;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.util.IntegrationsProvider;
-import com.testlum.testing.model.global_config.Api;
-import com.testlum.testing.model.global_config.Auth;
-import com.testlum.testing.model.global_config.AuthStrategies;
+import com.testlum.testing.model.global_config.BasicAuthStrategy;
+import com.testlum.testing.model.global_config.JwtAuthStrategy;
+import com.testlum.testing.model.global_config.CustomAuthStrategy;
+import com.testlum.testing.framework.env.AliasEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -42,59 +42,60 @@ class AuthFactoryTest {
     class Create {
         @Test
         void createsBasicAuthStrategy() {
-            Api api = buildApiWithStrategy(AuthStrategies.BASIC);
-            List<Api> apiList = List.of(api);
-            when(integrationsProvider.findListByEnv(Api.class, "test")).thenReturn(apiList);
-            when(integrationsProvider.findApiForAlias(apiList, "myAlias")).thenReturn(api);
-
-            AuthStrategy result = authFactory.create(dependencies, "myAlias");
-
-            assertInstanceOf(BasicAuth.class, result);
+            mockConfiguration("BASIC", new BasicAuthStrategy());
+            assertInstanceOf(BasicAuth.class, authFactory.create(dependencies, "BASIC"));
         }
 
         @Test
         void createsJwtAuthStrategy() {
-            Api api = buildApiWithStrategy(AuthStrategies.JWT);
-            List<Api> apiList = List.of(api);
-            when(integrationsProvider.findListByEnv(Api.class, "test")).thenReturn(apiList);
-            when(integrationsProvider.findApiForAlias(apiList, "myAlias")).thenReturn(api);
-
-            AuthStrategy result = authFactory.create(dependencies, "myAlias");
-
-            assertInstanceOf(JwtAuth.class, result);
+            mockConfiguration("JWT", new JwtAuthStrategy());
+            assertInstanceOf(JwtAuth.class, authFactory.create(dependencies, "JWT"));
         }
 
         @Test
-        void createsDefaultStrategyForDefaultType() {
-            Api api = buildApiWithStrategy(AuthStrategies.DEFAULT);
-            List<Api> apiList = List.of(api);
-            when(integrationsProvider.findListByEnv(Api.class, "test")).thenReturn(apiList);
-            when(integrationsProvider.findApiForAlias(apiList, "myAlias")).thenReturn(api);
-
-            AuthStrategy result = authFactory.create(dependencies, "myAlias");
-
-            assertInstanceOf(DefaultStrategy.class, result);
+        void createsCustomAuthStrategy() {
+            CustomAuthStrategy configuration = new CustomAuthStrategy();
+            configuration.setClassName(CustomAuth.class.getName());
+            mockConfiguration("CUSTOM", configuration);
+            assertInstanceOf(CustomAuth.class, authFactory.create(dependencies, "CUSTOM"));
         }
 
         @Test
-        void throwsWhenAuthConfigIsNull() {
-            Api api = new Api();
-            api.setAlias("myAlias");
-            List<Api> apiList = List.of(api);
-            when(integrationsProvider.findListByEnv(Api.class, "test")).thenReturn(apiList);
-            when(integrationsProvider.findApiForAlias(apiList, "myAlias")).thenReturn(api);
+        void defaultAliasUsesConfiguredStrategy() {
+            mockConfiguration("DEFAULT", new BasicAuthStrategy());
+            assertInstanceOf(BasicAuth.class, authFactory.create(dependencies, "DEFAULT"));
+        }
 
-            assertThrows(DefaultFrameworkException.class,
-                    () -> authFactory.create(dependencies, "myAlias"));
+        @Test
+        void propagatesMissingStrategyError() {
+            when(integrationsProvider.findAuthStrategy(
+                    com.testlum.testing.model.global_config.AuthStrategy.class,
+                    new AliasEnv("missing", "test")))
+                    .thenThrow(new DefaultFrameworkException("Strategy not found"));
+            assertThrows(DefaultFrameworkException.class, () -> authFactory.create(dependencies, "missing"));
+        }
+
+        @Test
+        void rejectsCustomClassWithoutStrategyContract() {
+            CustomAuthStrategy configuration = new CustomAuthStrategy();
+            configuration.setClassName(String.class.getName());
+            mockConfiguration("CUSTOM", configuration);
+            assertThrows(DefaultFrameworkException.class, () -> authFactory.create(dependencies, "CUSTOM"));
+        }
+
+        @Test
+        void rejectsCustomClassWithoutConfigurationConstructor() {
+            CustomAuthStrategy configuration = new CustomAuthStrategy();
+            configuration.setClassName(DefaultStrategy.class.getName());
+            mockConfiguration("CUSTOM", configuration);
+            assertThrows(DefaultFrameworkException.class, () -> authFactory.create(dependencies, "CUSTOM"));
         }
     }
 
-    private Api buildApiWithStrategy(final AuthStrategies strategyType) {
-        Api api = new Api();
-        api.setAlias("myAlias");
-        Auth auth = new Auth();
-        auth.setAuthStrategy(strategyType);
-        api.setAuth(auth);
-        return api;
+    private void mockConfiguration(final String alias,
+                                   final com.testlum.testing.model.global_config.AuthStrategy configuration) {
+        when(integrationsProvider.findAuthStrategy(
+                com.testlum.testing.model.global_config.AuthStrategy.class,
+                new AliasEnv(alias, "test"))).thenReturn(configuration);
     }
 }

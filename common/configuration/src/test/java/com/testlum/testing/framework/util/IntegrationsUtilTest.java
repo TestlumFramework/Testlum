@@ -4,6 +4,11 @@ import com.testlum.testing.framework.EnvToIntegrationMap;
 import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.global_config.AuthStrategy;
+import com.testlum.testing.model.global_config.AuthStrategies;
+import com.testlum.testing.model.global_config.BasicAuthStrategy;
+import com.testlum.testing.model.global_config.JwtAuthStrategy;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.global_config.Apis;
 import com.testlum.testing.model.global_config.Integrations;
 import org.junit.jupiter.api.BeforeEach;
@@ -140,5 +145,74 @@ class IntegrationsUtilTest {
         void returnsFalseForEmptyList() {
             assertFalse(integrationsUtil.isEnabled(Collections.emptyList()));
         }
+    }
+
+    @Nested
+    class FindAuthStrategy {
+        @Test
+        void resolvesAliasFromSelectedEnvironment() {
+            BasicAuthStrategy dev = basic("BASIC");
+            BasicAuthStrategy ci = basic("BASIC");
+            IntegrationsUtil util = new IntegrationsUtil(new EnvToIntegrationMap(Map.of(
+                    "dev", authRegistry(dev), "ci", authRegistry(ci))));
+            assertSame(ci, util.findAuthStrategy(BasicAuthStrategy.class, new AliasEnv("BASIC", "ci")));
+            assertSame(dev, util.findAuthStrategy(AuthStrategy.class, new AliasEnv("BASIC", "dev")));
+        }
+
+        @Test
+        void nullAliasResolvesConfiguredDefault() {
+            BasicAuthStrategy expected = basic("DEFAULT");
+            IntegrationsUtil util = authUtil(expected);
+            assertSame(expected, util.findAuthStrategy(AuthStrategy.class, new AliasEnv(null, "dev")));
+        }
+
+        @Test
+        void missingEnvironmentAndMissingAliasFailClearly() {
+            IntegrationsUtil util = authUtil(basic("BASIC"));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> util.findAuthStrategy(AuthStrategy.class, new AliasEnv("BASIC", "missing")));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> util.findAuthStrategy(AuthStrategy.class, new AliasEnv("missing", "dev")));
+        }
+
+        @Test
+        void missingRegistryFailsClearly() {
+            assertThrows(DefaultFrameworkException.class,
+                    () -> integrationsUtil.findAuthStrategy(AuthStrategy.class, new AliasEnv("DEFAULT", "dev")));
+        }
+
+        @Test
+        void mismatchedRequestedTypeFailsClearly() {
+            IntegrationsUtil util = authUtil(basic("BASIC"));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> util.findAuthStrategy(JwtAuthStrategy.class, new AliasEnv("BASIC", "dev")));
+        }
+
+        @Test
+        void duplicateAliasAcrossTypesIsNotHiddenByRequestedType() {
+            JwtAuthStrategy jwt = new JwtAuthStrategy();
+            jwt.setAlias("SAME");
+            IntegrationsUtil util = authUtil(basic("SAME"), jwt);
+            assertThrows(DefaultFrameworkException.class,
+                    () -> util.findAuthStrategy(BasicAuthStrategy.class, new AliasEnv("SAME", "dev")));
+        }
+    }
+
+    private BasicAuthStrategy basic(final String alias) {
+        BasicAuthStrategy strategy = new BasicAuthStrategy();
+        strategy.setAlias(alias);
+        return strategy;
+    }
+
+    private Integrations authRegistry(final AuthStrategy... strategies) {
+        Integrations config = new Integrations();
+        AuthStrategies registry = new AuthStrategies();
+        registry.getJwtOrBasicOrCustom().addAll(List.of(strategies));
+        config.setAuthStrategies(registry);
+        return config;
+    }
+
+    private IntegrationsUtil authUtil(final AuthStrategy... strategies) {
+        return new IntegrationsUtil(new EnvToIntegrationMap(Map.of("dev", authRegistry(strategies))));
     }
 }

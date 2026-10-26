@@ -4,12 +4,12 @@ import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.util.InjectionService;
-import com.testlum.testing.framework.util.IntegrationsUtil;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLParser;
 import com.testlum.testing.framework.xml.XMLParsers;
-import com.testlum.testing.model.global_config.Integrations;
 import com.testlum.testing.model.scenario.Overview;
+import com.testlum.testing.model.scenario.Auth;
+import com.testlum.testing.model.scenario.Http;
 import com.testlum.testing.model.scenario.Scenario;
 import com.testlum.testing.model.scenario.Settings;
 import com.testlum.testing.model.scenario.TestRail;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ScenarioCollector} verifying scenario collection,
- * XML parsing and error handling. Auth expansion is covered by {@link AuthCommandExpanderTest}.
+ * XML parsing and error handling. Auth blocks are preserved for execution.
  */
 @ExtendWith(MockitoExtension.class)
 class ScenarioCollectorTest {
@@ -46,11 +46,7 @@ class ScenarioCollectorTest {
     @Mock
     private TestResourceSettings testResourceSettings;
     @Mock
-    private IntegrationsUtil integrationUtil;
-    @Mock
     private GlobalVariationsProvider globalVariationsProvider;
-    @Mock
-    private Integrations integrations;
     @Mock
     private InjectionService injectionService;
 
@@ -60,7 +56,7 @@ class ScenarioCollectorTest {
     void setUp() {
         collector = new ScenarioCollector(
                 scenarioValidator, xmlParsers, testResourceSettings,
-                globalVariationsProvider, new AuthCommandExpander(integrationUtil, integrations),
+                globalVariationsProvider,
                 injectionService);
     }
 
@@ -176,12 +172,20 @@ class ScenarioCollectorTest {
             Scenario scenario = new Scenario();
             Settings settings = new Settings();
             scenario.setSettings(settings);
+            Auth auth = new Auth();
+            auth.setStrategyAlias("JWT");
+            auth.getCommands().add(new Http());
+            scenario.getCommands().add(auth);
             when(parser.process(any(File.class))).thenReturn(scenario);
 
             ScenarioCollector.Result result = collector.collect();
 
             assertNotNull(result);
             assertEquals(1, result.size());
+            assertNull(result.get(0).exception);
+            assertSame(auth, result.get(0).scenario.getCommands().get(0));
+            assertEquals(1, auth.getCommands().size());
+            verify(scenarioValidator).validate(eq(scenario), any(File.class));
         }
 
         @SuppressWarnings("unchecked")

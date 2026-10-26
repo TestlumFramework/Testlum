@@ -18,6 +18,9 @@ import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -26,6 +29,7 @@ import static org.mockito.Mockito.*;
 class LogoutInterpreterTest {
 
     private LogoutInterpreter interpreter;
+    private InterpreterDependencies dependencies;
     private AuthFactory authFactory;
     private AuthStrategy authStrategy;
     private JacksonService jacksonService;
@@ -50,7 +54,7 @@ class LogoutInterpreterTest {
         when(context.getBean(GlobalTestConfiguration.class)).thenReturn(globalConfig);
 
         ScenarioContext scenarioContext = new ScenarioContext(new HashMap<>());
-        InterpreterDependencies dependencies = InterpreterDependencies.builder()
+        dependencies = InterpreterDependencies.builder()
                 .context(context)
                 .file(new File("test.xml"))
                 .scenarioContext(scenarioContext)
@@ -73,7 +77,10 @@ class LogoutInterpreterTest {
 
         CommandResult result = new CommandResult();
         result.setId(1);
+        dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                Map.of("Authorization", "Bearer token")));
         interpreter.apply(logout, result);
+        assertNull(dependencies.getAuthorization());
 
         verify(authStrategy).logout();
     }
@@ -93,8 +100,38 @@ class LogoutInterpreterTest {
 
         CommandResult result = new CommandResult();
         result.setId(1);
+        dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                Map.of("Authorization", "Bearer token")));
         interpreter.apply(logout, result);
+        assertNull(dependencies.getAuthorization());
 
         verify(authFactory).create(any(), eq("api2-injected"));
+    }
+
+    @Test
+    void clearsAuthorizationWhenLogoutFails() {
+        Logout logout = preparedLogout("JWT");
+        when(authFactory.create(dependencies, "JWT")).thenReturn(authStrategy);
+        doThrow(new IllegalStateException("Logout failed")).when(authStrategy).logout();
+        assertThrows(IllegalStateException.class, () -> interpreter.acceptImpl(logout, new CommandResult()));
+        assertNull(dependencies.getAuthorization());
+    }
+
+    @Test
+    void clearsAuthorizationWhenFactoryFails() {
+        Logout logout = preparedLogout("JWT");
+        when(authFactory.create(dependencies, "JWT")).thenThrow(new IllegalStateException("Strategy unavailable"));
+        assertThrows(IllegalStateException.class, () -> interpreter.acceptImpl(logout, new CommandResult()));
+        assertNull(dependencies.getAuthorization());
+    }
+
+    private Logout preparedLogout(final String alias) {
+        Logout logout = new Logout();
+        logout.setAlias(alias);
+        when(jacksonService.writeValueToCopiedString(any())).thenReturn("{}");
+        when(jacksonService.readCopiedValue(anyString(), eq(Logout.class))).thenReturn(logout);
+        dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                Map.of("Authorization", "Bearer token")));
+        return logout;
     }
 }

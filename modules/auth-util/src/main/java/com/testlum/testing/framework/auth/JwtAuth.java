@@ -70,7 +70,8 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private String getTokenPath() {
-        String tokenName = StringUtils.defaultIfBlank(configuration.getTokenName(), AuthorizationConstant.CONTENT_KEY_TOKEN);
+        String tokenName = StringUtils.defaultIfBlank(
+                configuration.getTokenName(), AuthorizationConstant.CONTENT_KEY_TOKEN);
         if (tokenName.startsWith("$")) {
             return tokenName;
         }

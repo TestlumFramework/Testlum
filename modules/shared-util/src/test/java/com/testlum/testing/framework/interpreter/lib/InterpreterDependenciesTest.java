@@ -90,4 +90,16 @@ class InterpreterDependenciesTest {
         assertNotNull(deps.getAuthorization());
         assertEquals("Bearer token", deps.getAuthorization().getHeaders().get("Authorization"));
     }
+
+    @Test
+    void clearAuthorizationPreservesActiveAuthBlock() {
+        InterpreterDependencies dependencies = InterpreterDependencies.builder().build();
+        dependencies.setAuthBlockActive(true);
+        dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                Map.of("Authorization", "Bearer token")));
+        dependencies.clearAuthorization();
+        assertNull(dependencies.getAuthorization());
+        assertTrue(dependencies.isAuthBlockActive());
+        assertDoesNotThrow(dependencies::clearAuthorization);
+    }
 }

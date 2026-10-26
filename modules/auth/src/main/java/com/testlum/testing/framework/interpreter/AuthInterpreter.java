@@ -47,6 +47,11 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         result.setSubCommandsResult(new ArrayList<>());
         dependencies.clearAuthorization();
         AuthStrategy strategy = authFactory.create(dependencies, auth.getStrategyAlias());
+        executeAuth(command, result, strategy, auth);
+    }
+
+    private void executeAuth(final Auth command, final CommandResult result,
+                             final AuthStrategy strategy, final Auth auth) {
         Throwable failure = null;
         try {
             authenticate(strategy, auth, result);

@@ -62,12 +62,13 @@ class CompareImageExecutorTest {
 
     private CompareImageExecutor executor;
     private File scenarioFile;
+    private ExecutorDependencies dependencies;
 
     @BeforeEach
     void setUp() {
         scenarioFile = mock(File.class);
         when(context.getBean(any(Class.class))).thenAnswer(inv -> mock((Class<?>) inv.getArgument(0)));
-        ExecutorDependencies dependencies = ExecutorDependencies.builder()
+        dependencies = ExecutorDependencies.builder()
                 .context(context)
                 .driver(driver)
                 .file(scenarioFile)
@@ -152,7 +153,7 @@ class CompareImageExecutorTest {
             CommandResult result = new CommandResult();
             assertDoesNotThrow(() -> executor.execute(image, result));
             verify(imageComparisonUtil).processImageComparisonResult(eq(comparisonResult),
-                    eq("expected.png"), eq(false), any(), any(), eq(result));
+                    eq("expected.png"), eq(false), eq(dependencies), eq(result));
         }
 
         @Test

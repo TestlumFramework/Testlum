@@ -257,6 +257,9 @@ public class ScenarioRunner {
                 .webDriver(createWebDriver())
                 .mobilebrowserDriver(createMobileBrowserDriver())
                 .nativeDriver(createNativeDriver())
+                .browser(scenarioArguments.getBrowser())
+                .mobilebrowserDevice(scenarioArguments.getMobileBrowserDevice())
+                .nativeDevice(scenarioArguments.getNativeDevice())
                 .build();
     }
 

@@ -55,6 +55,7 @@ class NativeCompareImageExecutorTest {
     private NativeCompareImageExecutor executor;
     private RemoteWebDriver driver;
     private File scenarioFile;
+    private ExecutorDependencies deps;
 
     @BeforeEach
     void setUp() {
@@ -62,7 +63,7 @@ class NativeCompareImageExecutorTest {
         scenarioFile = mock(File.class);
         when(context.getBean(any(Class.class))).thenAnswer(inv -> mock((Class<?>) inv.getArgument(0)));
         when(context.getBean(ImageComparator.class)).thenReturn(imageComparator);
-        ExecutorDependencies deps = ExecutorDependencies.builder()
+        deps = ExecutorDependencies.builder()
                 .context(context)
                 .driver(driver)
                 .file(scenarioFile)
@@ -271,7 +272,7 @@ class NativeCompareImageExecutorTest {
             assertDoesNotThrow(() -> executor.execute(image, result));
 
             verify(imageComparisonUtil).processImageComparisonResult(eq(comparisonResult),
-                    eq("expected.png"), eq(false), any(), any(), eq(result));
+                    eq("expected.png"), eq(false), eq(deps), eq(result));
         }
 
         @Test

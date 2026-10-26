@@ -30,7 +30,16 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .position(dependencies.getPosition())
                 .uiType(uiType)
                 .environment(dependencies.getEnvironment())
+                .browser(getTargetIdentifier(uiType))
                 .build();
+    }
+
+    private String getTargetIdentifier(final UiType uiType) {
+        return switch (uiType) {
+            case WEB -> dependencies.getBrowser();
+            case MOBILE_BROWSER -> dependencies.getMobilebrowserDevice();
+            case NATIVE -> dependencies.getNativeDevice();
+        };
     }
 
     public void clearLocalStorage(final WebDriver driver, final String key, final CommandResult result) {

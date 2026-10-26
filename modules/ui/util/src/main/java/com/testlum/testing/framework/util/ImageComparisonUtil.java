@@ -4,12 +4,14 @@ import com.github.romankh3.image.comparison.exception.ImageComparisonException;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.testlum.testing.framework.TestResourceSettings;
+import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.scenario.ByArea;
 import com.testlum.testing.model.scenario.Exclude;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -49,9 +51,22 @@ public class ImageComparisonUtil {
                                              final File directoryToSave,
                                              final String prefix,
                                              final CommandResult result) {
+        ExecutorDependencies dependencies = ExecutorDependencies.builder()
+                .file(new File(directoryToSave, "scenario.xml"))
+                .prefix(prefix)
+                .build();
+        processImageComparisonResult(comparisonResult, expectedImageFullName, isHighlightDifference,
+                dependencies, result);
+    }
+
+    public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
+                                             final String expectedImageFullName,
+                                             final boolean isHighlightDifference,
+                                             final ExecutorDependencies dependencies,
+                                             final CommandResult result) {
         if (comparisonResult.getImageComparisonState() != ImageComparisonState.MATCH) {
             saveAndAttachImage(comparisonResult, expectedImageFullName, isHighlightDifference,
-                    directoryToSave, prefix, result);
+                    dependencies, result);
             throwMismatchException(comparisonResult, result);
         }
     }
@@ -59,12 +74,11 @@ public class ImageComparisonUtil {
     private void saveAndAttachImage(final ImageComparisonResult comparisonResult,
                                     final String expectedImageFullName,
                                     final boolean isHighlightDifference,
-                                    final File directoryToSave,
-                                    final String prefix,
+                                    final ExecutorDependencies dependencies,
                                     final CommandResult result) {
         try {
             File actualImage = saveActualImage(
-                    comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave, prefix);
+                    comparisonResult, expectedImageFullName, isHighlightDifference, dependencies);
             screenshotUtil.putScreenshotToResult(result, actualImage);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
@@ -93,10 +107,10 @@ public class ImageComparisonUtil {
     private File saveActualImage(final ImageComparisonResult comparisonResult,
                                  final String expectedImageFullName,
                                  final boolean isHighlightDifference,
-                                 final File directoryToSave,
-                                 final String prefix) throws IOException {
+                                 final ExecutorDependencies dependencies) throws IOException {
         String imageExtension = FilenameUtils.getExtension(expectedImageFullName);
-        File fileToSave = getFileToSave(directoryToSave, expectedImageFullName, prefix);
+        File fileToSave = getFileToSave(dependencies.getRootFile().getParentFile(),
+                expectedImageFullName, dependencies.getPrefix(), dependencies.getBrowser());
         if (isHighlightDifference) {
             ImageIO.write(comparisonResult.getResult(), imageExtension, fileToSave);
         } else {
@@ -107,9 +121,11 @@ public class ImageComparisonUtil {
 
     private File getFileToSave(final File directoryToSave,
                                final String expectedImageFullName,
-                               final String prefix) {
+                               final String prefix,
+                               final String browserIdentifier) {
         verifyDirectoryToSave(directoryToSave);
-        return new File(directoryToSave.getAbsolutePath(), getImageNameToSave(expectedImageFullName, prefix));
+        return new File(directoryToSave.getAbsolutePath(),
+                getImageNameToSave(expectedImageFullName, prefix, browserIdentifier));
     }
 
     private void verifyDirectoryToSave(final File directoryToSave) {
@@ -119,13 +135,13 @@ public class ImageComparisonUtil {
         }
     }
 
-    private String getImageNameToSave(final String expectedImageFullName) {
-        return getImageNameToSave(expectedImageFullName, null);
-    }
-
-    private String getImageNameToSave(final String expectedImageFullName, final String prefix) {
-        String baseName = String.format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
+    private String getImageNameToSave(final String expectedImageFullName,
+                                      final String prefix,
+                                      final String browserIdentifier) {
+        String browserSuffix = StringUtils.isNotBlank(browserIdentifier) ? "_" + browserIdentifier : "";
+        String baseName = String.format("%s%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
+                browserSuffix,
                 FilenameUtils.getExtension(expectedImageFullName));
         return PrefixUtil.applyPrefix(prefix, baseName);
     }

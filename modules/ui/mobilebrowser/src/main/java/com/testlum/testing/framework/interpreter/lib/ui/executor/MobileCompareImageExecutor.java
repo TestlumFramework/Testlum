@@ -46,8 +46,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
             ImageComparisonResult comparisonResult = imageComparator.compare(image, expected,
                     cutStatusBar(image.getFullScreen(), actual, dependencies.getDriver()));
             imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                    image.isHighlightDifference(), dependencies.getRootFile().getParentFile(),
-                    dependencies.getPrefix(), result);
+                    image.isHighlightDifference(), dependencies, result);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }

@@ -75,6 +75,7 @@ public class VariableHelperImpl implements VariableHelper {
     private final AliasToStorageOperation aliasToStorageOperation;
     private final ResultUtil resultUtil;
     private final LogUtil logUtil;
+    private final SqlVariableResultConverter sqlVariableResultConverter;
 
     public VariableHelperImpl(final ApplicationContext ctx) {
         RandomStringUtils util = RandomStringUtils.secure();
@@ -86,6 +87,7 @@ public class VariableHelperImpl implements VariableHelper {
         this.aliasToStorageOperation = ctx.getBean(AliasToStorageOperation.class);
         this.resultUtil = ctx.getBean(ResultUtil.class);
         this.logUtil = ctx.getBean(LogUtil.class);
+        this.sqlVariableResultConverter = ctx.getBean(SqlVariableResultConverter.class);
     }
 
     @Override
@@ -436,7 +438,7 @@ public class VariableHelperImpl implements VariableHelper {
     private String getResultValue(final AbstractStorageOperation.StorageOperationResult storageOperationResult) {
         List<AbstractStorageOperation.QueryResult<?>> rawList =
                 (List<AbstractStorageOperation.QueryResult<?>>) storageOperationResult.getRaw();
-        return SqlVariableResultConverter.convert(toRows(rawList.get(0).getContent()));
+        return sqlVariableResultConverter.convert(toRows(rawList.get(0).getContent()));
     }
 
     @SuppressWarnings("unchecked")

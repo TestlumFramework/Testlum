@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testlum.testing.framework.context.AliasToStorageOperation;
 import com.testlum.testing.framework.db.AbstractStorageOperation;
 import com.testlum.testing.framework.db.source.ListSource;
@@ -39,6 +40,8 @@ class VariableHelperImplTest {
         when(ctx.getBean(AliasToStorageOperation.class)).thenReturn(aliasToStorageOperation);
         when(ctx.getBean(ResultUtil.class)).thenReturn(resultUtil);
         when(ctx.getBean(LogUtil.class)).thenReturn(logUtil);
+        when(ctx.getBean(SqlVariableResultConverter.class))
+                .thenReturn(new SqlVariableResultConverter(new ObjectMapper()));
         variableHelper = new VariableHelperImpl(ctx);
     }
 

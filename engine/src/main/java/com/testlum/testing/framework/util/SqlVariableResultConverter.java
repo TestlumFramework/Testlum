@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -11,14 +13,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class SqlVariableResultConverter {
+@Component
+@RequiredArgsConstructor
+public class SqlVariableResultConverter {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    private SqlVariableResultConverter() {
-    }
-
-    public static String convert(final List<? extends Map<String, ?>> rows) {
+    public String convert(final List<? extends Map<String, ?>> rows) {
         if (rows.isEmpty() || rows.get(0).isEmpty()) {
             throw new DefaultFrameworkException(ExceptionMessage.VAR_QUERY_RESULT_ERROR);
         }
@@ -28,7 +29,7 @@ public final class SqlVariableResultConverter {
         return toJson(rows);
     }
 
-    private static String toJson(final List<? extends Map<String, ?>> rows) {
+    private String toJson(final List<? extends Map<String, ?>> rows) {
         List<Map<String, Object>> normalizedRows = new ArrayList<>();
         for (Map<String, ?> row : rows) {
             Map<String, Object> normalizedRow = new LinkedHashMap<>();
@@ -36,7 +37,7 @@ public final class SqlVariableResultConverter {
             normalizedRows.add(normalizedRow);
         }
         try {
-            return OBJECT_MAPPER.writeValueAsString(normalizedRows);
+            return objectMapper.writeValueAsString(normalizedRows);
         } catch (JsonProcessingException e) {
             throw new DefaultFrameworkException(e);
         }

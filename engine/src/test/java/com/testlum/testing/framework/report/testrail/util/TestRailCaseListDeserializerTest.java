@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.report.testrail.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testlum.testing.framework.report.testrail.api.util.TestRailResponseJsonDeserializer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,9 @@ class TestRailCaseListDeserializerTest {
 
     private static final String MATCH_KEY = "custom_automation_id";
 
-    private final TestRailResponseJsonDeserializer deserializer = new TestRailResponseJsonDeserializer();
+    private final TestRailResponseJsonDeserializer deserializer = new TestRailResponseJsonDeserializer(
+            new ObjectMapper()
+    );
 
     @Nested
     class ResponseShapes {

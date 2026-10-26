@@ -180,6 +180,7 @@ public class ExceptionMessage {
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";
+    public static final String INVALID_SCROLL_VALUE = "Invalid scroll value: '%s'. Expected a valid integer.";
     public static final String SWIPE_TYPE_NOT_FOUND = "Swipe direction <%s> is not supported";
     public static final String TAB_NOT_FOUND = "No tab found to work with";
     public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";

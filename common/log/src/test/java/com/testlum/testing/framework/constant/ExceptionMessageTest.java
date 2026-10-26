@@ -189,10 +189,20 @@ class ExceptionMessageTest {
         void tabOutOfBoundsContainsPlaceholder() {
             assertTrue(ExceptionMessage.TAB_OUT_OF_BOUNDS.contains("%s"));
         }
+
+        @Test
+        void invalidScrollValueContainsPlaceholder() {
+            assertTrue(ExceptionMessage.INVALID_SCROLL_VALUE.contains("%s"));
+        }
     }
 
     @Nested
     class FormattingVerification {
+        @Test
+        void formatInvalidScrollValue() {
+            String result = String.format(ExceptionMessage.INVALID_SCROLL_VALUE, "abc");
+            assertEquals("Invalid scroll value: 'abc'. Expected a valid integer.", result);
+        }
         @Test
         void formatWithValidArgs() {
             String result = String.format(ExceptionMessage.INTEGRATION_NOT_FOUND, "Elasticsearch");

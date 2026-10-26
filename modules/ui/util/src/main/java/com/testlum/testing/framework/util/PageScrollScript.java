@@ -1,7 +1,6 @@
 package com.testlum.testing.framework.util;
 
 import com.testlum.testing.framework.constant.DelimiterConstant;
-import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.scenario.Scroll;
 import com.testlum.testing.model.scenario.ScrollDirection;
 import com.testlum.testing.model.scenario.ScrollMeasure;
@@ -18,7 +17,7 @@ public enum PageScrollScript {
     private final String script;
 
     public static String getPageScrollScript(final Scroll scroll, final UiUtil uiUtil) {
-        int value = parseScrollValue(scroll.getValue());
+        int value = ScrollUtil.parseScrollValue(scroll.getValue());
         boolean isUpDirection = ScrollDirection.UP == scroll.getDirection();
         if (ScrollMeasure.PERCENT == scroll.getMeasure()) {
             float percent = uiUtil.calculatePercentageValue(value);
@@ -27,14 +26,5 @@ public enum PageScrollScript {
         }
         Object o = isUpDirection ? DelimiterConstant.DASH + value : value;
         return String.format(VERTICAL_BY_PIXEL.getScript(), o);
-    }
-
-    private static int parseScrollValue(final String value) {
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException ex) {
-            throw new DefaultFrameworkException(
-                    String.format("Invalid scroll value: '%s'. Expected a valid integer.", value));
-        }
     }
 }

@@ -540,7 +540,7 @@ class LogUtilTest {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.PAGE);
             scroll.setDirection(ScrollDirection.DOWN);
-            scroll.setValue(500);
+            scroll.setValue("500");
             scroll.setMeasure(ScrollMeasure.PIXEL);
 
             assertDoesNotThrow(() -> uiLogUtil.logScrollInfo(scroll));
@@ -551,7 +551,7 @@ class LogUtilTest {
             Scroll scroll = new Scroll();
             scroll.setType(ScrollType.INNER);
             scroll.setDirection(ScrollDirection.DOWN);
-            scroll.setValue(300);
+            scroll.setValue("300");
             scroll.setLocator("scrollContainer");
             scroll.setLocatorStrategy(null);
 

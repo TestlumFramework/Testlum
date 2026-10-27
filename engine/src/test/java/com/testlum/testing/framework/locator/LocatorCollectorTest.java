@@ -306,5 +306,58 @@ class LocatorCollectorTest {
             assertNotNull(lc.getLocator("testPage.pageField"));
             assertNotNull(lc.getLocator("testPage.compField"));
         }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void includedLocatorPointsToComponentFileAndPageLocatorToPageFile() {
+            final XMLParsers xmlParsers = mock(XMLParsers.class);
+            final PageValidator pageValidator = mock(PageValidator.class);
+            final TestResourceSettings testResourceSettings = mock(TestResourceSettings.class);
+            final FileSearcher fileSearcher = mock(FileSearcher.class);
+
+            when(testResourceSettings.getPagesFolder()).thenReturn(new File("/pages"));
+            when(testResourceSettings.getComponentsFolder()).thenReturn(new File("/components"));
+
+            // Page with include
+            Page page = new Page();
+            Locators locators = new Locators();
+            Locator pageLoc = new Locator();
+            pageLoc.setLocatorId("pageField");
+            locators.getLocator().add(pageLoc);
+            page.setLocators(locators);
+            Include include = new Include();
+            include.setComponent("myComponent");
+            page.getInclude().add(include);
+
+            // Component
+            Component component = new Component();
+            Locators compLocators = new Locators();
+            Locator compLoc = new Locator();
+            compLoc.setLocatorId("compField");
+            compLocators.getLocator().add(compLoc);
+            component.setLocators(compLocators);
+
+            File pageFile = new File("/pages/testPage.xml");
+            File componentFile = new File("/components/myComponent.xml");
+            Map<String, File> pageFiles = new LinkedHashMap<>();
+            pageFiles.put("testPage", pageFile);
+            Map<String, File> componentFiles = new LinkedHashMap<>();
+            componentFiles.put("myComponent", componentFile);
+
+            when(fileSearcher.collectFilesFromFolder(new File("/pages"))).thenReturn(pageFiles);
+            when(fileSearcher.collectFilesFromFolder(new File("/components"))).thenReturn(componentFiles);
+
+            XMLParser<Page> pageParser = mock(XMLParser.class);
+            XMLParser<Component> compParser = mock(XMLParser.class);
+            when(xmlParsers.forPageLocator()).thenReturn(pageParser);
+            when(xmlParsers.forComponentLocator()).thenReturn(compParser);
+            when(pageParser.process(any(File.class))).thenReturn(page);
+            when(compParser.process(any(File.class))).thenReturn(component);
+
+            LocatorCollector lc = new LocatorCollector(xmlParsers, pageValidator, testResourceSettings, fileSearcher);
+
+            assertEquals(pageFile, lc.getLocator("testPage.pageField").getFile());
+            assertEquals(componentFile, lc.getLocator("testPage.compField").getFile());
+        }
     }
 }

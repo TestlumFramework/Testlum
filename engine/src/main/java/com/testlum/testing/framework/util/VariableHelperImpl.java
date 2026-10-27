@@ -39,7 +39,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -76,6 +75,7 @@ public class VariableHelperImpl implements VariableHelper {
     private final AliasToStorageOperation aliasToStorageOperation;
     private final ResultUtil resultUtil;
     private final LogUtil logUtil;
+    private final SqlVariableResultConverter sqlVariableResultConverter;
 
     public VariableHelperImpl(final ApplicationContext ctx) {
         RandomStringUtils util = RandomStringUtils.secure();
@@ -87,6 +87,7 @@ public class VariableHelperImpl implements VariableHelper {
         this.aliasToStorageOperation = ctx.getBean(AliasToStorageOperation.class);
         this.resultUtil = ctx.getBean(ResultUtil.class);
         this.logUtil = ctx.getBean(LogUtil.class);
+        this.sqlVariableResultConverter = ctx.getBean(SqlVariableResultConverter.class);
     }
 
     @Override
@@ -437,15 +438,14 @@ public class VariableHelperImpl implements VariableHelper {
     private String getResultValue(final AbstractStorageOperation.StorageOperationResult storageOperationResult) {
         List<AbstractStorageOperation.QueryResult<?>> rawList =
                 (List<AbstractStorageOperation.QueryResult<?>>) storageOperationResult.getRaw();
-        List<LinkedCaseInsensitiveMap<Object>> content =
-                (List<LinkedCaseInsensitiveMap<Object>>) rawList.get(0).getContent();
-        verifyIfContentNotEmpty(content);
-        return String.valueOf(content.get(0).values().iterator().next());
+        return sqlVariableResultConverter.convert(toRows(rawList.get(0).getContent()));
     }
 
-    private void verifyIfContentNotEmpty(final List<LinkedCaseInsensitiveMap<Object>> content) {
-        if (content.isEmpty() || content.get(0).isEmpty()) {
-            throw new DefaultFrameworkException(ExceptionMessage.VAR_QUERY_RESULT_ERROR);
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> toRows(final Object content) {
+        if (content instanceof Map) {
+            return List.of((Map<String, Object>) content);
         }
+        return (List<Map<String, Object>>) content;
     }
 }

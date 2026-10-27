@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.testrail.TestRailConstants;
 import com.testlum.testing.framework.report.testrail.api.dto.ResultResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,10 @@ import java.util.stream.StreamSupport;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class TestRailResponseJsonDeserializer {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     public List<ResultResponse> extractResultsDTOs(final String jsonResponse) {
         JsonNode root = readTree(jsonResponse);
@@ -36,7 +38,7 @@ public class TestRailResponseJsonDeserializer {
 
     public Optional<Integer> extractIdFieldFromJson(final String jsonResponse, final String idField) {
         try {
-            JsonNode root = OBJECT_MAPPER.readTree(jsonResponse);
+            JsonNode root = objectMapper.readTree(jsonResponse);
             if (!root.isArray()) {
                 JsonNode idNode = root.get(idField);
                 if (idNode != null && idNode.isInt()) {
@@ -100,12 +102,12 @@ public class TestRailResponseJsonDeserializer {
                 .build());
     }
 
-    private static JsonNode readTree(final String jsonResponse) {
+    private JsonNode readTree(final String jsonResponse) {
         if (jsonResponse == null) {
             return MissingNode.getInstance();
         }
         try {
-            return OBJECT_MAPPER.readTree(jsonResponse);
+            return objectMapper.readTree(jsonResponse);
         } catch (JsonProcessingException e) {
             throw new DefaultFrameworkException(
                     String.format(TestRailConstants.RESPONSE_NOT_PARSABLE, e.getOriginalMessage()), e);

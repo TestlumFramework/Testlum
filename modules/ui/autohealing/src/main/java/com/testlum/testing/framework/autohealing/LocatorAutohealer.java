@@ -67,15 +67,16 @@ public class LocatorAutohealer implements AutoHealer {
     private static final String PATCH_FILE_PREFIX = TestResourceSettings.PATCH_FILE_PREFIX;
     private static final String PATCH_FILE_EXTENSION = ".xml";
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final JaroWinklerSimilarity jaroWinklerSimilarity = new JaroWinklerSimilarity();
     private final LevenshteinDistance levenshteinDistance = LevenshteinDistance.getDefaultInstance();
     private final ElementMetadataExtractor elementMetadataExtractor;
     private final WebDriver driver;
+    private final ObjectMapper objectMapper;
 
     public LocatorAutohealer(final ExecutorDependencies dependencies) {
         this.elementMetadataExtractor = dependencies.getContext().getBean(ElementMetadataExtractor.class);
         this.driver = dependencies.getDriver();
+        this.objectMapper = dependencies.getContext().getBean(ObjectMapper.class);
     }
 
     // CHECKSTYLE:OFF
@@ -645,7 +646,7 @@ public class LocatorAutohealer implements AutoHealer {
                 "return JSON.stringify(results);";
         String xpathAndClassNames = (String) js.executeScript(script, healedElement);
         try {
-            return OBJECT_MAPPER.readValue(xpathAndClassNames, HealedLocators.class);
+            return objectMapper.readValue(xpathAndClassNames, HealedLocators.class);
         } catch (JsonProcessingException e) {
             return new HealedLocators();
         }

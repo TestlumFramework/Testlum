@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 @Slf4j
-public class CustomAuth extends AbstractAuthStrategy {
+public class CustomAuthLocal extends AbstractAuthStrategy {
 
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
@@ -31,14 +31,15 @@ public class CustomAuth extends AbstractAuthStrategy {
 
     private static final String AUTHENTICATION_TYPE = "Authentication type";
     private static final String CUSTOM_PREFIX = "Custom ";
+    private static final String LOGIN_ENDPOINT = "http://localhost:8080/api/v1/api/test/auth/custom/login";
 
     private final FileSearcher fileSearcher;
     private final SystemVariableService systemVariableService;
     private final RestTemplate restTemplate;
     private final CustomAuthStrategy configuration;
 
-    public CustomAuth(final InterpreterDependencies dependencies,
-                      final CustomAuthStrategy configuration) {
+    public CustomAuthLocal(final InterpreterDependencies dependencies,
+                           final CustomAuthStrategy configuration) {
         super(dependencies);
         this.configuration = configuration;
         this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
@@ -57,7 +58,7 @@ public class CustomAuth extends AbstractAuthStrategy {
     private String getCustomToken(final Auth auth) {
         final String body = getCredentialsFromFile(auth.getCredentials());
         final HttpEntity<String> request = new HttpEntity<>(body, getHeaders());
-        final String response = restTemplate.postForObject(getLoginEndpoint(), request, String.class);
+        final String response = restTemplate.postForObject(LOGIN_ENDPOINT, request, String.class);
         if (StringUtils.isBlank(response)) {
             throw new DefaultFrameworkException(
                     "Login response is empty for auth strategy <%s>", configuration.getAlias());
@@ -69,7 +70,7 @@ public class CustomAuth extends AbstractAuthStrategy {
         final DocumentContext context = JsonPath.parse(response);
         final Object value = context.read("$.token");
         if (!(value instanceof String token) || StringUtils.isBlank(token)) {
-            throw new DefaultFrameworkException("Login response must contain a non-empty customToken "
+            throw new DefaultFrameworkException("Login response must contain a non-empty token "
                     + "for auth strategy <%s>", configuration.getAlias());
         }
         return token;
@@ -82,15 +83,6 @@ public class CustomAuth extends AbstractAuthStrategy {
         return headers;
     }
 
-    private String getLoginEndpoint() {
-        final String endpoint = configuration.getLoginEndpoint();
-        if (StringUtils.isBlank(endpoint)) {
-            throw new DefaultFrameworkException(
-                    "Login endpoint is required by CustomAuth for strategy <%s>", configuration.getAlias());
-        }
-        return endpoint;
-    }
-
     @SneakyThrows
     private String getCredentialsFromFile(final String fileName) {
         String content = FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName),
@@ -100,7 +92,7 @@ public class CustomAuth extends AbstractAuthStrategy {
 
     private void logAuthInfo(final Auth auth) {
         log.info(ALIAS_LOG, configuration.getAlias());
-        log.info(ENDPOINT_LOG, configuration.getLoginEndpoint());
+        log.info(ENDPOINT_LOG, LOGIN_ENDPOINT);
         log.info(CREDENTIALS_LOG, auth.getCredentials());
     }
 }

@@ -141,10 +141,10 @@ class IntegrationsValidatorTest {
         }
 
         @Test
-        void mismatchedCustomClassesThrow() {
-            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
-                    "dev", authConfig(custom("example.FirstAuth")),
-                    "staging", authConfig(custom("example.SecondAuth")))));
+        void differentCustomClassesAcrossEnvironmentsDoNotThrow() {
+            assertDoesNotThrow(() -> validator.validate(Map.of(
+                    "local", authConfig(custom("example.CustomAuthLocal")),
+                    "regression", authConfig(custom("example.CustomAuthRegression")))));
         }
 
         @Test

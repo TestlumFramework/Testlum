@@ -44,8 +44,6 @@
     <x:complexType name="customAuthStrategy">
         <x:complexContent>
             <x:extension base="tns:authStrategy">
-                <x:attribute name="loginEndpoint"
-                             type="tns:url"/>
                 <x:attribute name="className"
                              type="tns:nonEmptyString"
                              use="required"/>

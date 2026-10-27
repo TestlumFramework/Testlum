@@ -32,7 +32,7 @@ class CustomAuthTest {
     private InterpreterDependencies dependencies;
     private RestTemplate restTemplate;
     private CustomAuthStrategy configuration;
-    private CustomAuth strategy;
+    private AuthStrategy strategy;
     private Auth command;
 
     @BeforeEach
@@ -51,14 +51,13 @@ class CustomAuthTest {
         when(variables.inject(anyString())).thenReturn("{\"password\":\"secret\"}");
         configuration = new CustomAuthStrategy();
         configuration.setAlias("CUSTOM");
-        configuration.setLoginEndpoint("http://localhost/custom/login");
-        strategy = new CustomAuth(dependencies, configuration);
+        strategy = new CustomAuthLocal(dependencies, configuration);
         command = new Auth();
         command.setCredentials("creds.json");
     }
 
     @Test
-    void authenticatesUsingStrategyEndpointAndResolvedCredentials() {
+    void authenticatesUsingLocalEndpointAndResolvedCredentials() {
         response("{\"token\":\"custom-value\"}");
         CommandResult result = new CommandResult();
         strategy.authenticate(command, result);
@@ -66,7 +65,7 @@ class CustomAuthTest {
         verify(dependencies).setAuthorization(authorization.capture());
         assertEquals("Custom custom-value", authorization.getValue().getHeaders().get("Authorization"));
         assertEquals("CUSTOM", result.getMetadata().get("Authentication type"));
-        verify(restTemplate).postForObject(eq(configuration.getLoginEndpoint()),
+        verify(restTemplate).postForObject(eq("http://localhost:8080/api/v1/api/test/auth/custom/login"),
                 argThat((HttpEntity<?> request) -> "{\"password\":\"secret\"}".equals(request.getBody())),
                 eq(String.class));
     }
@@ -100,10 +99,12 @@ class CustomAuthTest {
     }
 
     @Test
-    void requiresEndpointForThisCustomImplementation() {
-        configuration.setLoginEndpoint(null);
-        assertThrows(DefaultFrameworkException.class, () -> strategy.authenticate(command, new CommandResult()));
-        verifyNoInteractions(restTemplate);
+    void authenticatesUsingRegressionEndpoint() {
+        strategy = new CustomAuthRegression(dependencies, configuration);
+        response("{\"token\":\"custom-value\"}");
+        strategy.authenticate(command, new CommandResult());
+        verify(restTemplate).postForObject(eq("http://mega-test-api:8080/api/v1/api/test/auth/custom/login"),
+                any(HttpEntity.class), eq(String.class));
     }
 
     @Test
@@ -116,7 +117,7 @@ class CustomAuthTest {
     }
 
     private void response(final String body) {
-        when(restTemplate.postForObject(eq(configuration.getLoginEndpoint()), any(HttpEntity.class), eq(String.class)))
+        when(restTemplate.postForObject(anyString(), any(HttpEntity.class), eq(String.class)))
                 .thenReturn(body);
     }
 }

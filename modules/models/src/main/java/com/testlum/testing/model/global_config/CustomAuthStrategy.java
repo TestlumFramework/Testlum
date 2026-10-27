@@ -16,7 +16,6 @@ import jakarta.xml.bind.annotation.XmlType;
  * &lt;complexType name="customAuthStrategy"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/global-config}authStrategy"&gt;
- *       &lt;attribute name="loginEndpoint" type="{http://www.testlum.com/testing/model/global-config}url" /&gt;
  *       &lt;attribute name="className" use="required" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -31,34 +30,8 @@ public class CustomAuthStrategy
     extends AuthStrategy
 {
 
-    @XmlAttribute(name = "loginEndpoint")
-    protected String loginEndpoint;
     @XmlAttribute(name = "className", required = true)
     protected String className;
-
-    /**
-     * Gets the value of the loginEndpoint property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getLoginEndpoint() {
-        return loginEndpoint;
-    }
-
-    /**
-     * Sets the value of the loginEndpoint property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setLoginEndpoint(String value) {
-        this.loginEndpoint = value;
-    }
 
     /**
      * Gets the value of the className property.

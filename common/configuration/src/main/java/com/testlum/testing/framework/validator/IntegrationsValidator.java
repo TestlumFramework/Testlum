@@ -5,7 +5,6 @@ import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.global_config.AuthStrategy;
-import com.testlum.testing.model.global_config.CustomAuthStrategy;
 import com.testlum.testing.model.global_config.Integration;
 import com.testlum.testing.model.global_config.Integrations;
 import org.springframework.stereotype.Component;
@@ -154,16 +153,6 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         }
         if (!defaultStrategy.getClass().equals(strategy.getClass())) {
             throw new DefaultFrameworkException(ExceptionMessage.AUTH_STRATEGY_NOT_MATCH, alias);
-        }
-        checkCustomAuth(strategy, defaultStrategy, alias);
-    }
-
-    private void checkCustomAuth(final AuthStrategy strategy,
-                                 final AuthStrategy defaultStrategy,
-                                 final String alias) {
-        if (strategy instanceof CustomAuthStrategy custom && defaultStrategy instanceof CustomAuthStrategy defaultCustom
-                && !Objects.equals(custom.getClassName(), defaultCustom.getClassName())) {
-            throw new DefaultFrameworkException(ExceptionMessage.AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, alias);
         }
     }
 

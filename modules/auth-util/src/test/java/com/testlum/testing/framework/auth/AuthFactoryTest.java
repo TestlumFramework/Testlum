@@ -55,9 +55,17 @@ class AuthFactoryTest {
         @Test
         void createsCustomAuthStrategy() {
             CustomAuthStrategy configuration = new CustomAuthStrategy();
-            configuration.setClassName(CustomAuth.class.getName());
+            configuration.setClassName(CustomAuthLocal.class.getName());
             mockConfiguration("CUSTOM", configuration);
-            assertInstanceOf(CustomAuth.class, authFactory.create(dependencies, "CUSTOM"));
+            assertInstanceOf(CustomAuthLocal.class, authFactory.create(dependencies, "CUSTOM"));
+        }
+
+        @Test
+        void createsRegressionCustomAuthStrategy() {
+            CustomAuthStrategy configuration = new CustomAuthStrategy();
+            configuration.setClassName(CustomAuthRegression.class.getName());
+            mockConfiguration("CUSTOM", configuration);
+            assertInstanceOf(CustomAuthRegression.class, authFactory.create(dependencies, "CUSTOM"));
         }
 
         @Test

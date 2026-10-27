@@ -130,7 +130,7 @@ class ImageComparisonUtilTest {
         }
 
         @Test
-        void savesActualImageWithBrowserOnMismatch(@TempDir final Path tempDir) {
+        void savesActualImageWithTargetIdentifierOnMismatch(@TempDir final Path tempDir) {
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(comparisonResult.getImageComparisonState()).thenReturn(ImageComparisonState.MISMATCH);
             when(comparisonResult.getDifferencePercent()).thenReturn(5.0f);
@@ -141,7 +141,7 @@ class ImageComparisonUtilTest {
             CommandResult result = new CommandResult();
             ExecutorDependencies dependencies = ExecutorDependencies.builder()
                     .file(new File(tempDir.toFile(), "scenario.xml"))
-                    .browser("BROWSER")
+                    .targetIdentifier("BROWSER")
                     .build();
 
             assertThrows(ImageComparisonException.class,
@@ -153,7 +153,7 @@ class ImageComparisonUtilTest {
         }
 
         @Test
-        void savesActualImageWithPrefixAndBrowserOnMismatch(@TempDir final Path tempDir) {
+        void savesActualImageWithPrefixAndTargetIdentifierOnMismatch(@TempDir final Path tempDir) {
             ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
             when(comparisonResult.getImageComparisonState()).thenReturn(ImageComparisonState.MISMATCH);
             when(comparisonResult.getDifferencePercent()).thenReturn(5.0f);
@@ -165,7 +165,7 @@ class ImageComparisonUtilTest {
             ExecutorDependencies dependencies = ExecutorDependencies.builder()
                     .file(new File(tempDir.toFile(), "scenario.xml"))
                     .prefix("sub")
-                    .browser("BROWSER_2")
+                    .targetIdentifier("BROWSER_2")
                     .build();
 
             assertThrows(ImageComparisonException.class,
@@ -306,7 +306,7 @@ class ImageComparisonUtilTest {
         }
 
         @Test
-        void handlesBrowserIdentifier() throws Exception {
+        void handlesTargetIdentifier() throws Exception {
             Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
                     String.class, String.class, String.class);
             method.setAccessible(true);
@@ -317,7 +317,7 @@ class ImageComparisonUtilTest {
         }
 
         @Test
-        void handlesPrefixAndBrowserIdentifier() throws Exception {
+        void handlesPrefixAndTargetIdentifier() throws Exception {
             Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
                     String.class, String.class, String.class);
             method.setAccessible(true);

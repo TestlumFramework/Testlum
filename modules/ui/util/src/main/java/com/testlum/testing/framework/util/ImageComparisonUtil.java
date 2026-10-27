@@ -110,7 +110,7 @@ public class ImageComparisonUtil {
                                  final ExecutorDependencies dependencies) throws IOException {
         String imageExtension = FilenameUtils.getExtension(expectedImageFullName);
         File fileToSave = getFileToSave(dependencies.getRootFile().getParentFile(),
-                expectedImageFullName, dependencies.getPrefix(), dependencies.getBrowser());
+                expectedImageFullName, dependencies.getPrefix(), dependencies.getTargetIdentifier());
         if (isHighlightDifference) {
             ImageIO.write(comparisonResult.getResult(), imageExtension, fileToSave);
         } else {
@@ -122,10 +122,10 @@ public class ImageComparisonUtil {
     private File getFileToSave(final File directoryToSave,
                                final String expectedImageFullName,
                                final String prefix,
-                               final String browserIdentifier) {
+                               final String targetIdentifier) {
         verifyDirectoryToSave(directoryToSave);
         return new File(directoryToSave.getAbsolutePath(),
-                getImageNameToSave(expectedImageFullName, prefix, browserIdentifier));
+                getImageNameToSave(expectedImageFullName, prefix, targetIdentifier));
     }
 
     private void verifyDirectoryToSave(final File directoryToSave) {
@@ -137,11 +137,11 @@ public class ImageComparisonUtil {
 
     private String getImageNameToSave(final String expectedImageFullName,
                                       final String prefix,
-                                      final String browserIdentifier) {
-        String browserSuffix = StringUtils.isNotBlank(browserIdentifier) ? "_" + browserIdentifier : "";
+                                      final String targetIdentifier) {
+        String targetSuffix = StringUtils.isNotBlank(targetIdentifier) ? "_" + targetIdentifier : "";
         String baseName = String.format("%s%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
-                browserSuffix,
+                targetSuffix,
                 FilenameUtils.getExtension(expectedImageFullName));
         return PrefixUtil.applyPrefix(prefix, baseName);
     }

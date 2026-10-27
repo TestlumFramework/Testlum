@@ -22,7 +22,7 @@ public class ExecutorDependencies {
     private final WebDriver driver;
     private final UiType uiType;
     private final String environment;
-    private final String browser;
+    private final String targetIdentifier;
 
     public File getRootFile() {
         return rootFile != null ? rootFile : file;

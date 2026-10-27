@@ -30,7 +30,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .position(dependencies.getPosition())
                 .uiType(uiType)
                 .environment(dependencies.getEnvironment())
-                .browser(getTargetIdentifier(uiType))
+                .targetIdentifier(getTargetIdentifier(uiType))
                 .build();
     }
 

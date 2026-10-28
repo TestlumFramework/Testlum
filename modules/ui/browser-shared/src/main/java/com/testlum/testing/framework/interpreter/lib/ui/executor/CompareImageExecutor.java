@@ -54,8 +54,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
             List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver(), r);
             ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual, excludeList);
             imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                    image.isHighlightDifference(), dependencies.getRootFile().getParentFile(),
-                    dependencies.getPrefix(), r);
+                    image.isHighlightDifference(), dependencies, r);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }

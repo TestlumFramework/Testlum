@@ -29,6 +29,10 @@ public class InterpreterDependencies {
     private final WebDriver mobilebrowserDriver;
     private final WebDriver nativeDriver;
 
+    private final String browser;
+    private final String mobilebrowserDevice;
+    private final String nativeDevice;
+
     private Authorization authorization;
 
     public File getRootFile() {

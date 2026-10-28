@@ -3,6 +3,7 @@ package com.testlum.testing.framework.util;
 import com.github.romankh3.image.comparison.exception.ImageComparisonException;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
+import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -127,6 +128,53 @@ class ImageComparisonUtilTest {
             File expectedFile = new File(tempDir.toFile(), "included_sub_actual_image_compared_to_expected.png");
             assertTrue(expectedFile.exists());
         }
+
+        @Test
+        void savesActualImageWithTargetIdentifierOnMismatch(@TempDir final Path tempDir) {
+            ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
+            when(comparisonResult.getImageComparisonState()).thenReturn(ImageComparisonState.MISMATCH);
+            when(comparisonResult.getDifferencePercent()).thenReturn(5.0f);
+
+            BufferedImage actualImg = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+            when(comparisonResult.getActual()).thenReturn(actualImg);
+
+            CommandResult result = new CommandResult();
+            ExecutorDependencies dependencies = ExecutorDependencies.builder()
+                    .file(new File(tempDir.toFile(), "scenario.xml"))
+                    .targetIdentifier("BROWSER")
+                    .build();
+
+            assertThrows(ImageComparisonException.class,
+                    () -> imageComparisonUtil.processImageComparisonResult(
+                            comparisonResult, "expected.png", false, dependencies, result));
+
+            File expectedFile = new File(tempDir.toFile(), "actual_image_compared_to_expected_BROWSER.png");
+            assertTrue(expectedFile.exists());
+        }
+
+        @Test
+        void savesActualImageWithPrefixAndTargetIdentifierOnMismatch(@TempDir final Path tempDir) {
+            ImageComparisonResult comparisonResult = mock(ImageComparisonResult.class);
+            when(comparisonResult.getImageComparisonState()).thenReturn(ImageComparisonState.MISMATCH);
+            when(comparisonResult.getDifferencePercent()).thenReturn(5.0f);
+
+            BufferedImage actualImg = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+            when(comparisonResult.getActual()).thenReturn(actualImg);
+
+            CommandResult result = new CommandResult();
+            ExecutorDependencies dependencies = ExecutorDependencies.builder()
+                    .file(new File(tempDir.toFile(), "scenario.xml"))
+                    .prefix("sub")
+                    .targetIdentifier("BROWSER_2")
+                    .build();
+
+            assertThrows(ImageComparisonException.class,
+                    () -> imageComparisonUtil.processImageComparisonResult(
+                            comparisonResult, "expected.png", false, dependencies, result));
+
+            File expectedFile = new File(tempDir.toFile(), "sub_actual_image_compared_to_expected_BROWSER_2.png");
+            assertTrue(expectedFile.exists());
+        }
     }
 
     @Nested
@@ -226,20 +274,22 @@ class ImageComparisonUtilTest {
 
         @Test
         void generatesCorrectActualImageName() throws Exception {
-            Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave", String.class);
+            Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
+                    String.class, String.class, String.class);
             method.setAccessible(true);
 
-            String result = (String) method.invoke(imageComparisonUtil, "expected_logo.png");
+            String result = (String) method.invoke(imageComparisonUtil, "expected_logo.png", null, null);
 
             assertEquals("actual_image_compared_to_expected_logo.png", result);
         }
 
         @Test
         void handlesJpgExtension() throws Exception {
-            Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave", String.class);
+            Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
+                    String.class, String.class, String.class);
             method.setAccessible(true);
 
-            String result = (String) method.invoke(imageComparisonUtil, "screenshot.jpg");
+            String result = (String) method.invoke(imageComparisonUtil, "screenshot.jpg", null, null);
 
             assertEquals("actual_image_compared_to_screenshot.jpg", result);
         }
@@ -247,12 +297,34 @@ class ImageComparisonUtilTest {
         @Test
         void handlesPrefix() throws Exception {
             Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
-                    String.class, String.class);
+                    String.class, String.class, String.class);
             method.setAccessible(true);
 
-            String result = (String) method.invoke(imageComparisonUtil, "logo.png", "included_login");
+            String result = (String) method.invoke(imageComparisonUtil, "logo.png", "included_login", null);
 
             assertEquals("included_login_actual_image_compared_to_logo.png", result);
+        }
+
+        @Test
+        void handlesTargetIdentifier() throws Exception {
+            Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
+                    String.class, String.class, String.class);
+            method.setAccessible(true);
+
+            String result = (String) method.invoke(imageComparisonUtil, "logo.png", null, "BROWSER");
+
+            assertEquals("actual_image_compared_to_logo_BROWSER.png", result);
+        }
+
+        @Test
+        void handlesPrefixAndTargetIdentifier() throws Exception {
+            Method method = ImageComparisonUtil.class.getDeclaredMethod("getImageNameToSave",
+                    String.class, String.class, String.class);
+            method.setAccessible(true);
+
+            String result = (String) method.invoke(imageComparisonUtil, "logo.png", "included_login", "BROWSER_2");
+
+            assertEquals("included_login_actual_image_compared_to_logo_BROWSER_2.png", result);
         }
     }
 }

@@ -45,8 +45,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
             BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
             ImageComparisonResult comparisonResult = imageComparator.compare(image, expected, actual);
             imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                    image.isHighlightDifference(), dependencies.getRootFile().getParentFile(),
-                    dependencies.getPrefix(), result);
+                    image.isHighlightDifference(), dependencies, result);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }

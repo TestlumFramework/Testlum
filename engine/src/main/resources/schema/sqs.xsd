@@ -42,6 +42,7 @@
     <x:attribute name="visibilityTimeout" type="tns:positiveIntegerMin1"/>
     <x:attribute name="waitTimeSeconds" type="tns:positiveIntegerMin1"/>
     <x:attribute name="receiveRequestAttemptId" type="tns:nonEmptyString"/>
+    <x:attribute name="mode" type="tns:mode" default="strict"/>
   </x:complexType>
 
 </x:schema>

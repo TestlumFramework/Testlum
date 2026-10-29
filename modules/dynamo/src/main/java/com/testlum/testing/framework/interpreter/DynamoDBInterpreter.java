@@ -5,6 +5,7 @@ import com.testlum.testing.framework.interpreter.lib.AbstractDatabaseInterpreter
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.testlum.testing.model.scenario.Dynamo;
+import com.testlum.testing.model.scenario.Mode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -46,6 +47,11 @@ public class DynamoDBInterpreter extends AbstractDatabaseInterpreter<Dynamo> {
     @Override
     protected String getFile(final Dynamo command) {
         return command.getFile();
+    }
+
+    @Override
+    protected Mode getMode(final Dynamo command) {
+        return command.getMode();
     }
 
     @Override

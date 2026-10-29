@@ -8,6 +8,7 @@ import com.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterp
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.testlum.testing.model.scenario.SendSqsMessage;
 import com.testlum.testing.model.scenario.Sqs;
@@ -123,7 +124,7 @@ public class SQSInterpreter extends AbstractMessageBrokerInterpreter<Sqs> {
         logSQSReceiveInfo(receive, expectedMessages);
         addSqsReceiveInfo(receive, aliasEnv.getAlias(), result);
         final List<Object> actualMessages = receiveMessages(receive, aliasEnv);
-        compareMessages(actualMessages, expectedMessages, result);
+        compareMessages(actualMessages, expectedMessages, Mode.STRICT.equals(receive.getMode()), result);
     }
 
     private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {

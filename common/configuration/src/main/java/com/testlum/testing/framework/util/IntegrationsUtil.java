@@ -44,6 +44,8 @@ import java.util.function.Predicate;
 @Slf4j
 public class IntegrationsUtil {
 
+    private static final String DEFAULT_ALIAS = "DEFAULT";
+
     private final EnvToIntegrationMap envToIntegrations;
     private final Map<IntegrationsPredicate, IntegrationListMethod> configToIntegrationListMap;
 
@@ -134,7 +136,7 @@ public class IntegrationsUtil {
     private <T extends Integration> T getIntegrationByAliasOrThrow(final List<T> integrations,
                                                                    final String alias,
                                                                    final String message) {
-        String computedAlias = alias == null ? "DEFAULT" : alias;
+        String computedAlias = alias == null ? DEFAULT_ALIAS : alias;
         return integrations.stream()
                 .filter(Integration::isEnabled)
                 .filter(integration -> integration.getAlias().equals(computedAlias))
@@ -159,7 +161,7 @@ public class IntegrationsUtil {
     }
 
     private AuthStrategy findAuthStrategyByAlias(final AliasEnv aliasEnv) {
-        String alias = aliasEnv.getAlias() == null ? "DEFAULT" : aliasEnv.getAlias();
+        String alias = aliasEnv.getAlias() == null ? DEFAULT_ALIAS : aliasEnv.getAlias();
         List<AuthStrategy> matches = findAuthStrategies(aliasEnv.getEnvironment())
                 .stream()
                 .filter(strategy -> alias.equals(strategy.getAlias()))

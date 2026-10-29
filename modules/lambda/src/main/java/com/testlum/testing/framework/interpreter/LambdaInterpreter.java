@@ -11,6 +11,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Header;
 import com.testlum.testing.model.scenario.Lambda;
 import com.testlum.testing.model.scenario.LambdaBody;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -97,7 +98,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
                 : getContentIfFile(expected.getFile());
         result.setActual(stringPrettifier.asJsonResult(actualBody));
         result.setExpected(stringPrettifier.asJsonResult(body));
-        httpValidator.validateBody(body, actualBody);
+        httpValidator.validateBody(body, actualBody, Mode.STRICT.equals(expected.getMode()));
     }
 
     private void validateHeaders(final Response expected,

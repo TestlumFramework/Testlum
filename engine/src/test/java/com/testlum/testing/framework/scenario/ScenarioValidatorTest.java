@@ -12,7 +12,6 @@ import com.testlum.testing.framework.util.IntegrationsUtil;
 import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLValidator;
-import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.global_config.Apis;
 import com.testlum.testing.model.global_config.ClickhouseIntegration;
 import com.testlum.testing.model.global_config.DynamoIntegration;
@@ -499,39 +498,81 @@ class ScenarioValidatorTest {
 
     @Nested
     class ValidateAuthCommand {
-
         @Test
-        void throwsWhenApisIsNullForAuth() {
-            when(integrations.getApis()).thenReturn(null);
-
-            Auth auth = new Auth();
-            auth.setApiAlias("api1");
-            auth.setCredentials("creds.json");
-
-            Scenario scenario = createScenario(true, auth);
+        void rejectsMissingAuthRegistry() {
+            Auth auth = authCommand("JWT");
             assertThrows(DefaultFrameworkException.class,
-                    () -> validator.validate(scenario, xmlFile()));
+                    () -> validator.validate(createScenario(true, auth), xmlFile()));
         }
 
         @Test
-        void throwsWhenApiAuthConfigIsNull() {
-            Apis apis = new Apis();
-            when(integrations.getApis()).thenReturn(apis);
-
-            Api apiObj = mock(Api.class);
-            when(apiObj.getAuth()).thenReturn(null);
-            when(apiObj.getAlias()).thenReturn("api1");
-            when(integrationsUtil.findApiForAlias(apis.getApi(), "api1")).thenReturn(apiObj);
-            when(fileSearcher.searchFileFromDataFolder("creds.json"))
-                    .thenReturn(new File("creds.json"));
-
-            Auth auth = new Auth();
-            auth.setApiAlias("api1");
-            auth.setCredentials("creds.json");
-
-            Scenario scenario = createScenario(true, auth);
+        void rejectsUnknownStrategy() {
+            configureAuthRegistry();
             assertThrows(DefaultFrameworkException.class,
-                    () -> validator.validate(scenario, xmlFile()));
+                    () -> validator.validate(createScenario(true, authCommand("missing")), xmlFile()));
+        }
+
+        @Test
+        void validatesAuthWithoutHttpIntegration() {
+            configureAuthRegistry();
+            assertDoesNotThrow(() -> validator.validate(createScenario(true, authCommand("JWT")), xmlFile()));
+            verify(integrations, never()).getApis();
+        }
+
+        @Test
+        void validatesDefaultStrategyAlias() {
+            configureAuthRegistry();
+            Auth auth = authCommand(null);
+            assertDoesNotThrow(() -> validator.validate(createScenario(true, auth), xmlFile()));
+        }
+
+        @Test
+        void defersDynamicStrategyAliasUntilExecution() {
+            configureAuthRegistry();
+            assertDoesNotThrow(() -> validator.validate(
+                    createScenario(true, authCommand("{{selectedStrategy}}")), xmlFile()));
+        }
+
+        @Test
+        void checksGraphqlIntegrationInsideAuth() {
+            configureAuthRegistry();
+            Auth auth = authCommand("JWT");
+            auth.getCommands().add(new Graphql());
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(createScenario(true, auth), xmlFile()));
+            verify(integrations).getGraphqlIntegration();
+        }
+
+        @Test
+        void checksCommandsInsideRepeatWithinAuth() {
+            configureAuthRegistry();
+            Auth auth = authCommand("JWT");
+            Repeat repeat = new Repeat();
+            repeat.setTimes(1);
+            repeat.getCommands().add(new Graphql());
+            auth.getCommands().add(repeat);
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(createScenario(true, auth), xmlFile()));
+            verify(integrations).getGraphqlIntegration();
+        }
+
+        private void configureAuthRegistry() {
+            var registry = new com.testlum.testing.model.global_config.AuthStrategies();
+            var jwt = new com.testlum.testing.model.global_config.JwtAuthStrategy();
+            jwt.setAlias("JWT");
+            var basic = new com.testlum.testing.model.global_config.BasicAuthStrategy();
+            basic.setAlias("DEFAULT");
+            registry.getJwtOrBasicOrCustom().add(jwt);
+            registry.getJwtOrBasicOrCustom().add(basic);
+            when(integrations.getAuthStrategies()).thenReturn(registry);
+            when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(new File("creds.json"));
+        }
+
+        private Auth authCommand(final String alias) {
+            Auth auth = new Auth();
+            auth.setStrategyAlias(alias);
+            auth.setCredentials("creds.json");
+            return auth;
         }
     }
 

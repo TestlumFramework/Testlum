@@ -8,68 +8,38 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for api complex type.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * 
- * <pre>
+ * &lt;p&gt;Java class for api complex type&lt;/p&gt;.
+ *
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
+ *
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="api"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/global-config}integration"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="auth" type="{http://www.testlum.com/testing/model/global-config}auth" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
  *       &lt;attribute name="url" use="required" type="{http://www.testlum.com/testing/model/global-config}url" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
- * 
- * 
+ * }&lt;/pre&gt;
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "api", propOrder = {
-    "auth"
-})
+@XmlType(name = "api")
 public class Api
     extends Integration
 {
 
-    protected Auth auth;
     @XmlAttribute(name = "url", required = true)
     protected String url;
 
     /**
-     * Gets the value of the auth property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Auth }
-     *     
-     */
-    public Auth getAuth() {
-        return auth;
-    }
-
-    /**
-     * Sets the value of the auth property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Auth }
-     *     
-     */
-    public void setAuth(Auth value) {
-        this.auth = value;
-    }
-
-    /**
      * Gets the value of the url property.
-     * 
+     *
      * @return
      *     possible object is
      *     {@link String }
-     *     
+     *
      */
     public String getUrl() {
         return url;
@@ -77,11 +47,11 @@ public class Api
 
     /**
      * Sets the value of the url property.
-     * 
+     *
      * @param value
      *     allowed object is
      *     {@link String }
-     *     
+     *
      */
     public void setUrl(String value) {
         this.url = value;

@@ -4,7 +4,6 @@ import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +27,6 @@ public abstract class AbstractAuthStrategy implements AuthStrategy {
 
     @Override
     public void logout() {
-        InterpreterDependencies.Authorization authorization = new InterpreterDependencies.Authorization();
-        authorization.setHeaders(Collections.emptyMap());
-        dependencies.setAuthorization(authorization);
+        dependencies.clearAuthorization();
     }
 }

@@ -6,6 +6,7 @@ import com.testlum.testing.framework.configuration.ui.WebDriverFactory;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.CommandToInterpreterClassMap;
 import com.testlum.testing.framework.interpreter.lib.InterpreterScanner;
+import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.report.ScenarioResult;
 import com.testlum.testing.framework.util.*;
@@ -308,5 +309,35 @@ class ScenarioRunnerTest {
             // Only one command should be processed before stop
             assertEquals(1, result.getCommands().size());
         }
+    }
+
+    @Test
+    void clearsRetainedAuthorizationAfterScenarioCompletion() throws Exception {
+        InterpreterDependencies dependencies = scenarioDependencies(runner);
+        dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                java.util.Map.of("Authorization", "Bearer retained-token")));
+        runner.run();
+        assertNull(dependencies.getAuthorization());
+    }
+
+    @Test
+    void clearsRetainedAuthorizationWhenScenarioStopsOnFailure() throws Exception {
+        when(config.isStopScenarioOnFailure()).thenReturn(true);
+        ScenarioRunner failingRunner = new ScenarioRunner(scenarioArguments, ctx);
+        InterpreterDependencies dependencies = scenarioDependencies(failingRunner);
+        dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                java.util.Map.of("Authorization", "Bearer retained-token")));
+        scenarioArguments.getScenario().getCommands().add(mock(AbstractCommand.class));
+        CommandResult failed = new CommandResult();
+        failed.setException(new IllegalStateException("Request failed"));
+        when(resultUtil.newCommandResultInstance(any(), any())).thenReturn(failed);
+        assertFalse(failingRunner.run().isSuccess());
+        assertNull(dependencies.getAuthorization());
+    }
+
+    private InterpreterDependencies scenarioDependencies(final ScenarioRunner scenarioRunner) throws Exception {
+        java.lang.reflect.Field field = ScenarioRunner.class.getDeclaredField("dependencies");
+        field.setAccessible(true);
+        return (InterpreterDependencies) field.get(scenarioRunner);
     }
 }

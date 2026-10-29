@@ -35,11 +35,13 @@
     <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
     <x:include schemaLocation="sqlDatabase-integration.xsd"/>
+    <x:include schemaLocation="auth-strategies.xsd"/>
 
     <x:element name="integrations">
         <x:complexType>
             <x:all>
                 <x:element name="aiIntegration" type="tns:aiIntegration" minOccurs="0"/>
+                <x:element name="authStrategies" type="tns:authStrategies" minOccurs="0"/>
                 <x:element name="apis" type="tns:apis" minOccurs="0"/>
                 <x:element name="websockets" type="tns:websockets" minOccurs="0"/>
                 <x:element name="graphqlIntegration" type="tns:graphqlIntegration" minOccurs="0"/>

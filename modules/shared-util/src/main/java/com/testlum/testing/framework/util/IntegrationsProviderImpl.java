@@ -1,6 +1,7 @@
 package com.testlum.testing.framework.util;
 
 import com.testlum.testing.framework.env.AliasEnv;
+import com.testlum.testing.model.global_config.AuthStrategy;
 import com.testlum.testing.model.global_config.Integration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -33,4 +34,8 @@ public class IntegrationsProviderImpl implements IntegrationsProvider {
         return false;
     }
 
+    @Override
+    public <T extends AuthStrategy> T findAuthStrategy(final Class<T> clazz, final AliasEnv aliasEnv) {
+        return integrationsUtil.findAuthStrategy(clazz, aliasEnv);
+    }
 }

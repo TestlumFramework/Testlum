@@ -26,6 +26,7 @@ public class InterpreterDependencies {
     private final WebDriver webDriver;
     private final WebDriver mobilebrowserDriver;
     private final WebDriver nativeDriver;
+    private boolean authBlockActive;
 
     private Authorization authorization;
 
@@ -33,6 +34,10 @@ public class InterpreterDependencies {
         return this.context.containsBean(beanName)
                 ? context.getBean(beanName, clazz)
                 : defaultValue.get();
+    }
+
+    public void clearAuthorization() {
+        this.authorization = null;
     }
 
     @Data

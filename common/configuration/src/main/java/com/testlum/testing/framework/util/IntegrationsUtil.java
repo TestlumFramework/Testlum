@@ -7,6 +7,7 @@ import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.model.global_config.Ai;
 import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.global_config.AuthStrategy;
 import com.testlum.testing.model.global_config.Clickhouse;
 import com.testlum.testing.model.global_config.Dynamo;
 import com.testlum.testing.model.global_config.Elasticsearch;
@@ -42,6 +43,8 @@ import java.util.function.Predicate;
 @Component
 @Slf4j
 public class IntegrationsUtil {
+
+    private static final String DEFAULT_ALIAS = "DEFAULT";
 
     private final EnvToIntegrationMap envToIntegrations;
     private final Map<IntegrationsPredicate, IntegrationListMethod> configToIntegrationListMap;
@@ -133,7 +136,7 @@ public class IntegrationsUtil {
     private <T extends Integration> T getIntegrationByAliasOrThrow(final List<T> integrations,
                                                                    final String alias,
                                                                    final String message) {
-        String computedAlias = alias == null ? "DEFAULT" : alias;
+        String computedAlias = alias == null ? DEFAULT_ALIAS : alias;
         return integrations.stream()
                 .filter(Integration::isEnabled)
                 .filter(integration -> integration.getAlias().equals(computedAlias))
@@ -143,6 +146,43 @@ public class IntegrationsUtil {
 
     public <T extends Integration> boolean isEnabled(final List<T> integrations) {
         return integrations.stream().anyMatch(Integration::isEnabled);
+    }
+
+    public <T extends AuthStrategy> T findAuthStrategy(final Class<T> clazz, final AliasEnv aliasEnv) {
+        AuthStrategy strategy = findAuthStrategyByAlias(aliasEnv);
+        if (!clazz.isInstance(strategy)) {
+            throw new DefaultFrameworkException(
+                    "Auth strategy <%s> has type <%s>, expected <%s>",
+                    strategy.getAlias(),
+                    strategy.getClass().getSimpleName(),
+                    clazz.getSimpleName());
+        }
+        return clazz.cast(strategy);
+    }
+
+    private AuthStrategy findAuthStrategyByAlias(final AliasEnv aliasEnv) {
+        String alias = aliasEnv.getAlias() == null ? DEFAULT_ALIAS : aliasEnv.getAlias();
+        List<AuthStrategy> matches = findAuthStrategies(aliasEnv.getEnvironment())
+                .stream()
+                .filter(strategy -> alias.equals(strategy.getAlias()))
+                .toList();
+        if (matches.size() != 1) {
+            throw new DefaultFrameworkException(
+                    "Expected one auth strategy <%s> in environment <%s>, found %d",
+                    alias, aliasEnv.getEnvironment(), matches.size());
+        }
+        return matches.get(0);
+    }
+
+    private List<AuthStrategy> findAuthStrategies(final String environment) {
+        Integrations integrations = envToIntegrations.get(environment);
+        if (integrations == null) {
+            throw new DefaultFrameworkException("Cannot find integrations for environment <%s>", environment);
+        }
+        if (integrations.getAuthStrategies() == null) {
+            throw new DefaultFrameworkException("Cannot find <authStrategies> for environment <%s>", environment);
+        }
+        return integrations.getAuthStrategies().getJwtOrBasicOrCustom();
     }
 
     private interface IntegrationsPredicate extends Predicate<Class<? extends Integration>> {

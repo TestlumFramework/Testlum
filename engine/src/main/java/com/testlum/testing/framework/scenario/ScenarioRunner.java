@@ -130,6 +130,7 @@ public class ScenarioRunner {
         } catch (StopSignalException ignore) {
             log.error(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
+            dependencies.clearAuthorization();
             if (scenarioArguments.isContainsUiSteps()) {
                 quitUiDrivers();
             }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.testlum.com/testing/model/global-config"
+          xmlns:tns="http://www.testlum.com/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+          jaxb:version="3.0">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="authStrategies">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="jwt" type="tns:jwtAuthStrategy"/>
+            <x:element name="basic" type="tns:basicAuthStrategy"/>
+            <x:element name="custom" type="tns:customAuthStrategy"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="authStrategy" abstract="true">
+        <x:attribute name="alias"
+                     type="tns:nonEmptyString"
+                     use="required"/>
+    </x:complexType>
+
+    <x:complexType name="jwtAuthStrategy">
+        <x:complexContent>
+            <x:extension base="tns:authStrategy">
+                <x:attribute name="loginEndpoint"
+                             type="tns:url"
+                             use="required"/>
+                <x:attribute name="tokenName"
+                             type="tns:nonEmptyString"
+                             default="token"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="basicAuthStrategy">
+        <x:complexContent>
+            <x:extension base="tns:authStrategy"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="customAuthStrategy">
+        <x:complexContent>
+            <x:extension base="tns:authStrategy">
+                <x:attribute name="className"
+                             type="tns:nonEmptyString"
+                             use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+</x:schema>

@@ -4,8 +4,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.testlum.testing.model.global_config.Api;
-import com.testlum.testing.model.global_config.Auth;
+import com.testlum.testing.model.global_config.AuthStrategy;
 import com.testlum.testing.model.global_config.Integration;
 import com.testlum.testing.model.global_config.Integrations;
 import org.springframework.stereotype.Component;
@@ -56,6 +55,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
 
     @Override
     public void validate(final Map<String, Integrations> integrationsMap) {
+        checkAuthStrategies(new ArrayList<>(integrationsMap.values()));
         configToIntegrationListMap.forEach((nonNullCheck, toIntegrationList) -> {
             List<List<? extends Integration>> integrationLists = getAllEnvsIntegrations(
                     new ArrayList<>(integrationsMap.values()), nonNullCheck, toIntegrationList);
@@ -65,7 +65,6 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
             } else if (!integrationLists.isEmpty()) {
                 List<String> defaultAliases = getDefaultAliases(integrationLists);
                 checkAliasesDifferAndMatch(new ArrayList<>(integrationsMap.keySet()), defaultAliases, integrationLists);
-                checkApiAuth(integrationLists);
             }
         });
     }
@@ -119,41 +118,47 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         }
     }
 
-    private void checkApiAuth(final List<List<? extends Integration>> integrationLists) {
-        List<Map<String, Auth>> authMaps = getAuthMaps(integrationLists);
+    private void checkAuthStrategies(final List<Integrations> integrationsList) {
+        List<Map<String, AuthStrategy>> authMaps = integrationsList.stream()
+                .map(this::getAuthMap)
+                .toList();
         if (authMaps.size() > 1) {
-            Map<String, Auth> defaultAuthMap = authMaps.stream().min(Comparator.comparingInt(Map::size)).get();
+            Map<String, AuthStrategy> defaultAuthMap = authMaps.stream()
+                    .min(Comparator.comparingInt(Map::size))
+                    .orElseThrow();
             authMaps.stream()
                     .flatMap(authMap -> authMap.entrySet().stream())
                     .forEach(entry -> checkAuth(entry.getValue(), entry.getKey(), defaultAuthMap));
         }
     }
 
-    private List<Map<String, Auth>> getAuthMaps(final List<List<? extends Integration>> integrationLists) {
-        return integrationLists.stream()
-                .map(integrations -> integrations.stream()
-                        .filter(integration -> integration instanceof Api)
-                        .map(Api.class::cast)
-                        .filter(api -> Objects.nonNull(api.getAuth()))
-                        .collect(Collectors.toMap(Api::getAlias, Api::getAuth)))
-                .toList();
+    private Map<String, AuthStrategy> getAuthMap(final Integrations integrations) {
+        Map<String, AuthStrategy> authMap = new HashMap<>();
+        if (integrations.getAuthStrategies() != null) {
+            for (AuthStrategy strategy : integrations.getAuthStrategies().getJwtOrBasicOrCustom()) {
+                if (authMap.putIfAbsent(strategy.getAlias(), strategy) != null) {
+                    throw new DefaultFrameworkException(ExceptionMessage.AUTH_DUPLICATE_ALIAS, strategy.getAlias());
+                }
+            }
+        }
+        return authMap;
     }
 
-    private void checkAuth(final Auth auth, final String alias, final Map<String, Auth> defaultAuthMap) {
-        if (!defaultAuthMap.containsKey(alias)) {
+    private void checkAuth(final AuthStrategy strategy,
+                           final String alias,
+                           final Map<String, AuthStrategy> defaultAuthMap) {
+        AuthStrategy defaultStrategy = defaultAuthMap.get(alias);
+        if (defaultStrategy == null) {
             throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_PRESENT_IN_ALL_ENVS, alias);
         }
-        if (!defaultAuthMap.get(alias).isAutoLogout() == auth.isAutoLogout()) {
-            throw new DefaultFrameworkException(ExceptionMessage.AUTH_LOGOUT_NOT_MATCH, alias);
-        }
-        if (!Objects.equals(defaultAuthMap.get(alias).getAuthStrategy(), auth.getAuthStrategy())) {
+        if (!defaultStrategy.getClass().equals(strategy.getClass())) {
             throw new DefaultFrameworkException(ExceptionMessage.AUTH_STRATEGY_NOT_MATCH, alias);
-        }
-        if (!Objects.equals(defaultAuthMap.get(alias).getAuthCustomClassName(), auth.getAuthCustomClassName())) {
-            throw new DefaultFrameworkException(ExceptionMessage.AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, alias);
         }
     }
 
-    private interface IntegrationsPredicate extends Predicate<Integrations> { }
-    private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> { }
+    private interface IntegrationsPredicate extends Predicate<Integrations> {
+    }
+
+    private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> {
+    }
 }

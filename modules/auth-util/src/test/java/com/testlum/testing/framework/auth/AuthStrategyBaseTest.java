@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -59,21 +58,16 @@ class AuthStrategyBaseTest {
     @Nested
     class Logout {
         @Test
-        void setsEmptyHeadersOnLogout() {
+        void clearsAuthorizationOnLogout() {
             strategy.logout();
-
-            verify(dependencies).setAuthorization(authCaptor.capture());
-            InterpreterDependencies.Authorization auth = authCaptor.getValue();
-            assertTrue(auth.getHeaders().isEmpty());
+            verify(dependencies).clearAuthorization();
+            verify(dependencies, never()).setAuthorization(any());
         }
 
         @Test
         void logoutWorksWithoutPriorLogin() {
-            strategy.logout();
-
-            verify(dependencies).setAuthorization(authCaptor.capture());
-            InterpreterDependencies.Authorization auth = authCaptor.getValue();
-            assertEquals(Collections.emptyMap(), auth.getHeaders());
+            assertDoesNotThrow(strategy::logout);
+            verify(dependencies).clearAuthorization();
         }
     }
 

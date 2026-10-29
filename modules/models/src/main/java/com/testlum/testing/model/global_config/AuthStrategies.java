@@ -1,57 +1,81 @@
 
 package com.testlum.testing.model.global_config;
 
-import jakarta.xml.bind.annotation.XmlEnum;
-import jakarta.xml.bind.annotation.XmlEnumValue;
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
 import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for authStrategies.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="authStrategies"&gt;
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="basic"/&gt;
- *     &lt;enumeration value="jwt"/&gt;
- *     &lt;enumeration value="custom"/&gt;
- *     &lt;enumeration value="default"/&gt;
- *   &lt;/restriction&gt;
- * &lt;/simpleType&gt;
- * </pre>
- * 
+ * &lt;p&gt;Java class for authStrategies complex type&lt;/p&gt;.
+ *
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
+ *
+ * &lt;pre&gt;{&#064;code
+ * &lt;complexType name="authStrategies"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="jwt" type="{http://www.testlum.com/testing/model/global-config}jwtAuthStrategy"/&gt;
+ *         &lt;element name="basic" type="{http://www.testlum.com/testing/model/global-config}basicAuthStrategy"/&gt;
+ *         &lt;element name="custom" type="{http://www.testlum.com/testing/model/global-config}customAuthStrategy"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * }&lt;/pre&gt;
+ *
+ *
  */
-@XmlType(name = "authStrategies")
-@XmlEnum
-public enum AuthStrategies {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "authStrategies", propOrder = {
+    "jwtOrBasicOrCustom"
+})
+public class AuthStrategies {
 
-    @XmlEnumValue("basic")
-    BASIC("basic"),
-    @XmlEnumValue("jwt")
-    JWT("jwt"),
-    @XmlEnumValue("custom")
-    CUSTOM("custom"),
-    @XmlEnumValue("default")
-    DEFAULT("default");
-    private final String value;
+    @XmlElements({
+        @XmlElement(name = "jwt", type = JwtAuthStrategy.class),
+        @XmlElement(name = "basic", type = BasicAuthStrategy.class),
+        @XmlElement(name = "custom", type = CustomAuthStrategy.class)
+    })
+    protected List<AuthStrategy> jwtOrBasicOrCustom;
 
-    AuthStrategies(String v) {
-        value = v;
-    }
-
-    public String value() {
-        return value;
-    }
-
-    public static AuthStrategies fromValue(String v) {
-        for (AuthStrategies c: AuthStrategies.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
+    /**
+     * Gets the value of the jwtOrBasicOrCustom property.
+     *
+     * <p>This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the Jakarta XML Binding object.
+     * This is why there is not a {@code set} method for the jwtOrBasicOrCustom property.</p>
+     *
+     * <p>
+     * For example, to add a new item, do as follows:
+     * </p>
+     * <pre>
+     * getJwtOrBasicOrCustom().add(newItem);
+     * </pre>
+     *
+     *
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link BasicAuthStrategy }
+     * {@link CustomAuthStrategy }
+     * {@link JwtAuthStrategy }
+     * </p>
+     *
+     *
+     * @return
+     *     The value of the jwtOrBasicOrCustom property.
+     */
+    public List<AuthStrategy> getJwtOrBasicOrCustom() {
+        if (jwtOrBasicOrCustom == null) {
+            jwtOrBasicOrCustom = new ArrayList<>();
         }
-        throw new IllegalArgumentException(v);
+        return this.jwtOrBasicOrCustom;
     }
 
 }

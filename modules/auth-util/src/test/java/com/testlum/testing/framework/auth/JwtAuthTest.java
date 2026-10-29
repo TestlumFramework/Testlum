@@ -4,9 +4,8 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
-import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.framework.util.SystemVariableService;
-import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.global_config.JwtAuthStrategy;
 import com.testlum.testing.model.scenario.Auth;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestClient;
 
 import java.io.File;
@@ -26,7 +27,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -39,7 +39,7 @@ class JwtAuthTest {
     Path tempDir;
 
     private InterpreterDependencies dependencies;
-    private IntegrationsProvider integrationsProvider;
+    private JwtAuthStrategy configuration;
     private FileSearcher fileSearcher;
     private SystemVariableService systemVariableService;
     private JwtAuth jwtAuth;
@@ -47,23 +47,20 @@ class JwtAuthTest {
     @BeforeEach
     void setUp() {
         dependencies = mock(InterpreterDependencies.class);
-        integrationsProvider = mock(IntegrationsProvider.class);
         fileSearcher = mock(FileSearcher.class);
         systemVariableService = mock(SystemVariableService.class);
 
         ApplicationContext context = mock(ApplicationContext.class);
         when(dependencies.getContext()).thenReturn(context);
-        when(dependencies.getEnvironment()).thenReturn("test");
-        when(context.getBean(IntegrationsProvider.class)).thenReturn(integrationsProvider);
         when(context.getBean(FileSearcher.class)).thenReturn(fileSearcher);
         when(context.getBean(SystemVariableService.class)).thenReturn(systemVariableService);
         lenient().when(systemVariableService.inject(anyString()))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        List<Api> apiList = List.of(buildApi("myApi", "http://localhost:8080", null));
-        when(integrationsProvider.findListByEnv(Api.class, "test")).thenReturn(apiList);
-
-        jwtAuth = new JwtAuth(dependencies);
+        configuration = new JwtAuthStrategy();
+        configuration.setAlias("JWT");
+        configuration.setLoginEndpoint("http://localhost:8080/auth/login");
+        jwtAuth = new JwtAuth(dependencies, configuration);
     }
 
     @Nested
@@ -74,10 +71,7 @@ class JwtAuthTest {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
-
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -88,7 +82,7 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
@@ -106,10 +100,8 @@ class JwtAuthTest {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -120,7 +112,7 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
@@ -139,14 +131,48 @@ class JwtAuthTest {
         }
 
         @Test
-        void usesCustomTokenNameFromApiConfig() throws IOException {
+        void supportsExplicitJsonPath() throws IOException {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", "access_token");
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
+            CommandResult result = new CommandResult();
+            configuration.setTokenName("$.data.accessToken");
+
+            RestClient restClient = mock(RestClient.class);
+            RestClient.RequestBodyUriSpec bodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            RestClient.RequestBodySpec bodySpec = mock(RestClient.RequestBodySpec.class);
+            RestClient.ResponseSpec responseSpec = mock(RestClient.ResponseSpec.class);
+
+            try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
+                mockedRestClient.when(RestClient::create).thenReturn(restClient);
+                when(restClient.post()).thenReturn(bodyUriSpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
+                when(bodySpec.headers(any())).thenReturn(bodySpec);
+                when(bodySpec.body(anyString())).thenReturn(bodySpec);
+                when(bodySpec.retrieve()).thenReturn(responseSpec);
+                when(responseSpec.body(String.class)).thenReturn("{\"data\":{\"accessToken\":\"jwt-abc-123\"}}");
+
+                jwtAuth.authenticate(auth, result);
+            }
+
+            ArgumentCaptor<InterpreterDependencies.Authorization> captor =
+                    ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
+            verify(dependencies).setAuthorization(captor.capture());
+
+            String headerValue = captor.getValue().getHeaders()
+                    .get(AuthorizationConstant.HEADER_AUTHORIZATION);
+            assertEquals("Bearer jwt-abc-123", headerValue);
+        }
+
+        @Test
+        void rejectsEmptyToken() throws IOException {
+            File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
+            when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
+
+
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -157,7 +183,95 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
+                when(bodySpec.headers(any())).thenReturn(bodySpec);
+                when(bodySpec.body(anyString())).thenReturn(bodySpec);
+                when(bodySpec.retrieve()).thenReturn(responseSpec);
+                when(responseSpec.body(String.class)).thenReturn("{\"token\":\"\"}");
+
+                assertThrows(DefaultFrameworkException.class, () -> jwtAuth.authenticate(auth, result));
+            }
+
+            verify(dependencies, never()).setAuthorization(any());
+        }
+
+        @Test
+        void rejectsNonStringToken() throws IOException {
+            File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
+            when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
+
+
+            Auth auth = buildAuth("myApi", "creds.json");
+            CommandResult result = new CommandResult();
+
+            RestClient restClient = mock(RestClient.class);
+            RestClient.RequestBodyUriSpec bodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            RestClient.RequestBodySpec bodySpec = mock(RestClient.RequestBodySpec.class);
+            RestClient.ResponseSpec responseSpec = mock(RestClient.ResponseSpec.class);
+
+            try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
+                mockedRestClient.when(RestClient::create).thenReturn(restClient);
+                when(restClient.post()).thenReturn(bodyUriSpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
+                when(bodySpec.headers(any())).thenReturn(bodySpec);
+                when(bodySpec.body(anyString())).thenReturn(bodySpec);
+                when(bodySpec.retrieve()).thenReturn(responseSpec);
+                when(responseSpec.body(String.class)).thenReturn("{\"token\":123}");
+
+                assertThrows(DefaultFrameworkException.class, () -> jwtAuth.authenticate(auth, result));
+            }
+
+            verify(dependencies, never()).setAuthorization(any());
+        }
+
+        @Test
+        void rejectsMissingToken() throws IOException {
+            File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
+            when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
+
+
+            Auth auth = buildAuth("myApi", "creds.json");
+            CommandResult result = new CommandResult();
+
+            RestClient restClient = mock(RestClient.class);
+            RestClient.RequestBodyUriSpec bodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            RestClient.RequestBodySpec bodySpec = mock(RestClient.RequestBodySpec.class);
+            RestClient.ResponseSpec responseSpec = mock(RestClient.ResponseSpec.class);
+
+            try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
+                mockedRestClient.when(RestClient::create).thenReturn(restClient);
+                when(restClient.post()).thenReturn(bodyUriSpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
+                when(bodySpec.headers(any())).thenReturn(bodySpec);
+                when(bodySpec.body(anyString())).thenReturn(bodySpec);
+                when(bodySpec.retrieve()).thenReturn(responseSpec);
+                when(responseSpec.body(String.class)).thenReturn("{}");
+
+                assertThrows(com.jayway.jsonpath.PathNotFoundException.class, () -> jwtAuth.authenticate(auth, result));
+            }
+
+            verify(dependencies, never()).setAuthorization(any());
+        }
+
+        @Test
+        void usesCustomTokenNameFromStrategyConfig() throws IOException {
+            File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
+            when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
+
+            configuration.setTokenName("access_token");
+
+            Auth auth = buildAuth("myApi", "creds.json");
+            CommandResult result = new CommandResult();
+
+            RestClient restClient = mock(RestClient.class);
+            RestClient.RequestBodyUriSpec bodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            RestClient.RequestBodySpec bodySpec = mock(RestClient.RequestBodySpec.class);
+            RestClient.ResponseSpec responseSpec = mock(RestClient.ResponseSpec.class);
+
+            try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
+                mockedRestClient.when(RestClient::create).thenReturn(restClient);
+                when(restClient.post()).thenReturn(bodyUriSpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
@@ -177,14 +291,12 @@ class JwtAuthTest {
         }
 
         @Test
-        void setsEmptyTokenWhenResponseIsBlank() throws IOException {
+        void throwsWhenResponseIsBlank() throws IOException {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -195,33 +307,26 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
                 when(responseSpec.body(String.class)).thenReturn("");
 
-                jwtAuth.authenticate(auth, result);
+                assertThrows(DefaultFrameworkException.class,
+                        () -> jwtAuth.authenticate(auth, result));
             }
 
-            ArgumentCaptor<InterpreterDependencies.Authorization> captor =
-                    ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
-            verify(dependencies).setAuthorization(captor.capture());
-
-            String headerValue = captor.getValue().getHeaders()
-                    .get(AuthorizationConstant.HEADER_AUTHORIZATION);
-            assertEquals("Bearer ", headerValue);
+            verify(dependencies, never()).setAuthorization(any());
         }
 
         @Test
-        void setsEmptyTokenWhenResponseIsNull() throws IOException {
+        void throwsWhenResponseIsNull() throws IOException {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -232,22 +337,17 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
                 when(responseSpec.body(String.class)).thenReturn(null);
 
-                jwtAuth.authenticate(auth, result);
+                assertThrows(DefaultFrameworkException.class,
+                        () -> jwtAuth.authenticate(auth, result));
             }
 
-            ArgumentCaptor<InterpreterDependencies.Authorization> captor =
-                    ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
-            verify(dependencies).setAuthorization(captor.capture());
-
-            String headerValue = captor.getValue().getHeaders()
-                    .get(AuthorizationConstant.HEADER_AUTHORIZATION);
-            assertEquals("Bearer ", headerValue);
+            verify(dependencies, never()).setAuthorization(any());
         }
     }
 
@@ -255,14 +355,12 @@ class JwtAuthTest {
     class DoRequestErrorHandling {
 
         @Test
-        void returnsEmptyStringOnHttpClientErrorNotFound() throws IOException {
+        void propagatesNotFoundLoginFailure() throws IOException {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -272,33 +370,26 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenThrow(
                         new HttpClientErrorException(HttpStatus.NOT_FOUND));
 
-                jwtAuth.authenticate(auth, result);
+                assertThrows(DefaultFrameworkException.class,
+                        () -> jwtAuth.authenticate(auth, result));
             }
 
-            ArgumentCaptor<InterpreterDependencies.Authorization> captor =
-                    ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
-            verify(dependencies).setAuthorization(captor.capture());
-
-            String headerValue = captor.getValue().getHeaders()
-                    .get(AuthorizationConstant.HEADER_AUTHORIZATION);
-            assertEquals("Bearer ", headerValue);
+            verify(dependencies, never()).setAuthorization(any());
         }
 
         @Test
-        void returnsEmptyStringOnHttpClientErrorBadGateway() throws IOException {
+        void propagatesBadGatewayLoginFailure() throws IOException {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -308,33 +399,26 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenThrow(
-                        new HttpClientErrorException(HttpStatus.BAD_GATEWAY));
+                        new HttpServerErrorException(HttpStatus.BAD_GATEWAY));
 
-                jwtAuth.authenticate(auth, result);
+                assertThrows(DefaultFrameworkException.class,
+                        () -> jwtAuth.authenticate(auth, result));
             }
 
-            ArgumentCaptor<InterpreterDependencies.Authorization> captor =
-                    ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
-            verify(dependencies).setAuthorization(captor.capture());
-
-            String headerValue = captor.getValue().getHeaders()
-                    .get(AuthorizationConstant.HEADER_AUTHORIZATION);
-            assertEquals("Bearer ", headerValue);
+            verify(dependencies, never()).setAuthorization(any());
         }
 
         @Test
-        void returnsEmptyStringOnHttpClientErrorOtherStatus() throws IOException {
+        void propagatesForbiddenLoginFailure() throws IOException {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -344,22 +428,17 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenThrow(
                         new HttpClientErrorException(HttpStatus.FORBIDDEN));
 
-                jwtAuth.authenticate(auth, result);
+                assertThrows(DefaultFrameworkException.class,
+                        () -> jwtAuth.authenticate(auth, result));
             }
 
-            ArgumentCaptor<InterpreterDependencies.Authorization> captor =
-                    ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
-            verify(dependencies).setAuthorization(captor.capture());
-
-            String headerValue = captor.getValue().getHeaders()
-                    .get(AuthorizationConstant.HEADER_AUTHORIZATION);
-            assertEquals("Bearer ", headerValue);
+            verify(dependencies, never()).setAuthorization(any());
         }
     }
 
@@ -371,7 +450,7 @@ class JwtAuthTest {
             when(fileSearcher.searchFileFromDataFolder("missing.json"))
                     .thenReturn(new File("/nonexistent/path/missing.json"));
 
-            Auth auth = buildAuth("myApi", "missing.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "missing.json");
             CommandResult result = new CommandResult();
 
             assertThrows(DefaultFrameworkException.class,
@@ -390,10 +469,8 @@ class JwtAuthTest {
             when(fileSearcher.searchFileFromDataFolder("env-creds.json")).thenReturn(credFile);
             when(systemVariableService.inject(rawBody)).thenReturn(injectedBody);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "env-creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "env-creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -404,7 +481,7 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
@@ -423,7 +500,7 @@ class JwtAuthTest {
             when(systemVariableService.inject(anyString()))
                     .thenThrow(new DefaultFrameworkException("Environment variable <MISSING_VAR> not found"));
 
-            Auth auth = buildAuth("myApi", "env-creds.json", "/auth/login");
+            Auth auth = buildAuth("myApi", "env-creds.json");
             CommandResult result = new CommandResult();
 
             assertThrows(DefaultFrameworkException.class,
@@ -437,7 +514,7 @@ class JwtAuthTest {
         @Test
         void handlesNotFoundStatusWithoutException() throws Exception {
             Method method = JwtAuth.class.getDeclaredMethod(
-                    "logResponseStatusError", HttpClientErrorException.class);
+                    "logResponseStatusError", RestClientResponseException.class);
             method.setAccessible(true);
 
             HttpClientErrorException exception =
@@ -448,18 +525,18 @@ class JwtAuthTest {
         @Test
         void handlesBadGatewayStatusWithoutException() throws Exception {
             Method method = JwtAuth.class.getDeclaredMethod(
-                    "logResponseStatusError", HttpClientErrorException.class);
+                    "logResponseStatusError", RestClientResponseException.class);
             method.setAccessible(true);
 
-            HttpClientErrorException exception =
-                    new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
+            HttpServerErrorException exception =
+                    new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
             assertDoesNotThrow(() -> method.invoke(jwtAuth, exception));
         }
 
         @Test
         void handlesOtherStatusWithoutException() throws Exception {
             Method method = JwtAuth.class.getDeclaredMethod(
-                    "logResponseStatusError", HttpClientErrorException.class);
+                    "logResponseStatusError", RestClientResponseException.class);
             method.setAccessible(true);
 
             HttpClientErrorException exception =
@@ -476,10 +553,8 @@ class JwtAuthTest {
             File credFile = createCredentialsFile("{\"username\":\"admin\",\"password\":\"secret\"}");
             when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(credFile);
 
-            Api api = buildApi("myApi", "http://localhost:8080", null);
-            when(integrationsProvider.findApiForAlias(any(), eq("myApi"))).thenReturn(api);
 
-            Auth auth = buildAuth("myApi", "creds.json", "/api/login");
+            Auth auth = buildAuth("myApi", "creds.json");
             CommandResult result = new CommandResult();
 
             RestClient restClient = mock(RestClient.class);
@@ -490,7 +565,7 @@ class JwtAuthTest {
             try (MockedStatic<RestClient> mockedRestClient = mockStatic(RestClient.class)) {
                 mockedRestClient.when(RestClient::create).thenReturn(restClient);
                 when(restClient.post()).thenReturn(bodyUriSpec);
-                when(bodyUriSpec.uri(anyString())).thenReturn(bodySpec);
+                when(bodyUriSpec.uri(configuration.getLoginEndpoint())).thenReturn(bodySpec);
                 when(bodySpec.headers(any())).thenReturn(bodySpec);
                 when(bodySpec.body(anyString())).thenReturn(bodySpec);
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
@@ -507,24 +582,11 @@ class JwtAuthTest {
         return file.toFile();
     }
 
-    private Auth buildAuth(final String alias, final String credentials, final String endpoint) {
+    private Auth buildAuth(final String alias, final String credentials) {
         Auth auth = new Auth();
-        auth.setApiAlias(alias);
+        auth.setStrategyAlias(alias);
         auth.setCredentials(credentials);
-        auth.setLoginEndpoint(endpoint);
         return auth;
     }
 
-    private Api buildApi(final String alias, final String url, final String tokenName) {
-        Api api = new Api();
-        api.setAlias(alias);
-        api.setUrl(url);
-        com.testlum.testing.model.global_config.Auth authConfig =
-                new com.testlum.testing.model.global_config.Auth();
-        if (tokenName != null) {
-            authConfig.setTokenName(tokenName);
-        }
-        api.setAuth(authConfig);
-        return api;
-    }
 }

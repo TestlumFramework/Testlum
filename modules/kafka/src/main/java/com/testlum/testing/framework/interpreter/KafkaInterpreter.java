@@ -10,6 +10,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Kafka;
 import com.testlum.testing.model.scenario.KafkaHeader;
 import com.testlum.testing.model.scenario.KafkaHeaders;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.testlum.testing.model.scenario.SendKafkaMessage;
 import lombok.Data;
@@ -115,7 +116,7 @@ public class KafkaInterpreter extends AbstractMessageBrokerInterpreter<Kafka> {
         addKafkaReceiveInfo(receive, aliasEnv.getAlias(), result);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
-        compareMessages(actualMessages, expectedMessages, result);
+        compareMessages(actualMessages, expectedMessages, Mode.STRICT.equals(receive.getMode()), result);
     }
 
     private void sendMessage(final SendKafkaMessage send,

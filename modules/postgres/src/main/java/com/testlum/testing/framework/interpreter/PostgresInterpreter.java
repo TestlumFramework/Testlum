@@ -4,6 +4,7 @@ import com.testlum.testing.framework.db.AbstractStorageOperation;
 import com.testlum.testing.framework.interpreter.lib.AbstractDatabaseInterpreter;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Postgres;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,10 @@ public class PostgresInterpreter extends AbstractDatabaseInterpreter<Postgres> {
     @Override
     protected String getFile(final Postgres command) {
         return command.getFile();
+    }
+
+    @Override
+    protected Mode getMode(final Postgres command) {
+        return command.getMode();
     }
 }

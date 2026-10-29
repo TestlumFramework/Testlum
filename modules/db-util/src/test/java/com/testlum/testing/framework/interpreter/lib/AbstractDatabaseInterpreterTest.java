@@ -5,6 +5,7 @@ import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.db.AbstractStorageOperation;
 import com.testlum.testing.framework.db.AbstractStorageOperation.StorageOperationResult;
 import com.testlum.testing.framework.db.source.ListSource;
+import com.testlum.testing.framework.exception.ComparisonException;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
 import com.testlum.testing.framework.util.ConditionProvider;
@@ -12,6 +13,7 @@ import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.Mode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,7 @@ abstract class AbstractDatabaseInterpreterTest {
     private StringPrettifier stringPrettifier;
     private ConditionProvider conditionProvider;
     private AbstractStorageOperation storageOperation;
+    private FileSearcher fileSearcher;
     private TestDatabaseInterpreter interpreter;
 
     @BeforeEach
@@ -45,13 +48,13 @@ abstract class AbstractDatabaseInterpreterTest {
         stringPrettifier = mock(StringPrettifier.class);
         conditionProvider = mock(ConditionProvider.class);
         storageOperation = mock(AbstractStorageOperation.class);
+        fileSearcher = mock(FileSearcher.class);
 
         ApplicationContext applicationContext = mock(ApplicationContext.class);
         ConfigProvider configProvider = mock(ConfigProvider.class);
         when(applicationContext.getBean(ConfigProvider.class)).thenReturn(configProvider);
         when(applicationContext.getBean(ConditionProvider.class)).thenReturn(conditionProvider);
 
-        FileSearcher fileSearcher = mock(FileSearcher.class);
         when(applicationContext.getBean(FileSearcher.class)).thenReturn(fileSearcher);
         when(applicationContext.getBean(JacksonService.class)).thenReturn(jacksonService);
         when(applicationContext.getBean(StringPrettifier.class)).thenReturn(stringPrettifier);
@@ -248,6 +251,67 @@ abstract class AbstractDatabaseInterpreterTest {
         }
     }
 
+    @Nested
+    class ComparisonMode {
+
+        private static final String EXPECTED_JSON = "{\"id\":1,\"name\":\"test\"}";
+        private static final String ACTUAL_JSON_WITH_EXTRA =
+                "{\"id\":1,\"name\":\"test\",\"extraField\":\"unexpected\"}";
+
+        private void stubComparisonMocks(final TestDbCommand command, final String actual, final String expected) {
+            when(conditionProvider.isTrue(any(), any(), any())).thenReturn(true);
+            when(jacksonService.writeValueToCopiedString(any())).thenReturn("{}");
+            when(jacksonService.readCopiedValue(anyString(), eq(TestDbCommand.class))).thenReturn(command);
+            when(storageOperation.apply(any(ListSource.class), anyString()))
+                    .thenReturn(new StorageOperationResult(actual));
+            when(jacksonService.writeValueAsString(any())).thenReturn(actual);
+            when(stringPrettifier.asJsonResult(anyString())).thenAnswer(inv -> inv.getArgument(0));
+            when(stringPrettifier.asJsonResult(isNull())).thenReturn("");
+            when(stringPrettifier.prettify(anyString())).thenAnswer(inv -> inv.getArgument(0));
+            when(stringPrettifier.prettifyToSave(anyString())).thenAnswer(inv -> inv.getArgument(0));
+            when(fileSearcher.searchFileToString(eq("expected.json"), any())).thenReturn(expected);
+        }
+
+        @Test
+        void strictModeFailsWhenActualHasExtraField() {
+            final TestDbCommand command = createCommand("strict test", "db", List.of("SELECT 1"), "expected.json");
+            command.setMode(Mode.STRICT);
+
+            final CommandResult result = new CommandResult();
+            result.setId(1);
+
+            stubComparisonMocks(command, ACTUAL_JSON_WITH_EXTRA, EXPECTED_JSON);
+
+            assertThrows(ComparisonException.class, () -> interpreter.apply(command, result));
+        }
+
+        @Test
+        void lenientModePassesWhenActualHasExtraField() {
+            final TestDbCommand command = createCommand("lenient test", "db", List.of("SELECT 1"), "expected.json");
+            command.setMode(Mode.LENIENT);
+
+            final CommandResult result = new CommandResult();
+            result.setId(1);
+
+            stubComparisonMocks(command, ACTUAL_JSON_WITH_EXTRA, EXPECTED_JSON);
+
+            assertDoesNotThrow(() -> interpreter.apply(command, result));
+        }
+
+        @Test
+        void defaultModeBehavesAsStrictAndFailsWhenActualHasExtraField() {
+            final TestDbCommand command = createCommand("default test", "db", List.of("SELECT 1"), "expected.json");
+            command.setMode(null);
+
+            final CommandResult result = new CommandResult();
+            result.setId(1);
+
+            stubComparisonMocks(command, ACTUAL_JSON_WITH_EXTRA, EXPECTED_JSON);
+
+            assertThrows(ComparisonException.class, () -> interpreter.apply(command, result));
+        }
+    }
+
     private TestDbCommand createCommand(final String comment, final String alias,
                                          final List<String> queries, final String file) {
         TestDbCommand command = new TestDbCommand();
@@ -262,6 +326,7 @@ abstract class AbstractDatabaseInterpreterTest {
         private String alias;
         private List<String> queries;
         private String file;
+        private Mode mode;
 
         public String getAlias() {
             return alias;
@@ -285,6 +350,17 @@ abstract class AbstractDatabaseInterpreterTest {
 
         public void setFile(final String file) {
             this.file = file;
+        }
+
+        public Mode getMode() {
+            if (mode == null) {
+                return Mode.STRICT;
+            }
+            return mode;
+        }
+
+        public void setMode(final Mode mode) {
+            this.mode = mode;
         }
     }
 
@@ -320,6 +396,11 @@ abstract class AbstractDatabaseInterpreterTest {
         @Override
         protected String getFile(final TestDbCommand command) {
             return command.getFile();
+        }
+
+        @Override
+        protected Mode getMode(final TestDbCommand command) {
+            return command.getMode();
         }
     }
 }

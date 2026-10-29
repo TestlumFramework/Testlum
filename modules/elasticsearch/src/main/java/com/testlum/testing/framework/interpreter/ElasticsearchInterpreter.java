@@ -15,6 +15,7 @@ import com.testlum.testing.model.scenario.ElasticSearchRequestWithBody;
 import com.testlum.testing.model.scenario.ElasticSearchResponse;
 import com.testlum.testing.model.scenario.Elasticsearch;
 import com.testlum.testing.model.scenario.Header;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Param;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -89,16 +90,20 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                     final CommandResult result) {
         String expectedBody = getContentIfFile(expectedResponse.getFile());
         if (StringUtils.isNotBlank(expectedBody)) {
-            try {
-                String actualBody = Objects.nonNull(actual.getEntity())
-                        ? EntityUtils.toString(actual.getEntity()) : null;
-                setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
-                result.setActual(stringPrettifier.asJsonResult(actualBody));
-                result.setExpected(stringPrettifier.asJsonResult(expectedBody));
-                httpValidator.validateBody(expectedBody, actualBody);
-            } catch (IOException e) {
-                throw new DefaultFrameworkException(e);
-            }
+            String actualBody = extractActualBody(actual);
+            setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
+            result.setActual(stringPrettifier.asJsonResult(actualBody));
+            result.setExpected(stringPrettifier.asJsonResult(expectedBody));
+            boolean isStrict = Mode.STRICT.equals(expectedResponse.getMode());
+            httpValidator.validateBody(expectedBody, actualBody, isStrict);
+        }
+    }
+
+    private String extractActualBody(final Response actual) {
+        try {
+            return Objects.nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
         }
     }
 

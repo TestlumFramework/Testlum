@@ -103,6 +103,40 @@ class CommandResultHelperTest {
     @Nested
     class AddHeadersMetaData {
         @Test
+        void masksAuthorizationRegardlessOfCaseWithoutChangingRequestHeaders() {
+            for (String name : List.of("Authorization", "authorization", "AUTHORIZATION", "aUtHoRiZaTiOn")) {
+                final Map<String, String> headers = Map.of(
+                        name, "Bearer sensitive-access-value", "Accept", "text/html");
+                final CommandResult result = new CommandResult();
+
+                CommandResultHelper.addHeadersMetaData(headers, result);
+
+                final List<?> metadata = (List<?>) result.getMetadata().get(CommandResultHelper.ADDITIONAL_HEADERS);
+                assertTrue(metadata.contains(name + ": [REDACTED]"));
+                assertTrue(metadata.contains("Accept: text/html"));
+                assertEquals("Bearer sensitive-access-value", headers.get(name));
+                assertFalse(result.getMetadata().toString().contains("sensitive-access-value"));
+            }
+        }
+
+        @Test
+        void masksBasicAndProxyAuthorizationWithoutChangingUnrelatedHeaders() {
+            final Map<String, String> headers = new LinkedHashMap<>();
+            headers.put("Authorization", "Basic sensitive-basic-value");
+            headers.put("proxy-authorization", "Basic sensitive-proxy-value");
+            headers.put("Content-Type", "application/json");
+            final CommandResult result = new CommandResult();
+
+            CommandResultHelper.addHeadersMetaData(headers, result);
+
+            assertEquals(List.of("Authorization: [REDACTED]", "proxy-authorization: [REDACTED]",
+                    "Content-Type: application/json"),
+                    result.getMetadata().get(CommandResultHelper.ADDITIONAL_HEADERS));
+            assertEquals("Basic sensitive-basic-value", headers.get("Authorization"));
+            assertEquals("Basic sensitive-proxy-value", headers.get("proxy-authorization"));
+        }
+
+        @Test
         void addsHeadersToMetadata() {
             final CommandResult result = new CommandResult();
             final Map<String, String> headers = new LinkedHashMap<>();

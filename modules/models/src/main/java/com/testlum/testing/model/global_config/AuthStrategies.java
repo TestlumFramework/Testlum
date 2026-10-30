@@ -23,6 +23,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *         &lt;element name="jwt" type="{http://www.testlum.com/testing/model/global-config}jwtAuthStrategy"/&gt;
  *         &lt;element name="basic" type="{http://www.testlum.com/testing/model/global-config}basicAuthStrategy"/&gt;
  *         &lt;element name="custom" type="{http://www.testlum.com/testing/model/global-config}customAuthStrategy"/&gt;
+ *         &lt;element name="google" type="{http://www.testlum.com/testing/model/global-config}googleAuthStrategy"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -40,7 +41,8 @@ public class AuthStrategies {
     @XmlElements({
         @XmlElement(name = "jwt", type = JwtAuthStrategy.class),
         @XmlElement(name = "basic", type = BasicAuthStrategy.class),
-        @XmlElement(name = "custom", type = CustomAuthStrategy.class)
+        @XmlElement(name = "custom", type = CustomAuthStrategy.class),
+        @XmlElement(name = "google", type = GoogleAuthStrategy.class)
     })
     protected List<AuthStrategy> jwtOrBasicOrCustom;
 
@@ -64,6 +66,7 @@ public class AuthStrategies {
      * Objects of the following type(s) are allowed in the list
      * {@link BasicAuthStrategy }
      * {@link CustomAuthStrategy }
+     * {@link GoogleAuthStrategy }
      * {@link JwtAuthStrategy }
      * </p>
      *

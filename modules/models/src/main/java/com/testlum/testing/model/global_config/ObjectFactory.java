@@ -847,4 +847,14 @@ public class ObjectFactory {
         return new CustomAuthStrategy();
     }
 
+    /**
+     * Create an instance of {@link GoogleAuthStrategy }
+     *
+     * @return
+     *     the new instance of {@link GoogleAuthStrategy }
+     */
+    public GoogleAuthStrategy createGoogleAuthStrategy() {
+        return new GoogleAuthStrategy();
+    }
+
 }

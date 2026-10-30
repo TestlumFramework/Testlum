@@ -5,8 +5,10 @@ import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.global_config.AuthStrategy;
+import com.testlum.testing.model.global_config.GoogleAuthStrategy;
 import com.testlum.testing.model.global_config.Integration;
 import com.testlum.testing.model.global_config.Integrations;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -136,12 +138,26 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         Map<String, AuthStrategy> authMap = new HashMap<>();
         if (integrations.getAuthStrategies() != null) {
             for (AuthStrategy strategy : integrations.getAuthStrategies().getJwtOrBasicOrCustom()) {
+                if (strategy instanceof GoogleAuthStrategy google) {
+                    checkGoogleConfiguration(google);
+                }
                 if (authMap.putIfAbsent(strategy.getAlias(), strategy) != null) {
                     throw new DefaultFrameworkException(ExceptionMessage.AUTH_DUPLICATE_ALIAS, strategy.getAlias());
                 }
             }
         }
         return authMap;
+    }
+
+    private void checkGoogleConfiguration(final GoogleAuthStrategy strategy) {
+        if (StringUtils.isBlank(strategy.getClientId())) {
+            throw new DefaultFrameworkException(
+                    "Google auth strategy <%s> requires a non-empty clientId", strategy.getAlias());
+        }
+        if (StringUtils.isBlank(strategy.getClientSecret())) {
+            throw new DefaultFrameworkException(
+                    "Google auth strategy <%s> requires a non-empty clientSecret", strategy.getAlias());
+        }
     }
 
     private void checkAuth(final AuthStrategy strategy,

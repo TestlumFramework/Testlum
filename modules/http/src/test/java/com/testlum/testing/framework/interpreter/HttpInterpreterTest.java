@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -103,6 +104,9 @@ class HttpInterpreterTest {
             assertEquals("alias", result.getMetadata().get("API alias"));
             assertEquals("POST", result.getMetadata().get("HTTP method"));
             assertTrue(result.getMetadata().containsKey("Additional headers"));
+            assertTrue(result.getMetadata().get("Additional headers").toString().contains("Authorization: [REDACTED]"));
+            assertFalse(result.getMetadata().toString().contains("Bearer token"));
+            assertEquals("Bearer token", headers.get("Authorization"));
         }
     }
 }

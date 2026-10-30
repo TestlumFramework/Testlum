@@ -6,6 +6,7 @@ import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.model.global_config.BasicAuthStrategy;
 import com.testlum.testing.model.global_config.JwtAuthStrategy;
 import com.testlum.testing.model.global_config.CustomAuthStrategy;
+import com.testlum.testing.model.global_config.GoogleAuthStrategy;
 import com.testlum.testing.framework.env.AliasEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -50,6 +51,14 @@ class AuthFactoryTest {
         void createsJwtAuthStrategy() {
             mockConfiguration("JWT", new JwtAuthStrategy());
             assertInstanceOf(JwtAuth.class, authFactory.create(dependencies, "JWT"));
+        }
+
+        @Test
+        void createsGoogleAuthStrategy() {
+            mockConfiguration("GOOGLE", new GoogleAuthStrategy());
+            when(context.getBean(GoogleCredentialsReader.class)).thenReturn(mock(GoogleCredentialsReader.class));
+            when(context.getBean(GoogleTokenClient.class)).thenReturn(mock(GoogleTokenClient.class));
+            assertInstanceOf(GoogleAuth.class, authFactory.create(dependencies, "GOOGLE"));
         }
 
         @Test

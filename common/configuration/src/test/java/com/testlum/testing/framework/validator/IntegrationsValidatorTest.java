@@ -7,6 +7,9 @@ import com.testlum.testing.model.global_config.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -153,6 +156,54 @@ class IntegrationsValidatorTest {
                     "dev", authConfig(custom("example.CustomAuth")),
                     "staging", authConfig(custom("example.CustomAuth")))));
         }
+    }
+
+    @Nested
+    class ValidateGoogleConfiguration {
+        @Test
+        void differentClientsAcrossEnvironmentsAreAllowed() {
+            assertDoesNotThrow(() -> validator.validate(Map.of(
+                    "local", authConfig(google("local-client", "local-secret")),
+                    "regression", authConfig(google("regression-client", "regression-secret")))));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"   "})
+        void missingClientIdIsRejected(final String clientId) {
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(Map.of("local", authConfig(google(clientId, "secret")))));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"   "})
+        void missingClientSecretIsRejected(final String clientSecret) {
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(Map.of("local", authConfig(google("client", clientSecret)))));
+        }
+
+        @Test
+        void googleCannotShareAnAliasWithAnotherStrategy() {
+            JwtAuthStrategy jwt = jwt("GOOGLE", "http://localhost/login");
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "local", authConfig(google("client", "secret"), jwt))));
+        }
+
+        @Test
+        void googleCannotBeReplacedByAnotherStrategyTypeAcrossEnvironments() {
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "local", authConfig(google("client", "secret")),
+                    "regression", authConfig(jwt("GOOGLE", "http://localhost/login")))));
+        }
+    }
+
+    private GoogleAuthStrategy google(final String clientId, final String clientSecret) {
+        GoogleAuthStrategy strategy = new GoogleAuthStrategy();
+        strategy.setAlias("GOOGLE");
+        strategy.setClientId(clientId);
+        strategy.setClientSecret(clientSecret);
+        return strategy;
     }
 
     private Integrations authConfig(final AuthStrategy... strategies) {

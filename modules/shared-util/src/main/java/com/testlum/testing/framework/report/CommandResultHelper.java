@@ -14,6 +14,7 @@ public final class CommandResultHelper {
     public static final String ADDITIONAL_HEADERS = "Additional headers";
 
     private static final String STEP_FAILED = "Step failed";
+    private static final String REDACTED = "[REDACTED]";
 
     public static void setExceptionResult(final CommandResult result, final Exception exception) {
         result.setSuccess(false);
@@ -34,7 +35,12 @@ public final class CommandResultHelper {
 
     public static void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), headerValueForReport(e.getKey(), e.getValue())))
                 .toList());
+    }
+
+    private static String headerValueForReport(final String name, final String value) {
+        return "Authorization".equalsIgnoreCase(name) || "Proxy-Authorization".equalsIgnoreCase(name)
+                ? REDACTED : value;
     }
 }

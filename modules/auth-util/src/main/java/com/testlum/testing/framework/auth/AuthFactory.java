@@ -7,6 +7,7 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.model.global_config.BasicAuthStrategy;
 import com.testlum.testing.model.global_config.CustomAuthStrategy;
+import com.testlum.testing.model.global_config.GoogleAuthStrategy;
 import com.testlum.testing.model.global_config.JwtAuthStrategy;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +24,14 @@ public class AuthFactory {
         if (configuration instanceof BasicAuthStrategy basic) {
             return new BasicAuth(dependencies, basic);
         }
+        if (configuration instanceof GoogleAuthStrategy google) {
+            return new GoogleAuth(dependencies, google);
+        }
+        return createCustomOrThrow(dependencies, configuration);
+    }
+
+    private AuthStrategy createCustomOrThrow(final InterpreterDependencies dependencies,
+                                             final com.testlum.testing.model.global_config.AuthStrategy configuration) {
         if (configuration instanceof CustomAuthStrategy custom) {
             return createCustomStrategy(dependencies, custom);
         }

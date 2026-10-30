@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -103,16 +104,19 @@ class GraphqlInterpreterTest {
         }
 
         @Test
-        void populatesMetadataWithHeaders() {
+        void populatesMetadataWithMaskedAuthorization() throws Exception {
             final CommandResult result = new CommandResult();
-            final Map<String, String> headers = Map.of("Auth", "Bearer token");
+            final Map<String, String> headers = Map.of("authorization", "Bearer token");
+            final Method method = GraphqlInterpreter.class.getDeclaredMethod(
+                    "addGraphQlMetaData", String.class, HttpMethod.class, Map.class, String.class, CommandResult.class);
+            method.setAccessible(true);
+            method.invoke(interpreter, "alias1", HttpMethod.GET, headers, "/query", result);
 
-            result.put("Alias", "alias1");
-            result.put("HTTP method", HttpMethod.GET);
-            result.put("Endpoint", "/query");
-
-            assertNotNull(result.getMetadata());
-            assertEquals(3, result.getMetadata().size());
+            assertEquals("alias1", result.getMetadata().get("Alias"));
+            assertEquals("/query", result.getMetadata().get("Endpoint"));
+            assertTrue(result.getMetadata().get("Additional headers").toString().contains("authorization: [REDACTED]"));
+            assertFalse(result.getMetadata().toString().contains("Bearer token"));
+            assertEquals("Bearer token", headers.get("authorization"));
         }
     }
 

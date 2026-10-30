@@ -1,12 +1,18 @@
 package com.testlum.testing.framework.util;
 
 import com.testlum.testing.framework.vault.VaultService;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.model.global_config.AuthStrategies;
+import com.testlum.testing.model.global_config.GoogleAuthStrategy;
+import com.testlum.testing.model.global_config.Integrations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -53,6 +59,47 @@ class InjectionServiceTest {
             final String result = injectionService.injectFromVault(vaultService, "original");
             assertNotNull(result);
             verify(vaultService).inject("{\"s\":\"{{v.k}}\"}");
+        }
+    }
+
+    @Nested
+    class InjectGoogleConfiguration {
+        @Test
+        void resolvesEnvironmentVariablesAndPreservesGoogleStrategyType() {
+            String path = System.getenv("PATH");
+            assertNotNull(path);
+            Integrations source = googleConfig("${PATH}", "${PATH}");
+            InjectionService service = new InjectionService(new JacksonService(), new SystemVariableService());
+
+            Integrations resolved = service.injectFromSystem(source);
+
+            GoogleAuthStrategy google = assertInstanceOf(GoogleAuthStrategy.class,
+                    resolved.getAuthStrategies().getJwtOrBasicOrCustom().get(0));
+            assertEquals("GOOGLE", google.getAlias());
+            assertEquals(path, google.getClientId());
+            assertEquals(path, google.getClientSecret());
+            GoogleAuthStrategy original = (GoogleAuthStrategy) source.getAuthStrategies()
+                    .getJwtOrBasicOrCustom().get(0);
+            assertEquals("${PATH}", original.getClientSecret());
+        }
+
+        @Test
+        void missingEnvironmentVariableFailsBeforeAuthorization() {
+            Integrations source = googleConfig("client", "${THIS_VAR_SHOULD_NOT_EXIST_12345}");
+            InjectionService service = new InjectionService(new JacksonService(), new SystemVariableService());
+            assertThrows(DefaultFrameworkException.class, () -> service.injectFromSystem(source));
+        }
+
+        private Integrations googleConfig(final String clientId, final String clientSecret) {
+            GoogleAuthStrategy google = new GoogleAuthStrategy();
+            google.setAlias("GOOGLE");
+            google.setClientId(clientId);
+            google.setClientSecret(clientSecret);
+            AuthStrategies strategies = new AuthStrategies();
+            strategies.getJwtOrBasicOrCustom().add(google);
+            Integrations integrations = new Integrations();
+            integrations.setAuthStrategies(strategies);
+            return integrations;
         }
     }
 

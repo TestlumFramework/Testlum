@@ -15,6 +15,7 @@
                 </x:sequence>
                 <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
                 <x:attribute name="file" type="tns:expectedPattern" use="required"/>
+                <x:attribute name="mode" type="tns:mode" default="strict"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

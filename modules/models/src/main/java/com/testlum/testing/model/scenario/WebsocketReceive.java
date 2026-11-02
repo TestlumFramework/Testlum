@@ -1,17 +1,20 @@
 
 package com.testlum.testing.model.scenario;
 
-import jakarta.xml.bind.annotation.*;
-
 import java.math.BigInteger;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for websocketReceive complex type.
+ * &lt;p&gt;Java class for websocketReceive complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="websocketReceive"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
@@ -23,10 +26,11 @@ import java.math.BigInteger;
  *       &lt;attribute name="topic" type="{http://www.testlum.com/testing/model/scenario}endpointPattern" /&gt;
  *       &lt;attribute name="limit" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" /&gt;
  *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}long" default="0" /&gt;
+ *       &lt;attribute name="mode" type="{http://www.testlum.com/testing/model/scenario}mode" default="strict" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -48,6 +52,8 @@ public class WebsocketReceive {
     protected BigInteger limit;
     @XmlAttribute(name = "timeoutMillis")
     protected Long timeoutMillis;
+    @XmlAttribute(name = "mode")
+    protected Mode mode;
 
     /**
      * Gets the value of the message property.
@@ -195,6 +201,34 @@ public class WebsocketReceive {
      */
     public void setTimeoutMillis(Long value) {
         this.timeoutMillis = value;
+    }
+
+    /**
+     * Gets the value of the mode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Mode }
+     *     
+     */
+    public Mode getMode() {
+        if (mode == null) {
+            return Mode.STRICT;
+        } else {
+            return mode;
+        }
+    }
+
+    /**
+     * Sets the value of the mode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Mode }
+     *     
+     */
+    public void setMode(Mode value) {
+        this.mode = value;
     }
 
 }

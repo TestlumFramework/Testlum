@@ -8,11 +8,11 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for receiveKafkaMessage complex type.
+ * &lt;p&gt;Java class for receiveKafkaMessage complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="receiveKafkaMessage"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
@@ -24,10 +24,11 @@ import jakarta.xml.bind.annotation.XmlType;
  *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}long" default="1500" /&gt;
  *       &lt;attribute name="headers" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *       &lt;attribute name="commit" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="mode" type="{http://www.testlum.com/testing/model/scenario}mode" default="strict" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -48,6 +49,8 @@ public class ReceiveKafkaMessage {
     protected Boolean headers;
     @XmlAttribute(name = "commit")
     protected Boolean commit;
+    @XmlAttribute(name = "mode")
+    protected Mode mode;
 
     /**
      * Gets the value of the value property.
@@ -203,6 +206,34 @@ public class ReceiveKafkaMessage {
      */
     public void setCommit(Boolean value) {
         this.commit = value;
+    }
+
+    /**
+     * Gets the value of the mode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Mode }
+     *     
+     */
+    public Mode getMode() {
+        if (mode == null) {
+            return Mode.STRICT;
+        } else {
+            return mode;
+        }
+    }
+
+    /**
+     * Sets the value of the mode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Mode }
+     *     
+     */
+    public void setMode(Mode value) {
+        this.mode = value;
     }
 
 }

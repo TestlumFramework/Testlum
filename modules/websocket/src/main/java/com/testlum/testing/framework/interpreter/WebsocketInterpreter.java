@@ -7,6 +7,7 @@ import com.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterp
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Websocket;
 import com.testlum.testing.model.scenario.WebsocketReceive;
 import com.testlum.testing.model.scenario.WebsocketSend;
@@ -150,7 +151,7 @@ public class WebsocketInterpreter extends AbstractMessageBrokerInterpreter<Webso
         result.setActual(stringPrettifier.asJsonResult(toString(actualContent)));
         result.setExpected(stringPrettifier.asJsonResult(expectedContent));
 
-        executeComparison(actualContent, expectedContent);
+        executeComparison(actualContent, expectedContent, Mode.STRICT.equals(wsReceive.getMode()));
     }
 
     private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final AliasEnv aliasEnv) {
@@ -185,10 +186,13 @@ public class WebsocketInterpreter extends AbstractMessageBrokerInterpreter<Webso
         }
     }
 
-    private void executeComparison(final List<Object> actualContent, final String expectedContent) {
+    private void executeComparison(final List<Object> actualContent,
+                                   final String expectedContent,
+                                   final boolean isStrict) {
         newCompare()
                 .withExpected(expectedContent)
                 .withActual(actualContent)
+                .withMode(isStrict)
                 .exec();
     }
 

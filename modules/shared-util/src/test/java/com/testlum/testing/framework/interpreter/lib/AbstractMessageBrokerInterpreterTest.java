@@ -330,6 +330,42 @@ abstract class AbstractMessageBrokerInterpreterTest {
             assertNotNull(result.getActual());
             assertNotNull(result.getExpected());
         }
+
+        @Test
+        void strictModeFailsWhenActualHasExtraField() {
+            setupPrettifierMocks();
+            final List<String> actual = List.of("{\"id\":1,\"name\":\"test\",\"extraField\":\"unexpected\"}");
+            when(jacksonService.writeValueAsString(actual))
+                    .thenReturn("[{\"id\":1,\"name\":\"test\",\"extraField\":\"unexpected\"}]");
+            final CommandResult result = new CommandResult();
+
+            assertThrows(ComparisonException.class, () -> interpreter.callCompareMessages(
+                    actual, "[{\"id\":1,\"name\":\"test\"}]", true, result));
+        }
+
+        @Test
+        void lenientModePassesWhenActualHasExtraField() {
+            setupPrettifierMocks();
+            final List<String> actual = List.of("{\"id\":1,\"name\":\"test\",\"extraField\":\"unexpected\"}");
+            when(jacksonService.writeValueAsString(actual))
+                    .thenReturn("[{\"id\":1,\"name\":\"test\",\"extraField\":\"unexpected\"}]");
+            final CommandResult result = new CommandResult();
+
+            assertDoesNotThrow(() -> interpreter.callCompareMessages(
+                    actual, "[{\"id\":1,\"name\":\"test\"}]", false, result));
+        }
+
+        @Test
+        void defaultModeBehavesAsStrictAndFailsWhenActualHasExtraField() {
+            setupPrettifierMocks();
+            final List<String> actual = List.of("{\"id\":1,\"name\":\"test\",\"extraField\":\"unexpected\"}");
+            when(jacksonService.writeValueAsString(actual))
+                    .thenReturn("[{\"id\":1,\"name\":\"test\",\"extraField\":\"unexpected\"}]");
+            final CommandResult result = new CommandResult();
+
+            assertThrows(ComparisonException.class, () -> interpreter.callCompareMessages(
+                    actual, "[{\"id\":1,\"name\":\"test\"}]", result));
+        }
     }
 
     @Nested
@@ -470,6 +506,13 @@ abstract class AbstractMessageBrokerInterpreterTest {
                                       final String expectedValue,
                                       final CommandResult result) {
             compareMessages(actualMessages, expectedValue, result);
+        }
+
+        <M> void callCompareMessages(final List<M> actualMessages,
+                                      final String expectedValue,
+                                      final boolean isStrict,
+                                      final CommandResult result) {
+            compareMessages(actualMessages, expectedValue, isStrict, result);
         }
 
         void callLogMessageBrokerMetaData(final String action,

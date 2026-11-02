@@ -6,6 +6,7 @@ import com.testlum.testing.framework.db.AbstractStorageOperation;
 import com.testlum.testing.framework.db.source.ListSource;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.Mode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -31,6 +32,8 @@ public abstract class AbstractDatabaseInterpreter<T extends AbstractCommand> ext
 
     protected abstract String getFile(T command);
 
+    protected abstract Mode getMode(T command);
+
     @Override
     protected void acceptImpl(final T o, final CommandResult result) {
         T command = injectCommand(o);
@@ -38,6 +41,7 @@ public abstract class AbstractDatabaseInterpreter<T extends AbstractCommand> ext
         String actual = executeQuery(command, result);
         CompareBuilder compare = newCompare()
                 .withActual(actual)
+                .withMode(Mode.STRICT.equals(getMode(command)))
                 .withExpected(getContentIfFile(getFile(command)));
         result.setExpected(stringPrettifier.asJsonResult(compare.getExpected()));
         result.setActual(stringPrettifier.asJsonResult(actual));

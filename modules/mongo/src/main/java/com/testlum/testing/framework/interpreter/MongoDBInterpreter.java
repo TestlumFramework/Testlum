@@ -4,6 +4,7 @@ import com.testlum.testing.framework.db.AbstractStorageOperation;
 import com.testlum.testing.framework.interpreter.lib.AbstractDatabaseInterpreter;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Mongo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,10 @@ public class MongoDBInterpreter extends AbstractDatabaseInterpreter<Mongo> {
     @Override
     protected String getFile(final Mongo command) {
         return command.getFile();
+    }
+
+    @Override
+    protected Mode getMode(final Mongo command) {
+        return command.getMode();
     }
 }

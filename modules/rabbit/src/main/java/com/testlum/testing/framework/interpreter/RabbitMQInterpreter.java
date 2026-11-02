@@ -7,6 +7,7 @@ import com.testlum.testing.framework.interpreter.lib.AbstractMessageBrokerInterp
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Rabbit;
 import com.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.testlum.testing.model.scenario.RmqHeader;
@@ -141,7 +142,7 @@ public class RabbitMQInterpreter extends AbstractMessageBrokerInterpreter<Rabbit
         addRabbitMQReceiveInfo(receive, aliasEnv.getAlias(), result);
         checkQueueExistence(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
-        compareMessages(actualRmqMessages, messages, result);
+        compareMessages(actualRmqMessages, messages, Mode.STRICT.equals(receive.getMode()), result);
     }
 
     private List<RabbitMQMessage> receiveRmqMessages(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {

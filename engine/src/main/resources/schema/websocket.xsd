@@ -58,6 +58,7 @@
         <x:attribute name="topic" type="tns:endpointPattern"/>
         <x:attribute name="limit" type="x:positiveInteger"/>
         <x:attribute name="timeoutMillis" type="x:long" default="0"/>
+        <x:attribute name="mode" type="tns:mode" default="strict"/>
     </x:complexType>
 
 </x:schema>

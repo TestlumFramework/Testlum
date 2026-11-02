@@ -10,6 +10,7 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.S3;
 import com.testlum.testing.model.scenario.S3Bucket;
 import com.testlum.testing.model.scenario.S3File;
@@ -207,17 +208,26 @@ public class S3Interpreter extends AbstractMessageBrokerInterpreter<S3> {
                          final String key,
                          final CommandResult result) {
         try {
-            CompareBuilder comparator = newCompare().withExpected(expected).withActual(actual);
+            CompareBuilder comparator = newCompare()
+                    .withExpected(expected)
+                    .withActual(actual)
+                    .withMode(Mode.STRICT.equals(s3FileDownload.getMode()));
             comparator.exec();
         } catch (ComparisonException e) {
-            ComparisonException comparisonException = s3FileDownload.getFile() == null
-                    ? new ComparisonException(String.format(
-                    FILE_VALUE_COMPARISON_ERROR, key, s3FileDownload.getValue()))
-                    : new ComparisonException(String.format(
-                    FILE_COMPARISON_ERROR, key, s3FileDownload.getFile()));
-            result.setException(comparisonException);
-            throw comparisonException;
+            handleComparisonException(s3FileDownload, key, result);
         }
+    }
+
+    private void handleComparisonException(final S3FileDownload s3FileDownload,
+                                           final String key,
+                                           final CommandResult result) {
+        ComparisonException comparisonException = s3FileDownload.getFile() == null
+                ? new ComparisonException(String.format(
+                FILE_VALUE_COMPARISON_ERROR, key, s3FileDownload.getValue()))
+                : new ComparisonException(String.format(
+                FILE_COMPARISON_ERROR, key, s3FileDownload.getFile()));
+        result.setException(comparisonException);
+        throw comparisonException;
     }
 
     private String downloadFile(final String bucketName,

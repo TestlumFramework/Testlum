@@ -49,6 +49,7 @@
             <x:element name="value" type="tns:nonEmptyString"/>
             <x:element name="file" type="tns:nonEmptyString"/>
         </x:choice>
+        <x:attribute name="mode" type="tns:mode" default="strict"/>
     </x:complexType>
 
     <x:complexType name="s3FileRemove"/>

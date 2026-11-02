@@ -3,6 +3,7 @@ package com.testlum.testing.framework.interpreter;
 import com.testlum.testing.framework.db.AbstractStorageOperation;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.model.scenario.Clickhouse;
+import com.testlum.testing.model.scenario.Mode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -176,6 +177,30 @@ class ClickhouseInterpreterTest {
             when(command.getFile()).thenReturn(null);
 
             assertNull(interpreter.getFile(command));
+        }
+    }
+
+    @Nested
+    class GetMode {
+
+        @Test
+        void returnsStrictMode() {
+            final Clickhouse command = new Clickhouse();
+            command.setMode(Mode.STRICT);
+            assertEquals(Mode.STRICT, interpreter.getMode(command));
+        }
+
+        @Test
+        void returnsLenientMode() {
+            final Clickhouse command = new Clickhouse();
+            command.setMode(Mode.LENIENT);
+            assertEquals(Mode.LENIENT, interpreter.getMode(command));
+        }
+
+        @Test
+        void defaultsToStrictWhenModeIsNull() {
+            final Clickhouse command = new Clickhouse();
+            assertEquals(Mode.STRICT, interpreter.getMode(command));
         }
     }
 }

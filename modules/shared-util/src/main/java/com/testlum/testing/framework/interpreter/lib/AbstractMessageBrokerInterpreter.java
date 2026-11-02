@@ -154,9 +154,17 @@ public abstract class AbstractMessageBrokerInterpreter<T extends AbstractCommand
     protected <M> void compareMessages(final List<M> actualMessages,
                                        final String expectedValue,
                                        final CommandResult result) {
+        compareMessages(actualMessages, expectedValue, true, result);
+    }
+
+    protected <M> void compareMessages(final List<M> actualMessages,
+                                       final String expectedValue,
+                                       final boolean isStrict,
+                                       final CommandResult result) {
         CompareBuilder comparator = newCompare()
                 .withExpected(expectedValue)
-                .withActual(actualMessages);
+                .withActual(actualMessages)
+                .withMode(isStrict);
         result.setActual(stringPrettifier.asJsonResult(toString(actualMessages)));
         result.setExpected(stringPrettifier.asJsonResult(comparator.getExpected()));
         comparator.exec();

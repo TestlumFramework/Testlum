@@ -7,11 +7,11 @@ import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
-import com.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Body;
+import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Sendgrid;
 import com.testlum.testing.model.scenario.SendgridInfo;
 import com.testlum.testing.model.scenario.SendgridWithBody;
@@ -69,17 +69,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint,
                 getQueryParams(sendgridInfo), result);
         Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, result);
-        ApiResponse expected = getExpected(sendgridInfo, headers);
-        compare(expected, actual, result);
+        compare(sendgridInfo.getResponse(), headers, actual, result);
         setContextBody(getContextBodyKey(sendgridInfo.getResponse().getFile()), actual.getBody());
-    }
-
-    private ApiResponse getExpected(final SendgridInfo sendgridInfo, final Map<String, String> headers) {
-        com.testlum.testing.model.scenario.Response response = sendgridInfo.getResponse();
-        String body = StringUtils.isBlank(response.getFile())
-                ? DelimiterConstant.EMPTY
-                : getContentIfFile(response.getFile());
-        return new ApiResponse(response.getCode(), headers, stringPrettifier.asJsonResult(body));
     }
 
     private Response getActual(final SendgridInfo sendgridInfo,
@@ -99,17 +90,23 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         }
     }
 
-    private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {
-        String expectedBody = expected.getBody();
-        result.setExpected(stringPrettifier.asJsonResult(expectedBody));
+    private void compare(final com.testlum.testing.model.scenario.Response expected,
+                         final Map<String, String> expectedHeaders,
+                         final Response actual,
+                         final CommandResult result) {
+        String body = StringUtils.isBlank(expected.getFile())
+                ? DelimiterConstant.EMPTY
+                : getContentIfFile(expected.getFile());
+        String expectedBody = stringPrettifier.asJsonResult(body);
+        result.setExpected(expectedBody);
         result.setActual(stringPrettifier.asJsonResult(actual.getBody()));
         result.put(EXPECTED_CODE, expected.getCode());
         result.put(ACTUAL_CODE, actual.getStatusCode());
 
         HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         httpValidator.validateCode(expected.getCode(), actual.getStatusCode());
-        httpValidator.validateBody(expectedBody, actual.getBody());
-        httpValidator.validateHeaders(expected.getHeaders(), actual.getHeaders());
+        httpValidator.validateBody(expectedBody, actual.getBody(), Mode.STRICT.equals(expected.getMode()));
+        httpValidator.validateHeaders(expectedHeaders, actual.getHeaders());
         httpValidator.rethrowOnErrors();
     }
 

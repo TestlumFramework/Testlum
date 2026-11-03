@@ -114,7 +114,8 @@ class GraphqlInterpreterTest {
 
             assertEquals("alias1", result.getMetadata().get("Alias"));
             assertEquals("/query", result.getMetadata().get("Endpoint"));
-            assertTrue(result.getMetadata().get("Additional headers").toString().contains("authorization: [REDACTED]"));
+            assertTrue(result.getMetadata().get("Additional headers").toString()
+                    .contains("authorization: Bearer tok***"));
             assertFalse(result.getMetadata().toString().contains("Bearer token"));
             assertEquals("Bearer token", headers.get("authorization"));
         }

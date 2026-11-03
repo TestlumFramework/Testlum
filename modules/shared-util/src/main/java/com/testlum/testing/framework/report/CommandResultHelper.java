@@ -1,6 +1,7 @@
 package com.testlum.testing.framework.report;
 
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.util.TokenMasker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +15,6 @@ public final class CommandResultHelper {
     public static final String ADDITIONAL_HEADERS = "Additional headers";
 
     private static final String STEP_FAILED = "Step failed";
-    private static final String REDACTED = "[REDACTED]";
 
     public static void setExceptionResult(final CommandResult result, final Exception exception) {
         result.setSuccess(false);
@@ -41,6 +41,6 @@ public final class CommandResultHelper {
 
     private static String headerValueForReport(final String name, final String value) {
         return "Authorization".equalsIgnoreCase(name) || "Proxy-Authorization".equalsIgnoreCase(name)
-                ? REDACTED : value;
+                ? TokenMasker.maskAuthorization(value) : value;
     }
 }

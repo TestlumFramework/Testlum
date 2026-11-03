@@ -103,6 +103,14 @@ class CommandResultHelperTest {
     @Nested
     class AddHeadersMetaData {
         @Test
+        void shortTokensAreFullyMasked() {
+            CommandResult result = new CommandResult();
+            CommandResultHelper.addHeadersMetaData(Map.of("Authorization", "Bearer abc"), result);
+            assertEquals(List.of("Authorization: Bearer ***"),
+                    result.getMetadata().get(CommandResultHelper.ADDITIONAL_HEADERS));
+        }
+
+        @Test
         void masksAuthorizationRegardlessOfCaseWithoutChangingRequestHeaders() {
             for (String name : List.of("Authorization", "authorization", "AUTHORIZATION", "aUtHoRiZaTiOn")) {
                 final Map<String, String> headers = Map.of(
@@ -112,7 +120,7 @@ class CommandResultHelperTest {
                 CommandResultHelper.addHeadersMetaData(headers, result);
 
                 final List<?> metadata = (List<?>) result.getMetadata().get(CommandResultHelper.ADDITIONAL_HEADERS);
-                assertTrue(metadata.contains(name + ": [REDACTED]"));
+                assertTrue(metadata.contains(name + ": Bearer sen***"));
                 assertTrue(metadata.contains("Accept: text/html"));
                 assertEquals("Bearer sensitive-access-value", headers.get(name));
                 assertFalse(result.getMetadata().toString().contains("sensitive-access-value"));
@@ -129,7 +137,7 @@ class CommandResultHelperTest {
 
             CommandResultHelper.addHeadersMetaData(headers, result);
 
-            assertEquals(List.of("Authorization: [REDACTED]", "proxy-authorization: [REDACTED]",
+            assertEquals(List.of("Authorization: Basic sen***", "proxy-authorization: Basic sen***",
                     "Content-Type: application/json"),
                     result.getMetadata().get(CommandResultHelper.ADDITIONAL_HEADERS));
             assertEquals("Basic sensitive-basic-value", headers.get("Authorization"));

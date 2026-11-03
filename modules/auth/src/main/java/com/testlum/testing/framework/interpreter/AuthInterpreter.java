@@ -43,6 +43,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     private void executeAuthBlock(final Auth command, final CommandResult result) {
         Auth auth = prepareAuthCommand(command);
+        validateTokenVariable(auth);
         addAuthMetaData(auth, result);
         result.setSubCommandsResult(new ArrayList<>());
         dependencies.clearAuthorization();
@@ -60,9 +61,13 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
             failure = exception;
             throw exception;
         } finally {
-            if (auth.isAutoLogout()) {
-                logout(strategy, failure);
-            }
+            cleanupAuth(strategy, auth, failure);
+        }
+    }
+
+    private void cleanupAuth(final AuthStrategy strategy, final Auth auth, final Throwable failure) {
+        if (auth.isAutoLogout()) {
+            logout(strategy, failure);
         }
     }
 
@@ -70,9 +75,26 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         Auth auth = new Auth();
         auth.setStrategyAlias(inject(command.getStrategyAlias()));
         auth.setCredentials(inject(command.getCredentials()));
+        auth.setTokenVariable(inject(command.getTokenVariable()));
         auth.setAutoLogout(command.isAutoLogout());
         ensureAlias(auth::getStrategyAlias, auth::setStrategyAlias);
         return auth;
+    }
+
+    private void validateTokenVariable(final Auth auth) {
+        String name = auth.getTokenVariable();
+        if (name != null && (name.isBlank() || dependencies.getScenarioContext().containsKey(name))) {
+            throw new DefaultFrameworkException("Auth token variable must have an unused nonblank name");
+        }
+    }
+
+    private void publishTokenVariable(final AuthStrategy strategy, final Auth auth) {
+        if (auth.getTokenVariable() == null) {
+            return;
+        }
+        String token = strategy.getAccessToken().filter(value -> !value.isBlank())
+                .orElseThrow(() -> new DefaultFrameworkException("Auth strategy does not expose an access token"));
+        dependencies.getScenarioContext().setAuthToken(auth.getTokenVariable(), token);
     }
 
     private void authenticate(final AuthStrategy strategy,
@@ -80,6 +102,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
                               final CommandResult result) {
         try {
             strategy.authenticate(auth, result);
+            publishTokenVariable(strategy, auth);
         } catch (RuntimeException exception) {
             dependencies.clearAuthorization();
             throw exception;

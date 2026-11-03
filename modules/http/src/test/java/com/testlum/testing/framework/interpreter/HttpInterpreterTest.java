@@ -104,7 +104,8 @@ class HttpInterpreterTest {
             assertEquals("alias", result.getMetadata().get("API alias"));
             assertEquals("POST", result.getMetadata().get("HTTP method"));
             assertTrue(result.getMetadata().containsKey("Additional headers"));
-            assertTrue(result.getMetadata().get("Additional headers").toString().contains("Authorization: [REDACTED]"));
+            assertTrue(result.getMetadata().get("Additional headers").toString()
+                    .contains("Authorization: Bearer tok***"));
             assertFalse(result.getMetadata().toString().contains("Bearer token"));
             assertEquals("Bearer token", headers.get("Authorization"));
         }

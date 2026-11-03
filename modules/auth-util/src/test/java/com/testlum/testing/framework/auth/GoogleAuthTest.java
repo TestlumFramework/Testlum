@@ -56,6 +56,7 @@ class GoogleAuthTest {
         var authorization = ArgumentCaptor.forClass(InterpreterDependencies.Authorization.class);
         verify(dependencies).setAuthorization(authorization.capture());
         assertEquals("Bearer access-value", authorization.getValue().getHeaders().get("Authorization"));
+        assertEquals("access-value", strategy.getAccessToken().orElseThrow());
         assertEquals("GOOGLE", result.getMetadata().get("Authentication type"));
         assertFalse(result.getMetadata().toString().contains("access-value"));
         assertFalse(result.getMetadata().toString().contains("refresh-value"));

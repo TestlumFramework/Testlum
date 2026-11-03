@@ -79,8 +79,12 @@ class LogoutInterpreterTest {
         result.setId(1);
         dependencies.setAuthorization(new InterpreterDependencies.Authorization(
                 Map.of("Authorization", "Bearer token")));
+        dependencies.getScenarioContext().setAuthToken("googleToken", "provider-secret");
+        dependencies.getScenarioContext().setVariable("copy", "Bearer provider-secret");
         interpreter.apply(logout, result);
         assertNull(dependencies.getAuthorization());
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertFalse(dependencies.getScenarioContext().containsKey("copy"));
 
         verify(authStrategy).logout();
     }
@@ -102,8 +106,12 @@ class LogoutInterpreterTest {
         result.setId(1);
         dependencies.setAuthorization(new InterpreterDependencies.Authorization(
                 Map.of("Authorization", "Bearer token")));
+        dependencies.getScenarioContext().setAuthToken("googleToken", "provider-secret");
+        dependencies.getScenarioContext().setVariable("copy", "Bearer provider-secret");
         interpreter.apply(logout, result);
         assertNull(dependencies.getAuthorization());
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertFalse(dependencies.getScenarioContext().containsKey("copy"));
 
         verify(authFactory).create(any(), eq("api2-injected"));
     }

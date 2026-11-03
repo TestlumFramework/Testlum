@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public abstract class AbstractAuthStrategy implements AuthStrategy {
@@ -16,8 +17,10 @@ public abstract class AbstractAuthStrategy implements AuthStrategy {
     protected static final String AUTHENTICATION_TYPE = "Authentication type";
 
     protected final InterpreterDependencies dependencies;
+    private String accessToken;
 
     protected void login(final String token, final String prefix) {
+        accessToken = AuthorizationConstant.HEADER_BASIC.equals(prefix) ? null : token;
         final InterpreterDependencies.Authorization authorization = new InterpreterDependencies.Authorization();
         final Map<String, String> headers = new HashMap<>();
         headers.put(AuthorizationConstant.HEADER_AUTHORIZATION, prefix + token);
@@ -27,6 +30,12 @@ public abstract class AbstractAuthStrategy implements AuthStrategy {
 
     @Override
     public void logout() {
+        accessToken = null;
         dependencies.clearAuthorization();
+    }
+
+    @Override
+    public Optional<String> getAccessToken() {
+        return Optional.ofNullable(accessToken);
     }
 }

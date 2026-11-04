@@ -2,7 +2,6 @@ package com.testlum.testing.framework.configuration.ui;
 
 import com.testlum.testing.framework.UIConfiguration;
 import com.testlum.testing.framework.constant.ExceptionMessage;
-import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.env.EnvManager;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.util.DriverFailureContext;
@@ -98,8 +97,6 @@ public class NativeDriverFactory {
             setAppiumAndroidApp(desiredCapabilities, nativeDevice.getAppiumCapabilities());
         } else if (Objects.nonNull(nativeDevice.getBrowserStackCapabilities())) {
             setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
-            setGooglePlayStoreCredentials(desiredCapabilities,
-                    nativeDevice.getBrowserStackCapabilities().getGooglePlayLogin());
         }
         desiredCapabilities.setCapability("appium:automationName", "uiautomator2");
     }
@@ -137,14 +134,6 @@ public class NativeDriverFactory {
         if (StringUtils.isNoneBlank(capabilities.getAppPackage(), capabilities.getAppActivity())) {
             desiredCapabilities.setCapability("appium:appPackage", capabilities.getAppPackage());
             desiredCapabilities.setCapability("appium:appActivity", capabilities.getAppActivity());
-        }
-    }
-
-    @Deprecated
-    private void setGooglePlayStoreCredentials(final DesiredCapabilities desiredCapabilities,
-                                               final GooglePlayLogin googlePlayLogin) {
-        if (Objects.nonNull(googlePlayLogin)) {
-            log.warn(LogMessage.DEPRECATED_GOOGLE_LOGIN);
         }
     }
 }

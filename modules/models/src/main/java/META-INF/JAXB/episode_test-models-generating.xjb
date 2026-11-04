@@ -237,9 +237,6 @@ Generated on: 2025.06.03 at 12:57:07 PM EEST
     <bindings scd="~tns:browserStackNativeCapabilities">
       <class ref="com.testlum.testing.model.global_config.BrowserStackNativeCapabilities"/>
     </bindings>
-    <bindings scd="~tns:googlePlayLogin">
-      <class ref="com.testlum.testing.model.global_config.GooglePlayLogin"/>
-    </bindings>
     <bindings scd="~tns:api">
       <class ref="com.testlum.testing.model.global_config.Api"/>
     </bindings>

@@ -56,16 +56,8 @@
             <x:extension base="tns:browserStackCapabilities">
                 <x:sequence>
                     <x:element name="app" type="tns:nonEmptyString"/>
-                    <x:element name="googlePlayLogin" type="tns:googlePlayLogin" minOccurs="0"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="googlePlayLogin">
-        <x:sequence>
-            <x:element name="email" type="tns:nonEmptyString"/>
-            <x:element name="password" type="tns:nonEmptyString"/>
-        </x:sequence>
     </x:complexType>
 </x:schema>

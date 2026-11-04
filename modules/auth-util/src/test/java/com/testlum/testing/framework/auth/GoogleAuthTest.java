@@ -5,6 +5,10 @@ import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.global_config.GoogleAuthStrategy;
 import com.testlum.testing.model.scenario.Auth;
+import org.springframework.web.client.RestClient;
+import org.springframework.http.MediaType;
+import org.springframework.util.MultiValueMap;
+import com.testlum.testing.framework.util.JacksonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,7 +33,7 @@ class GoogleAuthTest {
     private static final long EXPIRES_IN = 3600;
 
     private InterpreterDependencies dependencies;
-    private GoogleCredentialsReader credentialsReader;
+    private OAuthCredentialsReader credentialsReader;
     private GoogleTokenClient tokenClient;
     private GoogleAuthStrategy configuration;
     private GoogleAuth strategy;
@@ -37,10 +43,10 @@ class GoogleAuthTest {
     void setUp() {
         dependencies = mock(InterpreterDependencies.class);
         ApplicationContext context = mock(ApplicationContext.class);
-        credentialsReader = mock(GoogleCredentialsReader.class);
+        credentialsReader = mock(OAuthCredentialsReader.class);
         tokenClient = mock(GoogleTokenClient.class);
         when(dependencies.getContext()).thenReturn(context);
-        when(context.getBean(GoogleCredentialsReader.class)).thenReturn(credentialsReader);
+        when(context.getBean(OAuthCredentialsReader.class)).thenReturn(credentialsReader);
         when(context.getBean(GoogleTokenClient.class)).thenReturn(tokenClient);
         configuration = googleConfiguration();
         strategy = new GoogleAuth(dependencies, configuration);
@@ -107,6 +113,34 @@ class GoogleAuthTest {
         verifyNoInteractions(credentialsReader, tokenClient);
     }
 
+    @Test
+    void tokenClientSendsGoogleRefreshFormWithoutMicrosoftScope() {
+        var client = mock(RestClient.class,
+                RETURNS_DEEP_STUBS);
+        String endpoint = "https://oauth2.googleapis.com/token";
+        var request = client.post().uri(endpoint)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .accept(MediaType.APPLICATION_JSON);
+        when(request.body(any(MultiValueMap.class)).retrieve().body(String.class))
+                .thenReturn("{\"access_token\":\"access-value\",\"token_type\":\"Bearer\",\"expires_in\":3600}");
+        clearInvocations(request);
+
+        final OAuthTokenResponse response = new GoogleTokenClient(
+                new JacksonService(), client)
+                .refreshToken(configuration, "refresh-value");
+
+        var form = ArgumentCaptor.forClass(MultiValueMap.class);
+        verify(request).body(form.capture());
+        assertEquals("refresh_token", form.getValue().getFirst("grant_type"));
+        assertEquals("client-id", form.getValue().getFirst("client_id"));
+        assertEquals("client-secret", form.getValue().getFirst("client_secret"));
+        assertEquals("refresh-value", form.getValue().getFirst("refresh_token"));
+        assertFalse(form.getValue().containsKey("scope"));
+        assertEquals("access-value", response.getAccessToken());
+        assertEquals("Bearer", response.getTokenType());
+        assertEquals(EXPIRES_IN, response.getExpiresIn());
+    }
+
     private GoogleAuthStrategy googleConfiguration() {
         GoogleAuthStrategy google = new GoogleAuthStrategy();
         google.setAlias("GOOGLE");
@@ -120,7 +154,7 @@ class GoogleAuthTest {
         when(tokenClient.refreshToken(configuration, "refresh-value")).thenReturn(response(accessToken));
     }
 
-    private GoogleTokenResponse response(final String accessToken) {
-        return new GoogleTokenResponse(accessToken, "Bearer", EXPIRES_IN);
+    private OAuthTokenResponse response(final String accessToken) {
+        return new OAuthTokenResponse(accessToken, "Bearer", EXPIRES_IN);
     }
 }

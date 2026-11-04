@@ -4,6 +4,7 @@ import com.testlum.testing.framework.vault.VaultService;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.global_config.AuthStrategies;
 import com.testlum.testing.model.global_config.GoogleAuthStrategy;
+import com.testlum.testing.model.global_config.MicrosoftAuthStrategy;
 import com.testlum.testing.model.global_config.Integrations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -97,6 +98,50 @@ class InjectionServiceTest {
             google.setClientSecret(clientSecret);
             AuthStrategies strategies = new AuthStrategies();
             strategies.getJwtOrBasicOrCustom().add(google);
+            Integrations integrations = new Integrations();
+            integrations.setAuthStrategies(strategies);
+            return integrations;
+        }
+    }
+
+    @Nested
+    class InjectMicrosoftConfiguration {
+        @Test
+        void resolvesAllMicrosoftFieldsAndPreservesTheStrategyTypeAndSource() {
+            String value = System.getenv("PATH");
+            assertNotNull(value);
+            Integrations source = microsoftConfig("${PATH}");
+            InjectionService service = new InjectionService(new JacksonService(), new SystemVariableService());
+            Integrations resolved = service.injectFromSystem(source);
+            MicrosoftAuthStrategy strategy = assertInstanceOf(MicrosoftAuthStrategy.class,
+                    resolved.getAuthStrategies().getJwtOrBasicOrCustom().get(0));
+            assertEquals("MICROSOFT", strategy.getAlias());
+            assertEquals(value, strategy.getClientId());
+            assertEquals(value, strategy.getClientSecret());
+            assertEquals(value, strategy.getTenant());
+            assertEquals(value, strategy.getScope());
+            MicrosoftAuthStrategy original = (MicrosoftAuthStrategy) source.getAuthStrategies()
+                    .getJwtOrBasicOrCustom().get(0);
+            assertEquals("${PATH}", original.getClientSecret());
+            assertEquals("${PATH}", original.getTenant());
+        }
+
+        @Test
+        void missingEnvironmentVariableFailsBeforeMicrosoftAuthorization() {
+            InjectionService service = new InjectionService(new JacksonService(), new SystemVariableService());
+            assertThrows(DefaultFrameworkException.class,
+                    () -> service.injectFromSystem(microsoftConfig("${THIS_VAR_SHOULD_NOT_EXIST_12345}")));
+        }
+
+        private Integrations microsoftConfig(final String value) {
+            MicrosoftAuthStrategy strategy = new MicrosoftAuthStrategy();
+            strategy.setAlias("MICROSOFT");
+            strategy.setClientId(value);
+            strategy.setClientSecret(value);
+            strategy.setTenant(value);
+            strategy.setScope(value);
+            AuthStrategies strategies = new AuthStrategies();
+            strategies.getJwtOrBasicOrCustom().add(strategy);
             Integrations integrations = new Integrations();
             integrations.setAuthStrategies(strategies);
             return integrations;

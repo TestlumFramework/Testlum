@@ -5,7 +5,7 @@ import com.testlum.testing.model.scenario.Auth;
 
 import java.util.Optional;
 
-public interface AuthStrategy {
+public interface AuthenticationStrategy {
 
     void authenticate(Auth auth, CommandResult result);
 

@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class GoogleTokenResponse {
+public class OAuthTokenResponse {
 
     private final String accessToken;
     private final String tokenType;

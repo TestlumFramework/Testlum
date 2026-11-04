@@ -31,7 +31,8 @@ import jakarta.xml.bind.annotation.XmlType;
     JwtAuthStrategy.class,
     BasicAuthStrategy.class,
     CustomAuthStrategy.class,
-    GoogleAuthStrategy.class
+    GoogleAuthStrategy.class,
+    MicrosoftAuthStrategy.class
 })
 public abstract class AuthStrategy {
 

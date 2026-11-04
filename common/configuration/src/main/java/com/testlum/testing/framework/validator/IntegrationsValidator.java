@@ -8,6 +8,7 @@ import com.testlum.testing.model.global_config.AuthStrategy;
 import com.testlum.testing.model.global_config.GoogleAuthStrategy;
 import com.testlum.testing.model.global_config.Integration;
 import com.testlum.testing.model.global_config.Integrations;
+import com.testlum.testing.model.global_config.MicrosoftAuthStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -138,9 +139,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         Map<String, AuthStrategy> authMap = new HashMap<>();
         if (integrations.getAuthStrategies() != null) {
             for (AuthStrategy strategy : integrations.getAuthStrategies().getJwtOrBasicOrCustom()) {
-                if (strategy instanceof GoogleAuthStrategy google) {
-                    checkGoogleConfiguration(google);
-                }
+                checkAuthConfiguration(strategy);
                 if (authMap.putIfAbsent(strategy.getAlias(), strategy) != null) {
                     throw new DefaultFrameworkException(ExceptionMessage.AUTH_DUPLICATE_ALIAS, strategy.getAlias());
                 }
@@ -157,6 +156,31 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         if (StringUtils.isBlank(strategy.getClientSecret())) {
             throw new DefaultFrameworkException(
                     "Google auth strategy <%s> requires a non-empty clientSecret", strategy.getAlias());
+        }
+    }
+
+    private void checkAuthConfiguration(final AuthStrategy strategy) {
+        if (strategy instanceof GoogleAuthStrategy google) {
+            checkGoogleConfiguration(google);
+        } else if (strategy instanceof MicrosoftAuthStrategy microsoft) {
+            checkMicrosoftConfiguration(microsoft);
+        }
+    }
+
+    private void checkMicrosoftConfiguration(final MicrosoftAuthStrategy strategy) {
+        checkMicrosoftValue(strategy.getClientId(), "clientId", strategy.getAlias());
+        checkMicrosoftValue(strategy.getClientSecret(), "clientSecret", strategy.getAlias());
+        checkMicrosoftValue(strategy.getTenant(), "tenant", strategy.getAlias());
+        checkMicrosoftValue(strategy.getScope(), "scope", strategy.getAlias());
+        if (!strategy.getTenant().matches("[A-Za-z0-9][A-Za-z0-9.-]*")) {
+            throw new DefaultFrameworkException("Microsoft auth strategy <%s> has an invalid tenant",
+                    strategy.getAlias());
+        }
+    }
+
+    private void checkMicrosoftValue(final String value, final String field, final String alias) {
+        if (StringUtils.isBlank(value)) {
+            throw new DefaultFrameworkException("Microsoft auth strategy <%s> requires a non-empty %s", alias, field);
         }
     }
 

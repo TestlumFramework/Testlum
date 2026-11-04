@@ -1,7 +1,7 @@
 package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.auth.AuthFactory;
-import com.testlum.testing.framework.auth.AuthStrategy;
+import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.interpreter.lib.CommandRunner;
@@ -47,12 +47,12 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         addAuthMetaData(auth, result);
         result.setSubCommandsResult(new ArrayList<>());
         dependencies.clearAuthorization();
-        AuthStrategy strategy = authFactory.create(dependencies, auth.getStrategyAlias());
+        AuthenticationStrategy strategy = authFactory.create(dependencies, auth.getStrategyAlias());
         executeAuth(command, result, strategy, auth);
     }
 
     private void executeAuth(final Auth command, final CommandResult result,
-                             final AuthStrategy strategy, final Auth auth) {
+                             final AuthenticationStrategy strategy, final Auth auth) {
         Throwable failure = null;
         try {
             authenticate(strategy, auth, result);
@@ -65,7 +65,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         }
     }
 
-    private void cleanupAuth(final AuthStrategy strategy, final Auth auth, final Throwable failure) {
+    private void cleanupAuth(final AuthenticationStrategy strategy, final Auth auth, final Throwable failure) {
         if (auth.isAutoLogout()) {
             logout(strategy, failure);
         }
@@ -88,7 +88,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         }
     }
 
-    private void publishTokenVariable(final AuthStrategy strategy, final Auth auth) {
+    private void publishTokenVariable(final AuthenticationStrategy strategy, final Auth auth) {
         if (auth.getTokenVariable() == null) {
             return;
         }
@@ -97,7 +97,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         dependencies.getScenarioContext().setAuthToken(auth.getTokenVariable(), token);
     }
 
-    private void authenticate(final AuthStrategy strategy,
+    private void authenticate(final AuthenticationStrategy strategy,
                               final Auth auth,
                               final CommandResult result) {
         try {
@@ -115,7 +115,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         result.put(AUTO_LOGOUT, auth.isAutoLogout());
     }
 
-    private void logout(final AuthStrategy strategy, final Throwable failure) {
+    private void logout(final AuthenticationStrategy strategy, final Throwable failure) {
         try {
             strategy.logout();
         } catch (RuntimeException | Error exception) {

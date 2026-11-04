@@ -2,7 +2,7 @@ package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.auth.AuthFactory;
-import com.testlum.testing.framework.auth.AuthStrategy;
+import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.exception.StopSignalException;
@@ -35,7 +35,7 @@ class AuthInterpreterTest {
 
     private AuthInterpreter interpreter;
     private AuthFactory authFactory;
-    private AuthStrategy authStrategy;
+    private AuthenticationStrategy authStrategy;
     private ConditionProvider conditionProvider;
     private CommandRunner commandRunner;
     private InterpreterDependencies dependencies;
@@ -44,7 +44,7 @@ class AuthInterpreterTest {
     @BeforeEach
     void setUp() {
         authFactory = mock(AuthFactory.class);
-        authStrategy = mock(AuthStrategy.class);
+        authStrategy = mock(AuthenticationStrategy.class);
         conditionProvider = mock(ConditionProvider.class);
         commandRunner = mock(CommandRunner.class);
         ApplicationContext context = mockContext();

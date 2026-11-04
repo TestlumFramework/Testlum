@@ -2,7 +2,7 @@ package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.auth.AuthFactory;
-import com.testlum.testing.framework.auth.AuthStrategy;
+import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
@@ -31,14 +31,14 @@ class LogoutInterpreterTest {
     private LogoutInterpreter interpreter;
     private InterpreterDependencies dependencies;
     private AuthFactory authFactory;
-    private AuthStrategy authStrategy;
+    private AuthenticationStrategy authStrategy;
     private JacksonService jacksonService;
     private ConditionProvider conditionProvider;
 
     @BeforeEach
     void setUp() {
         authFactory = mock(AuthFactory.class);
-        authStrategy = mock(AuthStrategy.class);
+        authStrategy = mock(AuthenticationStrategy.class);
         jacksonService = mock(JacksonService.class);
         conditionProvider = mock(ConditionProvider.class);
         GlobalTestConfiguration globalConfig = mock(GlobalTestConfiguration.class);

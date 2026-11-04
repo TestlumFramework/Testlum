@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class GoogleCredentialsReader {
+public class OAuthCredentialsReader {
 
     private final FileSearcher fileSearcher;
     private final SystemVariableService systemVariableService;
@@ -23,7 +23,7 @@ public class GoogleCredentialsReader {
 
     public String readRefreshToken(final String fileName) {
         if (StringUtils.isBlank(fileName)) {
-            throw new DefaultFrameworkException("Google credentials file name must not be empty");
+            throw new DefaultFrameworkException("OAuth credentials file name must not be empty");
         }
         String content = readCredentialsFile(fileName);
         String injected = systemVariableService.inject(content);
@@ -33,12 +33,12 @@ public class GoogleCredentialsReader {
 
     private String extractRefreshToken(final Object credentials, final String fileName) {
         if (!(credentials instanceof Map<?, ?> values)) {
-            throw new DefaultFrameworkException("Google credentials file <%s> must contain a JSON object", fileName);
+            throw new DefaultFrameworkException("OAuth credentials file <%s> must contain a JSON object", fileName);
         }
         Object value = values.get("refreshToken");
         if (!(value instanceof String refreshToken) || StringUtils.isBlank(refreshToken)) {
             throw new DefaultFrameworkException(
-                    "Google credentials file <%s> must contain a non-empty string refreshToken", fileName);
+                    "OAuth credentials file <%s> must contain a non-empty string refreshToken", fileName);
         }
         return refreshToken;
     }
@@ -47,7 +47,7 @@ public class GoogleCredentialsReader {
         try {
             return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
         } catch (IOException exception) {
-            throw new DefaultFrameworkException("Cannot read Google credentials file <%s>", fileName);
+            throw new DefaultFrameworkException("Cannot read OAuth credentials file <%s>", fileName);
         }
     }
 
@@ -55,7 +55,7 @@ public class GoogleCredentialsReader {
         try {
             return jacksonService.readValue(content, Object.class);
         } catch (DefaultFrameworkException exception) {
-            throw new DefaultFrameworkException("Google credentials file <%s> must contain valid JSON", fileName);
+            throw new DefaultFrameworkException("OAuth credentials file <%s> must contain valid JSON", fileName);
         }
     }
 }

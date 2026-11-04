@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public abstract class AbstractAuthStrategy implements AuthStrategy {
+public abstract class AbstractAuthStrategy implements AuthenticationStrategy {
 
     protected static final String ALIAS_LOG = LogFormat.table("Alias");
     protected static final String ENDPOINT_LOG = LogFormat.table("Endpoint");

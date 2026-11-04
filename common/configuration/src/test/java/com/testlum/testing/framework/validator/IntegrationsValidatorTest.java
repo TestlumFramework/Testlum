@@ -18,6 +18,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -196,6 +198,75 @@ class IntegrationsValidatorTest {
                     "local", authConfig(google("client", "secret")),
                     "regression", authConfig(jwt("GOOGLE", "http://localhost/login")))));
         }
+    }
+
+    @Nested
+    class ValidateMicrosoftConfiguration {
+        @Test
+        void defaultTenantAndDifferentEnvironmentConfigurationsAreAllowed() {
+            MicrosoftAuthStrategy local = microsoft("local-client", "local-secret", null, "User.Read");
+            MicrosoftAuthStrategy regression = microsoft("ci-client", "ci-secret", "organizations", "Mail.Read");
+            assertEquals("common", local.getTenant());
+            assertDoesNotThrow(() -> validator.validate(Map.of(
+                    "local", authConfig(local), "regression", authConfig(regression))));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"   "})
+        void missingRequiredValuesAreRejectedWithoutExposingSecrets(final String value) {
+            for (String field : java.util.List.of("clientId", "clientSecret", "scope")) {
+                MicrosoftAuthStrategy strategy = microsoft("client", "private-value", "common", "User.Read");
+                if ("clientId".equals(field)) {
+                    strategy.setClientId(value);
+                } else if ("clientSecret".equals(field)) {
+                    strategy.setClientSecret(value);
+                } else {
+                    strategy.setScope(value);
+                }
+                DefaultFrameworkException error = assertThrows(DefaultFrameworkException.class,
+                        () -> validator.validate(Map.of("local", authConfig(strategy))));
+                assertFalse(error.getMessage().contains("private-value"));
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"", "   ", "common/path", "../common", "common?x=1", "tenant name"})
+        void invalidTenantIsRejected(final String tenant) {
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "local", authConfig(microsoft("client", "secret", tenant, "User.Read")))));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"common", "organizations", "consumers", "example.onmicrosoft.com",
+                "12345678-1234-1234-1234-123456789abc"})
+        void supportedTenantFormatsAreAccepted(final String tenant) {
+            assertDoesNotThrow(() -> validator.validate(Map.of(
+                    "local", authConfig(microsoft("client", "secret", tenant, "User.Read")))));
+        }
+
+        @Test
+        void duplicateAliasAndDifferentStrategyTypesAcrossEnvironmentsAreRejected() {
+            MicrosoftAuthStrategy strategy = microsoft("client", "secret", "common", "User.Read");
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "local", authConfig(strategy, jwt("MICROSOFT", "http://localhost/login")))));
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "local", authConfig(strategy),
+                    "regression", authConfig(jwt("MICROSOFT", "http://localhost/login")))));
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "local", authConfig(strategy), "regression", new Integrations())));
+        }
+    }
+
+    private MicrosoftAuthStrategy microsoft(final String clientId, final String clientSecret,
+                                           final String tenant, final String scope) {
+        MicrosoftAuthStrategy strategy = new MicrosoftAuthStrategy();
+        strategy.setAlias("MICROSOFT");
+        strategy.setClientId(clientId);
+        strategy.setClientSecret(clientSecret);
+        strategy.setTenant(tenant);
+        strategy.setScope(scope);
+        return strategy;
     }
 
     private GoogleAuthStrategy google(final String clientId, final String clientSecret) {

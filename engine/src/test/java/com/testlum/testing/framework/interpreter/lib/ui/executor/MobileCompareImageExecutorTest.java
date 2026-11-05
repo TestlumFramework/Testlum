@@ -10,6 +10,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.*;
 import com.testlum.testing.model.scenario.MobileImage;
 import com.testlum.testing.model.scenario.Part;
+import com.testlum.testing.model.scenario.Picture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -210,6 +212,37 @@ class MobileCompareImageExecutorTest {
 
             CommandResult result = new CommandResult();
             assertThrows(DefaultFrameworkException.class, () -> androidExecutor.execute(image, result));
+        }
+
+        @Test
+        void resolvesRelativePictureSrcToFullUrl() throws IOException {
+            BufferedImage testImage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+            File imageFile = File.createTempFile("test-image", ".png");
+            imageFile.deleteOnExit();
+            ImageIO.write(testImage, "png", imageFile);
+            final String fullUrl = imageFile.toURI().toString();
+
+            Picture picture = new Picture();
+            picture.setLocator("testImage");
+            picture.setAttribute("src");
+            MobileImage image = new MobileImage();
+            image.setFile("expected.png");
+            image.setPicture(picture);
+
+            WebElement element = mock(WebElement.class);
+            when(fileSearcher.searchFileFromDir(any(), eq("expected.png"))).thenReturn(imageFile);
+            when(uiUtil.findWebElement(any(), eq("testImage"), any(), any())).thenReturn(element);
+            when(uiUtil.getElementAttribute(eq(element), eq("src"), any()))
+                    .thenReturn("/images/test-image.png");
+            when(uiUtil.getUrl(eq("/images/test-image.png"), any(), any())).thenReturn(fullUrl);
+            when(uiUtil.resolveHostIfNeeded(fullUrl)).thenReturn(fullUrl);
+            when(imageComparator.compare(any(MobileImage.class), any(BufferedImage.class),
+                    any(BufferedImage.class))).thenReturn(mock(ImageComparisonResult.class));
+
+            CommandResult result = new CommandResult();
+            executor.execute(image, result);
+
+            assertEquals(fullUrl, result.getMetadata().get(ResultUtil.URL_TO_ACTUAL_IMAGE));
         }
     }
 

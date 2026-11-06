@@ -91,17 +91,19 @@ public class TestSetCollector {
         List<String> mobileBrowsersAliases = s.isMobileBrowserPresent() ? mobileBrowsers : singletonList(null);
         List<String> nativeAliases = s.isNativePresent() ? nativeDevices : singletonList(null);
         if (!s.isWebPresent() && !s.isMobileBrowserPresent() && !s.isNativePresent()) {
-            return getArgumentsWithoutUiSteps(entry);
+            return getArgumentsWithoutUiSteps(entry, s.variationsFile());
         }
         return nativeAliases.stream().flatMap(nativeAlias ->
                 mobileBrowsersAliases.stream().flatMap(mobileBrowserAlias ->
                         webBrowsersAliases.stream().flatMap(webBrowserAlias ->
-                                getArgumentsWithUiSteps(entry, webBrowserAlias, mobileBrowserAlias, nativeAlias))));
+                                getArgumentsWithUiSteps(entry, webBrowserAlias, mobileBrowserAlias, nativeAlias,
+                                        s.variationsFile()))));
     }
 
-    private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry) {
-        if (variationsExist(entry)) {
-            return getVariationList(entry).stream().map(variations -> getArgumentsWithoutUiSteps(entry, variations));
+    private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry, final String variationsFile) {
+        if (variationsExist(variationsFile)) {
+            return getVariationList(variationsFile).stream()
+                    .map(variations -> getArgumentsWithoutUiSteps(entry, variations));
         }
         return Stream.of(getArgumentsWithoutUiSteps(entry, new HashMap<>()));
     }
@@ -114,9 +116,10 @@ public class TestSetCollector {
     private Stream<Arguments> getArgumentsWithUiSteps(final MappingResult entry,
                                                       final String webBrowserAlias,
                                                       final String mobileBrowserAlias,
-                                                      final String nativeAlias) {
-        if (variationsExist(entry)) {
-            return getVariationList(entry).stream().map(variations ->
+                                                      final String nativeAlias,
+                                                      final String variationsFile) {
+        if (variationsExist(variationsFile)) {
+            return getVariationList(variationsFile).stream().map(variations ->
                     getArgumentsWithUiSteps(entry, webBrowserAlias, mobileBrowserAlias, nativeAlias, variations));
         } else {
             return Stream.of(
@@ -216,12 +219,12 @@ public class TestSetCollector {
         return file.getPath().replace(scenariosFolder.toString(), StringUtils.EMPTY);
     }
 
-    private boolean variationsExist(final MappingResult entry) {
-        return Objects.nonNull(entry.scenario)
-                && StringUtils.isNotBlank(entry.scenario.getSettings().getVariations());
+    private boolean variationsExist(final String variationsFile) {
+        return StringUtils.isNotBlank(variationsFile);
     }
 
-    private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return globalVariationsProvider.getVariations(entry.scenario.getSettings().getVariations());
+    private List<Map<String, String>> getVariationList(final String variationsFile) {
+        globalVariationsProvider.process(variationsFile);
+        return globalVariationsProvider.getVariations(variationsFile);
     }
 }

@@ -5,6 +5,7 @@ import com.testlum.testing.framework.util.ConfigUtil;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.Include;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -89,6 +91,38 @@ class RepeatCommandsRunnerImplTest {
                     .newCommandResultInstance(any(AtomicInteger.class), any(AbstractCommand.class));
             verify(resultUtil).setExecutionResultIfSubCommandsFailed(result);
             assertEquals(2, subResults.size());
+        }
+
+        @Test
+        void executesIncludeCommandInsideRepeat() {
+            final Include include = new Include();
+            include.setScenario("included_folder");
+            final List<AbstractCommand> commands = List.of(include);
+            final CommandResult result = new CommandResult();
+            final CommandResult stepResult = new CommandResult();
+            final InterpreterDependencies dependencies = mock(InterpreterDependencies.class);
+            final AtomicInteger position = new AtomicInteger(0);
+            when(dependencies.getPosition()).thenReturn(position);
+            when(resultUtil.newCommandResultInstance(position, include)).thenReturn(stepResult);
+
+            @SuppressWarnings("unchecked")
+            final AbstractInterpreter<AbstractCommand> interpreter = mock(AbstractInterpreter.class);
+            when(interpreterProvider.getAppropriateInterpreter(include, dependencies)).thenReturn(interpreter);
+
+            final ApplicationContext ctx = mock(ApplicationContext.class);
+            final AutowireCapableBeanFactory beanFactory = mock(AutowireCapableBeanFactory.class);
+            when(ctx.getAutowireCapableBeanFactory()).thenReturn(beanFactory);
+            when(dependencies.getContext()).thenReturn(ctx);
+
+            final List<CommandResult> subResults = new ArrayList<>();
+            runner.runCommands(commands, dependencies, result, subResults);
+
+            verify(interpreterProvider).getAppropriateInterpreter(include, dependencies);
+            verify(beanFactory).autowireBean(interpreter);
+            verify(interpreter).apply(include, stepResult);
+            verify(resultUtil).setExecutionResultIfSubCommandsFailed(result);
+            assertEquals(1, subResults.size());
+            assertSame(stepResult, subResults.get(0));
         }
 
         @Test

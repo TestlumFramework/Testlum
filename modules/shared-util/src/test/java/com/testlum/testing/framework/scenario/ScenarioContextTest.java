@@ -100,6 +100,15 @@ class ScenarioContextTest {
         }
 
         @Test
+        void injectReplacesPlaceholdersWithSurroundingSpaces() {
+            context.set("name", "John");
+            assertEquals("Hello John",
+                    context.inject("Hello {{ name }}"));
+            assertEquals("Hello John",
+                    context.inject("Hello {{  name  }}"));
+        }
+
+        @Test
         void injectReplacesMultiplePlaceholders() {
             context.set("first", "A");
             context.set("second", "B");

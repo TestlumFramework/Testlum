@@ -1,10 +1,11 @@
 package com.testlum.testing.framework.vault;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.exception.VaultUnavailableException;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.global_config.Vault;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@RequiredArgsConstructor
 @Service
 public class VaultService {
 
@@ -29,10 +29,22 @@ public class VaultService {
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
     private final VaultTemplate template;
+    private final String vaultUri;
+
+    public VaultService(final VaultTemplate template) {
+        this(template, null);
+    }
+
+    public VaultService(final VaultTemplate template, final String vaultUri) {
+        this.template = template;
+        this.vaultUri = vaultUri;
+    }
 
     public VaultService(final GlobalTestConfiguration configuration) {
         Vault vault = getVaultOrThrow(configuration);
-        this.template = new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));
+        VaultEndpoint endpoint = vaultEndpoint(vault);
+        this.template = new VaultTemplate(endpoint, new TokenAuthentication(vault.getToken()));
+        this.vaultUri = endpoint.toString();
     }
 
     private Vault getVaultOrThrow(final GlobalTestConfiguration configuration) {
@@ -97,7 +109,7 @@ public class VaultService {
     }
 
     private String getValue(final String vaultKey, final String path, final String key) {
-        VaultResponse response = template.read(path);
+        VaultResponse response = readPath(path);
         if (response == null) {
             throw new DefaultFrameworkException("No data found for path: %s", vaultKey);
         }
@@ -108,6 +120,18 @@ public class VaultService {
                 .map(VaultDto::getValue)
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException("No such key in Vault: %s", key));
+    }
+
+    private VaultResponse readPath(final String path) {
+        try {
+            return template.read(path);
+        } catch (Exception e) {
+            String reason = StringUtils.defaultIfBlank(e.getMessage(), e.getClass().getSimpleName());
+            String message = StringUtils.isNotBlank(vaultUri)
+                    ? String.format(ExceptionMessage.VAULT_UNAVAILABLE_AT, vaultUri, reason)
+                    : String.format(ExceptionMessage.VAULT_UNAVAILABLE, reason);
+            throw new VaultUnavailableException(message, e);
+        }
     }
 
     @Data

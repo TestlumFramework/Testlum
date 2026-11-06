@@ -208,4 +208,9 @@ public class ExceptionMessage {
     public static final String REPEAT_TYPE_IS_NOT_PROVIDED = """
             <repeat> must specify either 'times' or 'variations'.
             Use 'times' to run the commands a fixed number of times, or 'variations' to run them once per variation""";
+
+    public static final String VAULT_UNAVAILABLE_AT =
+            "Vault is unavailable at [%s]. Connection could not be established: %s";
+    public static final String VAULT_UNAVAILABLE =
+            "Vault is unavailable. Connection could not be established: %s";
 }

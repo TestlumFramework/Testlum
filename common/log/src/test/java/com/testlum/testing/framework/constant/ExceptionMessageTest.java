@@ -220,5 +220,19 @@ class ExceptionMessageTest {
             String result = String.format(ExceptionMessage.DB_NOT_SUPPORTED, "CouchDB");
             assertEquals("Database by name CouchDB not supported", result);
         }
+
+        @Test
+        void formatVaultUnavailableAt() {
+            String result = String.format(ExceptionMessage.VAULT_UNAVAILABLE_AT,
+                    "http://localhost:8200", "Connection refused");
+            assertEquals("Vault is unavailable at [http://localhost:8200]. "
+                    + "Connection could not be established: Connection refused", result);
+        }
+
+        @Test
+        void formatVaultUnavailable() {
+            String result = String.format(ExceptionMessage.VAULT_UNAVAILABLE, "Connection refused");
+            assertEquals("Vault is unavailable. Connection could not be established: Connection refused", result);
+        }
     }
 }

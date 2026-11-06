@@ -12,6 +12,7 @@ import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLParsers;
 import com.testlum.testing.model.global_config.AbstractBrowser;
 import com.testlum.testing.model.global_config.Environment;
+import com.testlum.testing.model.scenario.Include;
 import com.testlum.testing.model.scenario.Scenario;
 import com.testlum.testing.model.scenario.Settings;
 import com.testlum.testing.model.scenario.Web;
@@ -31,8 +32,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link TestSetCollector} verifying test set collection,
@@ -256,6 +256,40 @@ class TestSetCollectorTest {
 
             // 2 variations x 1 environment = 2
             assertEquals(2, argumentsList.size());
+        }
+
+        @Test
+        void expandsScenarioByVariationsOfIncludedScenario() {
+            File includedFile = new File("/scenarios/included/scenario.xml");
+            Scenario included = createScenarioWithSettings();
+            included.getSettings().setVariations("vars.csv");
+            final MappingResult includedEntry = new MappingResult(includedFile, included, null);
+
+            Include include = new Include();
+            include.setScenario("included");
+            Scenario main = createScenarioWithSettings();
+            main.getCommands().add(include);
+            MappingResult mainEntry = new MappingResult(new File("/scenarios/main/scenario.xml"), main, null);
+
+            ScenarioCollector.Result collectorResult = new ScenarioCollector.Result();
+            collectorResult.add(mainEntry);
+            collectorResult.add(includedEntry);
+
+            when(scenarioCollector.collect()).thenReturn(collectorResult);
+            when(scenarioFilter.filterScenarios(collectorResult)).thenReturn(List.of(mainEntry));
+            when(testResourceSettings.getScenariosFolder()).thenReturn(new File("/scenarios"));
+            when(fileSearcher.searchFileFromDir(new File("/scenarios", "included"),
+                    TestResourceSettings.SCENARIO_FILENAME)).thenReturn(includedFile);
+
+            Map<String, String> v1 = Map.of("user", "alice");
+            Map<String, String> v2 = Map.of("user", "bob");
+            when(globalVariationsProvider.getVariations("vars.csv")).thenReturn(List.of(v1, v2));
+
+            List<Arguments> argumentsList = testSetCollector.collect().toList();
+
+            // 2 variations of the included scenario x 1 environment = 2
+            assertEquals(2, argumentsList.size());
+            verify(globalVariationsProvider).process("vars.csv");
         }
     }
 

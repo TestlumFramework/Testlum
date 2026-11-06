@@ -30,9 +30,11 @@ public class ScenarioStepReader {
                        final Map<File, Scenario> parsedScenarios) {
         ScanContext context = new ScanContext(scenarioFile, parsedScenarios);
         context.visited.add(scenarioFile);
-        collectVariations(context, scenarioVariations(scenario));
+        context.variationsFile = scenarioVariations(scenario);
+        collectVariations(context, context.variationsFile);
         walk(scenario.getCommands(), context);
-        return new Result(context.isWebPresent, context.isMobileBrowserPresent, context.isNativePresent);
+        return new Result(context.isWebPresent, context.isMobileBrowserPresent, context.isNativePresent,
+                context.variationsFile);
     }
 
     private String scenarioVariations(final Scenario scenario) {
@@ -42,7 +44,7 @@ public class ScenarioStepReader {
 
     private void walk(final List<AbstractCommand> commands, final ScanContext context) {
         for (AbstractCommand command : commands) {
-            if (context.isAllTypesAlreadyFound()) {
+            if (context.isScanComplete()) {
                 return;
             }
             walkCommand(command, context);
@@ -73,9 +75,19 @@ public class ScenarioStepReader {
     private void walkInclude(final Include include, final ScanContext context) {
         for (File includedFile : resolveIncludedFiles(include, context)) {
             if (context.visited.add(includedFile)) {
-                loadScenario(includedFile, context)
-                        .ifPresent(included -> walk(included.getCommands(), context));
+                loadScenario(includedFile, context).ifPresent(included -> walkIncluded(included, context));
             }
+        }
+    }
+
+    private void walkIncluded(final Scenario included, final ScanContext context) {
+        inheritVariations(included, context);
+        walk(included.getCommands(), context);
+    }
+
+    private void inheritVariations(final Scenario included, final ScanContext context) {
+        if (StringUtils.isBlank(context.variationsFile)) {
+            context.variationsFile = scenarioVariations(included);
         }
     }
 
@@ -153,7 +165,8 @@ public class ScenarioStepReader {
         }
     }
 
-    public record Result(boolean isWebPresent, boolean isMobileBrowserPresent, boolean isNativePresent) {
+    public record Result(boolean isWebPresent, boolean isMobileBrowserPresent, boolean isNativePresent,
+                         String variationsFile) {
     }
 
     @RequiredArgsConstructor
@@ -166,9 +179,11 @@ public class ScenarioStepReader {
         private boolean isWebPresent;
         private boolean isMobileBrowserPresent;
         private boolean isNativePresent;
+        private String variationsFile;
 
-        private boolean isAllTypesAlreadyFound() {
-            return this.isWebPresent && this.isMobileBrowserPresent && this.isNativePresent;
+        private boolean isScanComplete() {
+            return this.isWebPresent && this.isMobileBrowserPresent && this.isNativePresent
+                    && StringUtils.isNotBlank(this.variationsFile);
         }
     }
 }

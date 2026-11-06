@@ -14,8 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -52,9 +51,13 @@ class ScenarioStepReaderTest {
     }
 
     private Scenario scenarioWithVariations(final AbstractCommand... commands) {
+        return scenarioWithVariationsFile(VARIATIONS_FILE, commands);
+    }
+
+    private Scenario scenarioWithVariationsFile(final String variationsFile, final AbstractCommand... commands) {
         Scenario scenario = scenario(commands);
         Settings settings = mock(Settings.class);
-        when(settings.getVariations()).thenReturn(VARIATIONS_FILE);
+        when(settings.getVariations()).thenReturn(variationsFile);
         when(scenario.getSettings()).thenReturn(settings);
         return scenario;
     }
@@ -254,6 +257,64 @@ class ScenarioStepReaderTest {
             scan(scenario(include("login"), include("login")));
 
             verify(scenarioParser, times(1)).process(includedFile);
+        }
+    }
+
+    @Nested
+    class VariationsFile {
+
+        @Test
+        void shouldReturnOwnVariationsFile() {
+            assertEquals(VARIATIONS_FILE, scan(scenarioWithVariations()).variationsFile());
+        }
+
+        @Test
+        void shouldReturnNullWhenNoVariationsDeclared() {
+            assertNull(scan(scenario()).variationsFile());
+        }
+
+        @Test
+        void shouldInheritVariationsFileFromIncludedScenario() {
+            indexedInclude("login", scenarioWithVariations());
+
+            assertEquals(VARIATIONS_FILE, scan(scenario(include("login"))).variationsFile());
+        }
+
+        @Test
+        void shouldInheritVariationsFileFromNestedInclude() {
+            indexedInclude("inner", scenarioWithVariations());
+            indexedInclude("outer", scenario(include("inner")));
+
+            assertEquals(VARIATIONS_FILE, scan(scenario(include("outer"))).variationsFile());
+        }
+
+        @Test
+        void shouldPreferOwnVariationsFileOverIncludedOne() {
+            indexedInclude("login", scenarioWithVariationsFile("included.csv"));
+
+            ScenarioStepReader.Result result = scan(scenarioWithVariations(include("login")));
+
+            assertEquals(VARIATIONS_FILE, result.variationsFile());
+        }
+
+        @Test
+        void shouldTakeFirstVariationsFileOfSeveralIncludes() {
+            indexedInclude("first", scenarioWithVariationsFile("first.csv"));
+            indexedInclude("second", scenarioWithVariationsFile("second.csv"));
+
+            ScenarioStepReader.Result result = scan(scenario(include("first"), include("second")));
+
+            assertEquals("first.csv", result.variationsFile());
+        }
+
+        @Test
+        void shouldFindVariationsFileOfIncludeAfterAllUiTypesWereFound() {
+            indexedInclude("login", scenarioWithVariations());
+
+            ScenarioStepReader.Result result = scan(
+                    scenario(mock(Web.class), mock(Mobilebrowser.class), mock(Native.class), include("login")));
+
+            assertEquals(VARIATIONS_FILE, result.variationsFile());
         }
     }
 

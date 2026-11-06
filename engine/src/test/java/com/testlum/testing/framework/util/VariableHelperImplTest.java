@@ -824,4 +824,154 @@ class VariableHelperImplTest {
             assertEquals("second", value);
         }
     }
+
+    @Nested
+    class GetDateResultTests {
+
+        @Test
+        void getDateResultWithNow12HourPatternHh() {
+            FromDate fromDate = new FromDate();
+            fromDate.setNow(new Now());
+            fromDate.setFormat("hh:mm");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "var12", result);
+
+            assertNotNull(value);
+            assertTrue(value.matches("^\\d{2}:\\d{2}$"), "Should match hh:mm format, got: " + value);
+        }
+
+        @Test
+        void getDateResultWithNowFull12HourPatternWithAmPm() {
+            FromDate fromDate = new FromDate();
+            fromDate.setNow(new Now());
+            fromDate.setFormat("yyyy-MM-dd hh:mm:ss a");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "var12Full", result);
+
+            assertNotNull(value);
+            assertTrue(value.matches("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} (AM|PM)$"),
+                    "Should match 12-hour format with AM/PM, got: " + value);
+        }
+
+        @Test
+        void getDateResultWithNow12HourPatternVariants() {
+            FromDate fromDate = new FromDate();
+            fromDate.setNow(new Now());
+            CommandResult result = new CommandResult();
+
+            fromDate.setFormat("hh:mm:ss a");
+            String v1 = variableHelper.getDateResult(fromDate, "v1", result);
+            assertTrue(v1.matches("^\\d{2}:\\d{2}:\\d{2} (AM|PM)$"), "Got: " + v1);
+
+            fromDate.setFormat("hh");
+            String v2 = variableHelper.getDateResult(fromDate, "v2", result);
+            assertTrue(v2.matches("^\\d{2}$"), "Got: " + v2);
+
+            fromDate.setFormat("h:m a");
+            String v3 = variableHelper.getDateResult(fromDate, "v3", result);
+            assertTrue(v3.matches("^\\d{1,2}:\\d{1,2} (AM|PM)$"), "Got: " + v3);
+        }
+
+        @Test
+        void getDateResultWithNow24HourPatternHH() {
+            FromDate fromDate = new FromDate();
+            fromDate.setNow(new Now());
+            fromDate.setFormat("HH:mm");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "var24", result);
+
+            assertNotNull(value);
+            assertTrue(value.matches("^\\d{2}:\\d{2}$"), "Should match HH:mm, got: " + value);
+        }
+
+        @Test
+        void getDateResultWithConstant12HourPattern() {
+            FromDate fromDate = new FromDate();
+            FromDateConstant constant = new FromDateConstant();
+            constant.setValue("03:30");
+            fromDate.setConstant(constant);
+            fromDate.setFormat("hh:mm");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "const12", result);
+
+            assertEquals("03:30", value);
+        }
+
+        @Test
+        void getDateResultWithConstant12HourFullPatternWithAmPm() {
+            FromDate fromDate = new FromDate();
+            FromDateConstant constant = new FromDateConstant();
+            constant.setValue("2026-10-21 03:30:00 PM");
+            fromDate.setConstant(constant);
+            fromDate.setFormat("yyyy-MM-dd hh:mm:ss a");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "const12Full", result);
+
+            assertEquals("2026-10-21 03:30:00 PM", value);
+        }
+
+        @Test
+        void getDateResultWithConstant12HourAmPm() {
+            FromDate fromDate = new FromDate();
+            FromDateConstant constant = new FromDateConstant();
+            constant.setValue("03:30 PM");
+            fromDate.setConstant(constant);
+            fromDate.setFormat("hh:mm a");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "const12AmPm", result);
+
+            assertEquals("03:30 PM", value);
+        }
+
+        @Test
+        void getDateResultWithConstant24HourPattern() {
+            FromDate fromDate = new FromDate();
+            FromDateConstant constant = new FromDateConstant();
+            constant.setValue("15:30");
+            fromDate.setConstant(constant);
+            fromDate.setFormat("HH:mm");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "const24", result);
+
+            assertEquals("15:30", value);
+        }
+
+        @Test
+        void getDateResultWithDateShift12HourPattern() {
+            FromDate fromDate = new FromDate();
+            DateShift shift = new DateShift();
+            shift.setUnit(DateUnit.HOURS);
+            shift.setValue("2");
+            fromDate.setBeforeNow(shift);
+            fromDate.setFormat("hh:mm a");
+            CommandResult result = new CommandResult();
+
+            String value = variableHelper.getDateResult(fromDate, "shift12", result);
+
+            assertNotNull(value);
+            assertTrue(value.matches("^\\d{2}:\\d{2} (AM|PM)$"), "Got: " + value);
+        }
+
+        @Test
+        void getDateResultWithInvalidPatternThrowsException() {
+            FromDate fromDate = new FromDate();
+            fromDate.setNow(new Now());
+            CommandResult result = new CommandResult();
+
+            fromDate.setFormat("yyyy-MM-dd qq:mm");
+            assertThrows(DefaultFrameworkException.class,
+                    () -> variableHelper.getDateResult(fromDate, "err", result));
+
+            fromDate.setFormat("yyyy-MM-dd 12:30");
+            assertThrows(DefaultFrameworkException.class,
+                    () -> variableHelper.getDateResult(fromDate, "err", result));
+        }
+    }
 }

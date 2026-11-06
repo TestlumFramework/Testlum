@@ -1,7 +1,7 @@
 package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.auth.AuthFactory;
-import com.testlum.testing.framework.auth.AuthStrategy;
+import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -24,7 +24,7 @@ public class LogoutInterpreter extends AbstractInterpreter<Logout> {
     protected void acceptImpl(final Logout o, final CommandResult result) {
         try {
             Logout logout = injectCommand(o);
-            AuthStrategy authStrategy = authFactory.create(dependencies, logout.getAlias());
+            AuthenticationStrategy authStrategy = authFactory.create(dependencies, logout.getAlias());
             authStrategy.logout();
         } finally {
             dependencies.clearAuthorization();

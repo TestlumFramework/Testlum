@@ -1,11 +1,14 @@
 package com.testlum.testing.framework.scenario;
 
+import com.testlum.testing.framework.util.TokenMasker;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +25,8 @@ public class ScenarioContext {
 
     private final Map<String, String> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
+    private final Map<String, String> authVariables = new HashMap<>();
+    private final Set<String> secretValues = new LinkedHashSet<>();
 
     public ScenarioContext(final Map<String, String> contextMap) {
         this.contextMap = new LinkedHashMap<>(contextMap);
@@ -30,7 +35,7 @@ public class ScenarioContext {
     public Map.Entry<String, String> getBody() {
         Map.Entry<String, String> lastEntryFromLinkedHashMap = getLastEntryFromLinkedHashMap(contextMap);
         if (lastEntryFromLinkedHashMap == null) {
-            throw new IllegalArgumentException(String.format(NO_VALUES_FOUND_IN_CONTEXT, contextMap));
+            throw new IllegalArgumentException(String.format(NO_VALUES_FOUND_IN_CONTEXT, contextMap.keySet()));
         }
         return lastEntryFromLinkedHashMap;
     }
@@ -47,16 +52,65 @@ public class ScenarioContext {
         contextMap.put(key, value);
     }
 
+    public void setVariable(final String key, final String value) {
+        if (authVariables.containsKey(key) || containsSecret(value)) {
+            authVariables.put(key, value);
+        } else {
+            set(key, value);
+        }
+    }
+
+    public void setAuthToken(final String key, final String token) {
+        if (StringUtils.isBlank(key) || containsKey(key)) {
+            throw new IllegalArgumentException("Auth token variable must have an unused nonblank name");
+        }
+        if (StringUtils.isBlank(token)) {
+            throw new IllegalArgumentException("Auth strategy did not provide an access token");
+        }
+        registerSecret(token);
+        authVariables.put(key, token);
+    }
+
+    public void clearAuthVariables() {
+        authVariables.clear();
+    }
+
+    private boolean containsSecret(final String value) {
+        return value != null && secretValues.stream().anyMatch(value::contains);
+    }
+
+    private void registerSecret(final String value) {
+        if (StringUtils.isNotEmpty(value)) {
+            secretValues.add(value);
+            secretValues.add(StringEscapeUtils.escapeJson(value));
+        }
+    }
+
+    public String redact(final String value) {
+        if (value == null || secretValues.isEmpty()) {
+            return value;
+        }
+        String redacted = value;
+        for (String secret : secretValues.stream().sorted((left, right) -> right.length() - left.length()).toList()) {
+            redacted = redacted.replace(secret, TokenMasker.mask(secret));
+        }
+        return redacted;
+    }
+
     public boolean containsKey(final String key) {
-        return contextMap.containsKey(key) || conditionMap.containsKey(key);
+        return authVariables.containsKey(key) || contextMap.containsKey(key) || conditionMap.containsKey(key);
     }
 
     public String get(final String key) {
+        if (authVariables.containsKey(key)) {
+            return authVariables.get(key);
+        }
         String result = contextMap.get(key);
         if (result == null) {
             result = String.valueOf(conditionMap.get(key));
             if (result == null || "null".equals(result)) {
-                throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, contextMap));
+                throw new IllegalArgumentException(redact(String.format(NO_VALUE_FOUND_FOR_KEY,
+                        key, contextMap.keySet())));
             }
         }
         return result;

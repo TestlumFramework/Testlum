@@ -50,7 +50,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private void setContextVariable(final Var var, final CommandResult result) {
         String value = getValueForContext(var, result);
-        dependencies.getScenarioContext().set(var.getName(), value);
+        dependencies.getScenarioContext().setVariable(var.getName(), value);
         logVarInfo(var.getName(), value);
     }
 
@@ -98,6 +98,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private void logVarInfo(final String name, final String value) {
         log.info(NAME_LOG, name);
-        log.info(VALUE_LOG, stringPrettifier.cut(value));
+        log.info(VALUE_LOG, stringPrettifier.cut(dependencies.getScenarioContext().redact(value)));
     }
 }

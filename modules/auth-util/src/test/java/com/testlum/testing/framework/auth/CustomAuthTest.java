@@ -32,7 +32,7 @@ class CustomAuthTest {
     private InterpreterDependencies dependencies;
     private RestTemplate restTemplate;
     private CustomAuthStrategy configuration;
-    private AuthStrategy strategy;
+    private AuthenticationStrategy strategy;
     private Auth command;
 
     @BeforeEach

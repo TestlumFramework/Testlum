@@ -102,4 +102,15 @@ class InterpreterDependenciesTest {
         assertTrue(dependencies.isAuthBlockActive());
         assertDoesNotThrow(dependencies::clearAuthorization);
     }
+
+    @Test
+    void clearAuthorizationRemovesTokenVariableAndCopies() {
+        ScenarioContext context = new ScenarioContext(Map.of());
+        InterpreterDependencies dependencies = InterpreterDependencies.builder().scenarioContext(context).build();
+        context.setAuthToken("googleToken", "provider-secret");
+        context.setVariable("copy", "Bearer provider-secret");
+        dependencies.clearAuthorization();
+        assertFalse(context.containsKey("googleToken"));
+        assertFalse(context.containsKey("copy"));
+    }
 }

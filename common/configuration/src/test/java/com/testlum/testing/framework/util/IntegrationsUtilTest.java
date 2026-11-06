@@ -7,6 +7,8 @@ import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.global_config.AuthStrategy;
 import com.testlum.testing.model.global_config.AuthStrategies;
 import com.testlum.testing.model.global_config.BasicAuthStrategy;
+import com.testlum.testing.model.global_config.GoogleAuthStrategy;
+import com.testlum.testing.model.global_config.MicrosoftAuthStrategy;
 import com.testlum.testing.model.global_config.JwtAuthStrategy;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.model.global_config.Apis;
@@ -149,6 +151,43 @@ class IntegrationsUtilTest {
 
     @Nested
     class FindAuthStrategy {
+        @Test
+        void resolvesMicrosoftFromSelectedEnvironmentAndChecksRequestedType() {
+            MicrosoftAuthStrategy local = new MicrosoftAuthStrategy();
+            local.setAlias("MICROSOFT");
+            local.setClientId("local-client");
+            MicrosoftAuthStrategy regression = new MicrosoftAuthStrategy();
+            regression.setAlias("MICROSOFT");
+            regression.setClientId("regression-client");
+            IntegrationsUtil util = new IntegrationsUtil(new EnvToIntegrationMap(Map.of(
+                    "local", authRegistry(local), "regression", authRegistry(regression))));
+            assertSame(local, util.findAuthStrategy(MicrosoftAuthStrategy.class,
+                    new AliasEnv("MICROSOFT", "local")));
+            assertSame(regression, util.findAuthStrategy(AuthStrategy.class,
+                    new AliasEnv("MICROSOFT", "regression")));
+            assertThrows(DefaultFrameworkException.class, () -> util.findAuthStrategy(GoogleAuthStrategy.class,
+                    new AliasEnv("MICROSOFT", "local")));
+        }
+
+        @Test
+        void resolvesGoogleFromSelectedEnvironmentWithItsOwnClientConfiguration() {
+            GoogleAuthStrategy local = new GoogleAuthStrategy();
+            local.setAlias("GOOGLE");
+            local.setClientId("local-client");
+            local.setClientSecret("local-secret");
+            GoogleAuthStrategy regression = new GoogleAuthStrategy();
+            regression.setAlias("GOOGLE");
+            regression.setClientId("regression-client");
+            regression.setClientSecret("regression-secret");
+            IntegrationsUtil util = new IntegrationsUtil(new EnvToIntegrationMap(Map.of(
+                    "local", authRegistry(local), "regression", authRegistry(regression))));
+
+            assertSame(local, util.findAuthStrategy(GoogleAuthStrategy.class, new AliasEnv("GOOGLE", "local")));
+            assertSame(regression, util.findAuthStrategy(AuthStrategy.class, new AliasEnv("GOOGLE", "regression")));
+            assertThrows(DefaultFrameworkException.class,
+                    () -> util.findAuthStrategy(BasicAuthStrategy.class, new AliasEnv("GOOGLE", "local")));
+        }
+
         @Test
         void resolvesAliasFromSelectedEnvironment() {
             BasicAuthStrategy dev = basic("BASIC");

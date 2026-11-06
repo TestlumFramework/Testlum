@@ -6,6 +6,8 @@ import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.model.global_config.BasicAuthStrategy;
 import com.testlum.testing.model.global_config.JwtAuthStrategy;
 import com.testlum.testing.model.global_config.CustomAuthStrategy;
+import com.testlum.testing.model.global_config.GoogleAuthStrategy;
+import com.testlum.testing.model.global_config.MicrosoftAuthStrategy;
 import com.testlum.testing.framework.env.AliasEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -50,6 +52,22 @@ class AuthFactoryTest {
         void createsJwtAuthStrategy() {
             mockConfiguration("JWT", new JwtAuthStrategy());
             assertInstanceOf(JwtAuth.class, authFactory.create(dependencies, "JWT"));
+        }
+
+        @Test
+        void createsGoogleAuthStrategy() {
+            mockConfiguration("GOOGLE", new GoogleAuthStrategy());
+            when(context.getBean(OAuthCredentialsReader.class)).thenReturn(mock(OAuthCredentialsReader.class));
+            when(context.getBean(GoogleTokenClient.class)).thenReturn(mock(GoogleTokenClient.class));
+            assertInstanceOf(GoogleAuth.class, authFactory.create(dependencies, "GOOGLE"));
+        }
+
+        @Test
+        void createsMicrosoftAuthStrategy() {
+            mockConfiguration("MICROSOFT", new MicrosoftAuthStrategy());
+            when(context.getBean(OAuthCredentialsReader.class)).thenReturn(mock(OAuthCredentialsReader.class));
+            when(context.getBean(MicrosoftTokenClient.class)).thenReturn(mock(MicrosoftTokenClient.class));
+            assertInstanceOf(MicrosoftAuth.class, authFactory.create(dependencies, "MICROSOFT"));
         }
 
         @Test

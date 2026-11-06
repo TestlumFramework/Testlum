@@ -30,7 +30,9 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     JwtAuthStrategy.class,
     BasicAuthStrategy.class,
-    CustomAuthStrategy.class
+    CustomAuthStrategy.class,
+    GoogleAuthStrategy.class,
+    MicrosoftAuthStrategy.class
 })
 public abstract class AuthStrategy {
 

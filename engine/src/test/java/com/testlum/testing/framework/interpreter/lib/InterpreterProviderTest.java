@@ -3,12 +3,14 @@ package com.testlum.testing.framework.interpreter.lib;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.interpreter.IncludeInterpreter;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.Include;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -123,6 +125,26 @@ class InterpreterProviderTest {
 
             assertNotNull(result);
             assertInstanceOf(GoodInterpreter.class, result);
+        }
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        @Test
+        void returnsIncludeInterpreterForIncludeCommand() {
+            final CommandToInterpreterClassMap map = new CommandToInterpreterClassMap();
+            map.put(Include.class, (Class) IncludeInterpreter.class);
+            when(scanner.getInterpreters()).thenReturn(map);
+            provider.init();
+
+            final Include include = new Include();
+            InterpreterDependencies deps = createMockDependencies();
+            when(deps.getContext().getBean(IncludedScenarioRunner.class))
+                    .thenReturn(mock(IncludedScenarioRunner.class));
+
+            AbstractInterpreter<AbstractCommand> result =
+                    provider.getAppropriateInterpreter(include, deps);
+
+            assertNotNull(result);
+            assertInstanceOf(IncludeInterpreter.class, result);
         }
     }
 

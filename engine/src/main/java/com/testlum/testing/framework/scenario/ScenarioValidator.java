@@ -278,7 +278,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVarCommand(xmlFile, var.getFile(), var.getSql());
         });
         map.put(o -> o instanceof Repeat, (xmlFile, command) ->
-                validateRepeatCommand(xmlFile, ((Repeat) command).getVariations()));
+                validateRepeat(xmlFile, (Repeat) command));
     }
 
     private void registerUiValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {
@@ -645,6 +645,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         List<String> shellFiles = shell.getShellFile();
         if (!shellFiles.isEmpty()) {
             shellFiles.forEach(this::validateFileExistenceInDataFolder);
+        }
+    }
+
+    private void validateRepeat(final File xmlFile, final Repeat repeat) {
+        validateRepeatCommand(xmlFile, repeat.getVariations());
+        if (Objects.nonNull(repeat.getCommands())) {
+            repeat.getCommands().forEach(subCommand -> validateCommand(subCommand, xmlFile));
         }
     }
 

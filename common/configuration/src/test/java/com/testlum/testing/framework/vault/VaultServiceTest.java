@@ -1,11 +1,14 @@
 package com.testlum.testing.framework.vault;
 
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.testlum.testing.model.global_config.Vault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.support.VaultResponse;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Map;
 
@@ -77,6 +80,53 @@ class VaultServiceTest {
             when(vaultTemplate.read("secret/app")).thenReturn(response);
             assertThrows(DefaultFrameworkException.class,
                     () -> vaultService.inject("{{secret/app.missing}}"));
+        }
+
+        @Test
+        void throwsWhenVaultUnavailableWithEndpoint() {
+            final VaultService serviceWithUri = new VaultService(vaultTemplate, "http://localhost:8200");
+            when(vaultTemplate.read("secret/app")).thenThrow(
+                    new ResourceAccessException("Connection refused"));
+
+            DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                    () -> serviceWithUri.inject("{{secret/app.key}}"));
+
+            assertTrue(exception.getMessage().contains("Vault is unavailable at [http://localhost:8200]"));
+            assertTrue(exception.getMessage().contains("Connection could not be established: Connection refused"));
+            assertInstanceOf(ResourceAccessException.class, exception.getCause());
+        }
+
+        @Test
+        void throwsWhenVaultUnavailableWithoutEndpoint() {
+            when(vaultTemplate.read("secret/app")).thenThrow(
+                    new ResourceAccessException("Connection refused"));
+
+            DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                    () -> vaultService.inject("{{secret/app.key}}"));
+
+            assertTrue(exception.getMessage().startsWith("Vault is unavailable. Connection could not be established"));
+            assertTrue(exception.getMessage().contains("Connection refused"));
+            assertInstanceOf(ResourceAccessException.class, exception.getCause());
+        }
+
+        @Test
+        void constructorWithConfigurationSetsVaultUri() {
+            final GlobalTestConfiguration config = new GlobalTestConfiguration();
+            final Vault vault = new Vault();
+            vault.setHost("vault.example.com");
+            vault.setPort(8200);
+            vault.setScheme("https");
+            vault.setToken("my-token");
+            config.setVault(vault);
+
+            VaultService configuredService = new VaultService(config);
+            assertNotNull(configuredService);
+        }
+
+        @Test
+        void throwsWhenVaultNullInConfiguration() {
+            final GlobalTestConfiguration config = new GlobalTestConfiguration();
+            assertThrows(DefaultFrameworkException.class, () -> new VaultService(config));
         }
     }
 

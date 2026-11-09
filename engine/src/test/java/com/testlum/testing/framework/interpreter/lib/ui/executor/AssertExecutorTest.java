@@ -43,6 +43,8 @@ class AssertExecutorTest {
     @Mock
     private JacksonService jacksonService;
     @Mock
+    private ScenarioInjectionUtil scenarioInjectionUtil;
+    @Mock
     private WebDriver driver;
     @Mock
     private ScenarioContext scenarioContext;
@@ -68,6 +70,10 @@ class AssertExecutorTest {
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "stringPrettifier", stringPrettifier);
         ReflectionTestUtils.setField(executor, "jacksonService", jacksonService);
+        ReflectionTestUtils.setField(executor, "scenarioInjectionUtil", scenarioInjectionUtil);
+        lenient().when(jacksonService.deepCopy(any(), any())).thenAnswer(inv -> inv.getArgument(0));
+        lenient().when(scenarioInjectionUtil.injectObject(any(), eq(scenarioContext)))
+                .thenAnswer(inv -> inv.getArgument(0));
         lenient().when(stringPrettifier.prettify(anyString())).thenAnswer(inv -> inv.getArgument(0));
     }
 
@@ -655,6 +661,25 @@ class AssertExecutorTest {
 
             assertNotNull(result.getSubCommandsResult());
             assertTrue(result.getSubCommandsResult().isEmpty());
+        }
+    }
+
+    @Nested
+    class ConditionBeforeInjection {
+
+        @Test
+        void doesNotInjectSubCommandWhenConditionIsFalse() {
+            WebAssert webAssert = new WebAssert();
+            AssertEqual assertEqual = new AssertEqual();
+            assertEqual.getContent().addAll(List.of("${missing}", "value"));
+            webAssert.getAttributeOrTitleOrEqual().add(assertEqual);
+            CommandResult subResult = new CommandResult();
+            when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
+            when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(subResult))).thenReturn(false);
+
+            assertDoesNotThrow(() -> executor.execute(webAssert, new CommandResult()));
+
+            verifyNoInteractions(scenarioInjectionUtil);
         }
     }
 }

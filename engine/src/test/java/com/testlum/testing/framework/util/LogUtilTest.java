@@ -178,14 +178,12 @@ class LogUtilTest {
         @Test
         void logsUiCommandWithPosition() {
             final AbstractCommand command = mock(AbstractCommand.class);
-            when(command.getComment()).thenReturn(null);
             assertDoesNotThrow(() -> uiLogUtil.logUICommand(1, command));
         }
 
         @Test
         void logsUiCommandWithZeroPosition() {
             final AbstractCommand command = mock(AbstractCommand.class);
-            when(command.getComment()).thenReturn(null);
             assertDoesNotThrow(() -> uiLogUtil.logUICommand(0, command));
         }
 
@@ -193,7 +191,7 @@ class LogUtilTest {
         void logsUiCommandWithComment() {
             final AbstractCommand command = mock(AbstractCommand.class);
             when(command.getComment()).thenReturn("my comment");
-            assertDoesNotThrow(() -> uiLogUtil.logUICommand(3, command));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommandDetails(command));
         }
 
         @Test
@@ -201,14 +199,14 @@ class LogUtilTest {
             final Click click = new Click();
             click.setLocator("myLocator");
             click.setComment("click comment");
-            assertDoesNotThrow(() -> uiLogUtil.logUICommand(5, click));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommandDetails(click));
         }
 
         @Test
         void logsUiCommandWithCommandWithLocatorAndNoComment() {
             final Click click = new Click();
             click.setLocator("loc");
-            assertDoesNotThrow(() -> uiLogUtil.logUICommand(2, click));
+            assertDoesNotThrow(() -> uiLogUtil.logUICommandDetails(click));
         }
     }
 

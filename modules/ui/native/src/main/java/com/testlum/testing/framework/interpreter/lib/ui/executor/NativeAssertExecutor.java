@@ -38,7 +38,7 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
             subCommandsResult.add(commandResult);
             uiLogUtil.logAssertCommand(command, dependencies.getPosition().get());
             if (conditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
-                processEachCommand(command, commandResult);
+                processEachCommand(injectSubCommand(command), commandResult);
             }
         });
     }

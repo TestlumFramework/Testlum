@@ -53,7 +53,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
             subCommandsResult.add(commandResult);
             uiLogUtil.logAssertCommand(command, dependencies.getPosition().get());
             if (conditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
-                executeSubCommand(command, commandResult);
+                executeSubCommand(injectSubCommand(command), commandResult);
             }
         });
         rethrowOnErrors();

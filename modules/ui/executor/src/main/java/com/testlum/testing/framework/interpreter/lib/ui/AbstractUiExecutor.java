@@ -47,17 +47,19 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        T t = injectCommand(o);
-        result.setComment(t.getComment());
-        uiLogUtil.logUICommand(result.getId(), t);
-        if (conditionUtil.isTrue(t.getCondition(), dependencies.getScenarioContext(), result)) {
+        uiLogUtil.logUICommand(result.getId(), o);
+        result.setComment(o.getComment());
+        if (conditionUtil.isTrue(inject(o.getCondition()), dependencies.getScenarioContext(), result)) {
+            T t = injectCommand(o);
+            result.setComment(t.getComment());
+            uiLogUtil.logUICommandDetails(t);
             execute(t, result);
         }
     }
 
     private T injectCommand(final T o) {
         if (Objects.isNull(o) || o instanceof WebRepeat || o instanceof NativeRepeat
-            || o instanceof MobilebrowserRepeat) {
+                || o instanceof MobilebrowserRepeat || o instanceof WebAssert || o instanceof NativeAssert) {
             return o;
         }
         @SuppressWarnings("unchecked")
@@ -69,6 +71,12 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
             processExpression(nativeVar.getExpression());
         }
         return scenarioInjectionUtil.injectObject(copiedObject, dependencies.getScenarioContext());
+    }
+
+    protected <C extends AbstractCommand> C injectSubCommand(final C command) {
+        @SuppressWarnings("unchecked")
+        C copiedCommand = jacksonService.deepCopy(command, (Class<C>) command.getClass());
+        return scenarioInjectionUtil.injectObject(copiedCommand, dependencies.getScenarioContext());
     }
 
     private void processExpression(final FromExpression fromExpression) {

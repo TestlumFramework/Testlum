@@ -103,50 +103,38 @@ class ScenarioSchemaValidationTest {
     }
 
     @Test
-    void acceptsWaitWithSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
+    void acceptsWaitAndScrollWithHyphenAndUnderscoreInVariableName(@TempDir final Path tempDir) throws IOException {
         File file = createScenarioFile(tempDir,
-                "    <wait comment=\"" + COMMENT + "\" time=\"{{var#1}}\"/>\n"
-                + "    <wait comment=\"" + COMMENT + "\" time=\"{{timeout!}}\"/>\n"
-                + "    <wait comment=\"" + COMMENT + "\" time=\"{{my$time}}\"/>\n"
-                + "    <wait comment=\"" + COMMENT + "\" time=\"{{count+1}}\"/>\n"
-                + "    <wait comment=\"" + COMMENT + "\" time=\"{{scroll@val}}\"/>\n"
-                + "    <wait comment=\"" + COMMENT + "\" time=\"{{item[0]}}\"/>\n"
-                + "    <wait comment=\"" + COMMENT + "\" time=\"{{speed%val}}\"/>");
-        Scenario scenario = parser.process(file);
-        assertNotNull(scenario);
-        assertEquals(7, scenario.getCommands().size());
-    }
-
-    @Test
-    void acceptsScrollWithSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
-        File file = createScenarioFile(tempDir,
-                "    <web comment=\"" + COMMENT + "\">\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{var#1}}\"/>\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{scroll!val}}\"/>\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{my$val}}\"/>\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{count+1}}\"/>\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{scroll@val}}\"/>\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{item[0]}}\"/>\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{speed%val}}\"/>\n"
+                "    <wait comment=\"" + COMMENT + "\" time=\"{{wait-time_1}}\"/>\n"
+                + "    <wait comment=\"" + COMMENT + "\" time=\"{{inner_var-2}}\"/>\n"
+                + "    <web comment=\"" + COMMENT + "\">\n"
+                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{scroll-val_1}}\"/>\n"
+                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{scroll_val-2}}\"/>\n"
                 + "    </web>");
         Scenario scenario = parser.process(file);
         assertNotNull(scenario);
-        Web web = (Web) scenario.getCommands().get(0);
-        assertEquals(7, web.getClickOrInputOrAssert().size());
+        assertEquals(3, scenario.getCommands().size());
     }
 
     @Test
-    void rejectsWaitWithXmlSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
+    void rejectsWaitWithSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
         File file = createScenarioFile(tempDir,
-                "    <wait comment=\"" + COMMENT + "\" time=\"{{var&amp;TestName!}}\"/>");
+                "    <wait comment=\"" + COMMENT + "\" time=\"{{var#1}}\"/>");
         assertThrows(RuntimeException.class, () -> parser.process(file));
     }
 
     @Test
-    void rejectsScrollWithXmlSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
+    void rejectsWaitWithDollarInVariableName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <wait comment=\"" + COMMENT + "\" time=\"{{my$time}}\"/>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsScrollWithSpecialCharactersInVariableName(@TempDir final Path tempDir) throws IOException {
         File file = createScenarioFile(tempDir,
                 "    <web comment=\"" + COMMENT + "\">\n"
-                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{var&amp;TestName!}}\"/>\n"
+                + "        <scroll comment=\"" + COMMENT + "\" type=\"page\" value=\"{{my$#Var3}}\"/>\n"
                 + "    </web>");
         assertThrows(RuntimeException.class, () -> parser.process(file));
     }

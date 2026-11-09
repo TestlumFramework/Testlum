@@ -1,23 +1,24 @@
 
 package com.testlum.testing.model.global_config;
 
-import jakarta.xml.bind.annotation.*;
-
-import java.math.BigInteger;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for smtp complex type.
+ * &lt;p&gt;Java class for smtp complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="smtp"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/global-config}integration"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="host" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
+ *         &lt;element name="port" type="{http://www.testlum.com/testing/model/global-config}portNumber"/&gt;
  *         &lt;element name="username" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="password" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="smtpAuth" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
@@ -26,7 +27,7 @@ import java.math.BigInteger;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -45,9 +46,7 @@ public class Smtp
 
     @XmlElement(required = true)
     protected String host;
-    @XmlElement(required = true)
-    @XmlSchemaType(name = "positiveInteger")
-    protected BigInteger port;
+    protected int port;
     @XmlElement(required = true)
     protected String username;
     @XmlElement(required = true)
@@ -82,24 +81,16 @@ public class Smtp
     /**
      * Gets the value of the port property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
      */
-    public BigInteger getPort() {
+    public int getPort() {
         return port;
     }
 
     /**
      * Sets the value of the port property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
      */
-    public void setPort(BigInteger value) {
+    public void setPort(int value) {
         this.port = value;
     }
 

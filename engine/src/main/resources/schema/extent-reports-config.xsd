@@ -33,7 +33,7 @@
 
     <x:complexType name="mongodb">
         <x:attribute name="host" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="port" type="x:nonNegativeInteger" use="required"/>
+        <x:attribute name="port" type="tns:portNumber" use="required"/>
     </x:complexType>
 
     <x:complexType name="klovServer">

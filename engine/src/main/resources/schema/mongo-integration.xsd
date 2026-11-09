@@ -19,7 +19,7 @@
                 <x:sequence>
                     <x:element name="database" type="tns:nonEmptyString"/>
                     <x:element name="host" type="tns:nonEmptyString"/>
-                    <x:element name="port" type="x:int"/>
+                    <x:element name="port" type="tns:portNumber"/>
                     <x:element name="username" type="tns:nonEmptyString"/>
                     <x:element name="password" type="tns:nonEmptyString"/>
                 </x:sequence>

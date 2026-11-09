@@ -8,25 +8,25 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for mongo complex type.
+ * &lt;p&gt;Java class for mongo complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="mongo"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/global-config}storageIntegration"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="database" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="host" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="port" type="{http://www.testlum.com/testing/model/global-config}portNumber"/&gt;
  *         &lt;element name="username" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="password" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */

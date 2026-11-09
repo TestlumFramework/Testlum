@@ -1,26 +1,27 @@
 
 package com.testlum.testing.model.global_config;
 
-import jakarta.xml.bind.annotation.*;
-
-import java.math.BigInteger;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for mongodb complex type.
+ * &lt;p&gt;Java class for mongodb complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="mongodb"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="host" use="required" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString" /&gt;
- *       &lt;attribute name="port" use="required" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" /&gt;
+ *       &lt;attribute name="port" use="required" type="{http://www.testlum.com/testing/model/global-config}portNumber" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */
@@ -31,8 +32,7 @@ public class Mongodb {
     @XmlAttribute(name = "host", required = true)
     protected String host;
     @XmlAttribute(name = "port", required = true)
-    @XmlSchemaType(name = "nonNegativeInteger")
-    protected BigInteger port;
+    protected int port;
 
     /**
      * Gets the value of the host property.
@@ -61,24 +61,16 @@ public class Mongodb {
     /**
      * Gets the value of the port property.
      * 
-     * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
      */
-    public BigInteger getPort() {
+    public int getPort() {
         return port;
     }
 
     /**
      * Sets the value of the port property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
      */
-    public void setPort(BigInteger value) {
+    public void setPort(int value) {
         this.port = value;
     }
 

@@ -4,13 +4,17 @@ import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.constant.LogMessage;
 import com.testlum.testing.framework.db.AbstractStorageOperation.QueryResult;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.apache.commons.text.WordUtils;
+import org.springframework.core.NestedExceptionUtils;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +52,12 @@ public abstract class AbstractSqlExecutor {
     private static final Pattern RETURNING = Pattern.compile("\\bRETURNING\\b", Pattern.CASE_INSENSITIVE);
     private static final Pattern BLOCK_COMMENT = Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL);
     private static final Pattern STRING_LITERAL = Pattern.compile("'(?:[^']|'')*'");
+    private static final int LOG_WIDTH = 100;
+    private static final String QUERY_LABEL = "Query: ";
+    private static final String POSITION_LABEL = "Position: ";
+    private static final String POINTER = "^ position ";
+    private static final String LINE_BREAK = "\\R";
+    private static final Pattern DB_ERROR_PREFIX = Pattern.compile("^ERROR:\\s*");
 
     protected final JdbcTemplate template;
 
@@ -110,9 +120,9 @@ public abstract class AbstractSqlExecutor {
     private Object executeSingleStatement(final String statement) {
         try {
             return executeAppropriateQuery(statement);
-        } catch (InvalidDataAccessResourceUsageException e) {
+        } catch (DataAccessException e) {
             logSqlException(e, statement);
-            throw e;
+            throw new DefaultFrameworkException(getReason(e), e);
         }
     }
 
@@ -128,15 +138,51 @@ public abstract class AbstractSqlExecutor {
     }
 
     public void logSqlException(final Exception ex, final String query) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            String sql = new SQLUtil().getBrokenQuery(ex, query);
-            log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.getMessage().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()),
-                    sql.replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
-        } else {
-            log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.toString().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
+        int position = SQLUtil.getSqlPosition(getDatabaseMessage(ex));
+        List<String> lines = new ArrayList<>(wrap(getReason(ex)));
+        lines.addAll(describeQuery(query, position));
+        log.error(LogMessage.ERROR_SQL_QUERY, String.join(LogFormat.newLogLine(), lines));
+    }
+
+    String getDatabaseMessage(final Exception ex) {
+        String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
+        return StringUtils.defaultString(StringUtils.defaultIfBlank(message, ex.getMessage()));
+    }
+
+    String getReason(final Exception ex) {
+        String message = SQLUtil.removePosition(getDatabaseMessage(ex));
+        String reason = DB_ERROR_PREFIX.matcher(normalizeLines(message)).replaceFirst(EMPTY);
+        return StringUtils.defaultIfBlank(reason, ex.toString());
+    }
+
+    private String normalizeLines(final String text) {
+        return text.lines()
+                .map(String::strip)
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.joining(LF));
+    }
+
+    List<String> wrap(final String text) {
+        return text.lines()
+                .map(line -> WordUtils.wrap(line, LOG_WIDTH, LF, true))
+                .flatMap(String::lines)
+                .toList();
+    }
+
+    List<String> describeQuery(final String query, final int position) {
+        boolean singleLine = query.length() <= LOG_WIDTH && query.lines().count() <= 1;
+        if (position > 0 && singleLine) {
+            return List.of(QUERY_LABEL + query, pointer(position));
         }
+        String shown = SQLUtil.getBrokenQuery(position, query)
+                .replaceAll(LINE_BREAK, LogFormat.newLogLine());
+        return position > 0
+                ? List.of(QUERY_LABEL + shown, POSITION_LABEL + position)
+                : List.of(QUERY_LABEL + shown);
+    }
+
+    private String pointer(final int position) {
+        return SPACE.repeat(QUERY_LABEL.length() + position - 1) + POINTER + position;
     }
 
     private Object executeAppropriateQuery(final String query) {
@@ -177,17 +223,19 @@ public abstract class AbstractSqlExecutor {
     }
 
     private static class SQLUtil {
-        private static final int CUT_LIMIT = 100;
         private static final int OFFSET_LIMIT = 2;
-        private static final Pattern BAD_SQL_POSITION_PATTERN = Pattern.compile("Position: ([0-9]+)");
+        private static final Pattern BAD_SQL_POSITION_PATTERN = Pattern.compile("\\s*Position: ([0-9]+)");
 
-        public String getBrokenQuery(final Exception ex, final String query) {
-            final int position = getSqlPositionFromException(ex) - OFFSET_LIMIT;
-            return StringUtils.abbreviate(query, position, CUT_LIMIT);
+        static String getBrokenQuery(final int position, final String query) {
+            return StringUtils.abbreviate(query, position - OFFSET_LIMIT, LOG_WIDTH);
         }
 
-        private int getSqlPositionFromException(final Exception ex) {
-            Matcher m = BAD_SQL_POSITION_PATTERN.matcher(ex.getMessage());
+        static String removePosition(final String message) {
+            return BAD_SQL_POSITION_PATTERN.matcher(message).replaceAll(EMPTY);
+        }
+
+        private static int getSqlPosition(final String message) {
+            Matcher m = BAD_SQL_POSITION_PATTERN.matcher(message);
             try {
                 if (m.find()) {
                     return Integer.parseInt(m.group(1));

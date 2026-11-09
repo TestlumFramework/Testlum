@@ -18,8 +18,7 @@ public final class LogMessage {
             LogFormat.table("Condition", "'{}' = {};");
 
     public static final String QUERY = LogFormat.table("Query");
-    public static final String ERROR_SQL_QUERY = LogFormat.withRed(
-            "Error while executing SQL query -> {}" + LogFormat.newLogLine() + "{}");
+    public static final String ERROR_SQL_QUERY = LogFormat.withRed("SQL error: {}");
     public static final String SCENARIO_NUMBER_AND_PATH_LOG =
             "================== Execute for scenario %s ==================";
 

@@ -73,7 +73,9 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                     dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
             uiLogUtil.logHotKeyInfo(command, dependencies.getPosition().get());
-            executeHotKeyCommand(command, commandResult);
+            if (conditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
+                executeHotKeyCommand(command, commandResult);
+            }
         });
     }
 

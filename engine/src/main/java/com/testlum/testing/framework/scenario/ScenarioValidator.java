@@ -6,6 +6,7 @@ import com.testlum.testing.framework.UIConfiguration;
 import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.framework.interpreter.SendGridUtil;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.util.BrowserUtil;
@@ -15,6 +16,7 @@ import com.testlum.testing.framework.util.MobileUtil;
 import com.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.testlum.testing.framework.xml.XMLValidator;
 import com.testlum.testing.model.global_config.Apis;
+import com.testlum.testing.model.global_config.AuthStrategy;
 import com.testlum.testing.model.global_config.AppiumCapabilities;
 import com.testlum.testing.model.global_config.ClickhouseIntegration;
 import com.testlum.testing.model.global_config.DynamoIntegration;
@@ -121,8 +123,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (integrations.getAuthStrategies() == null) {
             throw new DefaultFrameworkException(ExceptionMessage.AUTH_STRATEGIES_NOT_CONFIGURED);
         }
-        validateFileExistenceInDataFolder(auth.getCredentials());
         validateAuthCommand(auth, integrations);
+        validateFileExistenceInDataFolder(auth.getCredentials());
         auth.getCommands().forEach(command -> validateCommand(command, xmlFile));
     }
 
@@ -502,11 +504,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (alias.contains(DelimiterConstant.DOUBLE_OPEN_BRACE)) {
             return;
         }
-        boolean found = integrations.getAuthStrategies().getJwtOrBasicOrCustom()
+        AuthStrategy strategy = integrations.getAuthStrategies().getJwtOrBasicOrCustom()
                 .stream()
-                .anyMatch(strategy -> alias.equals(strategy.getAlias()));
-        if (!found) {
-            throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, alias);
+                .filter(candidate -> alias.equals(candidate.getAlias()))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, alias));
+        if (!strategy.isEnabled()) {
+            throw new IntegrationDisabledException("Auth strategy <%s> is disabled", alias);
         }
     }
 

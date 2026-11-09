@@ -150,6 +150,9 @@ public class IntegrationsUtil {
 
     public <T extends AuthStrategy> T findAuthStrategy(final Class<T> clazz, final AliasEnv aliasEnv) {
         AuthStrategy strategy = findAuthStrategyByAlias(aliasEnv);
+        if (!strategy.isEnabled()) {
+            throw new IntegrationDisabledException("Auth strategy <%s> is disabled", strategy.getAlias());
+        }
         if (!clazz.isInstance(strategy)) {
             throw new DefaultFrameworkException(
                     "Auth strategy <%s> has type <%s>, expected <%s>",

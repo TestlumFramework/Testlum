@@ -242,4 +242,43 @@ class ScenarioContextTest {
                     () -> context.get("missing"));
         }
     }
+
+    @Test
+    void authTokenIsInjectedWithoutReplacingLastBody() {
+        context.set("response", "{\"token\":\"application-token\"}");
+        context.setAuthToken("googleToken", "provider-secret");
+        assertEquals("Bearer provider-secret", context.inject("Bearer {{googleToken}}"));
+        assertEquals("response", context.getBody().getKey());
+        assertEquals("pro***", context.redact("provider-secret"));
+    }
+
+    @Test
+    void copiedSecretsAreScopedAndPreviousVariablesAreRestored() {
+        context.set("copy", "previous");
+        context.setAuthToken("googleToken", "provider-secret");
+        context.setVariable("copy", "Bearer " + context.get("googleToken"));
+        assertEquals("Bearer provider-secret", context.get("copy"));
+        assertEquals("Bearer pro***", context.redact(context.get("copy")));
+        context.clearAuthVariables();
+        assertFalse(context.containsKey("googleToken"));
+        assertEquals("previous", context.get("copy"));
+        assertEquals("pro***", context.redact("provider-secret"));
+    }
+
+    @Test
+    void authTokenRejectsConflictingNamesAndEmptyValues() {
+        context.set("existing", "old");
+        assertThrows(IllegalArgumentException.class, () -> context.setAuthToken("existing", "secret"));
+        assertThrows(IllegalArgumentException.class, () -> context.setAuthToken(" ", "secret"));
+        assertThrows(IllegalArgumentException.class, () -> context.setAuthToken("token", " "));
+        assertEquals("old", context.get("existing"));
+    }
+
+    @Test
+    void missingVariableErrorsDoNotExposeContextValues() {
+        context.setAuthToken("googleToken", "provider-secret");
+        context.set("response", "echoed provider-secret");
+        IllegalArgumentException failure = assertThrows(IllegalArgumentException.class, () -> context.get("missing"));
+        assertFalse(failure.getMessage().contains("provider-secret"));
+    }
 }

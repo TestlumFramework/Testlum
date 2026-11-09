@@ -2,7 +2,7 @@ package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.auth.AuthFactory;
-import com.testlum.testing.framework.auth.AuthStrategy;
+import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.exception.StopSignalException;
@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +35,7 @@ class AuthInterpreterTest {
 
     private AuthInterpreter interpreter;
     private AuthFactory authFactory;
-    private AuthStrategy authStrategy;
+    private AuthenticationStrategy authStrategy;
     private ConditionProvider conditionProvider;
     private CommandRunner commandRunner;
     private InterpreterDependencies dependencies;
@@ -43,7 +44,7 @@ class AuthInterpreterTest {
     @BeforeEach
     void setUp() {
         authFactory = mock(AuthFactory.class);
-        authStrategy = mock(AuthStrategy.class);
+        authStrategy = mock(AuthenticationStrategy.class);
         conditionProvider = mock(ConditionProvider.class);
         commandRunner = mock(CommandRunner.class);
         ApplicationContext context = mockContext();
@@ -238,6 +239,66 @@ class AuthInterpreterTest {
         assertSame(authorization, dependencies.getAuthorization());
         assertTrue(dependencies.isAuthBlockActive());
         verifyNoInteractions(authFactory, commandRunner);
+    }
+
+
+    @Test
+    void publishesTokenAndRetainsCopiesUntilAuthorizationIsCleared() {
+        Auth auth = command(false);
+        auth.setTokenVariable("googleToken");
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.of("provider-secret"));
+        doAnswer(call -> {
+            assertEquals("provider-secret", dependencies.getScenarioContext().get("googleToken"));
+            dependencies.getScenarioContext().setVariable("copy", "Bearer provider-secret");
+            return null;
+        }).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        interpreter.acceptImpl(auth, new CommandResult());
+        assertEquals("provider-secret", dependencies.getScenarioContext().get("googleToken"));
+        assertEquals("Bearer provider-secret", dependencies.getScenarioContext().get("copy"));
+        assertSame(authorization, dependencies.getAuthorization());
+        verify(authStrategy, never()).logout();
+        dependencies.clearAuthorization();
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertFalse(dependencies.getScenarioContext().containsKey("copy"));
+    }
+
+    @Test
+    void tokenAndCopiesAreClearedWhenChildrenAndLogoutFail() {
+        Auth auth = command(true);
+        auth.setTokenVariable("googleToken");
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.of("provider-secret"));
+        IllegalStateException failure = new IllegalStateException("child failed");
+        doThrow(failure).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        doThrow(new IllegalStateException("logout failed")).when(authStrategy).logout();
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> interpreter.acceptImpl(auth, new CommandResult())));
+        assertEquals(1, failure.getSuppressed().length);
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertNull(dependencies.getAuthorization());
+    }
+
+    @Test
+    void conflictingTokenNameFailsBeforeAuthentication() {
+        Auth auth = command(true);
+        auth.setTokenVariable("existing");
+        dependencies.getScenarioContext().set("existing", "old");
+        assertThrows(DefaultFrameworkException.class, () -> interpreter.acceptImpl(auth, new CommandResult()));
+        assertEquals("old", dependencies.getScenarioContext().get("existing"));
+        verifyNoInteractions(authFactory, authStrategy, commandRunner);
+    }
+
+    @Test
+    void strategyWithoutExportableTokenDoesNotRunChildren() {
+        Auth auth = command(false);
+        auth.setTokenVariable("googleToken");
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.empty());
+        assertThrows(DefaultFrameworkException.class, () -> interpreter.acceptImpl(auth, new CommandResult()));
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertNull(dependencies.getAuthorization());
+        verifyNoInteractions(commandRunner);
     }
 
     private Auth command(final boolean autoLogout) {

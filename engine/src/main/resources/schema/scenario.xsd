@@ -144,6 +144,7 @@
                 </x:choice>
                 <x:attribute name="strategyAlias" type="tns:nonEmptyString" default="DEFAULT"/>
                 <x:attribute name="credentials" type="tns:jsonFileExtension" use="required"/>
+                <x:attribute name="tokenVariable" type="tns:nonEmptyString" use="optional"/>
                 <x:attribute name="autoLogout" type="x:boolean" default="true"/>
             </x:extension>
         </x:complexContent>

@@ -108,6 +108,57 @@ class IntegrationsValidatorTest {
     }
 
     @Nested
+    class ValidateDisabledAuthStrategies {
+        @Test
+        void disabledProvidersDoNotRequireValidConfiguration() {
+            GoogleAuthStrategy google = google(null, "");
+            google.setEnabled(false);
+            MicrosoftAuthStrategy microsoft = microsoft(null, "", "invalid/tenant", "");
+            microsoft.setEnabled(false);
+
+            assertDoesNotThrow(() -> validator.validate(Map.of("dev", authConfig(google, microsoft))));
+        }
+
+        @Test
+        void disabledStrategyDoesNotHaveToExistInOtherEnvironments() {
+            GoogleAuthStrategy google = google(null, null);
+            google.setEnabled(false);
+
+            assertDoesNotThrow(() -> validator.validate(Map.of(
+                    "dev", authConfig(google), "staging", new Integrations())));
+        }
+
+        @Test
+        void disabledAliasesStillHaveToBeUnique() {
+            GoogleAuthStrategy first = google(null, null);
+            first.setEnabled(false);
+            GoogleAuthStrategy second = google(null, null);
+            second.setEnabled(false);
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(Map.of("dev", authConfig(first, second))));
+        }
+
+        @Test
+        void disabledAliasCannotDuplicateAnEnabledAlias() {
+            GoogleAuthStrategy disabled = google(null, null);
+            disabled.setEnabled(false);
+
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "dev", authConfig(disabled, google("client", "secret")))));
+        }
+
+        @Test
+        void enabledStrategyMustBeEnabledInEveryEnvironment() {
+            GoogleAuthStrategy disabled = google(null, null);
+            disabled.setEnabled(false);
+
+            assertThrows(DefaultFrameworkException.class, () -> validator.validate(Map.of(
+                    "dev", authConfig(google("client", "secret")), "staging", authConfig(disabled))));
+        }
+    }
+
+    @Nested
     class ValidateAuthConsistency {
         @Test
         void matchingStrategiesWithDifferentEndpointsDoNotThrow() {

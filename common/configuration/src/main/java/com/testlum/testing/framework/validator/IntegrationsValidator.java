@@ -139,12 +139,15 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         Map<String, AuthStrategy> authMap = new HashMap<>();
         if (integrations.getAuthStrategies() != null) {
             for (AuthStrategy strategy : integrations.getAuthStrategies().getJwtOrBasicOrCustom()) {
-                checkAuthConfiguration(strategy);
                 if (authMap.putIfAbsent(strategy.getAlias(), strategy) != null) {
                     throw new DefaultFrameworkException(ExceptionMessage.AUTH_DUPLICATE_ALIAS, strategy.getAlias());
                 }
+                if (strategy.isEnabled()) {
+                    checkAuthConfiguration(strategy);
+                }
             }
         }
+        authMap.values().removeIf(strategy -> !strategy.isEnabled());
         return authMap;
     }
 

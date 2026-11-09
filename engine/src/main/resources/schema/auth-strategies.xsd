@@ -22,6 +22,9 @@
         <x:attribute name="alias"
                      type="tns:nonEmptyString"
                      use="required"/>
+        <x:attribute name="enabled"
+                     type="x:boolean"
+                     default="true"/>
     </x:complexType>
 
     <x:complexType name="jwtAuthStrategy">

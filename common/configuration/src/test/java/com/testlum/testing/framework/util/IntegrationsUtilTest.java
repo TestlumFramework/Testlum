@@ -152,6 +152,47 @@ class IntegrationsUtilTest {
     @Nested
     class FindAuthStrategy {
         @Test
+        void disabledStrategyThrowsForGenericAndTypedLookup() {
+            BasicAuthStrategy disabled = basic("BASIC");
+            disabled.setEnabled(false);
+            IntegrationsUtil util = authUtil(disabled);
+
+            assertThrows(IntegrationDisabledException.class,
+                    () -> util.findAuthStrategy(AuthStrategy.class, new AliasEnv("BASIC", "dev")));
+            assertThrows(IntegrationDisabledException.class,
+                    () -> util.findAuthStrategy(BasicAuthStrategy.class, new AliasEnv("BASIC", "dev")));
+        }
+
+        @Test
+        void explicitlyEnabledStrategyIsReturned() {
+            BasicAuthStrategy enabled = basic("BASIC");
+            enabled.setEnabled(true);
+            IntegrationsUtil util = authUtil(enabled);
+
+            assertSame(enabled, util.findAuthStrategy(AuthStrategy.class, new AliasEnv("BASIC", "dev")));
+        }
+
+        @Test
+        void disabledDefaultStrategyThrowsWhenAliasIsNull() {
+            BasicAuthStrategy disabled = basic("DEFAULT");
+            disabled.setEnabled(false);
+            IntegrationsUtil util = authUtil(disabled);
+
+            assertThrows(IntegrationDisabledException.class,
+                    () -> util.findAuthStrategy(AuthStrategy.class, new AliasEnv(null, "dev")));
+        }
+
+        @Test
+        void disabledDuplicateIsNotHiddenByEnabledStrategy() {
+            BasicAuthStrategy disabled = basic("BASIC");
+            disabled.setEnabled(false);
+            IntegrationsUtil util = authUtil(basic("BASIC"), disabled);
+
+            assertThrows(DefaultFrameworkException.class,
+                    () -> util.findAuthStrategy(AuthStrategy.class, new AliasEnv("BASIC", "dev")));
+        }
+
+        @Test
         void resolvesMicrosoftFromSelectedEnvironmentAndChecksRequestedType() {
             MicrosoftAuthStrategy local = new MicrosoftAuthStrategy();
             local.setAlias("MICROSOFT");

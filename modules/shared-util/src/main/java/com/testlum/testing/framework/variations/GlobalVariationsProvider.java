@@ -91,15 +91,11 @@ public class GlobalVariationsProvider {
                                         final Map<String, String> variationMap,
                                         final ScenarioContext scenarioContext) {
         if (Objects.isNull(variationValue)) {
-            if (isContextValue(variationKey, scenarioContext)) {
+            if (Objects.nonNull(scenarioContext)) {
                 return true;
             }
             throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
         }
         return false;
-    }
-
-    private boolean isContextValue(final String variationKey, final ScenarioContext scenarioContext) {
-        return Objects.nonNull(scenarioContext) && scenarioContext.containsKey(variationKey);
     }
 }

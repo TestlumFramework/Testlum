@@ -112,11 +112,13 @@ class GlobalVariationsProviderTest {
         }
 
         @Test
-        void throwsWhenKeyNotInMapOrContext() {
+        void keepsPlaceholderWhenKeyIsNotInMapAndNotYetInContext() {
             final ScenarioContext ctx = new ScenarioContext(new HashMap<>());
-            final Map<String, String> vars = new HashMap<>();
-            assertThrows(IllegalArgumentException.class,
-                    () -> provider.getValue("{{unknown}}", vars, ctx));
+            final Map<String, String> vars = Map.of("x", "42");
+
+            final String result = provider.getValue("a={{x}} b={{later}}", vars, ctx);
+
+            assertEquals("a=42 b={{later}}", result);
         }
     }
 

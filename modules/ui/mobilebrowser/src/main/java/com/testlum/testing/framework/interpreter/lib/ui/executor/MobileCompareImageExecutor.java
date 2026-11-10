@@ -88,6 +88,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
         String urlToImage = uiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
+        urlToImage = uiUtil.getUrl(urlToImage, dependencies.getEnvironment(), dependencies.getUiType());
         urlToImage = uiUtil.resolveHostIfNeeded(urlToImage);
         log.info(LogMessage.URL_TO_IMAGE_LOG, urlToImage);
         result.put(ResultUtil.URL_TO_ACTUAL_IMAGE, urlToImage);

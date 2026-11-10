@@ -1127,6 +1127,22 @@ class ScenarioValidatorTest {
             Scenario scenario = createScenario(true, repeat);
             assertDoesNotThrow(() -> validator.validate(scenario, xmlFile()));
         }
+
+        @Test
+        void nestedRepeatWithVariationsProcessesThem() {
+            when(globalVariationsProvider.getVariations("nested_vars.csv"))
+                    .thenReturn(List.of(Map.of("k", "v")));
+
+            Repeat nested = new Repeat();
+            nested.setVariations("nested_vars.csv");
+            Repeat outer = new Repeat();
+            outer.getCommands().add(nested);
+
+            Scenario scenario = createScenario(true, outer);
+            assertDoesNotThrow(() -> validator.validate(scenario, xmlFile()));
+
+            verify(globalVariationsProvider).process("nested_vars.csv");
+        }
     }
 
     @Nested
@@ -1191,6 +1207,30 @@ class ScenarioValidatorTest {
 
             Scenario scenario = createScenario(true, web);
             assertDoesNotThrow(() -> validator.validate(scenario, xmlFile()));
+        }
+
+        @Test
+        void nestedWebRepeatWithVariationsProcessesThem() {
+            com.testlum.testing.model.global_config.Web webConfig =
+                    mock(com.testlum.testing.model.global_config.Web.class);
+            when(webConfig.isEnabled()).thenReturn(true);
+            when(uiConfig.getWeb()).thenReturn(webConfig);
+            when(browserUtil.filterDefaultEnabledBrowsers()).thenReturn(List.of(mock(
+                    com.testlum.testing.model.global_config.AbstractBrowser.class)));
+            when(globalVariationsProvider.getVariations("nested_vars.csv"))
+                    .thenReturn(List.of(Map.of("k", "v")));
+
+            WebRepeat nested = new WebRepeat();
+            nested.setVariations("nested_vars.csv");
+            WebRepeat outer = new WebRepeat();
+            outer.getClickOrInputOrAssert().add(nested);
+            Web web = new Web();
+            web.getClickOrInputOrAssert().add(outer);
+
+            Scenario scenario = createScenario(true, web);
+            assertDoesNotThrow(() -> validator.validate(scenario, xmlFile()));
+
+            verify(globalVariationsProvider).process("nested_vars.csv");
         }
     }
 

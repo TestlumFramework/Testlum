@@ -310,11 +310,45 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void registerUiRepeatValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {
         map.put(o -> o instanceof WebRepeat,
-                (f, c) -> validateRepeatCommand(f, ((WebRepeat) c).getVariations()));
+                (f, c) -> validateRepeat(f, (WebRepeat) c));
         map.put(o -> o instanceof NativeRepeat,
-                (f, c) -> validateRepeatCommand(f, ((NativeRepeat) c).getVariations()));
+                (f, c) -> validateRepeat(f, (NativeRepeat) c));
         map.put(o -> o instanceof MobilebrowserRepeat,
-                (f, c) -> validateRepeatCommand(f, ((MobilebrowserRepeat) c).getVariations()));
+                (f, c) -> validateRepeat(f, (MobilebrowserRepeat) c));
+    }
+
+    private void validateRepeat(final File xmlFile, final Repeat repeat) {
+        validateRepeatCommand(xmlFile, repeat.getVariations());
+        if (Objects.nonNull(repeat.getCommands())) {
+            repeat.getCommands().forEach(command -> validateCommand(command, xmlFile));
+        }
+    }
+
+    private void validateRepeat(final File xmlFile, final WebRepeat repeat) {
+        validateRepeatCommand(xmlFile, repeat.getVariations());
+        validateSubCommands(repeat.getClickOrInputOrAssert(), xmlFile);
+    }
+
+    private void validateRepeat(final File xmlFile, final NativeRepeat repeat) {
+        validateRepeatCommand(xmlFile, repeat.getVariations());
+        validateSubCommands(repeat.getClickOrInputOrAssert(), xmlFile);
+    }
+
+    private void validateRepeat(final File xmlFile, final MobilebrowserRepeat repeat) {
+        validateRepeatCommand(xmlFile, repeat.getVariations());
+        validateSubCommands(repeat.getClickOrInputOrAssert(), xmlFile);
+    }
+
+    private void validateRepeatCommand(final File xmlFile, final String variationsFileName) {
+        if (StringUtils.isNotBlank(variationsFileName)) {
+            globalVariationsProvider.process(variationsFileName);
+            List<Map<String, String>> repeatVariations = globalVariationsProvider.getVariations(variationsFileName);
+            if (repeatVariations.isEmpty()) {
+                throw new DefaultFrameworkException(ExceptionMessage.VARIATION_FILE_IS_EMPTY,
+                        variationsFileName, xmlFile.getAbsolutePath());
+            }
+            variationList.get().addAll(repeatVariations);
+        }
     }
 
     private void registerUiFileValidators(final Map<AbstractCommandPredicate, AbstractCommandValidator> map) {
@@ -645,25 +679,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         List<String> shellFiles = shell.getShellFile();
         if (!shellFiles.isEmpty()) {
             shellFiles.forEach(this::validateFileExistenceInDataFolder);
-        }
-    }
-
-    private void validateRepeat(final File xmlFile, final Repeat repeat) {
-        validateRepeatCommand(xmlFile, repeat.getVariations());
-        if (Objects.nonNull(repeat.getCommands())) {
-            repeat.getCommands().forEach(subCommand -> validateCommand(subCommand, xmlFile));
-        }
-    }
-
-    private void validateRepeatCommand(final File xmlFile, final String variationsFileName) {
-        if (StringUtils.isNotBlank(variationsFileName)) {
-            globalVariationsProvider.process(variationsFileName);
-            List<Map<String, String>> repeatVariations = globalVariationsProvider.getVariations(variationsFileName);
-            if (repeatVariations.isEmpty()) {
-                throw new DefaultFrameworkException(ExceptionMessage.VARIATION_FILE_IS_EMPTY,
-                        variationsFileName, xmlFile.getAbsolutePath());
-            }
-            variationList.get().addAll(repeatVariations);
         }
     }
 

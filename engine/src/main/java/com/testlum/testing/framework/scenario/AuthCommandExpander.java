@@ -39,18 +39,29 @@ public class AuthCommandExpander {
     }
 
     private void addAuthCommands(final List<AbstractCommand> expanded, final Auth authCommand) {
+        expanded.add(createLogin(authCommand));
+        expanded.addAll(authCommand.getCommands());
+        if (isAutoLogout(authCommand.getApiAlias())) {
+            expanded.add(createLogout(authCommand));
+        }
+    }
+
+    private Auth createLogin(final Auth authCommand) {
         Auth auth = new Auth();
         auth.setComment(authCommand.getComment());
+        auth.setCondition(authCommand.getCondition());
+        auth.setThreshold(authCommand.getThreshold());
         auth.setCredentials(authCommand.getCredentials());
         auth.setApiAlias(authCommand.getApiAlias());
         auth.setLoginEndpoint(authCommand.getLoginEndpoint());
-        expanded.add(auth);
-        expanded.addAll(authCommand.getCommands());
-        if (isAutoLogout(authCommand.getApiAlias())) {
-            Logout logout = new Logout();
-            logout.setAlias(authCommand.getApiAlias());
-            expanded.add(logout);
-        }
+        return auth;
+    }
+
+    private Logout createLogout(final Auth authCommand) {
+        Logout logout = new Logout();
+        logout.setAlias(authCommand.getApiAlias());
+        logout.setCondition(authCommand.getCondition());
+        return logout;
     }
 
     private boolean isAutoLogout(final String alias) {

@@ -119,4 +119,30 @@ class AuthCommandExpanderTest {
         when(integrationUtil.findApiForAlias(any(), eq(API_ALIAS))).thenReturn(api);
     }
 
+    @Test
+    void conditionAndThresholdAreCopiedToLogin() {
+        Auth auth = new Auth();
+        auth.setApiAlias(API_ALIAS);
+        auth.setCondition("myCondition");
+        auth.setThreshold(5);
+        mockApiAuth(false);
+
+        Auth login = (Auth) expander.expand(List.of(auth)).get(0);
+
+        assertEquals("myCondition", login.getCondition());
+        assertEquals(5, login.getThreshold());
+    }
+
+    @Test
+    void conditionIsCopiedToLogout() {
+        Auth auth = new Auth();
+        auth.setApiAlias(API_ALIAS);
+        auth.setCondition("myCondition");
+        mockApiAuth(true);
+
+        List<AbstractCommand> expanded = expander.expand(List.of(auth));
+
+        assertEquals("myCondition", expanded.get(1).getCondition());
+    }
+
 }

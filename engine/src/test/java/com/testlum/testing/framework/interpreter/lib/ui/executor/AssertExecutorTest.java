@@ -681,5 +681,21 @@ class AssertExecutorTest {
 
             verifyNoInteractions(scenarioInjectionUtil);
         }
+
+        @Test
+        void injectsSubCommandCondition() {
+            WebAssert webAssert = new WebAssert();
+            AssertEqual assertEqual = new AssertEqual();
+            assertEqual.setCondition("{{cond}}");
+            webAssert.getAttributeOrTitleOrEqual().add(assertEqual);
+            CommandResult subResult = new CommandResult();
+            when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
+            when(scenarioContext.inject("{{cond}}")).thenReturn("cond");
+            when(conditionUtil.isTrue(eq("cond"), eq(scenarioContext), eq(subResult))).thenReturn(false);
+
+            executor.execute(webAssert, new CommandResult());
+
+            verify(conditionUtil).isTrue("cond", scenarioContext, subResult);
+        }
     }
 }

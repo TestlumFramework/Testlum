@@ -126,6 +126,22 @@ class NativeAssertExecutorTest {
 
             verifyNoInteractions(scenarioInjectionUtil);
         }
+
+        @Test
+        void injectsSubCommandCondition() {
+            NativeAssert nativeAssert = new NativeAssert();
+            AssertEqual assertEqual = new AssertEqual();
+            assertEqual.setCondition("{{cond}}");
+            nativeAssert.getAttributeOrEqualOrNotEqual().add(assertEqual);
+            CommandResult subResult = new CommandResult();
+            scenarioContext.set("cond", "resolved");
+            when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
+            when(conditionUtil.isTrue(eq("resolved"), eq(scenarioContext), eq(subResult))).thenReturn(false);
+
+            executor.execute(nativeAssert, new CommandResult());
+
+            verify(conditionUtil).isTrue("resolved", scenarioContext, subResult);
+        }
     }
 
     @Nested

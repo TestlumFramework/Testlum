@@ -606,14 +606,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GooglePlayLogin }
-     * 
-     */
-    public GooglePlayLogin createGooglePlayLogin() {
-        return new GooglePlayLogin();
-    }
-
-    /**
      * Create an instance of {@link Ai }
      * 
      */

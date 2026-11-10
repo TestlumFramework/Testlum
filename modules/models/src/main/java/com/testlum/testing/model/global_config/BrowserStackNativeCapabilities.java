@@ -18,7 +18,6 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.testlum.com/testing/model/global-config}browserStackCapabilities"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="app" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="googlePlayLogin" type="{http://www.testlum.com/testing/model/global-config}googlePlayLogin" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -29,8 +28,7 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "browserStackNativeCapabilities", propOrder = {
-    "app",
-    "googlePlayLogin"
+    "app"
 })
 public class BrowserStackNativeCapabilities
     extends BrowserStackCapabilities
@@ -38,7 +36,6 @@ public class BrowserStackNativeCapabilities
 
     @XmlElement(required = true)
     protected String app;
-    protected GooglePlayLogin googlePlayLogin;
 
     /**
      * Gets the value of the app property.
@@ -62,30 +59,6 @@ public class BrowserStackNativeCapabilities
      */
     public void setApp(String value) {
         this.app = value;
-    }
-
-    /**
-     * Gets the value of the googlePlayLogin property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link GooglePlayLogin }
-     *     
-     */
-    public GooglePlayLogin getGooglePlayLogin() {
-        return googlePlayLogin;
-    }
-
-    /**
-     * Sets the value of the googlePlayLogin property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link GooglePlayLogin }
-     *     
-     */
-    public void setGooglePlayLogin(GooglePlayLogin value) {
-        this.googlePlayLogin = value;
     }
 
 }

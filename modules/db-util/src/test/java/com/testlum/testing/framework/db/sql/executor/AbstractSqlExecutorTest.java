@@ -1,17 +1,21 @@
 package com.testlum.testing.framework.db.sql.executor;
 
 import com.testlum.testing.framework.db.AbstractStorageOperation.QueryResult;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -197,14 +201,15 @@ abstract class AbstractSqlExecutorTest {
         }
 
         @Test
-        void sqlExceptionRethrown() {
+        void sqlExceptionRethrownWithDatabaseReason() {
             JdbcTemplate mockTemplate = mock(JdbcTemplate.class);
             when(mockTemplate.update(any(PreparedStatementCreator.class)))
                     .thenThrow(new InvalidDataAccessResourceUsageException("Bad SQL. Position: 10"));
             TestSqlExecutor executor = createExecutorWith(mockTemplate);
 
-            assertThrows(InvalidDataAccessResourceUsageException.class,
+            DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
                     () -> executor.executeQueries(List.of("INSERT INTO bad_table VALUES(1)")));
+            assertEquals("Bad SQL.", ex.getMessage());
         }
 
         @Test
@@ -255,6 +260,68 @@ abstract class AbstractSqlExecutorTest {
             TestSqlExecutor executor = new TestSqlExecutor(null);
             Exception ex = new RuntimeException("Generic SQL error without position");
             executor.logSqlException(ex, "SELECT 1");
+        }
+
+        @Test
+        void databaseMessageIsTakenFromRootCause() {
+            TestSqlExecutor executor = new TestSqlExecutor(null);
+            SQLException cause = new SQLException("ERROR: relation \"t\" does not exist");
+            Exception ex = new BadSqlGrammarException("StatementCallback", "SELECT * FROM t", cause);
+
+            assertEquals("ERROR: relation \"t\" does not exist", executor.getDatabaseMessage(ex));
+        }
+
+        @Test
+        void databaseMessageFallsBackToOwnMessageWhenNoCause() {
+            TestSqlExecutor executor = new TestSqlExecutor(null);
+
+            assertEquals("plain error", executor.getDatabaseMessage(new RuntimeException("plain error")));
+        }
+
+        @Test
+        void reasonHasNoErrorPrefixAndNoPosition() {
+            TestSqlExecutor executor = new TestSqlExecutor(null);
+            SQLException cause = new SQLException("ERROR: relation \"t\" does not exist\n  Position: 13");
+            Exception ex = new BadSqlGrammarException("StatementCallback", "SELECT * FROM t", cause);
+
+            assertEquals("relation \"t\" does not exist", executor.getReason(ex));
+        }
+
+        @Test
+        void reasonKeepsDetailLine() {
+            TestSqlExecutor executor = new TestSqlExecutor(null);
+            SQLException cause = new SQLException("ERROR: duplicate key value violates unique constraint \"pk\"\n"
+                    + "  Detail: Key (id)=(1) already exists.");
+            Exception ex = new DuplicateKeyException("PreparedStatementCallback", cause);
+
+            assertEquals("duplicate key value violates unique constraint \"pk\"\n"
+                    + "Detail: Key (id)=(1) already exists.", executor.getReason(ex));
+        }
+
+        @Test
+        void pointerIsUnderBrokenPlace() {
+            TestSqlExecutor executor = new TestSqlExecutor(null);
+            List<String> lines = executor.describeQuery("INSERT INTO qa_3732_users (name) VALUES ('Kate')", 13);
+
+            assertEquals(" ".repeat(19) + "^ position 13", lines.get(1));
+            assertEquals('q', lines.get(0).charAt(19));
+        }
+
+        @Test
+        void longQueryHasNoPointer() {
+            TestSqlExecutor executor = new TestSqlExecutor(null);
+            String query = "SELECT " + "a, ".repeat(60) + "b FROM t";
+
+            assertEquals("Position: 120", executor.describeQuery(query, 120).get(1));
+        }
+
+        @Test
+        void longReasonIsWrapped() {
+            TestSqlExecutor executor = new TestSqlExecutor(null);
+            List<String> lines = executor.wrap("word ".repeat(50).trim());
+
+            assertTrue(lines.size() > 1);
+            assertTrue(lines.stream().allMatch(line -> line.length() <= 100));
         }
     }
 

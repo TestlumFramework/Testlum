@@ -2,6 +2,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.util.ConditionUtil;
 import com.testlum.testing.framework.util.ConfigUtil;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.framework.util.ResultUtil;
@@ -43,6 +44,8 @@ class WaitExecutorTest {
     @Mock
     private WaitUtil waitUtil;
     @Mock
+    private ConditionUtil conditionUtil;
+    @Mock
     private WebDriver driver;
     @Mock
     private ApplicationContext context;
@@ -62,6 +65,8 @@ class WaitExecutorTest {
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "configUtil", configUtil);
         ReflectionTestUtils.setField(executor, "waitUtil", waitUtil);
+        ReflectionTestUtils.setField(executor, "conditionUtil", conditionUtil);
+        lenient().when(conditionUtil.isTrue(any(), any(), any())).thenReturn(true);
     }
 
     @Nested
@@ -220,6 +225,95 @@ class WaitExecutorTest {
 
             verify(logUtil).logException(any(Exception.class));
             verify(resultUtil).setExceptionResult(eq(result), any(Exception.class));
+        }
+    }
+
+    @Nested
+    class ConditionExecution {
+
+        @Test
+        void waitsForVisibleWhenConditionIsTrue() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("10");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Visible visible = new Visible();
+            visible.setLocator("loading-spinner");
+            visible.setCondition("trueCondition");
+            uiWait.setVisible(visible);
+            final CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(true);
+            when(uiUtil.findWebElement(any(), eq("loading-spinner"), any(), any())).thenReturn(element);
+
+            executor.execute(uiWait, result);
+
+            verify(conditionUtil).isTrue(eq("trueCondition"), any(), eq(result));
+            verify(uiUtil).findWebElement(any(), eq("loading-spinner"), any(), any());
+            verify(waitUtil, never()).sleep(anyLong(), any());
+        }
+
+        @Test
+        void skipsVisibleWhenConditionIsFalse() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("10");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Visible visible = new Visible();
+            visible.setLocator("loading-spinner");
+            visible.setCondition("falseCondition");
+            uiWait.setVisible(visible);
+            final CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            when(conditionUtil.isTrue(eq("falseCondition"), any(), eq(result))).thenReturn(false);
+
+            executor.execute(uiWait, result);
+
+            verify(conditionUtil).isTrue(eq("falseCondition"), any(), eq(result));
+            verify(uiUtil, never()).findWebElement(any(), any(), any(), any());
+            verify(waitUtil, never()).sleep(anyLong(), any());
+        }
+
+        @Test
+        void waitsForClickableWhenConditionIsTrue() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("8");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Clickable clickable = new Clickable();
+            clickable.setLocator("submit-btn");
+            clickable.setCondition("trueCondition");
+            uiWait.setClickable(clickable);
+            final CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            WebElement element = mock(WebElement.class);
+            when(element.isDisplayed()).thenReturn(true);
+            when(element.isEnabled()).thenReturn(true);
+            when(uiUtil.findWebElement(any(), eq("submit-btn"), any(), any())).thenReturn(element);
+
+            executor.execute(uiWait, result);
+
+            verify(conditionUtil).isTrue(eq("trueCondition"), any(), eq(result));
+            verify(uiUtil).findWebElement(any(), eq("submit-btn"), any(), any());
+            verify(waitUtil, never()).sleep(anyLong(), any());
+        }
+
+        @Test
+        void skipsClickableWhenConditionIsFalse() {
+            UiWait uiWait = new UiWait();
+            uiWait.setTime("8");
+            uiWait.setUnit(Timeunit.SECONDS);
+            Clickable clickable = new Clickable();
+            clickable.setLocator("submit-btn");
+            clickable.setCondition("falseCondition");
+            uiWait.setClickable(clickable);
+            final CommandResult result = new CommandResult();
+            when(waitUtil.getTimeUnit(any())).thenReturn(TimeUnit.SECONDS);
+            when(conditionUtil.isTrue(eq("falseCondition"), any(), eq(result))).thenReturn(false);
+
+            executor.execute(uiWait, result);
+
+            verify(conditionUtil).isTrue(eq("falseCondition"), any(), eq(result));
+            verify(uiUtil, never()).findWebElement(any(), any(), any(), any());
+            verify(waitUtil, never()).sleep(anyLong(), any());
         }
     }
 

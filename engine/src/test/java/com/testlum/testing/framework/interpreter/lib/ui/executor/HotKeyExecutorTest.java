@@ -3,6 +3,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.util.ConditionUtil;
 import com.testlum.testing.framework.util.LogUtil;
 import com.testlum.testing.framework.util.ResultUtil;
 import com.testlum.testing.framework.util.UiLogUtil;
@@ -41,6 +42,8 @@ class HotKeyExecutorTest {
     @Mock
     private UiUtil uiUtil;
     @Mock
+    private ConditionUtil conditionUtil;
+    @Mock
     private InteractiveWebDriver driver;
     @Mock
     private ApplicationContext context;
@@ -60,6 +63,8 @@ class HotKeyExecutorTest {
         ReflectionTestUtils.setField(executor, "logUtil", logUtil);
         ReflectionTestUtils.setField(executor, "uiLogUtil", uiLogUtil);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);
+        ReflectionTestUtils.setField(executor, "conditionUtil", conditionUtil);
+        lenient().when(conditionUtil.isTrue(any(), any(), any())).thenReturn(true);
     }
 
     @Nested
@@ -325,6 +330,49 @@ class HotKeyExecutorTest {
             when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
 
             assertThrows(DefaultFrameworkException.class, () -> executor.execute(hotKey, result));
+        }
+    }
+
+    @Nested
+    class ConditionExecution {
+
+        @Test
+        void executesSubCommandWhenConditionIsTrue() {
+            HotKey hotKey = new HotKey();
+            Paste paste = new Paste();
+            paste.setCondition("trueCondition");
+            paste.setLocator("input-field");
+            hotKey.getCopyOrPasteOrCut().add(paste);
+
+            final CommandResult subResult = new CommandResult();
+            when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
+            WebElement element = mock(WebElement.class);
+            when(uiUtil.findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION), any()))
+                    .thenReturn(element);
+
+            final CommandResult result = new CommandResult();
+            executor.execute(hotKey, result);
+
+            verify(conditionUtil).isTrue(eq("trueCondition"), any(), eq(subResult));
+            verify(uiUtil).findWebElement(any(), eq("input-field"), any(), eq(ElementChecks.FOR_INTERACTION), any());
+        }
+
+        @Test
+        void skipsSubCommandWhenConditionIsFalse() {
+            HotKey hotKey = new HotKey();
+            Paste paste = new Paste();
+            paste.setCondition("falseCondition");
+            paste.setLocator("input-field");
+            hotKey.getCopyOrPasteOrCut().add(paste);
+
+            final CommandResult subResult = new CommandResult();
+            when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
+            when(conditionUtil.isTrue(eq("falseCondition"), any(), eq(subResult))).thenReturn(false);
+
+            final CommandResult result = new CommandResult();
+            executor.execute(hotKey, result);
+
+            verify(uiUtil, never()).findWebElement(any(), any(), any(), any(), any());
         }
     }
 }

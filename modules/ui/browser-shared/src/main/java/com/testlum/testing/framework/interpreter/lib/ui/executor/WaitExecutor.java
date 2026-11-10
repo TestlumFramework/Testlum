@@ -44,10 +44,9 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
 
     private void wait(final UiWait wait, final String time, final TimeUnit timeUnit, final CommandResult result) {
         try {
-            if (Objects.nonNull(wait.getVisible())) {
-                waitIfVisibleOrClickable(wait.getVisible(), timeUnit.toSeconds(Long.parseLong(time)), result);
-            } else if (Objects.nonNull(wait.getClickable())) {
-                waitIfVisibleOrClickable(wait.getClickable(), timeUnit.toSeconds(Long.parseLong(time)), result);
+            CommandWithLocator command = getCommandWithLocator(wait);
+            if (Objects.nonNull(command)) {
+                waitByCommandWithLocator(command, time, timeUnit, result);
             } else {
                 waitUtil.sleep(Long.parseLong(time), timeUnit);
             }
@@ -55,6 +54,22 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
             logUtil.logException(e);
             resultUtil.setExceptionResult(result, e);
             configUtil.checkIfStopScenarioOnFailure(e);
+        }
+    }
+
+    private CommandWithLocator getCommandWithLocator(final UiWait wait) {
+        if (Objects.nonNull(wait.getVisible())) {
+            return wait.getVisible();
+        }
+        return wait.getClickable();
+    }
+
+    private void waitByCommandWithLocator(final CommandWithLocator command,
+                                          final String time,
+                                          final TimeUnit timeUnit,
+                                          final CommandResult result) {
+        if (conditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), result)) {
+            waitIfVisibleOrClickable(command, timeUnit.toSeconds(Long.parseLong(time)), result);
         }
     }
 

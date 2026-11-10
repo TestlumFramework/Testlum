@@ -56,6 +56,7 @@ import java.time.temporal.TemporalQueries;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
@@ -68,7 +69,7 @@ public class VariableHelperImpl implements VariableHelper {
     private static final String VAR_CONTEXT_LOG = LogFormat.table("Created from");
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
     private static final String JAVA_COMPATIBLE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final String ALLOWED_DATE_LETTERS = "yMdHmsSnuEaZzXx";
+    private static final String ALLOWED_DATE_LETTERS = "yMdhHmsSnuEaZzXx";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
 
@@ -297,17 +298,27 @@ public class VariableHelperImpl implements VariableHelper {
     private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
         validateDateFormatPattern(dateFormatPattern);
         ZonedDateTime now = ZonedDateTime.now();
+        ChronoField hourField = hasHourOfAmPm(dateFormatPattern) ? ChronoField.AMPM_OF_DAY : ChronoField.HOUR_OF_DAY;
         try {
-            return new DateTimeFormatterBuilder().appendPattern(dateFormatPattern)
-                    .parseDefaulting(ChronoField.YEAR_OF_ERA, now.getYear())
-                    .parseDefaulting(ChronoField.MONTH_OF_YEAR, now.getMonthValue())
-                    .parseDefaulting(ChronoField.DAY_OF_MONTH, now.getDayOfMonth())
-                    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-                    .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0).toFormatter();
+            return buildDateTimeFormatter(dateFormatPattern, now, hourField);
         } catch (IllegalArgumentException e) {
             throw new DefaultFrameworkException(String.format(
                     ExceptionMessage.INVALID_DATE_FORMAT_PATTERN, dateFormatPattern, e.getMessage()));
         }
+    }
+
+    private DateTimeFormatter buildDateTimeFormatter(final String pattern, final ZonedDateTime now,
+                                                     final ChronoField hourField) {
+        return new DateTimeFormatterBuilder().appendPattern(pattern)
+                .parseDefaulting(ChronoField.YEAR_OF_ERA, now.getYear())
+                .parseDefaulting(ChronoField.MONTH_OF_YEAR, now.getMonthValue())
+                .parseDefaulting(ChronoField.DAY_OF_MONTH, now.getDayOfMonth())
+                .parseDefaulting(hourField, 0).parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0).toFormatter(Locale.ENGLISH);
+    }
+
+    private boolean hasHourOfAmPm(final String pattern) {
+        return pattern.replaceAll("'[^']*'", "").contains("h");
     }
 
     private String normalizeDateFormat(final String dateFormat) {
@@ -355,7 +366,7 @@ public class VariableHelperImpl implements VariableHelper {
 
     private void verifyPatternFunctionality(final String dateFormatPattern) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormatPattern)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormatPattern, Locale.ENGLISH)
                     .withResolverStyle(ResolverStyle.STRICT);
             ZonedDateTime now = ZonedDateTime.now();
             String formatted = formatter.format(now);

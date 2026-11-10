@@ -112,7 +112,7 @@
         <javax.xml.version>4.0.7</javax.xml.version>
         <jakarta.xml.bind-api.version>4.0.5</jakarta.xml.bind-api.version>
         <xerces.version>2.12.2</xerces.version>
-        <org.json.version>20251224</org.json.version>
+        <org.json.version>20260719</org.json.version>
         <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
         <org.apache.httpcomponents.client.version>4.5.14</org.apache.httpcomponents.client.version>
         <org.apache.httpcomponents.client5.version>5.6</org.apache.httpcomponents.client5.version>

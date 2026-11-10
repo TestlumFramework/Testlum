@@ -141,6 +141,9 @@ public class UiLogUtil {
         } else {
             log.info(LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION, action.getClass().getSimpleName());
         }
+    }
+
+    public void logUICommandDetails(final AbstractCommand action) {
         if (StringUtils.isNotBlank(action.getComment())) {
             log.info(LogMessage.COMMENT_LOG, action.getComment());
         }

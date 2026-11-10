@@ -44,6 +44,8 @@ class NativeAssertExecutorTest {
     @Mock
     private JacksonService jacksonService;
     @Mock
+    private ScenarioInjectionUtil scenarioInjectionUtil;
+    @Mock
     private WebDriver driver;
     @Mock
     private ApplicationContext context;
@@ -69,6 +71,9 @@ class NativeAssertExecutorTest {
         ReflectionTestUtils.setField(executor, "conditionUtil", conditionUtil);
         ReflectionTestUtils.setField(executor, "stringPrettifier", stringPrettifier);
         ReflectionTestUtils.setField(executor, "jacksonService", jacksonService);
+        ReflectionTestUtils.setField(executor, "scenarioInjectionUtil", scenarioInjectionUtil);
+        lenient().when(jacksonService.deepCopy(any(), any())).thenAnswer(inv -> inv.getArgument(0));
+        lenient().when(scenarioInjectionUtil.injectObject(any(), any())).thenAnswer(inv -> inv.getArgument(0));
     }
 
     @Nested
@@ -105,6 +110,37 @@ class NativeAssertExecutorTest {
 
             assertNotNull(result.getSubCommandsResult());
             assertTrue(result.getSubCommandsResult().isEmpty());
+        }
+
+        @Test
+        void doesNotInjectSubCommandWhenConditionIsFalse() {
+            NativeAssert nativeAssert = new NativeAssert();
+            AssertEqual assertEqual = new AssertEqual();
+            assertEqual.getContent().addAll(List.of("${missing}", "value"));
+            nativeAssert.getAttributeOrEqualOrNotEqual().add(assertEqual);
+            CommandResult subResult = new CommandResult();
+            when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
+            when(conditionUtil.isTrue(any(), any(), eq(subResult))).thenReturn(false);
+
+            assertDoesNotThrow(() -> executor.execute(nativeAssert, new CommandResult()));
+
+            verifyNoInteractions(scenarioInjectionUtil);
+        }
+
+        @Test
+        void injectsSubCommandCondition() {
+            NativeAssert nativeAssert = new NativeAssert();
+            AssertEqual assertEqual = new AssertEqual();
+            assertEqual.setCondition("{{cond}}");
+            nativeAssert.getAttributeOrEqualOrNotEqual().add(assertEqual);
+            CommandResult subResult = new CommandResult();
+            scenarioContext.set("cond", "resolved");
+            when(resultUtil.newUiCommandResultInstance(anyInt(), any())).thenReturn(subResult);
+            when(conditionUtil.isTrue(eq("resolved"), eq(scenarioContext), eq(subResult))).thenReturn(false);
+
+            executor.execute(nativeAssert, new CommandResult());
+
+            verify(conditionUtil).isTrue("resolved", scenarioContext, subResult);
         }
     }
 

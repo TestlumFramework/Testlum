@@ -6,6 +6,7 @@ import com.testlum.testing.framework.scenario.ScenarioContext;
 import com.testlum.testing.framework.util.*;
 import com.testlum.testing.model.scenario.AbstractUiCommand;
 import com.testlum.testing.model.scenario.Click;
+import com.testlum.testing.model.scenario.WebAssert;
 import com.testlum.testing.model.scenario.WebRepeat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -101,6 +102,7 @@ class UiExecutorTest {
 
             assertEquals("test comment", result.getComment());
             verify(uiLogUtil).logUICommand(eq(result.getId()), eq(click));
+            verify(uiLogUtil).logUICommandDetails(eq(click));
         }
 
         @Test
@@ -120,13 +122,12 @@ class UiExecutorTest {
         void skipsExecutionWhenConditionIsFalse() {
             Click click = new Click();
             CommandResult result = new CommandResult();
-            when(jacksonService.deepCopy(eq(click), eq(Click.class))).thenReturn(click);
-            when(scenarioInjectionUtil.injectObject(eq(click), eq(scenarioContext))).thenReturn(click);
             when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(false);
 
             executor.apply(click, result);
 
             assertFalse(executor.wasExecuted());
+            verifyNoInteractions(jacksonService, scenarioInjectionUtil);
         }
 
         @Test
@@ -140,6 +141,17 @@ class UiExecutorTest {
 
             assertEquals("repeat comment", result.getComment());
             verifyNoInteractions(jacksonService);
+        }
+
+        @Test
+        void skipsInjectionForWebAssert() {
+            WebAssert webAssert = new WebAssert();
+            CommandResult result = new CommandResult();
+            when(conditionUtil.isTrue(any(), eq(scenarioContext), eq(result))).thenReturn(true);
+
+            executor.apply(webAssert, result);
+
+            verifyNoInteractions(jacksonService, scenarioInjectionUtil);
         }
     }
 

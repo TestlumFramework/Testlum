@@ -4,6 +4,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.UIConfiguration;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.exception.FileLinkingException;
 import com.testlum.testing.framework.interpreter.SendGridUtil;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.util.BrowserUtil;
@@ -1089,6 +1090,42 @@ class ScenarioValidatorTest {
             DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
                     () -> validator.validate(scenario, xmlFile()));
             assertTrue(exception.getMessage().contains("empty.csv"));
+        }
+
+        @Test
+        void throwsWhenRepeatContainsNonExistentInclude() {
+            File scenariosFolder = new File("/tmp/scenarios");
+            when(testResourceSettings.getScenariosFolder()).thenReturn(scenariosFolder);
+            when(fileSearcher.searchFileFromDir(any(File.class), eq(TestResourceSettings.SCENARIO_FILENAME)))
+                    .thenThrow(new FileLinkingException("not found", scenariosFolder));
+
+            Include include = new Include();
+            include.setScenario("non_existent_included_scenario");
+
+            Repeat repeat = new Repeat();
+            repeat.getCommands().add(include);
+
+            Scenario scenario = createScenario(true, repeat);
+            assertThrows(FileLinkingException.class, () -> validator.validate(scenario, xmlFile()));
+        }
+
+        @Test
+        void validatesCommandsInsideRepeatSuccessfully() {
+            File scenariosFolder = new File("/tmp/scenarios");
+            when(testResourceSettings.getScenariosFolder()).thenReturn(scenariosFolder);
+
+            File includedFile = new File("/tmp/scenarios/valid/scenario.xml");
+            when(fileSearcher.searchFileFromDir(any(File.class), eq(TestResourceSettings.SCENARIO_FILENAME)))
+                    .thenReturn(includedFile);
+
+            Include include = new Include();
+            include.setScenario("valid");
+
+            Repeat repeat = new Repeat();
+            repeat.getCommands().add(include);
+
+            Scenario scenario = createScenario(true, repeat);
+            assertDoesNotThrow(() -> validator.validate(scenario, xmlFile()));
         }
 
         @Test

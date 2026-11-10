@@ -319,7 +319,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateRepeat(final File xmlFile, final Repeat repeat) {
         validateRepeatCommand(xmlFile, repeat.getVariations());
-        repeat.getCommands().forEach(command -> validateCommand(command, xmlFile));
+        if (Objects.nonNull(repeat.getCommands())) {
+            repeat.getCommands().forEach(command -> validateCommand(command, xmlFile));
+        }
     }
 
     private void validateRepeat(final File xmlFile, final WebRepeat repeat) {

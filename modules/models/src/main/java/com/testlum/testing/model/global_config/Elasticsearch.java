@@ -8,17 +8,17 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for elasticsearch complex type.
+ * &lt;p&gt;Java class for elasticsearch complex type&lt;/p&gt;.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * &lt;p&gt;The following schema fragment specifies the expected content contained within this class.&lt;/p&gt;
  * 
- * <pre>
+ * &lt;pre&gt;{&#064;code
  * &lt;complexType name="elasticsearch"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.testlum.com/testing/model/global-config}storageIntegration"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="host" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="port" type="{http://www.testlum.com/testing/model/global-config}portNumber"/&gt;
  *         &lt;element name="scheme" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="connectionTimeout" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="socketTimeout" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
@@ -31,7 +31,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
- * </pre>
+ * }&lt;/pre&gt;
  * 
  * 
  */

@@ -19,7 +19,7 @@
             <x:extension base="tns:integration">
                 <x:sequence>
                     <x:element name="host" type="tns:nonEmptyString"/>
-                    <x:element name="port" type="x:positiveInteger"/>
+                    <x:element name="port" type="tns:portNumber"/>
                     <x:element name="username" type="tns:nonEmptyString"/>
                     <x:element name="password" type="tns:nonEmptyString"/>
                     <x:element name="smtpAuth" type="x:boolean"/>

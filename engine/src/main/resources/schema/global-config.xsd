@@ -59,7 +59,7 @@
     <x:complexType name="vault">
         <x:sequence>
             <x:element name="host" type="tns:nonEmptyString"/>
-            <x:element name="port" type="tns:positiveIntegerMin1"/>
+            <x:element name="port" type="tns:portNumber"/>
             <x:element name="scheme" type="tns:nonEmptyString"/>
             <x:element name="token" type="tns:nonEmptyString"/>
         </x:sequence>

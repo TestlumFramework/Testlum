@@ -36,6 +36,14 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="portNumber">
+        <x:restriction base="x:int">
+            <x:minInclusive value="1"/>
+            <x:maxInclusive value="65535"/>
+            <x:pattern value="[1-9][0-9]*"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="jsFileExtension">
         <x:restriction base="x:string">
             <x:pattern value=".+(\.js)"/>

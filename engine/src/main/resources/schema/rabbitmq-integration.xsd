@@ -18,10 +18,10 @@
             <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="host" type="tns:nonEmptyString"/>
-                    <x:element name="port" type="x:int"/>
+                    <x:element name="port" type="tns:portNumber"/>
                     <x:element name="username" type="tns:nonEmptyString"/>
                     <x:element name="password" type="tns:nonEmptyString"/>
-                    <x:element name="apiPort" type="x:int"/>
+                    <x:element name="apiPort" type="tns:portNumber"/>
                     <x:element name="virtualHost" type="tns:nonEmptyString"/>
                     <x:element name="enabledMetrics" type="x:boolean"/>
                 </x:sequence>

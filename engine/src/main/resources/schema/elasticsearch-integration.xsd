@@ -18,7 +18,7 @@
             <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="host" type="tns:nonEmptyString"/>
-                    <x:element name="port" type="x:int"/>
+                    <x:element name="port" type="tns:portNumber"/>
                     <x:element name="scheme" type="tns:nonEmptyString"/>
                     <x:element name="connectionTimeout" type="x:int"/>
                     <x:element name="socketTimeout" type="x:int"/>

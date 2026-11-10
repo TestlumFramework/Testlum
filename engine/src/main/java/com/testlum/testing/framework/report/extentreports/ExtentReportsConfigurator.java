@@ -80,7 +80,7 @@ public class ExtentReportsConfigurator {
         Mongodb mongodbSettings = klovServerGeneratorSettings.getMongoDB();
         String klovServerURL = klovServerGeneratorSettings.getKlovServer().getUrl();
         ExtentKlovReporter extentKlovReporter = new ExtentKlovReporter(projectName);
-        extentKlovReporter.initMongoDbConnection(mongodbSettings.getHost(), mongodbSettings.getPort().intValue());
+        extentKlovReporter.initMongoDbConnection(mongodbSettings.getHost(), mongodbSettings.getPort());
         extentKlovReporter.initKlovServerConnection(klovServerURL);
         extentReports.attachReporter(extentKlovReporter);
     }

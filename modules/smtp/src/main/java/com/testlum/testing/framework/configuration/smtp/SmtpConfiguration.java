@@ -56,7 +56,7 @@ public class SmtpConfiguration {
     private JavaMailSenderImpl createJavaMailSender(final Smtp smtp) {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(smtp.getHost());
-        javaMailSender.setPort(smtp.getPort().intValue());
+        javaMailSender.setPort(smtp.getPort());
         javaMailSender.setUsername(smtp.getUsername());
         javaMailSender.setPassword(smtp.getPassword());
         setSMTPProperties(javaMailSender.getJavaMailProperties(), smtp);
@@ -67,7 +67,7 @@ public class SmtpConfiguration {
         properties.put("mail.transport.protocol", SMTP_PROTOCOL);
         properties.put("mail.smtp.auth", smtpSettings.isSmtpAuth());
         properties.put("mail.smtp.starttls.enable", smtpSettings.isSmtpStarttlsEnable());
-        if (smtpSettings.getPort().intValue() == SSL_PORT) {
+        if (smtpSettings.getPort() == SSL_PORT) {
             properties.put("mail.smtp.ssl.enable", true);
         }
         properties.put("mail.smtp.connectiontimeout", TIMEOUT);

@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.math.BigInteger;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
@@ -54,7 +53,7 @@ class SmtpConfigurationTest {
         smtp.setAlias("SMTP_465");
         smtp.setEnabled(true);
         smtp.setHost("smtp.ukr.net");
-        smtp.setPort(BigInteger.valueOf(465));
+        smtp.setPort(465);
         smtp.setUsername("user@ukr.net");
         smtp.setPassword("secret");
         smtp.setSmtpAuth(true);
@@ -94,7 +93,7 @@ class SmtpConfigurationTest {
         smtp.setAlias("SMTP_587");
         smtp.setEnabled(true);
         smtp.setHost("smtp.gmail.com");
-        smtp.setPort(BigInteger.valueOf(587));
+        smtp.setPort(587);
         smtp.setUsername("user@gmail.com");
         smtp.setPassword("secret");
         smtp.setSmtpAuth(true);

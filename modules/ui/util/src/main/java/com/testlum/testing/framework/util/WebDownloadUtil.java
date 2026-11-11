@@ -10,7 +10,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +40,32 @@ public class WebDownloadUtil {
     private static final int DUPLICATE_INDEX_GROUP = 2;
     private static final int EXTENSION_GROUP = 3;
     private static final int INITIAL_DUPLICATE_INDEX = 1;
+    private static final int UUID_PREFIX_LENGTH = 8;
+
+    private final ConcurrentMap<Path, Object> scenarioLocks = new ConcurrentHashMap<>();
+
+    public Object getScenarioLock(final Path scenarioDir) {
+        if (scenarioDir == null) {
+            return new Object();
+        }
+        return scenarioLocks.computeIfAbsent(scenarioDir.toAbsolutePath().normalize(), k -> new Object());
+    }
+
+    public Path createDownloadDir(final Path scenarioDir, final String browserAlias) {
+        if (scenarioDir == null) {
+            return null;
+        }
+        String prefix = ".downloads_" + (browserAlias != null ? browserAlias : "browser")
+                + "_" + System.currentTimeMillis() + "_"
+                + UUID.randomUUID().toString().substring(0, UUID_PREFIX_LENGTH);
+        Path downloadDir = scenarioDir.resolve(prefix);
+        try {
+            return Files.createDirectories(downloadDir);
+        } catch (IOException exception) {
+            log.warn("Failed to create download dir {}, falling back to scenarioDir", downloadDir, exception);
+            return scenarioDir;
+        }
+    }
 
     public Path resolveScenarioDir(final File scenarioFile) {
         if (scenarioFile == null) {
@@ -65,12 +96,91 @@ public class WebDownloadUtil {
     }
 
     public void waitForDownloadIfInitiated(final Path directory, final Set<String> filesBeforeAction) {
-        if (directory == null || !Files.exists(directory)) {
+        waitForDownloadIfInitiated(directory, directory, filesBeforeAction, null);
+    }
+
+    public void waitForDownloadIfInitiated(final Path downloadDir,
+                                          final Path scenarioDir,
+                                          final Set<String> filesBeforeAction,
+                                          final Set<Path> downloadedFiles) {
+        if (downloadDir == null || scenarioDir == null || !Files.exists(downloadDir)) {
             return;
         }
-        if (isDownloadDetected(directory, filesBeforeAction)) {
-            waitForActiveDownloads(directory);
-            normalizeDuplicateFileNames(directory, filesBeforeAction);
+        if (isDownloadDetected(downloadDir, filesBeforeAction)) {
+            waitForActiveDownloads(downloadDir);
+            processCompletedDownloads(downloadDir, scenarioDir, filesBeforeAction, downloadedFiles);
+        }
+    }
+
+    private void processCompletedDownloads(final Path downloadDir,
+                                           final Path scenarioDir,
+                                           final Set<String> filesBeforeAction,
+                                           final Set<Path> downloadedFiles) {
+        if (downloadDir.equals(scenarioDir)) {
+            normalizeDuplicateFileNames(scenarioDir, filesBeforeAction);
+            trackDirectDownloads(scenarioDir, filesBeforeAction, downloadedFiles);
+        } else {
+            normalizeDuplicateFileNames(downloadDir, filesBeforeAction);
+            transferDownloadedFiles(downloadDir, scenarioDir, downloadedFiles);
+        }
+    }
+
+    private void trackDirectDownloads(final Path scenarioDir,
+                                      final Set<String> filesBeforeAction,
+                                      final Set<Path> downloadedFiles) {
+        if (downloadedFiles == null) {
+            return;
+        }
+        for (String name : collectFileNames(scenarioDir)) {
+            if (!filesBeforeAction.contains(name) && !isTestArtifact(name)) {
+                downloadedFiles.add(scenarioDir.resolve(name));
+            }
+        }
+    }
+
+    private void transferDownloadedFiles(final Path downloadDir,
+                                         final Path scenarioDir,
+                                         final Set<Path> downloadedFiles) {
+        synchronized (getScenarioLock(scenarioDir)) {
+            try (Stream<Path> stream = Files.list(downloadDir)) {
+                List<Path> files = stream.filter(Files::isRegularFile)
+                        .filter(path -> !isTempDownloadFile(path))
+                        .toList();
+                for (Path source : files) {
+                    moveDownloadedFile(source, scenarioDir, downloadedFiles);
+                }
+            } catch (IOException exception) {
+                log.error("Failed to transfer files from {} to {}", downloadDir, scenarioDir, exception);
+            }
+        }
+    }
+
+    private void moveDownloadedFile(final Path source,
+                                    final Path targetDirectory,
+                                    final Set<Path> downloadedFiles) {
+        try {
+            Path targetPath = resolveTargetTransferPath(source, targetDirectory);
+            Files.move(source, targetPath);
+            trackDownloadedFile(downloadedFiles, targetPath);
+            log.info("Transferred downloaded file to scenario: {} -> {}",
+                    source.getFileName(), targetPath.getFileName());
+        } catch (IOException exception) {
+            log.error("Failed to move file to scenario directory: {}", source, exception);
+        }
+    }
+
+    private Path resolveTargetTransferPath(final Path source, final Path targetDirectory) {
+        String fileName = source.getFileName().toString();
+        Path targetPath = targetDirectory.resolve(fileName);
+        if (Files.exists(targetPath)) {
+            return resolveUniquePathForExistingFile(targetDirectory, fileName);
+        }
+        return targetPath;
+    }
+
+    private void trackDownloadedFile(final Set<Path> downloadedFiles, final Path targetPath) {
+        if (downloadedFiles != null) {
+            downloadedFiles.add(targetPath);
         }
     }
 
@@ -218,6 +328,12 @@ public class WebDownloadUtil {
     }
 
     public void moveSystemDownloadsToScenarioDir(final Path scenarioDirectory, final long startTimeEpochMs) {
+        moveSystemDownloadsToScenarioDir(scenarioDirectory, startTimeEpochMs, null);
+    }
+
+    public void moveSystemDownloadsToScenarioDir(final Path scenarioDirectory,
+                                                final long startTimeEpochMs,
+                                                final Set<Path> downloadedFiles) {
         if (scenarioDirectory == null) {
             return;
         }
@@ -225,34 +341,30 @@ public class WebDownloadUtil {
         if (!Files.isDirectory(systemDownloadsDirectory)) {
             return;
         }
-        processSafariDownloads(systemDownloadsDirectory, scenarioDirectory, startTimeEpochMs);
+        processSafariDownloads(systemDownloadsDirectory, scenarioDirectory, startTimeEpochMs, downloadedFiles);
     }
 
     void processSafariDownloads(final Path sourceDirectory, final Path targetDirectory, final long startTime) {
-        try (Stream<Path> stream = Files.list(sourceDirectory)) {
-            stream.filter(Files::isRegularFile)
-                    .filter(path -> isEligibleSafariFile(path, startTime))
-                    .forEach(path -> moveFile(path, targetDirectory));
-        } catch (IOException exception) {
-            log.warn("Failed to scan system Downloads folder", exception);
+        processSafariDownloads(sourceDirectory, targetDirectory, startTime, null);
+    }
+
+    void processSafariDownloads(final Path sourceDirectory,
+                                final Path targetDirectory,
+                                final long startTime,
+                                final Set<Path> downloadedFiles) {
+        synchronized (getScenarioLock(targetDirectory)) {
+            try (Stream<Path> stream = Files.list(sourceDirectory)) {
+                stream.filter(Files::isRegularFile)
+                        .filter(path -> isEligibleSafariFile(path, startTime))
+                        .forEach(path -> moveDownloadedFile(path, targetDirectory, downloadedFiles));
+            } catch (IOException exception) {
+                log.warn("Failed to scan system Downloads folder", exception);
+            }
         }
     }
 
     private boolean isEligibleSafariFile(final Path path, final long startTime) {
         return !isTempDownloadFile(path) && getFileLastModifiedTime(path) > startTime;
-    }
-
-    private void moveFile(final Path source, final Path targetDirectory) {
-        try {
-            String fileName = source.getFileName().toString();
-            Path targetPath = targetDirectory.resolve(fileName);
-            if (Files.exists(targetPath)) {
-                targetPath = resolveUniquePathForExistingFile(targetDirectory, fileName);
-            }
-            Files.move(source, targetPath);
-        } catch (IOException exception) {
-            log.error("Failed to move file from Downloads: {}", source, exception);
-        }
     }
 
     private Path resolveUniquePathForExistingFile(final Path directory, final String fileName) {
@@ -273,11 +385,44 @@ public class WebDownloadUtil {
         return resolveUniqueDuplicatePath(directory, base, INITIAL_DUPLICATE_INDEX, ext);
     }
 
-    public void cleanupDownloadedFiles(final Path directory, final Set<String> existingFiles, final boolean keepFiles) {
+    public void cleanupDownloadedFiles(final Path directory,
+                                      final Set<String> existingFiles,
+                                      final boolean keepFiles) {
+        cleanupDownloadedFiles(directory, existingFiles, keepFiles, null);
+    }
+
+    public void cleanupDownloadedFiles(final Path directory,
+                                      final Set<String> existingFiles,
+                                      final boolean keepFiles,
+                                      final Set<Path> downloadedFiles) {
         if (keepFiles || directory == null || !Files.exists(directory)) {
             return;
         }
+        if (downloadedFiles != null) {
+            downloadedFiles.forEach(this::deleteFile);
+            return;
+        }
         performCleanup(directory, existingFiles);
+    }
+
+    public void deleteDownloadDir(final Path downloadDir, final Path scenarioDir) {
+        if (downloadDir == null || downloadDir.equals(scenarioDir) || !Files.exists(downloadDir)) {
+            return;
+        }
+        try (Stream<Path> stream = Files.walk(downloadDir)) {
+            stream.sorted(Comparator.reverseOrder())
+                    .forEach(this::deleteFileSilently);
+        } catch (IOException exception) {
+            log.warn("Failed to delete isolated download directory: {}", downloadDir, exception);
+        }
+    }
+
+    private void deleteFileSilently(final Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException exception) {
+            log.debug("Failed to delete file silently: {}", path, exception);
+        }
     }
 
     private void performCleanup(final Path directory, final Set<String> existingFiles) {

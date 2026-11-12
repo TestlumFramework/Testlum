@@ -27,10 +27,9 @@ import org.springframework.context.ApplicationContext;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.testlum.testing.framework.constant.ExceptionMessage.*;
@@ -61,7 +60,7 @@ public class ScenarioRunner {
     private final InterpreterScanner interpreterScanner;
     private final WebDownloadUtil webDownloadUtil;
 
-    private final Set<Path> downloadedFiles = Collections.synchronizedSet(new HashSet<>());
+    private final Set<Path> downloadedFiles = ConcurrentHashMap.newKeySet();
     private Path scenarioDir;
     private Path downloadDir;
     private Set<String> preExistingFiles;

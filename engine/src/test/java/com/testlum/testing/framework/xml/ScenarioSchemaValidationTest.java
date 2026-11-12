@@ -154,4 +154,83 @@ class ScenarioSchemaValidationTest {
                 "    <wait comment=\"" + COMMENT + "\" time=\"invalid_time\"/>");
         assertThrows(RuntimeException.class, () -> parser.process(file));
     }
+
+    @Test
+    void acceptsVarWithAlphanumericHyphenUnderscoreDotInName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <var comment=\"" + COMMENT + "\" name=\"valid-var_1.name\">\n"
+                + "        <constant value=\"1\"/>\n"
+                + "    </var>\n"
+                + "    <web comment=\"" + COMMENT + "\">\n"
+                + "        <var comment=\"" + COMMENT + "\" name=\"web_var-2.val\">\n"
+                + "            <constant value=\"2\"/>\n"
+                + "        </var>\n"
+                + "    </web>");
+        Scenario scenario = parser.process(file);
+        assertNotNull(scenario);
+        assertEquals(2, scenario.getCommands().size());
+    }
+
+    @Test
+    void rejectsVarWithSpecialCharactersInName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <var comment=\"" + COMMENT + "\" name=\"my$#Var3\">\n"
+                + "        <constant value=\"2\"/>\n"
+                + "    </var>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsVarWithSpacesInName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <var comment=\"" + COMMENT + "\" name=\"my var\">\n"
+                + "        <constant value=\"2\"/>\n"
+                + "    </var>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsWebVarWithSpecialCharactersInName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <web comment=\"" + COMMENT + "\">\n"
+                + "        <var comment=\"" + COMMENT + "\" name=\"web$var\">\n"
+                + "            <constant value=\"2\"/>\n"
+                + "        </var>\n"
+                + "    </web>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsNativeVarWithSpecialCharactersInName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <native comment=\"" + COMMENT + "\">\n"
+                + "        <var comment=\"" + COMMENT + "\" name=\"native#var\">\n"
+                + "            <constant value=\"2\"/>\n"
+                + "        </var>\n"
+                + "    </native>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsAiWithSpecialCharactersInName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <ai comment=\"" + COMMENT + "\" name=\"ai$var\" prompt=\"hello\"/>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsConditionWithSpecialCharactersInName(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <condition comment=\"" + COMMENT + "\" name=\"cond$var\" spel=\"1 == 1\"/>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsFromPathWithSpecialCharactersInFromVar(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <var comment=\"" + COMMENT + "\" name=\"validVar\">\n"
+                + "        <path value=\"/data\" fromVar=\"invalid$var\"/>\n"
+                + "    </var>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
 }

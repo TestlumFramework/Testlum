@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.testlum.testing.framework.constant.ExceptionMessage.*;
@@ -59,7 +60,9 @@ public class ScenarioRunner {
     private final InterpreterScanner interpreterScanner;
     private final WebDownloadUtil webDownloadUtil;
 
+    private final Set<Path> downloadedFiles = ConcurrentHashMap.newKeySet();
     private Path scenarioDir;
+    private Path downloadDir;
     private Set<String> preExistingFiles;
     private long executionStartTime;
 
@@ -79,6 +82,9 @@ public class ScenarioRunner {
         this.webDownloadUtil = ctx.getBean(WebDownloadUtil.class);
         this.stopScenarioOnFailure = ctx.getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
         this.scenarioDir = webDownloadUtil.resolveScenarioDir(scenarioArguments.getFile());
+        this.downloadDir = scenarioArguments.isContainsUiSteps() && nonNull(scenarioArguments.getBrowser())
+                ? webDownloadUtil.createDownloadDir(scenarioDir, scenarioArguments.getBrowser())
+                : null;
         this.dependencies = createDependencies();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
@@ -138,13 +144,17 @@ public class ScenarioRunner {
     }
 
     private void cleanupDownloadedFiles() {
-        AbstractBrowser browserConfig = browserUtil.getBrowserBy(
-                scenarioArguments.getEnvironment(), scenarioArguments.getBrowser()).orElse(null);
-        if (browserConfig instanceof Safari) {
-            webDownloadUtil.moveSystemDownloadsToScenarioDir(scenarioDir, executionStartTime);
+        try {
+            AbstractBrowser browserConfig = browserUtil.getBrowserBy(
+                    scenarioArguments.getEnvironment(), scenarioArguments.getBrowser()).orElse(null);
+            if (browserConfig instanceof Safari) {
+                webDownloadUtil.moveSystemDownloadsToScenarioDir(scenarioDir, executionStartTime, downloadedFiles);
+            }
+            boolean keep = nonNull(browserConfig) && browserConfig.isKeepDownloadedFiles();
+            webDownloadUtil.cleanupDownloadedFiles(scenarioDir, preExistingFiles, keep, downloadedFiles);
+        } finally {
+            webDownloadUtil.deleteDownloadDir(downloadDir, scenarioDir);
         }
-        boolean keep = nonNull(browserConfig) && browserConfig.isKeepDownloadedFiles();
-        webDownloadUtil.cleanupDownloadedFiles(scenarioDir, preExistingFiles, keep);
     }
 
     private void quitUiDrivers() {
@@ -177,14 +187,15 @@ public class ScenarioRunner {
     }
 
     private void executeCommand(final AbstractCommand command, final CommandResult result) {
-        Set<String> filesBefore = webDownloadUtil.snapshotFileNames(scenarioDir);
+        Path monitorDir = nonNull(downloadDir) ? downloadDir : scenarioDir;
+        Set<String> filesBefore = webDownloadUtil.snapshotFileNames(monitorDir);
         try {
             getInterpreterOrThrow(command).apply(command, result);
         } catch (Exception e) {
             resultUtil.setExceptionResult(result, e);
         }
         if (scenarioArguments.isContainsUiSteps()) {
-            webDownloadUtil.waitForDownloadIfInitiated(scenarioDir, filesBefore);
+            webDownloadUtil.waitForDownloadIfInitiated(monitorDir, scenarioDir, filesBefore, downloadedFiles);
         }
     }
 
@@ -264,8 +275,9 @@ public class ScenarioRunner {
     }
 
     private WebDriver createWebDriver() {
+        Path targetDownloadPath = nonNull(downloadDir) ? downloadDir : scenarioDir;
         return browserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
-                .map(config -> webDriverFactory.createDriver(config, scenarioDir))
+                .map(config -> webDriverFactory.createDriver(config, targetDownloadPath))
                 .orElse(new MockDriver(WEB_DRIVER_NOT_INIT));
     }
 

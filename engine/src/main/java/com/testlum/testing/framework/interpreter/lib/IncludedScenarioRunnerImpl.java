@@ -70,14 +70,28 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
         Scenario includedScenario = xmlParsers.forScenario().process(includedFile, scenarioValidator);
         InterpreterDependencies includedDeps = buildIncludedDependencies(includedFile, dependencies);
         try {
-            List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-            for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
-                processEachCommand(command, includedDeps, subCommandsResult);
-            }
-            resultUtil.setExecutionResultIfSubCommandsFailed(result);
+            executeIncludedCommands(includedScenario, includedDeps, result);
         } finally {
-            dependencies.setAuthorization(includedDeps.getAuthorization());
+            syncDependencies(dependencies, includedDeps);
         }
+    }
+
+    private void executeIncludedCommands(final Scenario includedScenario,
+                                         final InterpreterDependencies includedDeps,
+                                         final CommandResult result) {
+        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
+        for (AbstractCommand command : authCommandExpander.expand(includedScenario.getCommands())) {
+            processEachCommand(command, includedDeps, subCommandsResult);
+        }
+        resultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void syncDependencies(final InterpreterDependencies dependencies,
+                                  final InterpreterDependencies includedDeps) {
+        if (dependencies.getPosition() != null && includedDeps.getPosition() != null) {
+            dependencies.getPosition().addAndGet(includedDeps.getPosition().get());
+        }
+        dependencies.setAuthorization(includedDeps.getAuthorization());
     }
 
     private InterpreterDependencies buildIncludedDependencies(final File includedFile,

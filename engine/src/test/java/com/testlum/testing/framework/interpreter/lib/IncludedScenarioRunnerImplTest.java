@@ -141,8 +141,66 @@ class IncludedScenarioRunnerImplTest {
             assertEquals(mainDeps.getContext(), capturedDeps.getContext());
             assertEquals(1, capturedDeps.getPosition().get(),
                     "Included scenario must use its own isolated step position starting from 1");
+            assertEquals(1, mainDeps.getPosition().get(),
+                    "Parent position must be advanced by the number of steps executed in included scenario");
             assertEquals(mainDeps.getScenarioContext(), capturedDeps.getScenarioContext());
             verify(resultUtil).setExecutionResultIfSubCommandsFailed(result);
+        }
+
+        @Test
+        void propagatesExecutedStepsCountBackToParentDependencies() {
+            final File scenariosFolder = new File("/tests/scenarios");
+            when(testResourceSettings.getScenariosFolder()).thenReturn(scenariosFolder);
+
+            final Include include = new Include();
+            include.setScenario("included_folder/scenario.xml");
+
+            final File includedFile = new File("/tests/scenarios/included_folder/scenario.xml");
+            when(fileSearcher.searchFileFromDir(any(File.class), eq(TestResourceSettings.SCENARIO_FILENAME)))
+                    .thenReturn(includedFile);
+
+            @SuppressWarnings("unchecked")
+            final XMLParser<Scenario> scenarioParser = mock(XMLParser.class);
+            when(xmlParsers.forScenario()).thenReturn(scenarioParser);
+
+            final Scenario scenario = new Scenario();
+            final AbstractCommand cmd1 = mock(AbstractCommand.class);
+            final AbstractCommand cmd2 = mock(AbstractCommand.class);
+            scenario.getCommands().addAll(List.of(cmd1, cmd2));
+            when(scenarioParser.process(includedFile, scenarioValidator)).thenReturn(scenario);
+            when(authCommandExpander.expand(anyList())).thenReturn(List.of(cmd1, cmd2));
+
+            final ApplicationContext ctx = mock(ApplicationContext.class);
+            final AutowireCapableBeanFactory beanFactory = mock(AutowireCapableBeanFactory.class);
+            when(ctx.getAutowireCapableBeanFactory()).thenReturn(beanFactory);
+
+            final File mainFile = new File("/tests/scenarios/main/scenario.xml");
+            final InterpreterDependencies mainDeps = InterpreterDependencies.builder()
+                    .context(ctx)
+                    .file(mainFile)
+                    .scenarioContext(new ScenarioContext(new HashMap<>()))
+                    .position(new AtomicInteger(3))
+                    .environment("local")
+                    .build();
+
+            final CommandResult result = new CommandResult();
+            result.setSubCommandsResult(new ArrayList<>());
+            when(resultUtil.newCommandResultInstance(any(AtomicInteger.class), any(AbstractCommand.class)))
+                    .thenAnswer(inv -> {
+                        inv.getArgument(0, AtomicInteger.class).incrementAndGet();
+                        return new CommandResult();
+                    });
+
+            @SuppressWarnings("unchecked")
+            final AbstractInterpreter<AbstractCommand> mockInterpreter = mock(AbstractInterpreter.class);
+            when(interpreterProvider.getAppropriateInterpreter(
+                    any(AbstractCommand.class), any(InterpreterDependencies.class)))
+                    .thenReturn(mockInterpreter);
+
+            runner.run(include, mainDeps, result);
+
+            assertEquals(5, mainDeps.getPosition().get(),
+                    "Parent position started at 3 and must advance to 5 after executing 2 steps in include");
         }
 
         @Test

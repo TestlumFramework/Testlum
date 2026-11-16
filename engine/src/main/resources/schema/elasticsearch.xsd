@@ -35,7 +35,7 @@
         <x:complexContent>
             <x:extension base="tns:elasticSearchRequest">
                 <x:sequence>
-                    <x:element name="body" type="tns:body" minOccurs="0"/>
+                    <x:element name="body" type="tns:bodyWithoutMultipart" minOccurs="0"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>

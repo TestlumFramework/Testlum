@@ -594,10 +594,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
-        ElasticSearchResponse elasticSearchResponse = httpUtil.getESHttpMethodMetadata(elasticsearch)
-                .getElasticSearchRequest().getResponse();
+        ElasticSearchRequest request = httpUtil.getESHttpMethodMetadata(elasticsearch)
+                .getElasticSearchRequest();
+        ElasticSearchResponse elasticSearchResponse = request.getResponse();
         if (Objects.nonNull(elasticSearchResponse) && StringUtils.isNotBlank(elasticSearchResponse.getFile())) {
             validateFileIfExist(xmlFile, elasticSearchResponse.getFile());
+        }
+        if (request instanceof ElasticSearchRequestWithBody commandWithBody) {
+            validateBodyWithoutMultipart(xmlFile, commandWithBody.getBody(), "elasticsearch");
         }
     }
 
@@ -667,8 +671,17 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
 
         if (sendgridInfo instanceof SendgridWithBody commandWithBody) {
-            Body body = commandWithBody.getBody();
-            if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
+            validateBodyWithoutMultipart(xmlFile, commandWithBody.getBody(), "sendgrid");
+        }
+    }
+
+    private void validateBodyWithoutMultipart(final File xmlFile, final Body body, final String commandName) {
+        if (Objects.nonNull(body)) {
+            if (Objects.nonNull(body.getMultipart())) {
+                throw new DefaultFrameworkException(
+                        ExceptionMessage.MULTIPART_NOT_SUPPORTED.formatted(commandName));
+            }
+            if (Objects.nonNull(body.getFrom())) {
                 validateFileIfExist(xmlFile, body.getFrom().getFile());
             }
         }

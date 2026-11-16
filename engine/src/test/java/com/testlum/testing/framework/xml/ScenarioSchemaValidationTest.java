@@ -154,4 +154,79 @@ class ScenarioSchemaValidationTest {
                 "    <wait comment=\"" + COMMENT + "\" time=\"invalid_time\"/>");
         assertThrows(RuntimeException.class, () -> parser.process(file));
     }
+
+    @Test
+    void rejectsSendgridWithMultipartBody(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <sendgrid comment=\"" + COMMENT + "\" alias=\"DEFAULT\">\n"
+                + "        <post endpoint=\"/mail/send\">\n"
+                + "            <body>\n"
+                + "                <multipart>\n"
+                + "                    <param name=\"key\" data=\"value\"/>\n"
+                + "                </multipart>\n"
+                + "            </body>\n"
+                + "        </post>\n"
+                + "    </sendgrid>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void rejectsElasticsearchWithMultipartBody(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <elasticsearch comment=\"" + COMMENT + "\" alias=\"DEFAULT\">\n"
+                + "        <post endpoint=\"/index/_doc\">\n"
+                + "            <body>\n"
+                + "                <multipart>\n"
+                + "                    <param name=\"key\" data=\"value\"/>\n"
+                + "                </multipart>\n"
+                + "            </body>\n"
+                + "        </post>\n"
+                + "    </elasticsearch>");
+        assertThrows(RuntimeException.class, () -> parser.process(file));
+    }
+
+    @Test
+    void acceptsSendgridWithRawBody(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <sendgrid comment=\"" + COMMENT + "\" alias=\"DEFAULT\">\n"
+                + "        <post endpoint=\"/mail/send\">\n"
+                + "            <body>\n"
+                + "                <raw>{\"content\": \"test\"}</raw>\n"
+                + "            </body>\n"
+                + "        </post>\n"
+                + "    </sendgrid>");
+        Scenario scenario = parser.process(file);
+        assertNotNull(scenario);
+    }
+
+    @Test
+    void acceptsElasticsearchWithRawBody(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <elasticsearch comment=\"" + COMMENT + "\" alias=\"DEFAULT\">\n"
+                + "        <post endpoint=\"/index/_doc\">\n"
+                + "            <body>\n"
+                + "                <raw>{\"title\": \"test\"}</raw>\n"
+                + "            </body>\n"
+                + "        </post>\n"
+                + "    </elasticsearch>");
+        Scenario scenario = parser.process(file);
+        assertNotNull(scenario);
+    }
+
+    @Test
+    void acceptsHttpWithMultipartBody(@TempDir final Path tempDir) throws IOException {
+        File file = createScenarioFile(tempDir,
+                "    <http comment=\"" + COMMENT + "\" alias=\"DEFAULT\">\n"
+                + "        <post endpoint=\"/upload\">\n"
+                + "            <response code=\"200\"/>\n"
+                + "            <body>\n"
+                + "                <multipart>\n"
+                + "                    <param name=\"field\" data=\"value\"/>\n"
+                + "                </multipart>\n"
+                + "            </body>\n"
+                + "        </post>\n"
+                + "    </http>");
+        Scenario scenario = parser.process(file);
+        assertNotNull(scenario);
+    }
 }

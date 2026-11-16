@@ -1,6 +1,7 @@
 package com.testlum.testing.framework.interpreter;
 
 import com.testlum.log.LogFormat;
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -183,6 +184,9 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
             return null;
         }
         Body body = requestWithBody.getBody();
+        if (Objects.nonNull(body) && Objects.nonNull(body.getMultipart())) {
+            throw new DefaultFrameworkException(ExceptionMessage.MULTIPART_NOT_SUPPORTED.formatted("elasticsearch"));
+        }
         return httpUtil.extractBody(body, contentType, this, dependencies);
     }
 

@@ -106,6 +106,18 @@
         </x:choice>
     </x:complexType>
 
+    <x:complexType name="bodyWithoutMultipart">
+        <x:complexContent>
+            <x:restriction base="tns:body">
+                <x:choice>
+                    <x:element name="param" type="tns:param" minOccurs="0" maxOccurs="unbounded"/>
+                    <x:element name="from" type="tns:file" minOccurs="0"/>
+                    <x:element name="raw" type="x:string" minOccurs="0"/>
+                </x:choice>
+            </x:restriction>
+        </x:complexContent>
+    </x:complexType>
+
     <x:complexType name="param">
         <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="data" type="tns:nonEmptyString" use="required"/>

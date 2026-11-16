@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.interpreter;
 
+import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.configuration.ConfigProvider;
@@ -13,8 +14,11 @@ import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.scenario.Body;
+import com.testlum.testing.model.scenario.Header;
 import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Multipart;
+import com.testlum.testing.model.scenario.QueryParam;
+import com.testlum.testing.model.scenario.SendgridInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -112,14 +116,52 @@ class SendGridInterpreterTest {
         void addsMetadataCorrectly() throws Exception {
             final CommandResult result = new CommandResult();
             final Method method = SendGridInterpreter.class.getDeclaredMethod(
-                    "addSendGridMetaData", String.class, String.class, Map.class,
-                    String.class, List.class, CommandResult.class);
+                    "addSendGridMetaData", String.class, String.class, Map.class, String.class, List.class,
+                    CommandResult.class);
             method.setAccessible(true);
-            method.invoke(interpreter, "alias", "POST", Map.of("key", "val"), "/v3/mail/send", List.of(), result);
+            method.invoke(interpreter, "alias", "POST", Map.of("key", "val"), "/v3/mail/send",
+                    List.of("param=val"), result);
 
             assertEquals("alias", result.getMetadata().get("Alias"));
             assertEquals("POST", result.getMetadata().get("HTTP method"));
             assertEquals("/v3/mail/send", result.getMetadata().get("Endpoint"));
+            assertEquals(List.of("key: val"), result.getMetadata().get("Additional headers"));
+            assertEquals("param=val", result.getMetadata().get("Query parameters"));
+        }
+    }
+
+    @Nested
+    class GetRequest {
+
+        @Test
+        void populatesRequestFieldsAndHeaders() throws Exception {
+            final Method method = SendGridInterpreter.class.getDeclaredMethod(
+                    "getRequest", String.class, com.sendgrid.Method.class, SendgridInfo.class,
+                    String.class, Map.class);
+            method.setAccessible(true);
+
+            final SendgridInfo sendgridInfo = mock(SendgridInfo.class);
+            final QueryParam qp = new QueryParam();
+            qp.setKey("start_date");
+            qp.setValue("2026-01-01");
+            when(sendgridInfo.getQueryParam()).thenReturn(List.of(qp));
+
+            final Map<String, String> requestHeaders = Map.of(
+                    "Authorization", "Bearer SG.testKey",
+                    "X-Test-Request", "test-val"
+            );
+
+            final Request request = (Request) method.invoke(
+                    interpreter, "{\"body\":\"test\"}", com.sendgrid.Method.POST,
+                    sendgridInfo, "/v3/mail/send", requestHeaders);
+
+            assertNotNull(request);
+            assertEquals(com.sendgrid.Method.POST, request.getMethod());
+            assertEquals("/v3/mail/send", request.getEndpoint());
+            assertEquals("{\"body\":\"test\"}", request.getBody());
+            assertEquals("2026-01-01", request.getQueryParams().get("start_date"));
+            assertEquals("Bearer SG.testKey", request.getHeaders().get("Authorization"));
+            assertEquals("test-val", request.getHeaders().get("X-Test-Request"));
         }
     }
 
@@ -141,12 +183,12 @@ class SendGridInterpreterTest {
 
             final Method method = SendGridInterpreter.class.getDeclaredMethod(
                     "compare", com.testlum.testing.model.scenario.Response.class,
-                    Map.class, Response.class, CommandResult.class);
+                    Response.class, CommandResult.class);
             method.setAccessible(true);
 
             assertThrows(Exception.class, () -> {
                 try {
-                    method.invoke(interpreter, expected, Collections.emptyMap(), actual, result);
+                    method.invoke(interpreter, expected, actual, result);
                 } catch (Exception e) {
                     throw e.getCause() != null ? (Exception) e.getCause() : e;
                 }
@@ -168,12 +210,12 @@ class SendGridInterpreterTest {
 
             final Method method = SendGridInterpreter.class.getDeclaredMethod(
                     "compare", com.testlum.testing.model.scenario.Response.class,
-                    Map.class, Response.class, CommandResult.class);
+                    Response.class, CommandResult.class);
             method.setAccessible(true);
 
             assertThrows(Exception.class, () -> {
                 try {
-                    method.invoke(interpreter, expected, Collections.emptyMap(), actual, result);
+                    method.invoke(interpreter, expected, actual, result);
                 } catch (Exception e) {
                     throw e.getCause() != null ? (Exception) e.getCause() : e;
                 }
@@ -195,10 +237,99 @@ class SendGridInterpreterTest {
 
             final Method method = SendGridInterpreter.class.getDeclaredMethod(
                     "compare", com.testlum.testing.model.scenario.Response.class,
-                    Map.class, Response.class, CommandResult.class);
+                    Response.class, CommandResult.class);
             method.setAccessible(true);
 
-            assertDoesNotThrow(() -> method.invoke(interpreter, expected, Collections.emptyMap(), actual, result));
+            assertDoesNotThrow(() -> method.invoke(interpreter, expected, actual, result));
+        }
+
+        @Test
+        void validatesMatchingResponseHeadersSuccessfully() throws Exception {
+            when(fileSearcher.searchFileToString(anyString(), any())).thenReturn("{\"id\":1}");
+
+            final com.testlum.testing.model.scenario.Response expected =
+                    new com.testlum.testing.model.scenario.Response();
+            expected.setCode(200);
+            expected.setFile("expected.json");
+
+            final Header header = new Header();
+            header.setName("Content-Type");
+            header.setData("application/json");
+            expected.getHeader().add(header);
+
+            final Response actual = new Response(
+                    200, "{\"id\":1}", Map.of("Content-Type", "application/json"));
+            final CommandResult result = new CommandResult();
+
+            final Method method = SendGridInterpreter.class.getDeclaredMethod(
+                    "compare", com.testlum.testing.model.scenario.Response.class,
+                    Response.class, CommandResult.class);
+            method.setAccessible(true);
+
+            assertDoesNotThrow(() -> method.invoke(interpreter, expected, actual, result));
+        }
+
+        @Test
+        void throwsExceptionWhenResponseHeaderMismatches() throws Exception {
+            when(fileSearcher.searchFileToString(anyString(), any())).thenReturn("{\"id\":1}");
+
+            final com.testlum.testing.model.scenario.Response expected =
+                    new com.testlum.testing.model.scenario.Response();
+            expected.setCode(200);
+            expected.setFile("expected.json");
+
+            final Header header = new Header();
+            header.setName("Content-Type");
+            header.setData("text/plain");
+            expected.getHeader().add(header);
+
+            final Response actual = new Response(
+                    200, "{\"id\":1}", Map.of("Content-Type", "application/json"));
+            final CommandResult result = new CommandResult();
+
+            final Method method = SendGridInterpreter.class.getDeclaredMethod(
+                    "compare", com.testlum.testing.model.scenario.Response.class,
+                    Response.class, CommandResult.class);
+            method.setAccessible(true);
+
+            assertThrows(Exception.class, () -> {
+                try {
+                    method.invoke(interpreter, expected, actual, result);
+                } catch (Exception e) {
+                    throw e.getCause() != null ? (Exception) e.getCause() : e;
+                }
+            });
+        }
+
+        @Test
+        void throwsExceptionWhenExpectedHeaderMissingInActualResponse() throws Exception {
+            when(fileSearcher.searchFileToString(anyString(), any())).thenReturn("{\"id\":1}");
+
+            final com.testlum.testing.model.scenario.Response expected =
+                    new com.testlum.testing.model.scenario.Response();
+            expected.setCode(200);
+            expected.setFile("expected.json");
+
+            final Header header = new Header();
+            header.setName("X-Custom-Header");
+            header.setData("custom-value");
+            expected.getHeader().add(header);
+
+            final Response actual = new Response(200, "{\"id\":1}", Collections.emptyMap());
+            final CommandResult result = new CommandResult();
+
+            final Method method = SendGridInterpreter.class.getDeclaredMethod(
+                    "compare", com.testlum.testing.model.scenario.Response.class,
+                    Response.class, CommandResult.class);
+            method.setAccessible(true);
+
+            assertThrows(Exception.class, () -> {
+                try {
+                    method.invoke(interpreter, expected, actual, result);
+                } catch (Exception e) {
+                    throw e.getCause() != null ? (Exception) e.getCause() : e;
+                }
+            });
         }
     }
 }

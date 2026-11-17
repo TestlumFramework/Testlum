@@ -11,6 +11,7 @@ import com.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Body;
+import com.testlum.testing.model.scenario.Header;
 import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Sendgrid;
 import com.testlum.testing.model.scenario.SendgridInfo;
@@ -28,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -68,8 +70,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         Map<String, String> headers = getHeaders(sendgridInfo);
         addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint,
                 getQueryParams(sendgridInfo), result);
-        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, result);
-        compare(sendgridInfo.getResponse(), headers, actual, result);
+        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, headers, result);
+        compare(sendgridInfo.getResponse(), actual, result);
         setContextBody(getContextBodyKey(sendgridInfo.getResponse().getFile()), actual.getBody());
     }
 
@@ -77,9 +79,10 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
                                final Method method,
                                final String alias,
                                final String endpoint,
+                               final Map<String, String> headers,
                                final CommandResult result) {
         String body = getBody(sendgridInfo, method);
-        Request request = getRequest(body, method, sendgridInfo, endpoint);
+        Request request = getRequest(body, method, sendgridInfo, endpoint, headers);
         result.put(CONTENT_TO_SEND, stringPrettifier.asJsonResult(body));
         logHttpInfo(alias, method.name(), endpoint, getQueryParams(sendgridInfo));
         logBody(request.getBody());
@@ -91,7 +94,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     }
 
     private void compare(final com.testlum.testing.model.scenario.Response expected,
-                         final Map<String, String> expectedHeaders,
                          final Response actual,
                          final CommandResult result) {
         String body = StringUtils.isBlank(expected.getFile())
@@ -106,8 +108,22 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         httpValidator.validateCode(expected.getCode(), actual.getStatusCode());
         httpValidator.validateBody(expectedBody, actual.getBody(), Mode.STRICT.equals(expected.getMode()));
-        httpValidator.validateHeaders(expectedHeaders, actual.getHeaders());
+        validateHeaders(expected, actual, httpValidator);
         httpValidator.rethrowOnErrors();
+    }
+
+    private void validateHeaders(final com.testlum.testing.model.scenario.Response expected,
+                                 final Response actual,
+                                 final HttpValidator httpValidator) {
+        if (!expected.getHeader().isEmpty()) {
+            Map<String, String> actualHeaders = Objects.requireNonNullElse(actual.getHeaders(), Collections.emptyMap());
+            httpValidator.validateHeaders(getExpectedHeaders(expected), actualHeaders);
+        }
+    }
+
+    private Map<String, String> getExpectedHeaders(final com.testlum.testing.model.scenario.Response expected) {
+        return expected.getHeader().stream()
+                .collect(Collectors.toMap(Header::getName, Header::getData));
     }
 
     private Map<String, String> getHeaders(final SendgridInfo sendgridInfo) {
@@ -128,7 +144,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private Request getRequest(final String body,
                                final Method method,
                                final SendgridInfo sendgridInfo,
-                               final String endpoint) {
+                               final String endpoint,
+                               final Map<String, String> headers) {
         Request request = new Request();
         request.setMethod(method);
         request.setEndpoint(endpoint);
@@ -136,8 +153,10 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
             request.setBody(body);
         }
         if (Objects.nonNull(sendgridInfo.getQueryParam())) {
-            sendgridInfo.getQueryParam().forEach(queryParam ->
-                    request.addQueryParam(queryParam.getKey(), queryParam.getValue()));
+            sendgridInfo.getQueryParam().forEach(qp -> request.addQueryParam(qp.getKey(), qp.getValue()));
+        }
+        if (Objects.nonNull(headers)) {
+            headers.forEach(request::addHeader);
         }
         return request;
     }

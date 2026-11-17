@@ -48,6 +48,8 @@ public class ExceptionMessage {
 
     public static final String INTEGRATION_NOT_FOUND =
             "Cannot find integration configuration for <%s>";
+    public static final String MULTIPART_NOT_SUPPORTED =
+            "Multipart request body is not supported for <%s>";
     public static final String ALIAS_NOT_FOUND =
             "Cannot find enabled integration with alias <%s>";
     public static final String API_NOT_FOUND =

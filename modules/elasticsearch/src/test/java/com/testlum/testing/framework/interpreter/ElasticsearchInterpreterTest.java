@@ -10,8 +10,12 @@ import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.testlum.testing.model.scenario.Body;
+import com.testlum.testing.model.scenario.ElasticSearchRequest;
 import com.testlum.testing.model.scenario.ElasticSearchResponse;
+import com.testlum.testing.model.scenario.ElasticsearchPostRequest;
 import com.testlum.testing.model.scenario.Mode;
+import com.testlum.testing.model.scenario.Multipart;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.Response;
@@ -177,6 +181,27 @@ class ElasticsearchInterpreterTest {
 
         private void doCapture(final CommandResult result, final Map<String, String> capturedEntries) {
             // Capture put calls for verification
+        }
+    }
+
+    @Nested
+    class BodyExtraction {
+        @Test
+        void throwsExceptionWhenMultipartIsConfigured() throws Exception {
+            final ElasticsearchPostRequest request = new ElasticsearchPostRequest();
+            final Body body = new Body();
+            body.setMultipart(new Multipart());
+            request.setBody(body);
+
+            final Method method = ElasticsearchInterpreter.class.getDeclaredMethod(
+                    "getBody", ElasticSearchRequest.class, org.apache.http.entity.ContentType.class);
+            method.setAccessible(true);
+
+            final InvocationTargetException ex = assertThrows(InvocationTargetException.class,
+                    () -> method.invoke(interpreter, request, org.apache.http.entity.ContentType.APPLICATION_JSON));
+            assertInstanceOf(DefaultFrameworkException.class, ex.getCause());
+            assertTrue(ex.getCause().getMessage()
+                    .contains("Multipart request body is not supported for <elasticsearch>"));
         }
     }
 

@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.interpreter;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.util.JacksonService;
@@ -58,6 +59,8 @@ public final class SendGridUtil {
     private String getAppropriateBody(final Body body, final AbstractInterpreter<?> interpreter) {
         if (Objects.isNull(body)) {
             return StringUtils.EMPTY;
+        } else if (Objects.nonNull(body.getMultipart())) {
+            throw new DefaultFrameworkException(ExceptionMessage.MULTIPART_NOT_SUPPORTED.formatted("sendgrid"));
         } else if (Objects.nonNull(body.getRaw())) {
             return getFromRaw(body);
         } else if (Objects.nonNull(body.getFrom())) {

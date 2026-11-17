@@ -3,6 +3,7 @@ package com.testlum.testing.framework.interpreter;
 import com.sendgrid.Response;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.configuration.ConfigProvider;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.report.CommandResult;
@@ -11,7 +12,9 @@ import com.testlum.testing.framework.util.ConditionProvider;
 import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.testlum.testing.model.scenario.Body;
 import com.testlum.testing.model.scenario.Mode;
+import com.testlum.testing.model.scenario.Multipart;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,6 +25,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -86,15 +91,31 @@ class SendGridInterpreterTest {
     }
 
     @Nested
+    class BodyExtraction {
+
+        @Test
+        void throwsExceptionWhenMultipartIsConfigured() {
+            final SendGridUtil util = new SendGridUtil(new JacksonService());
+            final Body body = new Body();
+            body.setMultipart(new Multipart());
+
+            final DefaultFrameworkException ex = assertThrows(DefaultFrameworkException.class,
+                    () -> util.extractBody(body, interpreter));
+            assertTrue(ex.getMessage().contains("Multipart request body is not supported for <sendgrid>"));
+        }
+    }
+
+    @Nested
     class AddSendGridMetaData {
 
         @Test
         void addsMetadataCorrectly() throws Exception {
             final CommandResult result = new CommandResult();
             final Method method = SendGridInterpreter.class.getDeclaredMethod(
-                    "addSendGridMetaData", String.class, String.class, Map.class, String.class, CommandResult.class);
+                    "addSendGridMetaData", String.class, String.class, Map.class,
+                    String.class, List.class, CommandResult.class);
             method.setAccessible(true);
-            method.invoke(interpreter, "alias", "POST", Map.of("key", "val"), "/v3/mail/send", result);
+            method.invoke(interpreter, "alias", "POST", Map.of("key", "val"), "/v3/mail/send", List.of(), result);
 
             assertEquals("alias", result.getMetadata().get("Alias"));
             assertEquals("POST", result.getMetadata().get("HTTP method"));

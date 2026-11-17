@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +27,14 @@ public class WebDownloadUtil {
     private static final long STABILITY_THRESHOLD_MS = 2500;
     private static final String FINAL_ACTUAL_FILENAME = "action_";
     private static final String ACTUAL_IMAGE_PREFIX = "actual_image_compared_to_";
+    private static final Pattern FIREFOX_DUPLICATE_PATTERN =
+            Pattern.compile("^(.+?\\S)\\((\\d+)\\)(\\.[^.]+)?$");
+    private static final Pattern EXISTING_INDEX_PATTERN =
+            Pattern.compile("^(.+?)\\s?\\((\\d+)\\)(\\.[^.]+)?$");
+    private static final int BASE_NAME_GROUP = 1;
+    private static final int DUPLICATE_INDEX_GROUP = 2;
+    private static final int EXTENSION_GROUP = 3;
+    private static final int INITIAL_DUPLICATE_INDEX = 1;
 
     public Path resolveScenarioDir(final File scenarioFile) {
         if (scenarioFile == null) {
@@ -61,7 +70,73 @@ public class WebDownloadUtil {
         }
         if (isDownloadDetected(directory, filesBeforeAction)) {
             waitForActiveDownloads(directory);
+            normalizeDuplicateFileNames(directory, filesBeforeAction);
         }
+    }
+
+    void normalizeDuplicateFileNames(final Path directory, final Set<String> filesBeforeAction) {
+        Set<String> currentFiles = collectFileNames(directory);
+        for (String fileName : currentFiles) {
+            if (!filesBeforeAction.contains(fileName) && !isTestArtifact(fileName)) {
+                normalizeIfDuplicate(directory, fileName, filesBeforeAction);
+            }
+        }
+    }
+
+    private void normalizeIfDuplicate(final Path directory,
+                                      final String fileName,
+                                      final Set<String> filesBeforeAction) {
+        Matcher matcher = FIREFOX_DUPLICATE_PATTERN.matcher(fileName);
+        if (!matcher.matches()) {
+            return;
+        }
+        String base = matcher.group(BASE_NAME_GROUP);
+        int index = Integer.parseInt(matcher.group(DUPLICATE_INDEX_GROUP));
+        String ext = matcher.group(EXTENSION_GROUP) != null ? matcher.group(EXTENSION_GROUP) : "";
+        if (!isDuplicateOfExistingFile(directory, base, ext, filesBeforeAction)) {
+            return;
+        }
+        renameDuplicateFile(directory, fileName, base, index, ext);
+    }
+
+    private boolean isDuplicateOfExistingFile(final Path directory,
+                                              final String base,
+                                              final String ext,
+                                              final Set<String> filesBeforeAction) {
+        String originalName = base + ext;
+        return Files.exists(directory.resolve(originalName)) || filesBeforeAction.contains(originalName);
+    }
+
+    private void renameDuplicateFile(final Path directory,
+                                     final String fileName,
+                                     final String base,
+                                     final int index,
+                                     final String ext) {
+        Path sourcePath = directory.resolve(fileName);
+        Path targetPath = resolveUniqueDuplicatePath(directory, base, index, ext);
+        try {
+            Files.move(sourcePath, targetPath);
+            log.info("Normalized duplicate downloaded file name: {} -> {}", fileName, targetPath.getFileName());
+        } catch (IOException exception) {
+            log.error("Failed to rename duplicate downloaded file: {}", fileName, exception);
+        }
+    }
+
+    private Path resolveUniqueDuplicatePath(final Path directory,
+                                            final String base,
+                                            final int startIndex,
+                                            final String ext) {
+        int index = Math.max(INITIAL_DUPLICATE_INDEX, startIndex);
+        Path targetPath = directory.resolve(formatDuplicateFileName(base, index, ext));
+        while (Files.exists(targetPath)) {
+            index++;
+            targetPath = directory.resolve(formatDuplicateFileName(base, index, ext));
+        }
+        return targetPath;
+    }
+
+    private String formatDuplicateFileName(final String base, final int index, final String ext) {
+        return base + " (" + index + ")" + ext;
     }
 
     private boolean isDownloadDetected(final Path directory, final Set<String> filesBeforeAction) {
@@ -153,7 +228,7 @@ public class WebDownloadUtil {
         processSafariDownloads(systemDownloadsDirectory, scenarioDirectory, startTimeEpochMs);
     }
 
-    private void processSafariDownloads(final Path sourceDirectory, final Path targetDirectory, final long startTime) {
+    void processSafariDownloads(final Path sourceDirectory, final Path targetDirectory, final long startTime) {
         try (Stream<Path> stream = Files.list(sourceDirectory)) {
             stream.filter(Files::isRegularFile)
                     .filter(path -> isEligibleSafariFile(path, startTime))
@@ -169,11 +244,33 @@ public class WebDownloadUtil {
 
     private void moveFile(final Path source, final Path targetDirectory) {
         try {
-            Path targetPath = targetDirectory.resolve(source.getFileName());
-            Files.move(source, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            String fileName = source.getFileName().toString();
+            Path targetPath = targetDirectory.resolve(fileName);
+            if (Files.exists(targetPath)) {
+                targetPath = resolveUniquePathForExistingFile(targetDirectory, fileName);
+            }
+            Files.move(source, targetPath);
         } catch (IOException exception) {
             log.error("Failed to move file from Downloads: {}", source, exception);
         }
+    }
+
+    private Path resolveUniquePathForExistingFile(final Path directory, final String fileName) {
+        Matcher matcher = EXISTING_INDEX_PATTERN.matcher(fileName);
+        if (matcher.matches()) {
+            String base = matcher.group(BASE_NAME_GROUP);
+            int nextIndex = Integer.parseInt(matcher.group(DUPLICATE_INDEX_GROUP)) + 1;
+            String ext = matcher.group(EXTENSION_GROUP) != null ? matcher.group(EXTENSION_GROUP) : "";
+            return resolveUniqueDuplicatePath(directory, base, nextIndex, ext);
+        }
+        return resolveUniquePathFromUnindexedFile(directory, fileName);
+    }
+
+    private Path resolveUniquePathFromUnindexedFile(final Path directory, final String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        String base = (dotIndex > 0) ? fileName.substring(0, dotIndex) : fileName;
+        String ext = (dotIndex > 0) ? fileName.substring(dotIndex) : "";
+        return resolveUniqueDuplicatePath(directory, base, INITIAL_DUPLICATE_INDEX, ext);
     }
 
     public void cleanupDownloadedFiles(final Path directory, final Set<String> existingFiles, final boolean keepFiles) {

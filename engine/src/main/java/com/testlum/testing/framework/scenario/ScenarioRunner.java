@@ -136,10 +136,21 @@ public class ScenarioRunner {
         } catch (StopSignalException ignore) {
             log.error(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
+            completePendingDownloads();
             if (scenarioArguments.isContainsUiSteps()) {
                 quitUiDrivers();
             }
             cleanupDownloadedFiles();
+        }
+    }
+
+    private void completePendingDownloads() {
+        if (scenarioArguments.isContainsUiSteps() && nonNull(downloadDir)) {
+            try {
+                webDownloadUtil.completeAndTransferDownloads(downloadDir, scenarioDir, downloadedFiles);
+            } catch (Exception exception) {
+                log.warn("Failed to complete pending downloads before teardown", exception);
+            }
         }
     }
 

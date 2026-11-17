@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -540,6 +542,73 @@ class WebDownloadUtilTest {
         webDownloadUtil.deleteDownloadDir(tempDir.resolve("non_existent_dir"), tempDir);
         webDownloadUtil.cleanupDownloadedFiles(null, Collections.emptySet(), false);
         webDownloadUtil.cleanupDownloadedFiles(tempDir.resolve("non_existent_dir"), Collections.emptySet(), false);
+    }
+
+    @Test
+    void createDownloadDirCreatesDirectoryInSystemTempWithPrefix() {
+        Path downloadDir = webDownloadUtil.createDownloadDir("chrome");
+        assertNotNull(downloadDir);
+        assertTrue(Files.exists(downloadDir));
+        assertTrue(downloadDir.getFileName().toString().startsWith("testlum_downloads_chrome_"));
+        assertNotEquals(tempDir, downloadDir.getParent());
+        webDownloadUtil.deleteDownloadDir(downloadDir);
+        assertFalse(Files.exists(downloadDir));
+    }
+
+    @Test
+    void downloadStartedAfterDetectionWindowIsRescuedByCompleteAndTransferDownloads() throws IOException {
+        Path downloadDir = webDownloadUtil.createDownloadDir("chrome");
+        Path downloadedFile = downloadDir.resolve("slow_report.pdf");
+        Files.writeString(downloadedFile, "report data");
+
+        Set<Path> trackedFiles = ConcurrentHashMap.newKeySet();
+        webDownloadUtil.completeAndTransferDownloads(downloadDir, tempDir, trackedFiles);
+
+        assertTrue(exists("slow_report.pdf"));
+        assertFalse(Files.exists(downloadedFile));
+        assertEquals(1, trackedFiles.size());
+        assertTrue(trackedFiles.contains(tempDir.resolve("slow_report.pdf")));
+        webDownloadUtil.deleteDownloadDir(downloadDir);
+    }
+
+    @Test
+    void waitForDownloadIfInitiatedTransfersCompletedFilesWhenDownloadDirIsIsolated() throws IOException {
+        Path downloadDir = webDownloadUtil.createDownloadDir("firefox");
+        Path file = downloadDir.resolve("completed_file.txt");
+        Files.writeString(file, "file content");
+
+        Set<Path> trackedFiles = ConcurrentHashMap.newKeySet();
+        Set<String> filesBefore = Set.of("completed_file.txt");
+        webDownloadUtil.waitForDownloadIfInitiated(downloadDir, tempDir, filesBefore, trackedFiles);
+
+        assertTrue(exists("completed_file.txt"));
+        assertFalse(Files.exists(file));
+        assertEquals(1, trackedFiles.size());
+        webDownloadUtil.deleteDownloadDir(downloadDir);
+    }
+
+    @Test
+    void activeDownloadInProgressAtTeardownIsCompletedAndTransferred() throws Exception {
+        Path downloadDir = webDownloadUtil.createDownloadDir("edge");
+        Path tempFile = downloadDir.resolve("async_file.zip.crdownload");
+        Files.writeString(tempFile, "partial bytes");
+
+        Set<Path> trackedFiles = ConcurrentHashMap.newKeySet();
+        CompletableFuture.runAsync(() -> finishAsyncDownload(downloadDir, tempFile));
+        webDownloadUtil.completeAndTransferDownloads(downloadDir, tempDir, trackedFiles);
+
+        assertTrue(exists("async_file.zip"));
+        assertEquals(1, trackedFiles.size());
+        webDownloadUtil.deleteDownloadDir(downloadDir);
+    }
+
+    private void finishAsyncDownload(final Path downloadDir, final Path tempFile) {
+        try {
+            Thread.sleep(500);
+            Files.move(tempFile, downloadDir.resolve("async_file.zip"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void create(final String name) throws IOException {

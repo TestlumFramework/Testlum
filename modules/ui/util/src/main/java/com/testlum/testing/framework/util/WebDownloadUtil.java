@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +40,7 @@ public class WebDownloadUtil {
     private static final int DUPLICATE_INDEX_GROUP = 2;
     private static final int EXTENSION_GROUP = 3;
     private static final int INITIAL_DUPLICATE_INDEX = 1;
-    private static final int UUID_PREFIX_LENGTH = 8;
+    private static final String TEMP_DIR_PREFIX = "testlum_downloads_";
 
     private final ConcurrentMap<Path, Object> scenarioLocks = new ConcurrentHashMap<>();
 
@@ -51,20 +51,21 @@ public class WebDownloadUtil {
         return scenarioLocks.computeIfAbsent(scenarioDir.toAbsolutePath().normalize(), k -> new Object());
     }
 
-    public Path createDownloadDir(final Path scenarioDir, final String browserAlias) {
-        if (scenarioDir == null) {
+    public Path createDownloadDir(final String browserAlias) {
+        String safeAlias = browserAlias != null
+                ? browserAlias.replaceAll("[^a-zA-Z0-9_-]", "_")
+                : "browser";
+        try {
+            return Files.createTempDirectory(TEMP_DIR_PREFIX + safeAlias + "_");
+        } catch (IOException exception) {
+            log.error("Failed to create temporary download directory for {}", browserAlias, exception);
             return null;
         }
-        String prefix = ".downloads_" + (browserAlias != null ? browserAlias : "browser")
-                + "_" + System.currentTimeMillis() + "_"
-                + UUID.randomUUID().toString().substring(0, UUID_PREFIX_LENGTH);
-        Path downloadDir = scenarioDir.resolve(prefix);
-        try {
-            return Files.createDirectories(downloadDir);
-        } catch (IOException exception) {
-            log.warn("Failed to create download dir {}, falling back to scenarioDir", downloadDir, exception);
-            return scenarioDir;
-        }
+    }
+
+    public Path createDownloadDir(final Path scenarioDir, final String browserAlias) {
+        Path tempDir = createDownloadDir(browserAlias);
+        return tempDir != null ? tempDir : scenarioDir;
     }
 
     public Path resolveScenarioDir(final File scenarioFile) {
@@ -109,7 +110,35 @@ public class WebDownloadUtil {
         if (isDownloadDetected(downloadDir, filesBeforeAction)) {
             waitForActiveDownloads(downloadDir);
             processCompletedDownloads(downloadDir, scenarioDir, filesBeforeAction, downloadedFiles);
+        } else if (!downloadDir.equals(scenarioDir) && hasCompletedDownloads(downloadDir)) {
+            processCompletedDownloads(downloadDir, scenarioDir, filesBeforeAction, downloadedFiles);
         }
+    }
+
+    private boolean hasCompletedDownloads(final Path directory) {
+        try (Stream<Path> stream = Files.list(directory)) {
+            return stream.filter(Files::isRegularFile)
+                    .anyMatch(path -> !isTempDownloadFile(path));
+        } catch (IOException exception) {
+            return false;
+        }
+    }
+
+    public void completeAndTransferDownloads(final Path downloadDir,
+                                             final Path scenarioDir,
+                                             final Set<Path> downloadedFiles) {
+        if (downloadDir == null || scenarioDir == null || !Files.exists(downloadDir)) {
+            return;
+        }
+        if (downloadDir.equals(scenarioDir)) {
+            return;
+        }
+        if (containsActiveDownloads(downloadDir)) {
+            log.info("Active download detected in {}, waiting for completion...", downloadDir);
+            waitForActiveDownloads(downloadDir);
+        }
+        normalizeDuplicateFileNames(downloadDir, Collections.emptySet());
+        transferDownloadedFiles(downloadDir, scenarioDir, downloadedFiles);
     }
 
     private void processCompletedDownloads(final Path downloadDir,
@@ -160,12 +189,22 @@ public class WebDownloadUtil {
                                     final Set<Path> downloadedFiles) {
         try {
             Path targetPath = resolveTargetTransferPath(source, targetDirectory);
-            Files.move(source, targetPath);
+            transferFileWithFallback(source, targetPath);
             trackDownloadedFile(downloadedFiles, targetPath);
             log.info("Transferred downloaded file to scenario: {} -> {}",
                     source.getFileName(), targetPath.getFileName());
         } catch (IOException exception) {
             log.error("Failed to move file to scenario directory: {}", source, exception);
+        }
+    }
+
+    private void transferFileWithFallback(final Path source, final Path target) throws IOException {
+        try {
+            Files.move(source, target);
+        } catch (IOException exception) {
+            log.debug("Direct move failed, falling back to copy and delete: {}", exception.getMessage());
+            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+            Files.deleteIfExists(source);
         }
     }
 
@@ -403,6 +442,10 @@ public class WebDownloadUtil {
             return;
         }
         performCleanup(directory, existingFiles);
+    }
+
+    public void deleteDownloadDir(final Path downloadDir) {
+        deleteDownloadDir(downloadDir, null);
     }
 
     public void deleteDownloadDir(final Path downloadDir, final Path scenarioDir) {

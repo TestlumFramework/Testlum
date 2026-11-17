@@ -10,6 +10,12 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="variableNamePattern">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z0-9_.\-]+"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="nonEmptyString">
         <x:restriction base="x:string">
             <x:minLength value="1"/>

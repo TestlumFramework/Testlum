@@ -64,15 +64,23 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         Sendgrid sendgrid = injectCommand(o);
         ensureAlias(sendgrid::getAlias, sendgrid::setAlias);
         SendGridUtil.SendGridMethodMetadata metadata = sendGridUtil.getSendgridMethodMetadata(sendgrid);
-        String endpoint = metadata.getHttpInfo().getEndpoint();
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
+        String endpoint = sendgridInfo.getEndpoint();
         Map<String, String> headers = getHeaders(sendgridInfo);
         addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint,
                 getQueryParams(sendgridInfo), result);
         Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, headers, result);
-        compare(sendgridInfo.getResponse(), actual, result);
-        setContextBody(getContextBodyKey(sendgridInfo.getResponse().getFile()), actual.getBody());
+        processResponse(sendgridInfo.getResponse(), actual, result);
+    }
+
+    private void processResponse(final com.testlum.testing.model.scenario.Response expected,
+                                 final Response actual,
+                                 final CommandResult result) {
+        if (Objects.nonNull(expected)) {
+            compare(expected, actual, result);
+            setContextBody(getContextBodyKey(expected.getFile()), actual.getBody());
+        }
     }
 
     private Response getActual(final SendgridInfo sendgridInfo,
@@ -96,15 +104,34 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private void compare(final com.testlum.testing.model.scenario.Response expected,
                          final Response actual,
                          final CommandResult result) {
+        if (Objects.isNull(expected)) {
+            return;
+        }
+        String expectedBody = getExpectedBody(expected);
+        updateCommandResult(result, expectedBody, actual, expected.getCode());
+        executeValidation(expected, actual, expectedBody);
+    }
+
+    private String getExpectedBody(final com.testlum.testing.model.scenario.Response expected) {
         String body = StringUtils.isBlank(expected.getFile())
                 ? DelimiterConstant.EMPTY
                 : getContentIfFile(expected.getFile());
-        String expectedBody = stringPrettifier.asJsonResult(body);
+        return stringPrettifier.asJsonResult(body);
+    }
+
+    private void updateCommandResult(final CommandResult result,
+                                     final String expectedBody,
+                                     final Response actual,
+                                     final int expectedCode) {
         result.setExpected(expectedBody);
         result.setActual(stringPrettifier.asJsonResult(actual.getBody()));
-        result.put(EXPECTED_CODE, expected.getCode());
+        result.put(EXPECTED_CODE, expectedCode);
         result.put(ACTUAL_CODE, actual.getStatusCode());
+    }
 
+    private void executeValidation(final com.testlum.testing.model.scenario.Response expected,
+                                   final Response actual,
+                                   final String expectedBody) {
         HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         httpValidator.validateCode(expected.getCode(), actual.getStatusCode());
         httpValidator.validateBody(expectedBody, actual.getBody(), Mode.STRICT.equals(expected.getMode()));

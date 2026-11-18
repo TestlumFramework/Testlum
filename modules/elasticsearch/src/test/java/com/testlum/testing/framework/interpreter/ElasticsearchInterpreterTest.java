@@ -2,8 +2,10 @@ package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.configuration.ConfigProvider;
+import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
 import com.testlum.testing.framework.util.ConditionProvider;
@@ -13,12 +15,15 @@ import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.scenario.Body;
 import com.testlum.testing.model.scenario.ElasticSearchRequest;
 import com.testlum.testing.model.scenario.ElasticSearchResponse;
+import com.testlum.testing.model.scenario.Elasticsearch;
+import com.testlum.testing.model.scenario.ElasticsearchGetRequest;
 import com.testlum.testing.model.scenario.ElasticsearchPostRequest;
 import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Multipart;
 import org.apache.http.StatusLine;
 import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -37,7 +43,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /** Unit tests for {@link ElasticsearchInterpreter} metadata and utility methods. */
@@ -54,7 +62,9 @@ class ElasticsearchInterpreterTest {
     void setUp() {
         final ApplicationContext context = mock(ApplicationContext.class);
         when(context.getBean(ConfigProvider.class)).thenReturn(mock(ConfigProvider.class));
-        when(context.getBean(ConditionProvider.class)).thenReturn(mock(ConditionProvider.class));
+        final ConditionProvider conditionProvider = mock(ConditionProvider.class);
+        lenient().when(conditionProvider.isTrue(any(), any(), any())).thenReturn(true);
+        when(context.getBean(ConditionProvider.class)).thenReturn(conditionProvider);
         fileSearcher = mock(FileSearcher.class);
         when(context.getBean(FileSearcher.class)).thenReturn(fileSearcher);
 
@@ -151,6 +161,13 @@ class ElasticsearchInterpreterTest {
 
             assertThrows(DefaultFrameworkException.class, () -> invokeCompare(expected, actual));
         }
+
+        @Test
+        void nullExpectedResponseDoesNotThrowException() {
+            final Response actual = mock(Response.class);
+
+            assertDoesNotThrow(() -> invokeCompare(null, actual));
+        }
     }
 
     @Nested
@@ -213,6 +230,35 @@ class ElasticsearchInterpreterTest {
             field.setAccessible(true);
             int value = (int) field.get(null);
             assertEquals(25 * 1024, value);
+        }
+    }
+
+    @Nested
+    class AcceptWithoutResponse {
+
+        @Test
+        void executesSuccessfullyWhenResponseSectionIsOmitted() throws Exception {
+            final RestClient restClient = mock(RestClient.class);
+            final Response esResponse = mock(Response.class);
+            when(restClient.performRequest(any())).thenReturn(esResponse);
+
+            final Field restClientField = ElasticsearchInterpreter.class.getDeclaredField("restClient");
+            restClientField.setAccessible(true);
+            restClientField.set(interpreter, Map.of(new AliasEnv("DEFAULT", "test"), restClient));
+
+            final Field httpUtilField = ElasticsearchInterpreter.class.getDeclaredField("httpUtil");
+            httpUtilField.setAccessible(true);
+            httpUtilField.set(interpreter, new HttpUtil(fileSearcher, new JacksonService()));
+
+            final Elasticsearch elasticsearch = new Elasticsearch();
+            elasticsearch.setAlias("DEFAULT");
+            final ElasticsearchGetRequest getRequest = new ElasticsearchGetRequest();
+            getRequest.setEndpoint("/test-index/_doc/1");
+            elasticsearch.setGet(getRequest);
+
+            final CommandResult result = new CommandResult();
+            assertDoesNotThrow(() -> interpreter.apply(elasticsearch, result));
+            verify(restClient).performRequest(any());
         }
     }
 }

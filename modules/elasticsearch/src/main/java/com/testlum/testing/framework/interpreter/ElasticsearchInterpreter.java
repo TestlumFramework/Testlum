@@ -74,10 +74,15 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
         Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), result);
         ElasticSearchResponse expected = elasticSearchRequest.getResponse();
-        compare(expected, actual, result);
+        if (Objects.nonNull(expected)) {
+            compare(expected, actual, result);
+        }
     }
 
     private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
+        if (Objects.isNull(expected)) {
+            return;
+        }
         HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
         validateHeadersIfExists(expected, actual, httpValidator);

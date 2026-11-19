@@ -70,6 +70,9 @@ public final class LogMessage {
     public static final String NAME_LOG = LogFormat.table("Name");
     public static final String BY_URL_LOG = LogFormat.table("URL");
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
+    public static final String ACTUAL_IMAGE_SIZE_DIFFERS_LOG =
+            "Actual screenshot {}x{} differs from expected {}x{}, "
+                    + "comparing the common area after scaling to expected width";
 
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND =
             LogFormat.withOrange("Websocket message handler for topic <{}> not found");

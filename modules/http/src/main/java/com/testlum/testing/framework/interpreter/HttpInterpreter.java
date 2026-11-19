@@ -10,6 +10,7 @@ import com.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.report.CommandResultHelper;
 import com.testlum.testing.framework.util.IntegrationsProvider;
 import com.testlum.testing.model.global_config.Api;
 import com.testlum.testing.model.scenario.Body;
@@ -76,6 +77,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private void compareResult(final Response expected,
                                final ApiResponse actual,
                                final CommandResult result) {
+        result.put(CommandResultHelper.EXPECTED_HTTP_STATUS, expected.getCode());
+        result.put(CommandResultHelper.HTTP_STATUS, actual.getCode());
         HttpValidator httpValidator = new HttpValidator(this, stringPrettifier);
         String actualBody = actual.getBody();
         setContextBody(getContextBodyKey(expected.getFile()), actualBody);

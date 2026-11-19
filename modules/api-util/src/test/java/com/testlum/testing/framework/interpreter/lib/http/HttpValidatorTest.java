@@ -14,7 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -231,6 +233,26 @@ class HttpValidatorTest {
             validator.validateBody("expected", "actual");
             assertThrows(DefaultFrameworkException.class,
                     () -> validator.rethrowOnErrors());
+        }
+
+        @Test
+        void bodyMismatchLeadsWithTheComparatorMessageBeforeTheExcerpts() {
+            final CompareBuilder builder = mock(CompareBuilder.class);
+            when(interpreter.newCompare()).thenReturn(builder);
+            when(builder.withExpected(anyString())).thenReturn(builder);
+            when(builder.withActual(anyString())).thenReturn(builder);
+            when(builder.withMode(true)).thenReturn(builder);
+            Mockito.doThrow(new ComparisonException("Field $.items[2].price differs\nsecond line"))
+                    .when(builder).exec();
+
+            validator.validateBody("expected", "actual");
+            final DefaultFrameworkException e =
+                    assertThrows(DefaultFrameworkException.class, () -> validator.rethrowOnErrors());
+
+            final String text = e.getMessage();
+            assertTrue(text.contains("Http body differs: Field $.items[2].price differs"), text);
+            assertFalse(text.contains("second line"), text);
+            assertTrue(text.indexOf("differs: Field") < text.indexOf("Http body should be"), text);
         }
 
         @Test

@@ -205,6 +205,41 @@ class ScenarioRunnerTest {
     }
 
     @Nested
+    class FailedStepRecording {
+
+        @Test
+        void recordsWhichStepFailedAndKeepsTheFirstOne() {
+            AbstractCommand first = mock(AbstractCommand.class);
+            AbstractCommand second = mock(AbstractCommand.class);
+            scenarioArguments.getScenario().getCommands().add(first);
+            scenarioArguments.getScenario().getCommands().add(second);
+            CommandResult r1 = new CommandResult();
+            r1.setId(1);
+            r1.setCommandKey("Http");
+            CommandResult r2 = new CommandResult();
+            r2.setId(2);
+            r2.setCommandKey("AssertEqual");
+            CommandResult r3 = new CommandResult();
+            r3.setId(3);
+            r3.setCommandKey("Var");
+            when(resultUtil.newCommandResultInstance(anyInt(), any())).thenReturn(r1, r2, r3);
+            doAnswer(i -> {
+                CommandResult target = i.getArgument(0);
+                target.setSuccess(false);
+                target.setException(i.getArgument(1));
+                return null;
+            }).when(resultUtil).setExceptionResult(any(), any());
+
+            ScenarioResult result = new ScenarioRunner(scenarioArguments, ctx).run();
+
+            assertFalse(result.isSuccess());
+            assertNotNull(result.getFailedStep());
+            assertEquals("step 1 Http", result.getFailedStep().label());
+            assertTrue(result.getFailedStep().text().contains("error-type: DefaultFrameworkException"));
+        }
+    }
+
+    @Nested
     class FillReportException {
 
         @Test

@@ -17,6 +17,7 @@ public final class HttpValidator {
 
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
     public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s]%n but was [%s]";
+    public static final String HTTP_BODY_DIFFERS = " Http body differs: %s%n";
     public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s]%n but was [%s]";
 
     private final List<String> result = new ArrayList<>();
@@ -70,10 +71,19 @@ public final class HttpValidator {
                     .withMode(isStrict)
                     .exec();
         } catch (ComparisonException e) {
-            result.add(String.format(HTTP_BODY_EXPECTED_BUT_WAS,
+            result.add(String.format(HTTP_BODY_DIFFERS, comparatorMessage(e))
+                    + String.format(HTTP_BODY_EXPECTED_BUT_WAS,
                     prettifier.asJsonResult(prettifier.cut(expectedBody)),
                     prettifier.asJsonResult(prettifier.cut(actualBody))));
         }
+    }
+
+    // The comparator says where the bodies differ, which the cut excerpts below may not show.
+    private String comparatorMessage(final ComparisonException e) {
+        String message = e.getMessage();
+        String first = message == null ? "" : message.lines().map(String::strip)
+                .filter(l -> !l.isEmpty()).findFirst().orElse("");
+        return first.isEmpty() ? "(no detail)" : prettifier.cut(first);
     }
 
     public void rethrowOnErrors() {

@@ -12,6 +12,8 @@ public final class CommandResultHelper {
 
     public static final String HEADER_TEMPLATE = "%s: %s";
     public static final String ADDITIONAL_HEADERS = "Additional headers";
+    public static final String HTTP_STATUS = "HTTP status";
+    public static final String EXPECTED_HTTP_STATUS = "Expected HTTP status";
 
     private static final String STEP_FAILED = "Step failed";
 

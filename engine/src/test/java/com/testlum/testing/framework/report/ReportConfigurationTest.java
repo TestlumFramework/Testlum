@@ -120,6 +120,23 @@ class ReportConfigurationTest {
         }
 
         @Test
+        void theJunitArgumentSwitchesTheReportOnWithoutAConfigEntry() {
+            final Report report = reportWithHtml();
+            when(globalTestConfiguration.getReport()).thenReturn(report);
+            System.setProperty(ReportConfiguration.JUNIT_PROPERTY, "true");
+            try {
+                final GlobalScenarioStatCollector collector = new GlobalScenarioStatCollector();
+
+                reportConfiguration.create().generateReport(collector);
+
+                verify(junitReportGenerator).removeOldReport();
+                verify(junitReportGenerator).generateReport(collector);
+            } finally {
+                System.clearProperty(ReportConfiguration.JUNIT_PROPERTY);
+            }
+        }
+
+        @Test
         void skipsJunitWhenSwitchedOff() {
             final Report report = reportWithHtml();
             final JunitReport junit = new JunitReport();

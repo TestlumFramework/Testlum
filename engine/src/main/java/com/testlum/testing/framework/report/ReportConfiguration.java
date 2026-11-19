@@ -17,6 +17,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ReportConfiguration {
 
+    /** Set by the {@code --junit} engine argument; switches the JUnit XML report on without a config edit. */
+    public static final String JUNIT_PROPERTY = "testlum.junit";
+
     private final ExtentReportsGenerator extentReportsGenerator;
     private final JUnitReportGenerator junitReport;
     private final GlobalTestConfiguration globalTestConfiguration;
@@ -34,7 +37,8 @@ public class ReportConfiguration {
     }
 
     private ReportGenerator withJunit(final JunitReport junit) {
-        if (junit == null || !junit.isEnabled()) {
+        boolean switchedOnByArgument = Boolean.getBoolean(JUNIT_PROPERTY);
+        if (!switchedOnByArgument && (junit == null || !junit.isEnabled())) {
             return extentReportsGenerator;
         }
         junitReport.removeOldReport();

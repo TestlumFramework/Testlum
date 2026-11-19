@@ -48,6 +48,17 @@ class ArgsTest {
     }
 
     @Nested
+    class Junit {
+
+        @Test
+        void isAFlagWithoutAValue() {
+            assertTrue(Args.read(new String[] {"-c=x.xml", "--junit"}, Args.Param.JUNIT).isPresent());
+            assertFalse(Args.read(new String[] {"-c=x.xml"}, Args.Param.JUNIT).isPresent());
+            assertFalse(Args.read(new String[] {"--junit=false"}, Args.Param.JUNIT).isPresent());
+        }
+    }
+
+    @Nested
     class PathToTestResources {
 
         @Test
@@ -134,8 +145,8 @@ class ArgsTest {
         }
 
         @Test
-        void hasFourValues() {
-            assertEquals(4, Args.Param.values().length);
+        void hasFiveValues() {
+            assertEquals(5, Args.Param.values().length);
         }
     }
 }

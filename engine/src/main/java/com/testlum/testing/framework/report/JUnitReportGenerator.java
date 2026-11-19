@@ -141,8 +141,17 @@ public class JUnitReportGenerator implements ReportGenerator {
             return;
         }
         String cause = Objects.toString(r.getCause(), "");
-        xml.append(String.format("><failure message=\"%s\">%s</failure></testcase>%n",
-                esc(cause.lines().findFirst().orElse("")), esc(cause)));
+        FailedStep step = r.getFailedStep();
+        String first = firstMeaningfulLine(cause);
+        String message = step == null ? first : step.label() + (first.isEmpty() ? "" : ": " + first);
+        String text = step == null ? cause : step.text() + "\n" + cause;
+        xml.append(String.format("><failure message=\"%s\">%s</failure></testcase>%n", esc(message), esc(text)));
+    }
+
+    // An HTTP mismatch is thrown as "Errors:" followed by the findings, so the heading is never the message.
+    private static String firstMeaningfulLine(final String cause) {
+        return cause.lines().map(String::strip).filter(l -> !l.isEmpty() && !"Errors:".equals(l))
+                .findFirst().orElse("");
     }
 
     // The scenario folder is the stable identity; the file name is always scenario.xml.

@@ -17,7 +17,9 @@ public class Args {
         CONFIG_FILE("^(?:-c|--config)=(.*)$"),
         PATH_TO_TEST_RESOURCES("^(?:-p|--path)=(.*)$"),
         PATH_TO_SPECIFIC_SCENARIOS("^(?:-s|--scenarios)=(.*)$"),
-        TAGS("^(?:-t|--tags)=(.*)$");
+        TAGS("^(?:-t|--tags)=(.*)$"),
+        /** A flag without a value: switches the JUnit XML report on without a config edit. */
+        JUNIT("^(--junit)$");
 
         private final String regexp;
     }

@@ -128,6 +128,93 @@ class JUnitReportGeneratorTest {
         }
     }
 
+    @Nested
+    class FailureDetail {
+
+        private static CommandResult step(final long id, final String key, final String comment) {
+            CommandResult c = new CommandResult();
+            c.setId(id);
+            c.setCommandKey(key);
+            c.setComment(comment);
+            return c;
+        }
+
+        private Element failureOf(final ScenarioResult r) throws Exception {
+            Element suite = parse(JUnitReportGenerator.toXml(List.of(r), Map.of(), Map.of()));
+            return (Element) suite.getElementsByTagName("failure").item(0);
+        }
+
+        @Test
+        void anHttpMismatchNamesTheStatusesNotJustErrors() throws Exception {
+            CommandResult http = step(7, "Http", "login");
+            http.put(CommandResultHelper.EXPECTED_HTTP_STATUS, 200);
+            http.put(CommandResultHelper.HTTP_STATUS, 500);
+            DefaultFrameworkException ex = new DefaultFrameworkException(
+                    List.of(" Http code should be [200] but was [500]"));
+            http.setException(ex);
+            ScenarioResult r = result("/t/scenarios/s1/scenario.xml", true, null, 1);
+            failAsRunnerDoes(r, ex, http);
+
+            Element failure = failureOf(r);
+            String message = failure.getAttribute("message");
+            assertFalse(message.startsWith("Errors"), message);
+            assertEquals("step 7 Http: Http code should be [200] but was [500]", message);
+            String text = failure.getTextContent();
+            assertTrue(text.contains("step: 7"), text);
+            assertTrue(text.contains("command: Http"), text);
+            assertTrue(text.contains("comment: login"), text);
+            assertTrue(text.contains("error-type: DefaultFrameworkException"), text);
+            assertTrue(text.contains("http: expected status 200, actual 500"), text);
+        }
+
+        @Test
+        void aWrapperNamesTheInnermostFailingStep() throws Exception {
+            CommandResult inner = step(5, "AssertEqual", "check total");
+            IllegalStateException ex = new IllegalStateException("Equality <1,2> is not equal.");
+            inner.setException(ex);
+            CommandResult passed = step(4, "Var", null);
+            passed.setSuccess(true);
+            CommandResult repeat = step(3, "Repeat", null);
+            repeat.setSubCommandsResult(List.of(passed, inner));
+            repeat.setException(ex);
+            ScenarioResult r = result("/t/scenarios/s2/scenario.xml", true, null, 1);
+            failAsRunnerDoes(r, ex, repeat);
+
+            String text = failureOf(r).getTextContent();
+            assertTrue(text.contains("command: AssertEqual"), text);
+            assertTrue(text.contains("comment: check total"), text);
+            assertTrue(text.contains("error-type: IllegalStateException"), text);
+            assertTrue(text.contains("step: 3"), text);
+            assertTrue(text.contains("inner step: 5"), text);
+        }
+
+        @Test
+        void aScenarioThatFailedOutsideAStepIsAFailedTestcase() throws Exception {
+            ScenarioResult r = ScenarioResult.failedOutsideStep("/t/scenarios/s3/scenario.xml",
+                    new IllegalArgumentException("Unable to find value for key <missing>. Available keys: [a]"));
+
+            Element suite = parse(JUnitReportGenerator.toXml(List.of(r), Map.of(), Map.of()));
+            assertEquals("1", suite.getAttribute("failures"));
+            Element failure = (Element) suite.getElementsByTagName("failure").item(0);
+            assertEquals("before step 1: Unable to find value for key <missing>. Available keys: [a]",
+                    failure.getAttribute("message"));
+            assertTrue(failure.getTextContent().contains("error-type: IllegalArgumentException"));
+        }
+
+        @Test
+        void aResultWithoutStepDetailKeepsTheCauseAsMessage() throws Exception {
+            ScenarioResult r = result("/t/scenarios/s4/scenario.xml", false, "Errors:\n Http body differs", 1);
+            assertEquals("Http body differs", failureOf(r).getAttribute("message"));
+        }
+    }
+
+    // The three setters ScenarioRunner applies to the scenario result when a step fails.
+    private static void failAsRunnerDoes(final ScenarioResult r, final Exception ex, final CommandResult top) {
+        r.setSuccess(false);
+        r.setCause(ex.getMessage());
+        r.setFailedStep(FailedStep.of(top, ex));
+    }
+
     private static ScenarioResult result(final String path, final boolean ok, final String cause, final long ms) {
         ScenarioResult r = new ScenarioResult();
         r.setPath(path);

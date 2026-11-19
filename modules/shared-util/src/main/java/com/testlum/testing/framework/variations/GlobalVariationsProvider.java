@@ -94,7 +94,8 @@ public class GlobalVariationsProvider {
             if (isContextValue(variationKey, scenarioContext)) {
                 return true;
             }
-            throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
+            throw new IllegalArgumentException(
+                    String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap.keySet()));
         }
         return false;
     }

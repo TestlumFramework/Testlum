@@ -18,7 +18,7 @@ import java.util.Map;
 @Conditional(OnAiEnabledCondition.class)
 public class AiConfiguration {
 
-    private static final int MAX_COMPLETION_TOKENS = 50;
+    private static final int DEFAULT_MAX_COMPLETION_TOKENS = 1000;
 
     @Bean
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -40,12 +40,13 @@ public class AiConfiguration {
     }
 
     private ChatModel constructChatModel(final Ai ai) {
+        int maxTokens = ai.getMaxTokens() != null ? ai.getMaxTokens() : DEFAULT_MAX_COMPLETION_TOKENS;
         return OpenAiChatModel.builder()
                 .apiKey(ai.getApiKey())
                 .baseUrl(ai.getBaseUrl())
                 .modelName(ai.getModelName())
                 .temperature(0.0)
-                .maxCompletionTokens(MAX_COMPLETION_TOKENS)
+                .maxCompletionTokens(maxTokens)
                 .build();
     }
 

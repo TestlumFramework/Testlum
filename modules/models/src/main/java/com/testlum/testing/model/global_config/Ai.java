@@ -20,6 +20,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *         &lt;element name="apiKey" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="modelName" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="baseUrl" type="{http://www.testlum.com/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="maxTokens" type="{http://www.testlum.com/testing/model/global-config}positiveIntegerMin1" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -32,7 +33,8 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlType(name = "ai", propOrder = {
     "apiKey",
     "modelName",
-    "baseUrl"
+    "baseUrl",
+    "maxTokens"
 })
 public class Ai
     extends Integration
@@ -44,6 +46,8 @@ public class Ai
     protected String modelName;
     @XmlElement(required = true)
     protected String baseUrl;
+    @XmlElement(defaultValue = "1000")
+    protected Integer maxTokens = 1000;
 
     /**
      * Gets the value of the apiKey property.
@@ -115,6 +119,30 @@ public class Ai
      */
     public void setBaseUrl(String value) {
         this.baseUrl = value;
+    }
+
+    /**
+     * Gets the value of the maxTokens property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getMaxTokens() {
+        return maxTokens != null ? maxTokens : 1000;
+    }
+
+    /**
+     * Sets the value of the maxTokens property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setMaxTokens(Integer value) {
+        this.maxTokens = value;
     }
 
 }

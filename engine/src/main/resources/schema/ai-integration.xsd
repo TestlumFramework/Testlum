@@ -20,6 +20,7 @@
                     <x:element name="apiKey" type="tns:nonEmptyString"/>
                     <x:element name="modelName" type="tns:nonEmptyString"/>
                     <x:element name="baseUrl" type="tns:nonEmptyString"/>
+                    <x:element name="maxTokens" type="tns:positiveIntegerMin1" default="1000" minOccurs="0"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>

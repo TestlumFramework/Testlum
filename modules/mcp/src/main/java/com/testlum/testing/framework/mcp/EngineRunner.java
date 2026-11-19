@@ -28,7 +28,8 @@ final class EngineRunner {
     private static final long PUMP_WAIT_MILLIS = 2000;
     private static final Pattern ANSI = Pattern.compile("\u001B\\[[0-9;?]*[ -/]*[@-~]");
     private static final String NO_RESULTS = "report/junit.xml is missing or holds no scenario runs, so nothing is "
-            + "known to have run (the global config needs <junit enabled=\"true\"/> in its report).\n";
+            + "known to have run (the XML is written together with the HTML report, so the global config's "
+            + "<report> needs its <extentReports> element).\n";
     private static final Map<Integer, String> EXIT = Map.of(
             0, "all scenarios passed",
             1, "at least one scenario failed",
@@ -87,7 +88,7 @@ final class EngineRunner {
     private Process start(final Path root, final Job job) throws IOException {
         String java = Path.of(System.getProperty("java.home"), "bin", "java").toString();
         List<String> command = new ArrayList<>(List.of(java, "-jar", engineJar, "--config=" + job.config(),
-                "--path=" + root.toString().replace('\\', '/')));
+                "--path=" + root.toString().replace('\\', '/'), "--junit"));
         if (!job.tags().isEmpty()) {
             command.add("--tags=" + job.tags());
         }
@@ -131,6 +132,8 @@ final class EngineRunner {
         JunitResults results = JunitResults.read(root.resolve(Layout.REPORT).resolve(Layout.JUNIT_FILE));
         StringBuilder sb = new StringBuilder(r.timedOut() ? "TIMEOUT: engine killed\n" : headline(r.exit(), results));
         sb.append(results.isEmpty() ? NO_RESULTS : results.summary());
+        sb.append("junit: ").append(Layout.REPORT).append('/').append(Layout.JUNIT_FILE)
+                .append(" (under ").append(root).append(")\n");
         if (r.exit() != 0 || results.isEmpty()) {
             sb.append("--- last ").append(r.tail().size()).append(" console lines ---\n");
             r.tail().forEach(l -> sb.append(stripAnsi(l)).append('\n'));

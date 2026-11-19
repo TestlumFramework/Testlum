@@ -32,8 +32,18 @@ public final class FakeEngine {
             case "crash.xml" -> exit("\u001B[31mboom\u001B[0m", CRASH_CODE);
             case "silent.xml" -> exit("nothing written", 0);
             case "hang.xml" -> Thread.sleep(HANG_MILLIS);
+            case "needsjunit.xml" -> needsJunit(args, path);
             case "tagged.xml" -> report(path, value(args, "--tags=").equals("bad") ? ERROR : PASS);
             default -> reportFor(config, path);
+        }
+    }
+
+    // A config without the junit element: the report exists only when the engine is asked for it.
+    private static void needsJunit(final String[] args, final String path) throws IOException {
+        if (java.util.Arrays.asList(args).contains("--junit")) {
+            report(path, PASS);
+        } else {
+            exit("nothing written", 0);
         }
     }
 

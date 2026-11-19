@@ -43,7 +43,7 @@ class EngineRunnerTest {
         runner = new EngineRunner(jar.toString());
         tests = Files.createDirectories(tmp.resolve("tests"));
         for (String config : new String[] {"global-config.xml", "crash.xml", "silent.xml", "hang.xml", "tagged.xml",
-            "skipped.xml", "empty.xml", "lying.xml", "suite.xml", "both.xml", "nested.xml"}) {
+            "skipped.xml", "empty.xml", "lying.xml", "suite.xml", "both.xml", "nested.xml", "needsjunit.xml"}) {
             Files.writeString(tests.resolve(config), "<x/>");
         }
     }
@@ -72,6 +72,14 @@ class EngineRunnerTest {
         assertTrue(Files.readString(tests.resolve("args.txt")).endsWith("--tags=good"));
         run("tagged.xml", "", 60);
         assertFalse(Files.readString(tests.resolve("args.txt")).contains("--tags"));
+    }
+
+    @Test
+    void switchesTheReportOnItselfAndReportsItsPath() throws IOException {
+        String out = run("needsjunit.xml", "", 60);
+        assertTrue(out.startsWith("exit 0: all scenarios passed\n"), out);
+        assertTrue(out.contains("junit: report/junit.xml (under " + tests.toAbsolutePath().normalize() + ")"), out);
+        assertTrue(Files.readString(tests.resolve("args.txt")).contains("--junit"));
     }
 
     @Test

@@ -133,4 +133,42 @@ class ImageComparatorTest {
             assertEquals(ImageComparisonState.SIZE_MISMATCH, result.getImageComparisonState());
         }
     }
+
+    @Nested
+    class CompareFullScreenWithDifferentSize {
+        @Test
+        void actualTwiceLargerIsScaledAndMatches() {
+            ImageComparisonResult result = comparator.compare(new Image(),
+                    createSolidImage(100, 100, Color.RED), createSolidImage(200, 200, Color.RED), List.of());
+            assertEquals(ImageComparisonState.MATCH, result.getImageComparisonState());
+        }
+
+        @Test
+        void differentHeightComparesCommonArea() {
+            ImageComparisonResult result = comparator.compare(new Image(),
+                    createSolidImage(100, 100, Color.RED), createSolidImage(200, 120, Color.RED), List.of());
+            assertEquals(ImageComparisonState.MATCH, result.getImageComparisonState());
+        }
+
+        @Test
+        void imageWithAlphaIsComparedAsRgb() {
+            BufferedImage argb = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics = argb.createGraphics();
+            graphics.setColor(Color.RED);
+            graphics.fillRect(0, 0, 10, 10);
+            graphics.dispose();
+            ImageComparisonResult result = comparator.compare(new Image(),
+                    argb, createSolidImage(10, 10, Color.RED), List.of());
+            assertEquals(ImageComparisonState.MATCH, result.getImageComparisonState());
+        }
+
+        @Test
+        void partWithDifferentSizeStillReturnsSizeMismatch() {
+            Image image = new Image();
+            image.setPart(new Part());
+            ImageComparisonResult result = comparator.compare(image,
+                    createSolidImage(100, 100, Color.RED), createSolidImage(200, 200, Color.RED), List.of());
+            assertEquals(ImageComparisonState.SIZE_MISMATCH, result.getImageComparisonState());
+        }
+    }
 }

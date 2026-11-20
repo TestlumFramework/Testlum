@@ -321,7 +321,9 @@ class ScenarioRunnerTest {
         runner.run();
         assertNull(dependencies.getAuthorization());
         assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
-        assertFalse(dependencies.getScenarioContext().containsKey("copy"));
+        assertEquals("Bearer retained-token", dependencies.getScenarioContext().inject("{{copy}}"));
+        assertEquals("Bearer ret***", dependencies.getScenarioContext().redact(
+                dependencies.getScenarioContext().get("copy")));
     }
 
     @Test

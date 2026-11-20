@@ -228,7 +228,6 @@ public class ExceptionMessage {
             "OAuth credentials file <%s> must contain a non-empty string refreshToken";
     public static final String OAUTH_CREDENTIALS_READ_FAILED = "Cannot read OAuth credentials file <%s>";
     public static final String OAUTH_CREDENTIALS_JSON_INVALID = "OAuth credentials file <%s> must contain valid JSON";
-    public static final String AUTH_NESTED_BLOCK_UNSUPPORTED = "Nested auth blocks are not supported";
     public static final String AUTH_TOKEN_VARIABLE_INVALID = "Auth token variable must have an unused nonblank name";
     public static final String AUTH_ACCESS_TOKEN_NOT_EXPOSED = "Auth strategy does not expose an access token";
     public static final String AUTH_STRATEGY_DISABLED = "Auth strategy <%s> is disabled";

@@ -104,13 +104,17 @@ class InterpreterDependenciesTest {
     }
 
     @Test
-    void clearAuthorizationRemovesTokenVariableAndCopies() {
+    void clearAuthorizationRemovesTokenVariableButPreservesCopies() {
         ScenarioContext context = new ScenarioContext(Map.of());
         InterpreterDependencies dependencies = InterpreterDependencies.builder().scenarioContext(context).build();
         context.setAuthToken("googleToken", "provider-secret");
         context.setVariable("copy", "Bearer provider-secret");
+        dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                Map.of("Authorization", "Bearer provider-secret")));
         dependencies.clearAuthorization();
+        assertNull(dependencies.getAuthorization());
         assertFalse(context.containsKey("googleToken"));
-        assertFalse(context.containsKey("copy"));
+        assertEquals("Bearer provider-secret", context.inject("{{copy}}"));
+        assertEquals("Bearer pro***", context.redact(context.get("copy")));
     }
 }

@@ -12,6 +12,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Auth;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @InterpreterForClass(Auth.class)
 public class AuthInterpreter extends AbstractInterpreter<Auth> {
@@ -31,20 +32,29 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     @Override
     protected void acceptImpl(final Auth command, final CommandResult result) {
-        if (dependencies.isAuthBlockActive()) {
-            throw new DefaultFrameworkException(ExceptionMessage.AUTH_NESTED_BLOCK_UNSUPPORTED);
-        }
+        Auth auth = prepareAuthCommand(command);
+        validateTokenVariable(auth);
+        boolean nested = dependencies.isAuthBlockActive();
+        InterpreterDependencies.Authorization previous = dependencies.getAuthorization();
+        Map<String, String> variables = dependencies.getScenarioContext().replaceAuthVariables(Map.of());
         dependencies.setAuthBlockActive(true);
         try {
-            executeAuthBlock(command, result);
+            executeAuthBlock(command, result, auth);
         } finally {
-            dependencies.setAuthBlockActive(false);
+            restoreAuthContext(nested, previous, variables);
         }
     }
 
-    private void executeAuthBlock(final Auth command, final CommandResult result) {
-        Auth auth = prepareAuthCommand(command);
-        validateTokenVariable(auth);
+    private void restoreAuthContext(final boolean nested, final InterpreterDependencies.Authorization previous,
+                                    final Map<String, String> variables) {
+        dependencies.getScenarioContext().replaceAuthVariables(nested ? variables : Map.of());
+        if (nested) {
+            dependencies.setAuthorization(previous);
+        }
+        dependencies.setAuthBlockActive(nested);
+    }
+
+    private void executeAuthBlock(final Auth command, final CommandResult result, final Auth auth) {
         addAuthMetaData(auth, result);
         result.setSubCommandsResult(new ArrayList<>());
         dependencies.clearAuthorization();
@@ -84,7 +94,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     private void validateTokenVariable(final Auth auth) {
         String name = auth.getTokenVariable();
-        if (name != null && (name.isBlank() || dependencies.getScenarioContext().containsKey(name))) {
+        if (name != null && (name.isBlank() || dependencies.getScenarioContext().containsNonAuthKey(name))) {
             throw new DefaultFrameworkException(ExceptionMessage.AUTH_TOKEN_VARIABLE_INVALID);
         }
     }
@@ -104,7 +114,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         try {
             strategy.authenticate(auth, result);
             publishTokenVariable(strategy, auth);
-        } catch (RuntimeException exception) {
+        } catch (RuntimeException | Error exception) {
             dependencies.clearAuthorization();
             throw exception;
         }

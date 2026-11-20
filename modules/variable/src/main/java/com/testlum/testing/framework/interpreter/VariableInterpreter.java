@@ -45,7 +45,14 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         } catch (Exception e) {
             log.info(FAILED_VARIABLE_LOG, var.getName(), var.getComment());
             throw e;
+        } finally {
+            redactMetadata(result);
         }
+    }
+
+    private void redactMetadata(final CommandResult result) {
+        result.getMetadata().replaceAll((key, value) -> value instanceof String text
+                ? dependencies.getScenarioContext().redact(text) : value);
     }
 
     private void setContextVariable(final Var var, final CommandResult result) {

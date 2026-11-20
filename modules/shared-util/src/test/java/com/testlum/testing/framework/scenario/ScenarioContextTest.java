@@ -253,7 +253,7 @@ class ScenarioContextTest {
     }
 
     @Test
-    void copiedSecretsAreScopedAndPreviousVariablesAreRestored() {
+    void copiedSecretsRemainAvailableAndMaskedAfterLogout() {
         context.set("copy", "previous");
         context.setAuthToken("googleToken", "provider-secret");
         context.setVariable("copy", "Bearer " + context.get("googleToken"));
@@ -261,8 +261,28 @@ class ScenarioContextTest {
         assertEquals("Bearer pro***", context.redact(context.get("copy")));
         context.clearAuthVariables();
         assertFalse(context.containsKey("googleToken"));
-        assertEquals("previous", context.get("copy"));
+        assertEquals("Bearer provider-secret", context.inject("{{copy}}"));
+        assertEquals("Bearer pro***", context.redact(context.get("copy")));
         assertEquals("pro***", context.redact("provider-secret"));
+    }
+
+    @Test
+    void newTokenCopyRemainsAvailableAfterLogout() {
+        context.setAuthToken("token", "provider-secret");
+        context.setVariable("copy", context.get("token"));
+        context.clearAuthVariables();
+        assertFalse(context.containsKey("token"));
+        assertEquals("provider-secret", context.inject("{{copy}}"));
+        assertEquals("pro***", context.redact(context.get("copy")));
+    }
+
+    @Test
+    void updatingAuthTokenThroughVarKeepsItsAuthLifetime() {
+        context.setAuthToken("token", "provider-secret");
+        context.setVariable("token", "updated-value");
+        assertEquals("updated-value", context.get("token"));
+        context.clearAuthVariables();
+        assertFalse(context.containsKey("token"));
     }
 
     @Test

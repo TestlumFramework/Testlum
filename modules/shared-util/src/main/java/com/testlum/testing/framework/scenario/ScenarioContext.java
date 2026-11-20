@@ -54,7 +54,7 @@ public class ScenarioContext {
     }
 
     public void setVariable(final String key, final String value) {
-        if (authVariables.containsKey(key) || containsSecret(value)) {
+        if (authVariables.containsKey(key)) {
             authVariables.put(key, value);
         } else {
             set(key, value);
@@ -76,8 +76,15 @@ public class ScenarioContext {
         authVariables.clear();
     }
 
-    private boolean containsSecret(final String value) {
-        return value != null && secretValues.stream().anyMatch(value::contains);
+    public Map<String, String> replaceAuthVariables(final Map<String, String> variables) {
+        Map<String, String> previous = new HashMap<>(authVariables);
+        authVariables.clear();
+        authVariables.putAll(variables);
+        return previous;
+    }
+
+    public boolean containsNonAuthKey(final String key) {
+        return contextMap.containsKey(key) || conditionMap.containsKey(key);
     }
 
     private void registerSecret(final String value) {

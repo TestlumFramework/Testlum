@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="webhooks">
+        <x:sequence>
+            <x:element name="webhook" type="tns:webhook" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="webhook">
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="matcher" type="tns:matcher" minOccurs="0"/>
+                </x:sequence>
+                <x:attribute name="url" type="tns:url" use="required"/>
+                <x:attribute name="responseStatusCode" default="200">
+                    <x:simpleType>
+                        <x:restriction base="x:int">
+                            <x:minInclusive value="200"/>
+                            <x:maxInclusive value="599"/>
+                        </x:restriction>
+                    </x:simpleType>
+                </x:attribute>
+                <x:attribute name="holdTimeout" default="5">
+                    <x:simpleType>
+                        <x:restriction base="x:int">
+                            <x:minInclusive value="0"/>
+                        </x:restriction>
+                    </x:simpleType>
+                </x:attribute>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="matcher">
+        <x:choice>
+            <x:element name="byHeader" type="tns:nonEmptyString"/>
+            <x:element name="byQueryParam" type="tns:nonEmptyString"/>
+            <x:element name="byBodyKey" type="tns:nonEmptyString"/>
+            <x:element name="byPathVar" type="tns:nonEmptyString"/>
+        </x:choice>
+    </x:complexType>
+
+</x:schema>

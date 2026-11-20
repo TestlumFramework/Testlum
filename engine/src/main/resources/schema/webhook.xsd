@@ -11,37 +11,15 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:sequence>
-                    <x:element name="receive" type="tns:webhookReceive"/>
-                    <x:element name="response" type="tns:webhookResponse" minOccurs="0"/>
-                    <x:element name="retry" type="tns:webhookRetry" minOccurs="0"/>
-                    <x:element name="noRetry" type="tns:webhookNoRetry" minOccurs="0"/>
-                    <x:element name="webhookMatcher" type="tns:webhookMatcher" minOccurs="0"/>
+                    <x:element name="status" type="tns:codePattern" minOccurs="0"/>
+                    <x:element name="expected" type="tns:expectedPattern" minOccurs="0"/>
+                    <x:element name="headers" type="tns:webhookHeaders" minOccurs="0"/>
                 </x:sequence>
-                <x:attribute name="path" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="timeout" type="x:int" use="required"/>
+                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+                <x:attribute name="timeout" type="tns:positiveIntegerMin1" use="required"/>
+                <x:attribute name="matchValue" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="webhookReceive">
-        <x:attribute name="expected" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="forward" type="x:boolean" use="required"/>
-        <x:attribute name="alias" type="tns:aliasPattern"/>
-    </x:complexType>
-
-    <x:complexType name="webhookResponse">
-        <x:sequence>
-            <x:element name="expected" type="tns:webhookExpected" minOccurs="0"/>
-            <x:element name="mockReturn" type="tns:webhookMockReturn" minOccurs="0"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="webhookExpected">
-        <x:choice maxOccurs="unbounded">
-            <x:element name="status" type="tns:codePattern"/>
-            <x:element name="file" type="tns:nonEmptyString"/>
-            <x:element name="headers" type="tns:webhookHeaders"/>
-        </x:choice>
     </x:complexType>
 
     <x:complexType name="webhookHeaders">
@@ -61,68 +39,6 @@
                 <x:attribute name="value" use="required" type="x:string"/>
             </x:restriction>
         </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="webhookMockReturn">
-        <x:choice maxOccurs="unbounded">
-            <x:element name="status" type="tns:codePattern"/>
-            <x:element name="file" type="tns:nonEmptyString"/>
-            <x:element name="headers" type="x:string"/>
-        </x:choice>
-    </x:complexType>
-
-    <x:complexType name="webhookRetry">
-        <x:choice>
-            <x:sequence>
-                <x:element name="receive" type="tns:webhookReceive"/>
-                <x:element name="response" type="tns:webhookResponse" minOccurs="0"/>
-            </x:sequence>
-            <x:element name="attempt" type="tns:webhookRetryAttempt" maxOccurs="unbounded"/>
-        </x:choice>
-        <x:attribute name="min" type="x:integer"/>
-        <x:attribute name="max" type="x:integer"/>
-        <x:attribute name="idleTimeout" type="x:int" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="webhookRetryAttempt">
-        <x:sequence>
-            <x:element name="receive" type="tns:webhookReceive"/>
-            <x:element name="response" type="tns:webhookResponse" minOccurs="0"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="webhookNoRetry">
-        <x:attribute name="timeout" type="x:int" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="webhookMatcher">
-        <x:choice maxOccurs="unbounded">
-            <x:element name="byHeader" type="tns:webhookMatcherNameValue"/>
-            <x:element name="byJson" type="tns:webhookMatcherJson"/>
-            <x:element name="byQueryParam" type="tns:webhookMatcherNameValue"/>
-            <x:element name="byEndpoint" type="tns:webhookMatcherEndpoint"/>
-            <x:element name="always" type="x:boolean" default="false"/>
-        </x:choice>
-    </x:complexType>
-
-    <x:complexType name="webhookMatcherNameValue">
-        <x:sequence>
-            <x:element name="name" type="tns:nonEmptyString"/>
-            <x:element name="value" type="tns:nonEmptyString"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="webhookMatcherJson">
-        <x:sequence>
-            <x:element name="jpath" type="tns:nonEmptyString"/>
-            <x:element name="value" type="tns:nonEmptyString"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="webhookMatcherEndpoint">
-        <x:sequence>
-            <x:element name="url" type="tns:nonEmptyString"/>
-        </x:sequence>
     </x:complexType>
 
 </x:schema>

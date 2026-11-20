@@ -39,6 +39,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *         &lt;element name="smtpIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}smtpIntegration" minOccurs="0"/&gt;
  *         &lt;element name="twilioIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}twilioIntegration" minOccurs="0"/&gt;
  *         &lt;element name="sqlDatabaseIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}sqlDatabaseIntegration" minOccurs="0"/&gt;
+ *         &lt;element name="webhooks" type="{http://www.knubisoft.com/testlum/testing/model/global-config}webhooks" minOccurs="0"/&gt;
  *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -76,6 +77,7 @@ public class Integrations {
     protected SmtpIntegration smtpIntegration;
     protected TwilioIntegration twilioIntegration;
     protected SqlDatabaseIntegration sqlDatabaseIntegration;
+    protected Webhooks webhooks;
 
     /**
      * Gets the value of the aiIntegration property.
@@ -603,6 +605,30 @@ public class Integrations {
      */
     public void setSqlDatabaseIntegration(SqlDatabaseIntegration value) {
         this.sqlDatabaseIntegration = value;
+    }
+
+    /**
+     * Gets the value of the webhooks property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Webhooks }
+     *
+     */
+    public Webhooks getWebhooks() {
+        return webhooks;
+    }
+
+    /**
+     * Sets the value of the webhooks property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Webhooks }
+     *
+     */
+    public void setWebhooks(Webhooks value) {
+        this.webhooks = value;
     }
 
 }

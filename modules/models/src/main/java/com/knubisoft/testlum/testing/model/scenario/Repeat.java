@@ -44,6 +44,7 @@ import java.util.List;
  *         &lt;element name="shell" type="{http://www.knubisoft.com/testlum/testing/model/scenario}shell"/&gt;
  *         &lt;element name="smtp" type="{http://www.knubisoft.com/testlum/testing/model/scenario}smtp"/&gt;
  *         &lt;element name="twilio" type="{http://www.knubisoft.com/testlum/testing/model/scenario}twilio"/&gt;
+ *         &lt;element name="webhook" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webhook"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
  *       &lt;attribute name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" /&gt;
@@ -89,7 +90,8 @@ public class Repeat
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "shell", type = Shell.class),
         @XmlElement(name = "smtp", type = Smtp.class),
-        @XmlElement(name = "twilio", type = Twilio.class)
+        @XmlElement(name = "twilio", type = Twilio.class),
+        @XmlElement(name = "webhook", type = Webhook.class)
     })
     protected List<AbstractCommand> commands;
     @XmlAttribute(name = "times")

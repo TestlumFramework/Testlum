@@ -32,6 +32,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
         map.put(i -> Objects.nonNull(i.getApis()), i -> i.getApis().getApi());
         map.put(i -> Objects.nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
+        map.put(i -> Objects.nonNull(i.getWebhooks()), i -> i.getWebhooks().getWebhook());
         map.put(i -> Objects.nonNull(i.getS3Integration()), i -> i.getS3Integration().getS3());
         map.put(i -> Objects.nonNull(i.getSesIntegration()), i -> i.getSesIntegration().getSes());
         map.put(i -> Objects.nonNull(i.getSqsIntegration()), i -> i.getSqsIntegration().getSqs());

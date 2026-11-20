@@ -28,6 +28,7 @@ import com.knubisoft.testlum.testing.model.global_config.Smtp;
 import com.knubisoft.testlum.testing.model.global_config.SqlDatabase;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import com.knubisoft.testlum.testing.model.global_config.Twilio;
+import com.knubisoft.testlum.testing.model.global_config.Webhook;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -70,6 +71,7 @@ public class IntegrationsUtil {
         map.put(c -> c.equals(Api.class), i -> i.getApis().getApi());
         map.put(c -> c.equals(WebsocketApi.class), i -> i.getWebsockets().getApi());
         map.put(c -> c.equals(GraphqlApi.class), i -> i.getGraphqlIntegration().getApi());
+        map.put(c -> c.equals(Webhook.class), i -> i.getWebhooks().getWebhook());
     }
 
     private void registerDatabaseIntegrations(final Map<IntegrationsPredicate, IntegrationListMethod> map) {

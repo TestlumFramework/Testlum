@@ -1454,14 +1454,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebhookExpected }
-     *
-     */
-    public WebhookExpected createWebhookExpected() {
-        return new WebhookExpected();
-    }
-
-    /**
      * Create an instance of {@link WebhookHeader }
      *
      */
@@ -1475,86 +1467,6 @@ public class ObjectFactory {
      */
     public WebhookHeaders createWebhookHeaders() {
         return new WebhookHeaders();
-    }
-
-    /**
-     * Create an instance of {@link WebhookMatcher }
-     *
-     */
-    public WebhookMatcher createWebhookMatcher() {
-        return new WebhookMatcher();
-    }
-
-    /**
-     * Create an instance of {@link WebhookMatcherEndpoint }
-     *
-     */
-    public WebhookMatcherEndpoint createWebhookMatcherEndpoint() {
-        return new WebhookMatcherEndpoint();
-    }
-
-    /**
-     * Create an instance of {@link WebhookMatcherJson }
-     *
-     */
-    public WebhookMatcherJson createWebhookMatcherJson() {
-        return new WebhookMatcherJson();
-    }
-
-    /**
-     * Create an instance of {@link WebhookMatcherNameValue }
-     *
-     */
-    public WebhookMatcherNameValue createWebhookMatcherNameValue() {
-        return new WebhookMatcherNameValue();
-    }
-
-    /**
-     * Create an instance of {@link WebhookMockReturn }
-     *
-     */
-    public WebhookMockReturn createWebhookMockReturn() {
-        return new WebhookMockReturn();
-    }
-
-    /**
-     * Create an instance of {@link WebhookNoRetry }
-     *
-     */
-    public WebhookNoRetry createWebhookNoRetry() {
-        return new WebhookNoRetry();
-    }
-
-    /**
-     * Create an instance of {@link WebhookReceive }
-     *
-     */
-    public WebhookReceive createWebhookReceive() {
-        return new WebhookReceive();
-    }
-
-    /**
-     * Create an instance of {@link WebhookResponse }
-     *
-     */
-    public WebhookResponse createWebhookResponse() {
-        return new WebhookResponse();
-    }
-
-    /**
-     * Create an instance of {@link WebhookRetry }
-     *
-     */
-    public WebhookRetry createWebhookRetry() {
-        return new WebhookRetry();
-    }
-
-    /**
-     * Create an instance of {@link WebhookRetryAttempt }
-     *
-     */
-    public WebhookRetryAttempt createWebhookRetryAttempt() {
-        return new WebhookRetryAttempt();
     }
 
 }

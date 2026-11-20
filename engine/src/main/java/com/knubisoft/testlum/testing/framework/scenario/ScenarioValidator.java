@@ -40,6 +40,7 @@ import com.knubisoft.testlum.testing.model.global_config.SmtpIntegration;
 import com.knubisoft.testlum.testing.model.global_config.SqsIntegration;
 import com.knubisoft.testlum.testing.model.global_config.TwilioIntegration;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
+import com.knubisoft.testlum.testing.model.global_config.Webhooks;
 import com.knubisoft.testlum.testing.model.global_config.Websockets;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import jakarta.annotation.PostConstruct;
@@ -113,6 +114,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         map.put(o -> o instanceof Graphql, (f, c) -> validateGraphql(f, (Graphql) c, integrations));
         map.put(o -> o instanceof Websocket, (f, c) -> validateWs(f, (Websocket) c, integrations));
         map.put(o -> o instanceof Elasticsearch, (f, c) -> validateEs(f, (Elasticsearch) c, integrations));
+        map.put(o -> o instanceof Webhook, (f, c) -> validateWebhook(f, (Webhook) c, integrations));
     }
 
     private void validateAuth(final Auth auth, final Integrations i) {
@@ -124,6 +126,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateHttp(final File f, final Http http, final Integrations i) {
         checkIntegrationExistence(i.getApis(), Apis.class);
         validateHttpCommand(f, http);
+    }
+
+    private void validateWebhook(final File f, final Webhook webhook, final Integrations i) {
+        checkIntegrationExistence(i.getWebhooks(), Webhooks.class);
+        validateAlias(i.getWebhooks().getWebhook(), webhook.getAlias());
+        validateFileIfExist(f, webhook.getExpected());
     }
 
     private void validateGraphql(final File f, final Graphql gql, final Integrations i) {

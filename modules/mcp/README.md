@@ -20,7 +20,7 @@ An argument a tool does not know is an error, not ignored.
 - `TESTLUM_XSD_DIR`: a folder of the engine's `schema/*.xsd`. The image sets both.
 - The server runs until the client closes stdin, which also ends and removes its container.
 
-The engine reads `--tags=a,b` (or `-t=a,b`) and then ignores the tag setting in the global config. `testlum_run` always passes `--junit`, so the JUnit report is written whether or not the global config has `<junit enabled="true"/>`, and its result ends with a line `junit: report/junit.xml (under <tests folder>)`.
+The engine reads `--tags=a,b` (or `-t=a,b`) and then ignores the tag setting in the global config. `testlum_run` always passes `--junit`, so the JUnit report is written whether or not the global config has `<junit enabled="true"/>`, and its result contains a line `junit: report/junit.xml (under <tests folder>)` after the summary.
 
 ## JUnit XML report
 

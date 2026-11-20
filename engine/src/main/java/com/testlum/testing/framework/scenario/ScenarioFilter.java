@@ -128,8 +128,7 @@ public class ScenarioFilter {
             ScenarioStatusRegistry.registerSkipped(entry.file, LogMessage.SCENARIO_SKIPPED_WITHOUT_TAGS);
             return false;
         }
-        List<String> scenarioTags =
-                Arrays.asList((entry.scenario.getSettings().getTags()).split(DelimiterConstant.COMMA));
+        List<String> scenarioTags = extractTags(entry.scenario.getSettings().getTags());
         boolean matches = scenarioTags.stream().anyMatch(enabledTags::contains);
         if (!matches) {
             ScenarioStatusRegistry.registerSkipped(entry.file, LogMessage.SCENARIO_SKIPPED_TAGS_NOT_MATCH);
@@ -142,7 +141,7 @@ public class ScenarioFilter {
                 .filter(entry -> entry.scenario != null)
                 .map(entry -> entry.scenario.getSettings().getTags())
                 .filter(Objects::nonNull)
-                .flatMap(tags -> Arrays.stream(tags.split(DelimiterConstant.COMMA)))
+                .flatMap(tags -> extractTags(tags).stream())
                 .collect(Collectors.groupingBy(tag -> tag, Collectors.counting()));
     }
 
@@ -150,11 +149,24 @@ public class ScenarioFilter {
         List<String> enabledTags = tags.stream()
                 .filter(TagValue::isEnabled)
                 .map(TagValue::getName)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(Predicate.not(String::isEmpty))
                 .toList();
         if (enabledTags.isEmpty()) {
             throw new DefaultFrameworkException(ExceptionMessage.NO_ENABLED_TAGS_CONFIG);
         }
         return enabledTags;
+    }
+
+    private List<String> extractTags(final String tags) {
+        if (tags == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(tags.split(DelimiterConstant.COMMA))
+                .map(String::trim)
+                .filter(Predicate.not(String::isEmpty))
+                .toList();
     }
 
     private List<MappingResult> filterBy(final List<MappingResult> scenarios,

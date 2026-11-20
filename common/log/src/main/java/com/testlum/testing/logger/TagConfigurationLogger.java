@@ -8,6 +8,7 @@ import com.testlum.testing.model.global_config.TagValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,18 +31,14 @@ public class TagConfigurationLogger {
         declaredTags.forEach(tag -> table.row(computeRowColor(tag.isEnabled()),
                 tag.getName(),
                 tag.isEnabled(),
-                scenarioCountByTag.getOrDefault(tag.getName(), 0L)));
+                scenarioCountByTag.getOrDefault(tag.getName() != null ? tag.getName().trim() : null, 0L)));
         appendUndeclaredSection(table, declaredTags, scenarioCountByTag);
     }
 
     private void appendUndeclaredSection(final DynamicTableBuilder table,
                                          final List<TagValue> declaredTags,
                                          final Map<String, Long> scenarioCountByTag) {
-        Set<String> declaredNames = declaredTags.stream().map(TagValue::getName).collect(Collectors.toSet());
-        List<Map.Entry<String, Long>> undeclared = scenarioCountByTag.entrySet().stream()
-                .filter(entry -> !declaredNames.contains(entry.getKey()))
-                .sorted(Map.Entry.comparingByKey())
-                .toList();
+        List<Map.Entry<String, Long>> undeclared = findUndeclared(declaredTags, scenarioCountByTag);
         if (undeclared.isEmpty()) {
             return;
         }
@@ -50,6 +47,19 @@ public class TagConfigurationLogger {
                 entry.getKey(),
                 LogMessage.TAG_CONFIG_TABLE_UNDECLARED_ENABLED_CELL,
                 entry.getValue()));
+    }
+
+    private List<Map.Entry<String, Long>> findUndeclared(final List<TagValue> declaredTags,
+                                                         final Map<String, Long> scenarioCountByTag) {
+        Set<String> declaredNames = declaredTags.stream()
+                .map(TagValue::getName)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .collect(Collectors.toSet());
+        return scenarioCountByTag.entrySet().stream()
+                .filter(entry -> !declaredNames.contains(entry.getKey()))
+                .sorted(Map.Entry.comparingByKey())
+                .toList();
     }
 
     private void writeHeader(final DynamicTableBuilder table) {

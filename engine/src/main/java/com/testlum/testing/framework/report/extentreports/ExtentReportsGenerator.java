@@ -31,10 +31,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 
 @Slf4j
@@ -324,12 +326,12 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private String[] evaluateCategories(final ScenarioResult scenarioResult) {
-        String[] categories;
         if (scenarioResult.getTags() == null) {
-            categories = new String[0];
-        } else {
-            categories = scenarioResult.getTags().split(DelimiterConstant.COMMA);
+            return new String[0];
         }
-        return categories;
+        return Arrays.stream(scenarioResult.getTags().split(DelimiterConstant.COMMA))
+                .map(String::trim)
+                .filter(Predicate.not(String::isEmpty))
+                .toArray(String[]::new);
     }
 }

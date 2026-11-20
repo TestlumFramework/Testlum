@@ -172,6 +172,43 @@ class ScenarioFilterTest {
             assertEquals(1, result.size());
             assertEquals("b.xml", result.get(0).file.getName());
         }
+
+        @Test
+        void scenarioTagsWithWhitespaceAndLineBreaksMatchTrimmedEnabledTags() {
+            final RunScenariosByTag runByTag = new RunScenariosByTag();
+            runByTag.setEnabled(true);
+            final TagValue tag = new TagValue();
+            tag.setName("web");
+            tag.setEnabled(true);
+            runByTag.getTag().add(tag);
+            when(config.getRunScenariosByTag()).thenReturn(runByTag);
+
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, " web "));
+            input.add(validResult("b.xml", true, false, " \n web \n "));
+            input.add(validResult("c.xml", true, false, "other, web"));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(3, result.size());
+        }
+
+        @Test
+        void enabledTagsWithWhitespaceMatchScenarioTags() {
+            final RunScenariosByTag runByTag = new RunScenariosByTag();
+            runByTag.setEnabled(true);
+            final TagValue tag = new TagValue();
+            tag.setName("  web  ");
+            tag.setEnabled(true);
+            runByTag.getTag().add(tag);
+            when(config.getRunScenariosByTag()).thenReturn(runByTag);
+
+            final List<MappingResult> input = new ArrayList<>();
+            input.add(validResult("a.xml", true, false, "web"));
+
+            final List<MappingResult> result = filter.filterScenarios(input);
+            assertEquals(1, result.size());
+            assertEquals("a.xml", result.get(0).file.getName());
+        }
     }
 
     @Nested
@@ -450,13 +487,14 @@ class ScenarioFilterTest {
         }
 
         @Test
-        void doesNotTrimTagsSoTheTableMatchesTheFilter() {
+        void trimsTagsSoTheTableMatchesTheFilter() {
             final List<MappingResult> input = new ArrayList<>();
             input.add(validResult("a.xml", true, false, "smoke, regression"));
+            input.add(validResult("b.xml", true, false, " \n web \n "));
 
             filter.filterScenarios(input);
 
-            assertEquals(Map.of("smoke", 1L, " regression", 1L), capturedCounts());
+            assertEquals(Map.of("smoke", 1L, "regression", 1L, "web", 1L), capturedCounts());
         }
 
         @Test

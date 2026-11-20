@@ -64,6 +64,52 @@ class JwtAuthTest {
     }
 
     @Nested
+    class TokenPaths {
+
+        @Test
+        void readsNestedTokenFromDottedName() throws Exception {
+            configuration.setTokenName("data.accessToken");
+            assertEquals("abc", readToken("{\"data\":{\"accessToken\":\"abc\"}}"));
+        }
+
+        @Test
+        void preservesExplicitJsonPath() throws Exception {
+            configuration.setTokenName("$.data.accessToken");
+            assertEquals("abc", readToken("{\"data\":{\"accessToken\":\"abc\"}}"));
+        }
+
+        @Test
+        void readsLiteralDottedKeyOnlyWithBracketPath() throws Exception {
+            configuration.setTokenName("$['data.accessToken']");
+            assertEquals("literal", readToken("{\"data.accessToken\":\"literal\"}"));
+        }
+
+        @Test
+        void doesNotTreatDottedNameAsLiteralKey() throws Exception {
+            configuration.setTokenName("data.accessToken");
+            java.lang.reflect.InvocationTargetException exception = assertThrows(
+                    java.lang.reflect.InvocationTargetException.class,
+                    () -> readToken("{\"data.accessToken\":\"secret-value\"}"));
+            assertInstanceOf(DefaultFrameworkException.class, exception.getCause());
+            assertTrue(exception.getCause().getMessage().contains("$.data.accessToken"));
+            assertTrue(exception.getCause().getMessage().contains(configuration.getAlias()));
+            assertFalse(exception.getCause().getMessage().contains("secret-value"));
+        }
+
+        @Test
+        void readsExplicitArrayPath() throws Exception {
+            configuration.setTokenName("$.data[0].accessToken");
+            assertEquals("abc", readToken("{\"data\":[{\"accessToken\":\"abc\"}]}"));
+        }
+
+        private Object readToken(final String response) throws Exception {
+            Method method = JwtAuth.class.getDeclaredMethod("getTokenFromResponse", String.class);
+            method.setAccessible(true);
+            return method.invoke(jwtAuth, response);
+        }
+    }
+
+    @Nested
     class Authenticate {
 
         @Test
@@ -247,7 +293,10 @@ class JwtAuthTest {
                 when(bodySpec.retrieve()).thenReturn(responseSpec);
                 when(responseSpec.body(String.class)).thenReturn("{}");
 
-                assertThrows(com.jayway.jsonpath.PathNotFoundException.class, () -> jwtAuth.authenticate(auth, result));
+                DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                        () -> jwtAuth.authenticate(auth, result));
+                assertTrue(exception.getMessage().contains("$.token"));
+                assertTrue(exception.getMessage().contains(configuration.getAlias()));
             }
 
             verify(dependencies, never()).setAuthorization(any());

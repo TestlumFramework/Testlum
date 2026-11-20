@@ -151,11 +151,11 @@ public class IntegrationsUtil {
     public <T extends AuthStrategy> T findAuthStrategy(final Class<T> clazz, final AliasEnv aliasEnv) {
         AuthStrategy strategy = findAuthStrategyByAlias(aliasEnv);
         if (!strategy.isEnabled()) {
-            throw new IntegrationDisabledException("Auth strategy <%s> is disabled", strategy.getAlias());
+            throw new IntegrationDisabledException(ExceptionMessage.AUTH_STRATEGY_DISABLED, strategy.getAlias());
         }
         if (!clazz.isInstance(strategy)) {
             throw new DefaultFrameworkException(
-                    "Auth strategy <%s> has type <%s>, expected <%s>",
+                    ExceptionMessage.AUTH_STRATEGY_TYPE_MISMATCH,
                     strategy.getAlias(),
                     strategy.getClass().getSimpleName(),
                     clazz.getSimpleName());
@@ -171,7 +171,7 @@ public class IntegrationsUtil {
                 .toList();
         if (matches.size() != 1) {
             throw new DefaultFrameworkException(
-                    "Expected one auth strategy <%s> in environment <%s>, found %d",
+                    ExceptionMessage.AUTH_STRATEGY_COUNT_INVALID,
                     alias, aliasEnv.getEnvironment(), matches.size());
         }
         return matches.get(0);
@@ -180,10 +180,10 @@ public class IntegrationsUtil {
     private List<AuthStrategy> findAuthStrategies(final String environment) {
         Integrations integrations = envToIntegrations.get(environment);
         if (integrations == null) {
-            throw new DefaultFrameworkException("Cannot find integrations for environment <%s>", environment);
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_INTEGRATIONS_ENV_NOT_FOUND, environment);
         }
         if (integrations.getAuthStrategies() == null) {
-            throw new DefaultFrameworkException("Cannot find <authStrategies> for environment <%s>", environment);
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_STRATEGIES_ENV_NOT_FOUND, environment);
         }
         return integrations.getAuthStrategies().getJwtOrBasicOrCustom();
     }

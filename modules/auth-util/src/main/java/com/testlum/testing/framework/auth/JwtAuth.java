@@ -1,7 +1,10 @@
 package com.testlum.testing.framework.auth;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
+import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -54,17 +57,23 @@ public class JwtAuth extends AbstractAuthStrategy {
         String response = doRequest(request);
         if (StringUtils.isBlank(response)) {
             throw new DefaultFrameworkException(
-                    "Login response is empty for auth strategy <%s>", configuration.getAlias());
+                    ExceptionMessage.AUTH_LOGIN_RESPONSE_EMPTY, configuration.getAlias());
         }
         return getTokenFromResponse(response);
     }
 
     private String getTokenFromResponse(final String response) {
         DocumentContext context = JsonPath.parse(response);
-        Object value = context.read(getTokenPath());
+        String path = getTokenPath();
+        Object value;
+        try {
+            value = context.read(path);
+        } catch (PathNotFoundException exception) {
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_LOGIN_TOKEN_NOT_FOUND,
+                    path, configuration.getAlias());
+        }
         if (!(value instanceof String token) || StringUtils.isBlank(token)) {
-            throw new DefaultFrameworkException("Login response must contain a non-empty string token "
-                    + "for auth strategy <%s>", configuration.getAlias());
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_LOGIN_TOKEN_INVALID, configuration.getAlias());
         }
         return token;
     }
@@ -72,13 +81,8 @@ public class JwtAuth extends AbstractAuthStrategy {
     private String getTokenPath() {
         String tokenName = StringUtils.defaultIfBlank(
                 configuration.getTokenName(), AuthorizationConstant.CONTENT_KEY_TOKEN);
-        if (tokenName.startsWith("$")) {
-            return tokenName;
-        }
-        String escapedName = tokenName
-                .replace("\\", "\\\\")
-                .replace("'", "\\'");
-        return "$['" + escapedName + "']";
+        return tokenName.startsWith(DelimiterConstant.DOLLAR_SIGN)
+                ? tokenName : DelimiterConstant.DOLLAR_SIGN + DelimiterConstant.DOT + tokenName;
     }
 
     private String prepareBody(final Auth auth) {
@@ -104,7 +108,7 @@ public class JwtAuth extends AbstractAuthStrategy {
         } catch (RestClientResponseException exception) {
             logResponseStatusError(exception);
             throw new DefaultFrameworkException(
-                    "JWT login failed for auth strategy <" + configuration.getAlias() + ">", exception);
+                    String.format(ExceptionMessage.AUTH_JWT_LOGIN_FAILED, configuration.getAlias()), exception);
         }
     }
 

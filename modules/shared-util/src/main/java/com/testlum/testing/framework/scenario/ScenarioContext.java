@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.scenario;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.util.TokenMasker;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -62,10 +63,10 @@ public class ScenarioContext {
 
     public void setAuthToken(final String key, final String token) {
         if (StringUtils.isBlank(key) || containsKey(key)) {
-            throw new IllegalArgumentException("Auth token variable must have an unused nonblank name");
+            throw new IllegalArgumentException(ExceptionMessage.AUTH_TOKEN_VARIABLE_INVALID);
         }
         if (StringUtils.isBlank(token)) {
-            throw new IllegalArgumentException("Auth strategy did not provide an access token");
+            throw new IllegalArgumentException(ExceptionMessage.AUTH_ACCESS_TOKEN_EMPTY);
         }
         registerSecret(token);
         authVariables.put(key, token);

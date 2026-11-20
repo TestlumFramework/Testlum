@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.interpreter;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.auth.AuthFactory;
 import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -31,7 +32,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
     @Override
     protected void acceptImpl(final Auth command, final CommandResult result) {
         if (dependencies.isAuthBlockActive()) {
-            throw new DefaultFrameworkException("Nested auth blocks are not supported");
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_NESTED_BLOCK_UNSUPPORTED);
         }
         dependencies.setAuthBlockActive(true);
         try {
@@ -84,7 +85,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
     private void validateTokenVariable(final Auth auth) {
         String name = auth.getTokenVariable();
         if (name != null && (name.isBlank() || dependencies.getScenarioContext().containsKey(name))) {
-            throw new DefaultFrameworkException("Auth token variable must have an unused nonblank name");
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_TOKEN_VARIABLE_INVALID);
         }
     }
 
@@ -93,7 +94,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
             return;
         }
         String token = strategy.getAccessToken().filter(value -> !value.isBlank())
-                .orElseThrow(() -> new DefaultFrameworkException("Auth strategy does not expose an access token"));
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.AUTH_ACCESS_TOKEN_NOT_EXPOSED));
         dependencies.getScenarioContext().setAuthToken(auth.getTokenVariable(), token);
     }
 

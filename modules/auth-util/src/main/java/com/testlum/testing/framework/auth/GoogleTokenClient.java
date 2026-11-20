@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.auth;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.model.global_config.GoogleAuthStrategy;
@@ -44,7 +45,7 @@ public class GoogleTokenClient extends AbstractOAuthTokenClient<GoogleAuthStrate
         if (configuration == null || StringUtils.isBlank(configuration.getClientId())
                 || StringUtils.isBlank(configuration.getClientSecret()) || StringUtils.isBlank(refreshToken)) {
             throw new DefaultFrameworkException(
-                    "Google token request requires non-empty clientId, clientSecret and refreshToken");
+                    ExceptionMessage.GOOGLE_TOKEN_CREDENTIALS_INVALID);
         }
     }
 

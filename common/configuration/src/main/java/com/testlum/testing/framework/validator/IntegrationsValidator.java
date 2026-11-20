@@ -154,11 +154,11 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
     private void checkGoogleConfiguration(final GoogleAuthStrategy strategy) {
         if (StringUtils.isBlank(strategy.getClientId())) {
             throw new DefaultFrameworkException(
-                    "Google auth strategy <%s> requires a non-empty clientId", strategy.getAlias());
+                    ExceptionMessage.GOOGLE_AUTH_CLIENT_ID_EMPTY, strategy.getAlias());
         }
         if (StringUtils.isBlank(strategy.getClientSecret())) {
             throw new DefaultFrameworkException(
-                    "Google auth strategy <%s> requires a non-empty clientSecret", strategy.getAlias());
+                    ExceptionMessage.GOOGLE_AUTH_CLIENT_SECRET_EMPTY, strategy.getAlias());
         }
     }
 
@@ -176,14 +176,14 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         checkMicrosoftValue(strategy.getTenant(), "tenant", strategy.getAlias());
         checkMicrosoftValue(strategy.getScope(), "scope", strategy.getAlias());
         if (!strategy.getTenant().matches("[A-Za-z0-9][A-Za-z0-9.-]*")) {
-            throw new DefaultFrameworkException("Microsoft auth strategy <%s> has an invalid tenant",
+            throw new DefaultFrameworkException(ExceptionMessage.MICROSOFT_AUTH_TENANT_INVALID,
                     strategy.getAlias());
         }
     }
 
     private void checkMicrosoftValue(final String value, final String field, final String alias) {
         if (StringUtils.isBlank(value)) {
-            throw new DefaultFrameworkException("Microsoft auth strategy <%s> requires a non-empty %s", alias, field);
+            throw new DefaultFrameworkException(ExceptionMessage.MICROSOFT_AUTH_FIELD_EMPTY, alias, field);
         }
     }
 

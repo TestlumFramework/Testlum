@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.auth;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.model.global_config.AuthStrategy;
@@ -66,7 +67,7 @@ public abstract class AbstractOAuthTokenClient<C extends AuthStrategy> {
                     extractErrorCode(exception.getResponseBodyAsString()));
         } catch (RestClientException exception) {
             throw new DefaultFrameworkException(
-                    providerName() + " token request failed for auth strategy <%s>: transport error",
+                    ExceptionMessage.OAUTH_TOKEN_TRANSPORT_ERROR, providerName(),
                     configuration.getAlias());
         }
     }
@@ -80,7 +81,7 @@ public abstract class AbstractOAuthTokenClient<C extends AuthStrategy> {
         String tokenType = requireString(values, "token_type", alias);
         if (!"Bearer".equalsIgnoreCase(tokenType)) {
             throw new DefaultFrameworkException(
-                    providerName() + " token response for auth strategy <%s> must use Bearer", alias);
+                    ExceptionMessage.OAUTH_TOKEN_TYPE_INVALID, providerName(), alias);
         }
         return new OAuthTokenResponse(accessToken, "Bearer", requireExpiresIn(values, alias));
     }
@@ -88,12 +89,12 @@ public abstract class AbstractOAuthTokenClient<C extends AuthStrategy> {
     private Map<?, ?> parseResponseObject(final String response, final String alias) {
         if (StringUtils.isBlank(response)) {
             throw new DefaultFrameworkException(
-                    providerName() + " token response is empty for auth strategy <%s>", alias);
+                    ExceptionMessage.OAUTH_TOKEN_RESPONSE_EMPTY, providerName(), alias);
         }
         Object parsed = parseJson(response, alias);
         if (!(parsed instanceof Map<?, ?> values)) {
             throw new DefaultFrameworkException(
-                    providerName() + " token response must be a JSON object for strategy <%s>", alias);
+                    ExceptionMessage.OAUTH_TOKEN_RESPONSE_NOT_OBJECT, providerName(), alias);
         }
         return values;
     }
@@ -103,7 +104,7 @@ public abstract class AbstractOAuthTokenClient<C extends AuthStrategy> {
             return jacksonService.readValue(response, Object.class);
         } catch (DefaultFrameworkException exception) {
             throw new DefaultFrameworkException(
-                    providerName() + " token response contains invalid JSON for strategy <%s>", alias);
+                    ExceptionMessage.OAUTH_TOKEN_RESPONSE_JSON_INVALID, providerName(), alias);
         }
     }
 
@@ -111,7 +112,7 @@ public abstract class AbstractOAuthTokenClient<C extends AuthStrategy> {
         Object value = values.get(field);
         if (!(value instanceof String text) || StringUtils.isBlank(text)) {
             throw new DefaultFrameworkException(
-                    providerName() + " token response for strategy <%s> requires a non-empty string %s", alias, field);
+                    ExceptionMessage.OAUTH_TOKEN_RESPONSE_FIELD_INVALID, providerName(), alias, field);
         }
         return text;
     }
@@ -120,7 +121,7 @@ public abstract class AbstractOAuthTokenClient<C extends AuthStrategy> {
         Object value = values.get("expires_in");
         if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() <= 0) {
             throw new DefaultFrameworkException(
-                    providerName() + " token response for strategy <%s> requires a positive integer expires_in", alias);
+                    ExceptionMessage.OAUTH_TOKEN_EXPIRES_IN_INVALID, providerName(), alias);
         }
         return ((Number) value).longValue();
     }
@@ -146,7 +147,7 @@ public abstract class AbstractOAuthTokenClient<C extends AuthStrategy> {
 
     private DefaultFrameworkException oauthFailure(final String alias, final int status, final String errorCode) {
         return new DefaultFrameworkException(
-                providerName() + " token request failed for auth strategy <%s>: HTTP %d (%s)",
+                ExceptionMessage.OAUTH_TOKEN_REQUEST_FAILED, providerName(),
                 alias, status, errorCode);
     }
 }

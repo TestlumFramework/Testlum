@@ -1,6 +1,5 @@
 package com.testlum.testing.framework.auth;
 
-import com.jayway.jsonpath.PathNotFoundException;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -87,7 +86,10 @@ class CustomAuthTest {
     @Test
     void rejectsMissingToken() {
         response("{}");
-        assertThrows(PathNotFoundException.class, () -> strategy.authenticate(command, new CommandResult()));
+        DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                () -> strategy.authenticate(command, new CommandResult()));
+        assertTrue(exception.getMessage().contains("$.token"));
+        assertTrue(exception.getMessage().contains(configuration.getAlias()));
         verify(dependencies, never()).setAuthorization(any());
     }
 

@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.auth;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import org.springframework.stereotype.Service;
 import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -45,7 +46,8 @@ public class AuthFactory {
         if (configuration instanceof CustomAuthStrategy custom) {
             return createCustomStrategy(dependencies, custom);
         }
-        throw new DefaultFrameworkException("Unsupported auth strategy <%s>", configuration.getClass().getName());
+        throw new DefaultFrameworkException(
+                ExceptionMessage.AUTH_STRATEGY_UNSUPPORTED, configuration.getClass().getName());
     }
 
     private AuthStrategy getAuthConfig(
@@ -62,11 +64,13 @@ public class AuthFactory {
         try {
             return instantiateCustomStrategy(dependencies, configuration);
         } catch (InvocationTargetException exception) {
-            throw new DefaultFrameworkException("Custom auth constructor failed: "
-                    + configuration.getClassName(), exception.getTargetException());
+            throw new DefaultFrameworkException(
+                    String.format(ExceptionMessage.AUTH_CUSTOM_CONSTRUCTOR_FAILED, configuration.getClassName()),
+                    exception.getTargetException());
         } catch (ReflectiveOperationException | ClassCastException exception) {
             throw new DefaultFrameworkException(
-                    "Cannot instantiate custom auth class: " + configuration.getClassName(), exception);
+                    String.format(ExceptionMessage.AUTH_CUSTOM_INSTANTIATION_FAILED, configuration.getClassName()),
+                    exception);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.auth;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.model.global_config.MicrosoftAuthStrategy;
@@ -45,15 +46,14 @@ public class MicrosoftTokenClient extends AbstractOAuthTokenClient<MicrosoftAuth
                 || StringUtils.isBlank(configuration.getClientSecret()) || StringUtils.isBlank(refreshToken)
                 || StringUtils.isBlank(configuration.getTenant()) || StringUtils.isBlank(configuration.getScope())) {
             throw new DefaultFrameworkException(
-                    "Microsoft token request requires non-empty clientId, clientSecret, "
-                            + "tenant, scope and refreshToken");
+                    ExceptionMessage.MICROSOFT_TOKEN_CREDENTIALS_INVALID);
         }
     }
 
     @Override
     protected String tokenEndpoint(final MicrosoftAuthStrategy configuration) {
         if (!configuration.getTenant().matches("[A-Za-z0-9][A-Za-z0-9.-]*")) {
-            throw new DefaultFrameworkException("Microsoft auth strategy <%s> has an invalid tenant",
+            throw new DefaultFrameworkException(ExceptionMessage.MICROSOFT_AUTH_TENANT_INVALID,
                     configuration.getAlias());
         }
         return "https://login.microsoftonline.com/" + configuration.getTenant() + "/oauth2/v2.0/token";

@@ -597,6 +597,21 @@ class ExtentReportsGeneratorTest {
             assertEquals(1, categories.length);
             assertEquals("smoke", categories[0]);
         }
+
+        @Test
+        void evaluateCategoriesTrimsWhitespaceAndIgnoresEmptyTags() throws Exception {
+            Method method = ExtentReportsGenerator.class.getDeclaredMethod("evaluateCategories", ScenarioResult.class);
+            method.setAccessible(true);
+            ScenarioResult result = new ScenarioResult();
+            result.setTags(" smoke , \n regression \n , , api ");
+
+            String[] categories = (String[]) method.invoke(generator, result);
+
+            assertEquals(3, categories.length);
+            assertEquals("smoke", categories[0]);
+            assertEquals("regression", categories[1]);
+            assertEquals("api", categories[2]);
+        }
     }
 
     @Nested

@@ -1,0 +1,6 @@
+payload,message
+{},title is required
+"{""title"": ""  ""}",title is required
+"{""title"": ""Too big"", ""points"": 20}",points must be between 1 and 13
+"{""title"": ""Too small"", ""points"": 0}",points must be between 1 and 13
+"{""title"": ""Half"", ""points"": 2.5}",points must be between 1 and 13

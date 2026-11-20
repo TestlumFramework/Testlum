@@ -1,0 +1,13 @@
+[
+  {
+    "query": "SELECT title, status, points, assignee FROM stories WHERE id = {{newId}}",
+    "content": [
+      {
+        "title": "Write release notes {{suffix}}",
+        "status": "todo",
+        "points": 5,
+        "assignee": "Cy"
+      }
+    ]
+  }
+]

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.WebDriver;
@@ -30,6 +31,10 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class NativeAssertExecutorTest {
+
+    // A failed comparison saves action_N_actual.json next to the scenario file: keep it out of the source tree.
+    @TempDir
+    File tempDir;
 
     @Mock
     private UiUtil uiUtil;
@@ -60,7 +65,7 @@ class NativeAssertExecutorTest {
                 .driver(driver)
                 .position(new AtomicInteger(0))
                 .scenarioContext(scenarioContext)
-                .file(mock(File.class))
+                .file(new File(tempDir, "scenario.xml"))
                 .build();
         executor = new NativeAssertExecutor(dependencies);
         ReflectionTestUtils.setField(executor, "uiUtil", uiUtil);

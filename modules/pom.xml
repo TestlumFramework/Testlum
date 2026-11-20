@@ -62,4 +62,13 @@
         <module>ai</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>mcp</id>
+            <modules>
+                <module>mcp</module>
+            </modules>
+        </profile>
+    </profiles>
+
 </project>

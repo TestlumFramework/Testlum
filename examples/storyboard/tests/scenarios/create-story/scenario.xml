@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <description>A new story is saved and shows up in the database</description>
+        <name>create-story</name>
+    </overview>
+    <settings>
+        <tags>SB-3,api,db</tags>
+    </settings>
+    <var comment="Random title so reruns do not clash" name="suffix">
+        <generate length="6">
+            <alphabetic/>
+        </generate>
+    </var>
+    <http comment="Create a story" alias="DEFAULT">
+        <post endpoint="/api/stories">
+            <response code="201"/>
+            <body>
+                <from file="request_1.json"/>
+            </body>
+        </post>
+    </http>
+    <assert comment="Check the created story">
+        <jsonPath comment="Id was assigned" path="$.id" exists="true"/>
+        <jsonPath comment="New stories start as todo" path="$.status" equals="todo"/>
+        <jsonPath comment="Points were kept" path="$.points" equals="5"/>
+    </assert>
+    <var comment="Remember the new id" name="newId">
+        <path value="$.id"/>
+    </var>
+    <postgres comment="Read the row back from the database" alias="DEFAULT" file="expected_2.json">
+        <query>SELECT title, status, points, assignee FROM stories WHERE id = {{newId}}</query>
+    </postgres>
+    <http comment="Clean up the story" alias="DEFAULT">
+        <delete endpoint="/api/stories/{{newId}}">
+            <response code="204"/>
+        </delete>
+    </http>
+</scenario>

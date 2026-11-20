@@ -49,18 +49,21 @@ public final class FileSearcher {
     public File searchFileFromDir(final File fromDir, final String name) {
         final String targetName = name.startsWith(SLASH_SEPARATOR) ? name.substring(1) : name;
         FilenameFilter filter = (dir, file) -> file.equals(targetName);
-        return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, testResourcesFolder, name));
+        return find(fromDir, testResourcesFolder, filter)
+                .orElseThrow(() -> new FileLinkingException(fromDir, testResourcesFolder, name));
     }
 
-    private Optional<File> find(final File fromDir, final FilenameFilter filter) {
-        if (testResourcesFolder.equals(fromDir)) {
+    /** The single match in fromDir, else in its parent and so on, stopping before the test resources folder. */
+    public static Optional<File> find(final File fromDir, final File testResourcesFolder,
+                                      final FilenameFilter filter) {
+        if (Objects.isNull(fromDir) || testResourcesFolder.equals(fromDir)) {
             return Optional.empty();
         }
         File[] files = fromDir.listFiles(filter);
         if (Objects.nonNull(files) && files.length == 1) {
             return Optional.of(files[0]);
         }
-        return find(fromDir.getParentFile(), filter);
+        return find(fromDir.getParentFile(), testResourcesFolder, filter);
     }
 
     public String searchFileToString(final String name, final File fromDir) {

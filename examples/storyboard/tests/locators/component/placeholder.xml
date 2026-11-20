@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns="http://www.testlum.com/testing/model/pages">
+    <locators>
+        <locator locatorId="placeholder">
+            <id>placeholder</id>
+        </locator>
+    </locators>
+</component>

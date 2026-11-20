@@ -44,6 +44,15 @@ class ScenarioContextTest {
         }
 
         @Test
+        void missingKeyMessageNamesTheVariablesButNeverTheirValues() {
+            context.set("token", "SECRET-VALUE-123");
+            final IllegalArgumentException e =
+                    assertThrows(IllegalArgumentException.class, () -> context.get("tokn"));
+            assertTrue(e.getMessage().contains("token"), e.getMessage());
+            assertFalse(e.getMessage().contains("SECRET-VALUE-123"), e.getMessage());
+        }
+
+        @Test
         void getReturnsConditionValueIfNotInContextMap() {
             context.setCondition("flag", true);
             assertEquals("true", context.get("flag"));

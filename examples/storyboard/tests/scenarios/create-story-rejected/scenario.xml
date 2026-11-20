@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <description>Bad payloads are refused with a clear message</description>
+        <name>create-story-rejected</name>
+    </overview>
+    <settings>
+        <variations>bad-stories.csv</variations>
+        <tags>SB-3,api</tags>
+    </settings>
+    <http alias="DEFAULT" comment="Post a bad story">
+        <post endpoint="/api/stories">
+            <response code="400"/>
+            <body>
+                <raw>{{payload}}</raw>
+            </body>
+        </post>
+    </http>
+    <assert comment="Check the error text">
+        <jsonPath comment="Error names the problem" equals="{{message}}" path="$.error"/>
+    </assert>
+</scenario>

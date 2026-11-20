@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: storyboard
+      POSTGRES_PASSWORD: storyboard
+      POSTGRES_DB: storyboard
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U storyboard"]
+      interval: 2s
+      retries: 30
+  site:
+    build: ./site
+    pull_policy: build
+    environment:
+      DATABASE_URL: postgres://storyboard:storyboard@db:5432/storyboard
+      SB14: ${SB14:-}
+    ports:
+      - "18080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+  tests:
+    image: testlum-mcp:0.5.0
+    build:
+      context: ../..
+      dockerfile: modules/mcp/Dockerfile
+    pull_policy: build
+    profiles: [tests]
+    entrypoint: ["java", "-jar", "/testlum/testlum-final.jar", "--config=global-config.xml", "--path=/tests"]
+    environment:
+      LC_ALL: C.UTF-8
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./tests:/tests
+    depends_on:
+      - site

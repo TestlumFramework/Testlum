@@ -4,6 +4,8 @@ import com.testlum.log.Color;
 import com.testlum.starter.failure.StartupFailureReporter;
 import com.testlum.starter.summary.ExecutionCounts;
 import com.testlum.testing.framework.TestResourceSettings;
+import com.testlum.testing.framework.report.ReportConfiguration;
+import com.testlum.testing.framework.scenario.ScenarioFilter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +90,10 @@ public class TESTLUMStarter {
      *               <li>{@code -c=<file>} or {@code --config=<file>} - configuration file (required)</li>
      *               <li>{@code -p=<path>} or {@code --path=<path>} - test resources path (required)</li>
      *               <li>{@code -s=<path>} or {@code --scenario=<path>} - specific scenarios path (optional)</li>
+     *               <li>{@code -t=<tags>} or {@code --tags=<tags>} - comma separated tags, overrides the config
+     *               (optional)</li>
+     *               <li>{@code --junit} - writes report/junit.xml without a {@code <junit enabled="true"/>} entry
+     *               in the config (optional)</li>
      *             </ul>
      * @throws IllegalArgumentException if required arguments (config file or path) are not provided
      */
@@ -103,6 +109,9 @@ public class TESTLUMStarter {
 
         TestResourceSettings.init(configFileName.get(), pathToTestResources.get(), scenarioScope);
 
+        Args.read(args, Args.Param.TAGS).ifPresent(tags -> System.setProperty(ScenarioFilter.TAGS_PROPERTY, tags));
+        Args.read(args, Args.Param.JUNIT).ifPresent(flag -> System.setProperty(ReportConfiguration.JUNIT_PROPERTY,
+                Boolean.TRUE.toString()));
         runTests(args);
     }
 

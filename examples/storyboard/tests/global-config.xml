@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<globalTestConfiguration xmlns="http://www.testlum.com/testing/model/global-config">
+    <stopScenarioOnFailure>false</stopScenarioOnFailure>
+    <stopIfInvalidScenario>true</stopIfInvalidScenario>
+    <delayBetweenScenarioRuns seconds="0" enabled="false"/>
+    <runScenariosByTag enabled="false">
+        <tag name="none" enabled="false"/>
+    </runScenariosByTag>
+    <report>
+        <extentReports projectName="storyboard">
+            <htmlReportGenerator enabled="true"/>
+        </extentReports>
+        <junit enabled="true"/>
+    </report>
+    <environments>
+        <env folder="local" enabled="true"/>
+    </environments>
+</globalTestConfiguration>

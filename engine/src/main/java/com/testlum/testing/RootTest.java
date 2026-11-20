@@ -39,6 +39,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -92,8 +93,9 @@ public class RootTest {
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioResult result = null;
         try {
-            ScenarioRunner scenarioRunner = new ScenarioRunner(args, ctx);
-            result = scenarioRunner.run();
+            result = runRecordingFailureOutsideStep(
+                    ctx.getBean(GlobalScenarioStatCollector.class), args,
+                    () -> new ScenarioRunner(args, ctx).run());
             setTestScenarioResult(result);
         } finally {
             stopWatch.stop();
@@ -101,6 +103,28 @@ public class RootTest {
                 result.setExecutionTime(stopWatch.getDuration().toMillis());
             }
         }
+    }
+
+    /**
+     * Runs the scenario. When the run throws before it produces a result, the failure is recorded once as a
+     * failed testcase and the same exception is rethrown; a returned result is passed through untouched.
+     */
+    static ScenarioResult runRecordingFailureOutsideStep(final GlobalScenarioStatCollector collector,
+                                                         final ScenarioArguments args,
+                                                         final Supplier<ScenarioResult> run) {
+        try {
+            return run.get();
+        } catch (RuntimeException e) {
+            recordFailureOutsideStep(collector, args, e);
+            throw e;
+        }
+    }
+
+    /** A scenario that throws before or outside its steps still gets a failed testcase in the report. */
+    static void recordFailureOutsideStep(final GlobalScenarioStatCollector collector,
+                                         final ScenarioArguments args,
+                                         final RuntimeException error) {
+        collector.addResult(ScenarioResult.failedOutsideStep(args.getFile().getPath(), error));
     }
 
     private void setTestScenarioResult(final ScenarioResult result) {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <name>sb14-no-match</name>
+        <description>A name with no stories gives an empty list</description>
+    </overview>
+    <settings>
+        <tags>SB-14,api</tags>
+    </settings>
+    <http alias="DEFAULT" comment="List stories with the filter">
+        <get endpoint="/api/stories?assignee=Nobody">
+            <response code="200"/>
+        </get>
+    </http>
+    <assert comment="Check the filtered list">
+        <jsonPath comment="Check $.length()" path="$.length()" equals="0"/>
+    </assert>
+</scenario>

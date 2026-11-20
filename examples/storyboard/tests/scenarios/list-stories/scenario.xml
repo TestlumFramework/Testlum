@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario xmlns="http://www.testlum.com/testing/model/scenario">
+    <overview>
+        <description>The list returns the five seeded stories in order</description>
+        <name>list-stories</name>
+    </overview>
+    <settings>
+        <tags>SB-1,smoke,api</tags>
+    </settings>
+    <http comment="Get all stories" alias="DEFAULT">
+        <get endpoint="/api/stories">
+            <response code="200"/>
+        </get>
+    </http>
+    <assert comment="Check the first and last story">
+        <jsonPath comment="First story is the login page" path="$[0].title" equals="Login page"/>
+        <jsonPath comment="Last story is dark mode" path="$[4].title" equals="Dark mode"/>
+        <jsonPath comment="Every story has a status" path="$[*].status" exists="true"/>
+    </assert>
+</scenario>

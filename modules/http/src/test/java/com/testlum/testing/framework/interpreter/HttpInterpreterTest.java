@@ -3,7 +3,9 @@ package com.testlum.testing.framework.interpreter;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
+import com.testlum.testing.model.scenario.Response;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.ScenarioContext;
 import com.testlum.testing.framework.util.ConditionProvider;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,6 +72,30 @@ class HttpInterpreterTest {
         @Test
         void interpreterIsNotNull() {
             assertNotNull(interpreter);
+        }
+    }
+
+    @Nested
+    class CompareResult {
+
+        @Test
+        void recordsTheExpectedAndTheActualStatusEvenWhenTheStatusDiffers() throws Exception {
+            final Response expected = new Response();
+            expected.setCode(200);
+            final ApiResponse actual = mock(ApiResponse.class);
+            when(actual.getCode()).thenReturn(500);
+            when(actual.getBody()).thenReturn("");
+            final CommandResult result = new CommandResult();
+
+            final Method method = HttpInterpreter.class.getDeclaredMethod(
+                    "compareResult", Response.class, ApiResponse.class, CommandResult.class);
+            method.setAccessible(true);
+            final InvocationTargetException thrown = assertThrows(InvocationTargetException.class,
+                    () -> method.invoke(interpreter, expected, actual, result));
+
+            assertTrue(thrown.getCause().getMessage().contains("[200] but was [500]"), thrown.getCause().getMessage());
+            assertEquals(200, result.getMetadata().get("Expected HTTP status"));
+            assertEquals(500, result.getMetadata().get("HTTP status"));
         }
     }
 

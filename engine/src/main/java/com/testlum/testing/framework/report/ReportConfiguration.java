@@ -17,7 +17,11 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ReportConfiguration {
 
+    /** Set by the {@code --junit} engine argument; switches the JUnit XML report on without a config edit. */
+    public static final String JUNIT_PROPERTY = "testlum.junit";
+
     private final ExtentReportsGenerator extentReportsGenerator;
+    private final JUnitReportGenerator junitReport;
     private final GlobalTestConfiguration globalTestConfiguration;
 
     @Primary
@@ -26,10 +30,34 @@ public class ReportConfiguration {
         Report report = globalTestConfiguration.getReport();
         if (report != null) {
             validateReport(report.getExtentReports());
-            return extentReportsGenerator;
+            return withJunit(report.getJunit());
         } else {
             throw new UnsupportedOperationException("Report generator type is not supported");
         }
+    }
+
+    private ReportGenerator withJunit(final JunitReport junit) {
+        boolean switchedOnByArgument = Boolean.getBoolean(JUNIT_PROPERTY);
+        if (!switchedOnByArgument && (junit == null || !junit.isEnabled())) {
+            return extentReportsGenerator;
+        }
+        junitReport.removeOldReport();
+        return this::generateBoth;
+    }
+
+    /** The JUnit file is written even when the HTML report fails; the failure still reaches the caller. */
+    private void generateBoth(final GlobalScenarioStatCollector collector) {
+        try {
+            extentReportsGenerator.generateReport(collector);
+        } catch (RuntimeException e) {
+            try {
+                junitReport.generateReport(collector);
+            } catch (RuntimeException junitFailure) {
+                e.addSuppressed(junitFailure);
+            }
+            throw e;
+        }
+        junitReport.generateReport(collector);
     }
 
     private void validateReport(final ExtentReports extentReports) {

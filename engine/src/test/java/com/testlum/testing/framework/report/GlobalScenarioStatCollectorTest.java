@@ -36,6 +36,30 @@ class GlobalScenarioStatCollectorTest {
     }
 
     @Test
+    void keepsEveryResultWhenScenariosFinishAtTheSameTime() throws Exception {
+        final int threads = 8;
+        final int perThread = 5000;
+        final java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(threads);
+        final java.util.concurrent.CountDownLatch start = new java.util.concurrent.CountDownLatch(1);
+        final java.util.List<java.util.concurrent.Future<?>> done = new java.util.ArrayList<>();
+        for (int t = 0; t < threads; t++) {
+            done.add(pool.submit(() -> {
+                start.await();
+                for (int i = 0; i < perThread; i++) {
+                    collector.addResult(new ScenarioResult());
+                }
+                return null;
+            }));
+        }
+        start.countDown();
+        for (java.util.concurrent.Future<?> f : done) {
+            f.get();
+        }
+        pool.shutdown();
+        assertEquals(threads * perThread, collector.getResults().size());
+    }
+
+    @Test
     void recalculateReturnsInfo() {
         final GlobalScenarioStatCollector.ReCalculatedInfo info = collector.recalculate();
         assertNotNull(info);

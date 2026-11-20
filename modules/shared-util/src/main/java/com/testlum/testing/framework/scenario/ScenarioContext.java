@@ -30,7 +30,7 @@ public class ScenarioContext {
     public Map.Entry<String, String> getBody() {
         Map.Entry<String, String> lastEntryFromLinkedHashMap = getLastEntryFromLinkedHashMap(contextMap);
         if (lastEntryFromLinkedHashMap == null) {
-            throw new IllegalArgumentException(String.format(NO_VALUES_FOUND_IN_CONTEXT, contextMap));
+            throw new IllegalArgumentException(String.format(NO_VALUES_FOUND_IN_CONTEXT, contextMap.keySet()));
         }
         return lastEntryFromLinkedHashMap;
     }
@@ -56,7 +56,7 @@ public class ScenarioContext {
         if (result == null) {
             result = String.valueOf(conditionMap.get(key));
             if (result == null || "null".equals(result)) {
-                throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, contextMap));
+                throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, contextMap.keySet()));
             }
         }
         return result;

@@ -3,6 +3,7 @@ package com.testlum.testing.model.global_config;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 
@@ -15,9 +16,10 @@ import jakarta.xml.bind.annotation.XmlType;
  * &lt;complexType name="report"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice&gt;
+ *       &lt;sequence&gt;
  *         &lt;element name="extentReports" type="{http://www.testlum.com/testing/model/global-config}extentReports"/&gt;
- *       &lt;/choice&gt;
+ *         &lt;element name="junit" type="{http://www.testlum.com/testing/model/global-config}junitReport" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -27,11 +29,14 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "report", propOrder = {
-    "extentReports"
+    "extentReports",
+    "junit"
 })
 public class Report {
 
+    @XmlElement(required = true)
     protected ExtentReports extentReports;
+    protected JunitReport junit;
 
     /**
      * Gets the value of the extentReports property.
@@ -55,6 +60,30 @@ public class Report {
      */
     public void setExtentReports(ExtentReports value) {
         this.extentReports = value;
+    }
+
+    /**
+     * Gets the value of the junit property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JunitReport }
+     *     
+     */
+    public JunitReport getJunit() {
+        return junit;
+    }
+
+    /**
+     * Sets the value of the junit property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JunitReport }
+     *     
+     */
+    public void setJunit(JunitReport value) {
+        this.junit = value;
     }
 
 }

@@ -234,7 +234,9 @@ class MobileCompareImageExecutorTest {
             when(uiUtil.findWebElement(any(), eq("testImage"), any(), any())).thenReturn(element);
             when(uiUtil.getElementAttribute(eq(element), eq("src"), any()))
                     .thenReturn("/images/test-image.png");
-            when(uiUtil.getUrl(eq("/images/test-image.png"), any(), any())).thenReturn(fullUrl);
+            when(driver.getCurrentUrl()).thenReturn("https://example.com/page");
+            when(uiUtil.resolveImageUrl(eq("/images/test-image.png"), eq("https://example.com/page")))
+                    .thenReturn(fullUrl);
             when(uiUtil.resolveHostIfNeeded(fullUrl)).thenReturn(fullUrl);
             when(imageComparator.compare(any(MobileImage.class), any(BufferedImage.class),
                     any(BufferedImage.class))).thenReturn(mock(ImageComparisonResult.class));

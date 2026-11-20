@@ -336,6 +336,53 @@ class UiUtilTest {
     }
 
     // ================================================================
+    // ResolveImageUrl
+    // ================================================================
+
+    @Nested
+    class ResolveImageUrl {
+
+        @Test
+        void resolvesRelativeSrcWithoutLeadingSlash() {
+            String result = uiUtil.resolveImageUrl("img/avatar-blank.jpg",
+                    "https://the-internet.herokuapp.com/broken_images");
+            assertEquals("https://the-internet.herokuapp.com/img/avatar-blank.jpg", result);
+        }
+
+        @Test
+        void resolvesRootRelativeSrcAgainstPageHost() {
+            String result = uiUtil.resolveImageUrl("/static/images/x.png",
+                    "https://en.m.wikipedia.org/wiki/Main_Page");
+            assertEquals("https://en.m.wikipedia.org/static/images/x.png", result);
+        }
+
+        @Test
+        void resolvesProtocolRelativeSrc() {
+            String result = uiUtil.resolveImageUrl("//upload.wikimedia.org/a.png",
+                    "https://en.m.wikipedia.org/wiki/Main_Page");
+            assertEquals("https://upload.wikimedia.org/a.png", result);
+        }
+
+        @Test
+        void resolvesParentPathAndKeepsPort() {
+            String result = uiUtil.resolveImageUrl("../img/a.png", "http://10.0.2.2:8080/app/page");
+            assertEquals("http://10.0.2.2:8080/img/a.png", result);
+        }
+
+        @Test
+        void returnsAbsoluteSrcAsIs() {
+            String result = uiUtil.resolveImageUrl("https://b.com/x.png", "https://a.com/p");
+            assertEquals("https://b.com/x.png", result);
+        }
+
+        @Test
+        void throwsWhenPageUrlIsInvalid() {
+            assertThrows(DefaultFrameworkException.class,
+                    () -> uiUtil.resolveImageUrl("img/a.png", "not-a-url"));
+        }
+    }
+
+    // ================================================================
     // GetBasePageURL
     // ================================================================
 

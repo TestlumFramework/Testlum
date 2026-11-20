@@ -11,12 +11,16 @@ import com.testlum.testing.model.global_config.RunScenariosByTag;
 import com.testlum.testing.model.global_config.TagValue;
 import com.testlum.testing.model.scenario.Scenario;
 import com.testlum.testing.model.scenario.Settings;
+import com.testlum.testing.framework.xml.XMLParsers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +74,13 @@ class ScenarioFilterTest {
     private MappingResult invalidResult(final String fileName, final String tags, final Exception exception) {
         final MappingResult parsed = validResult(fileName, true, false, tags);
         return new MappingResult(parsed.file, parsed.scenario, exception);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Long> capturedCounts() {
+        final ArgumentCaptor<Map<String, Long>> captor = ArgumentCaptor.forClass(Map.class);
+        verify(configurationLogger).logTagConfiguration(any(), captor.capture());
+        return captor.getValue();
     }
 
     @Nested
@@ -446,12 +457,6 @@ class ScenarioFilterTest {
     @Nested
     class TagTable {
 
-        private Map<String, Long> capturedCounts() {
-            final ArgumentCaptor<Map<String, Long>> captor = ArgumentCaptor.forClass(Map.class);
-            verify(configurationLogger).logTagConfiguration(any(), captor.capture());
-            return captor.getValue();
-        }
-
         @Test
         void countsEveryParsedScenarioPerTag() {
             final List<MappingResult> input = new ArrayList<>();
@@ -531,6 +536,97 @@ class ScenarioFilterTest {
             input.add(validResult("a.xml", true, false, "smoke"));
 
             assertThrows(DefaultFrameworkException.class, () -> filter.filterScenarios(input));
+        }
+    }
+
+    @Nested
+    class XmlEndToEndTagParsing {
+
+        @TempDir
+        Path tempDir;
+
+        @Test
+        void realXmlScenarioWithNewlinesAndSpacesInTagsIsMatchedAndNotSkipped() throws Exception {
+            String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                    + "<scenario xmlns=\"http://www.testlum.com/testing/model/scenario\">\n"
+                    + "    <overview>\n"
+                    + "        <name>QA Test Scenario</name>\n"
+                    + "        <description>Testing whitespace and newlines handling</description>\n"
+                    + "    </overview>\n"
+                    + "    <settings>\n"
+                    + "        <tags>\n\n"
+                    + "            web\n\n"
+                    + "        </tags>\n"
+                    + "    </settings>\n"
+                    + "    <wait time=\"1\" comment=\"Wait for one second\"/>\n"
+                    + "</scenario>";
+            Path scenarioPath = tempDir.resolve("scenario.xml");
+            Files.writeString(scenarioPath, xml);
+
+            XMLParsers xmlParsers = new XMLParsers();
+            final Scenario scenario = xmlParsers.forScenario().process(scenarioPath.toFile());
+
+            assertTrue(scenario.getSettings().getTags().contains("\n"));
+
+            final RunScenariosByTag runByTag = new RunScenariosByTag();
+            runByTag.setEnabled(true);
+            final TagValue tag = new TagValue();
+            tag.setName("web");
+            tag.setEnabled(true);
+            runByTag.getTag().add(tag);
+            when(config.getRunScenariosByTag()).thenReturn(runByTag);
+
+            final List<MappingResult> input = List.of(
+                    new MappingResult(scenarioPath.toFile(), scenario, null)
+            );
+
+            final List<MappingResult> filtered = filter.filterScenarios(input);
+
+            assertEquals(1, filtered.size());
+            assertEquals("scenario.xml", filtered.get(0).file.getName());
+            assertTrue(ScenarioStatusRegistry.getSkipped().isEmpty());
+            assertEquals(Map.of("web", 1L), capturedCounts());
+        }
+
+        @Test
+        void realXmlScenarioWithMultipleTagsSplitAcrossLinesIsMatched() throws Exception {
+            String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                    + "<scenario xmlns=\"http://www.testlum.com/testing/model/scenario\">\n"
+                    + "    <overview>\n"
+                    + "        <name>Multi-tag Scenario</name>\n"
+                    + "        <description>Testing multi-tag parsing across lines</description>\n"
+                    + "    </overview>\n"
+                    + "    <settings>\n"
+                    + "        <tags>\n"
+                    + "            smoke,\n\n"
+                    + "            web\n"
+                    + "        </tags>\n"
+                    + "    </settings>\n"
+                    + "    <wait time=\"1\" comment=\"Wait for one second\"/>\n"
+                    + "</scenario>";
+            Path scenarioPath = tempDir.resolve("multi_tag_scenario.xml");
+            Files.writeString(scenarioPath, xml);
+
+            XMLParsers xmlParsers = new XMLParsers();
+            final Scenario scenario = xmlParsers.forScenario().process(scenarioPath.toFile());
+
+            final RunScenariosByTag runByTag = new RunScenariosByTag();
+            runByTag.setEnabled(true);
+            final TagValue tag = new TagValue();
+            tag.setName("web");
+            tag.setEnabled(true);
+            runByTag.getTag().add(tag);
+            when(config.getRunScenariosByTag()).thenReturn(runByTag);
+
+            final List<MappingResult> input = List.of(
+                    new MappingResult(scenarioPath.toFile(), scenario, null)
+            );
+
+            final List<MappingResult> filtered = filter.filterScenarios(input);
+
+            assertEquals(1, filtered.size());
+            assertTrue(ScenarioStatusRegistry.getSkipped().isEmpty());
+            assertEquals(Map.of("smoke", 1L, "web", 1L), capturedCounts());
         }
     }
 }

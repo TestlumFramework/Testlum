@@ -316,8 +316,14 @@ class ScenarioRunnerTest {
         InterpreterDependencies dependencies = scenarioDependencies(runner);
         dependencies.setAuthorization(new InterpreterDependencies.Authorization(
                 java.util.Map.of("Authorization", "Bearer retained-token")));
+        dependencies.getScenarioContext().setAuthToken("googleToken", "retained-token");
+        dependencies.getScenarioContext().setVariable("copy", "Bearer retained-token");
         runner.run();
         assertNull(dependencies.getAuthorization());
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertEquals("Bearer retained-token", dependencies.getScenarioContext().inject("{{copy}}"));
+        assertEquals("Bearer ret***", dependencies.getScenarioContext().redact(
+                dependencies.getScenarioContext().get("copy")));
     }
 
     @Test
@@ -331,8 +337,10 @@ class ScenarioRunnerTest {
         CommandResult failed = new CommandResult();
         failed.setException(new IllegalStateException("Request failed"));
         when(resultUtil.newCommandResultInstance(any(), any())).thenReturn(failed);
+        dependencies.getScenarioContext().setAuthToken("googleToken", "retained-token");
         assertFalse(failingRunner.run().isSuccess());
         assertNull(dependencies.getAuthorization());
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
     }
 
     private InterpreterDependencies scenarioDependencies(final ScenarioRunner scenarioRunner) throws Exception {

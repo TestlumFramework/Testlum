@@ -38,6 +38,9 @@ public class InterpreterDependencies {
 
     public void clearAuthorization() {
         this.authorization = null;
+        if (scenarioContext != null) {
+            scenarioContext.clearAuthVariables();
+        }
     }
 
     @Data

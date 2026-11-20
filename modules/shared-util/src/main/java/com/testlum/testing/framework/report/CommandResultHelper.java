@@ -1,6 +1,7 @@
 package com.testlum.testing.framework.report;
 
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.util.TokenMasker;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -34,7 +35,12 @@ public final class CommandResultHelper {
 
     public static void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), headerValueForReport(e.getKey(), e.getValue())))
                 .toList());
+    }
+
+    private static String headerValueForReport(final String name, final String value) {
+        return "Authorization".equalsIgnoreCase(name) || "Proxy-Authorization".equalsIgnoreCase(name)
+                ? TokenMasker.maskAuthorization(value) : value;
     }
 }

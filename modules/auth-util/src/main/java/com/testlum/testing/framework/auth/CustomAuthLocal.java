@@ -1,8 +1,9 @@
 package com.testlum.testing.framework.auth;
 
-import com.jayway.jsonpath.DocumentContext;
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.jayway.jsonpath.JsonPath;
-import com.testlum.log.LogFormat;
+import com.jayway.jsonpath.PathNotFoundException;
+import com.testlum.testing.framework.constant.DelimiterConstant;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -25,12 +26,6 @@ import java.util.Collections;
 @Slf4j
 public class CustomAuthLocal extends AbstractAuthStrategy {
 
-    private static final String ALIAS_LOG = LogFormat.table("Alias");
-    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
-    private static final String CREDENTIALS_LOG = LogFormat.table("Credentials");
-
-    private static final String AUTHENTICATION_TYPE = "Authentication type";
-    private static final String CUSTOM_PREFIX = "Custom ";
     private static final String LOGIN_ENDPOINT = "http://localhost:8080/api/v1/api/test/auth/custom/login";
 
     private final FileSearcher fileSearcher;
@@ -51,8 +46,8 @@ public class CustomAuthLocal extends AbstractAuthStrategy {
     public void authenticate(final Auth auth, final CommandResult result) {
         logAuthInfo(auth);
         final String token = getCustomToken(auth);
-        result.put(AUTHENTICATION_TYPE, "CUSTOM");
-        login(token, CUSTOM_PREFIX);
+        result.put(AUTHENTICATION_TYPE, AuthorizationConstant.CUSTOM_AUTHENTICATION_TYPE);
+        login(token, AuthorizationConstant.HEADER_CUSTOM);
     }
 
     private String getCustomToken(final Auth auth) {
@@ -61,19 +56,29 @@ public class CustomAuthLocal extends AbstractAuthStrategy {
         final String response = restTemplate.postForObject(LOGIN_ENDPOINT, request, String.class);
         if (StringUtils.isBlank(response)) {
             throw new DefaultFrameworkException(
-                    "Login response is empty for auth strategy <%s>", configuration.getAlias());
+                    ExceptionMessage.AUTH_LOGIN_RESPONSE_EMPTY, configuration.getAlias());
         }
         return extractToken(response);
     }
 
     private String extractToken(final String response) {
-        final DocumentContext context = JsonPath.parse(response);
-        final Object value = context.read("$.token");
+        final String path = DelimiterConstant.DOLLAR_SIGN + DelimiterConstant.DOT
+                + AuthorizationConstant.CONTENT_KEY_TOKEN;
+        final Object value = readTokenValue(response, path);
         if (!(value instanceof String token) || StringUtils.isBlank(token)) {
-            throw new DefaultFrameworkException("Login response must contain a non-empty token "
-                    + "for auth strategy <%s>", configuration.getAlias());
+            throw new DefaultFrameworkException(
+                    ExceptionMessage.AUTH_CUSTOM_LOGIN_TOKEN_INVALID, configuration.getAlias());
         }
         return token;
+    }
+
+    private Object readTokenValue(final String response, final String path) {
+        try {
+            return JsonPath.parse(response).read(path);
+        } catch (PathNotFoundException exception) {
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_LOGIN_TOKEN_NOT_FOUND,
+                    path, configuration.getAlias());
+        }
     }
 
     private HttpHeaders getHeaders() {

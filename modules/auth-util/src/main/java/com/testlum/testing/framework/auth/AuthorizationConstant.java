@@ -12,5 +12,7 @@ public class AuthorizationConstant {
     public static final String HEADER_AUTHORIZATION = "Authorization";
     public static final String HEADER_BEARER = "Bearer ";
     public static final String HEADER_BASIC = "Basic ";
+    public static final String HEADER_CUSTOM = "Custom ";
+    public static final String CUSTOM_AUTHENTICATION_TYPE = "CUSTOM";
     public static final String HEADER_JWT = "JWT";
 }

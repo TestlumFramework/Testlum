@@ -209,4 +209,56 @@ public class ExceptionMessage {
             Use 'times' to run the commands a fixed number of times, or 'variations' to run them once per variation""";
     public static final String AUTH_STRATEGIES_NOT_CONFIGURED = "Section <authStrategies> is not configured";
     public static final String AUTH_DUPLICATE_ALIAS = "More than one auth strategy was found with alias <%s>";
+
+    public static final String AUTH_LOGIN_RESPONSE_EMPTY = "Login response is empty for auth strategy <%s>";
+    public static final String AUTH_LOGIN_TOKEN_INVALID =
+            "Login response must contain a non-empty string token for auth strategy <%s>";
+    public static final String AUTH_CUSTOM_LOGIN_TOKEN_INVALID =
+            "Login response must contain a non-empty token for auth strategy <%s>";
+    public static final String AUTH_STRATEGY_UNSUPPORTED = "Unsupported auth strategy <%s>";
+    public static final String MICROSOFT_TOKEN_CREDENTIALS_INVALID =
+            "Microsoft token request requires non-empty clientId, clientSecret, tenant, scope and refreshToken";
+    public static final String MICROSOFT_AUTH_TENANT_INVALID = "Microsoft auth strategy <%s> has an invalid tenant";
+    public static final String GOOGLE_TOKEN_CREDENTIALS_INVALID =
+            "Google token request requires non-empty clientId, clientSecret and refreshToken";
+    public static final String OAUTH_CREDENTIALS_FILENAME_EMPTY = "OAuth credentials file name must not be empty";
+    public static final String OAUTH_CREDENTIALS_NOT_OBJECT =
+            "OAuth credentials file <%s> must contain a JSON object";
+    public static final String OAUTH_REFRESH_TOKEN_INVALID =
+            "OAuth credentials file <%s> must contain a non-empty string refreshToken";
+    public static final String OAUTH_CREDENTIALS_READ_FAILED = "Cannot read OAuth credentials file <%s>";
+    public static final String OAUTH_CREDENTIALS_JSON_INVALID = "OAuth credentials file <%s> must contain valid JSON";
+    public static final String AUTH_TOKEN_VARIABLE_INVALID = "Auth token variable must have an unused nonblank name";
+    public static final String AUTH_ACCESS_TOKEN_NOT_EXPOSED = "Auth strategy does not expose an access token";
+    public static final String AUTH_STRATEGY_DISABLED = "Auth strategy <%s> is disabled";
+    public static final String AUTH_STRATEGY_TYPE_MISMATCH = "Auth strategy <%s> has type <%s>, expected <%s>";
+    public static final String AUTH_STRATEGY_COUNT_INVALID =
+            "Expected one auth strategy <%s> in environment <%s>, found %d";
+    public static final String AUTH_INTEGRATIONS_ENV_NOT_FOUND = "Cannot find integrations for environment <%s>";
+    public static final String AUTH_STRATEGIES_ENV_NOT_FOUND = "Cannot find <authStrategies> for environment <%s>";
+    public static final String GOOGLE_AUTH_CLIENT_ID_EMPTY =
+            "Google auth strategy <%s> requires a non-empty clientId";
+    public static final String GOOGLE_AUTH_CLIENT_SECRET_EMPTY =
+            "Google auth strategy <%s> requires a non-empty clientSecret";
+    public static final String MICROSOFT_AUTH_FIELD_EMPTY = "Microsoft auth strategy <%s> requires a non-empty %s";
+    public static final String AUTH_ACCESS_TOKEN_EMPTY = "Auth strategy did not provide an access token";
+    public static final String OAUTH_TOKEN_TRANSPORT_ERROR =
+            "%s token request failed for auth strategy <%s>: transport error";
+    public static final String OAUTH_TOKEN_TYPE_INVALID = "%s token response for auth strategy <%s> must use Bearer";
+    public static final String OAUTH_TOKEN_RESPONSE_EMPTY = "%s token response is empty for auth strategy <%s>";
+    public static final String OAUTH_TOKEN_RESPONSE_NOT_OBJECT =
+            "%s token response must be a JSON object for strategy <%s>";
+    public static final String OAUTH_TOKEN_RESPONSE_JSON_INVALID =
+            "%s token response contains invalid JSON for strategy <%s>";
+    public static final String OAUTH_TOKEN_RESPONSE_FIELD_INVALID =
+            "%s token response for strategy <%s> requires a non-empty string %s";
+    public static final String OAUTH_TOKEN_EXPIRES_IN_INVALID =
+            "%s token response for strategy <%s> requires a positive integer expires_in";
+    public static final String OAUTH_TOKEN_REQUEST_FAILED =
+            "%s token request failed for auth strategy <%s>: HTTP %d (%s)";
+    public static final String AUTH_JWT_LOGIN_FAILED = "JWT login failed for auth strategy <%s>";
+    public static final String AUTH_LOGIN_TOKEN_NOT_FOUND =
+            "Login response does not contain token at path <%s> for auth strategy <%s>";
+    public static final String AUTH_CUSTOM_CONSTRUCTOR_FAILED = "Custom auth constructor failed: %s";
+    public static final String AUTH_CUSTOM_INSTANTIATION_FAILED = "Cannot instantiate custom auth class: %s";
 }

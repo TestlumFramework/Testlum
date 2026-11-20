@@ -51,6 +51,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *       &lt;/choice&gt;
  *       &lt;attribute name="strategyAlias" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" default="DEFAULT" /&gt;
  *       &lt;attribute name="credentials" use="required" type="{http://www.testlum.com/testing/model/scenario}jsonFileExtension" /&gt;
+ *       &lt;attribute name="tokenVariable" type="{http://www.testlum.com/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="autoLogout" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -101,6 +102,8 @@ public class Auth
     protected String strategyAlias;
     @XmlAttribute(name = "credentials", required = true)
     protected String credentials;
+    @XmlAttribute(name = "tokenVariable")
+    protected String tokenVariable;
     @XmlAttribute(name = "autoLogout")
     protected Boolean autoLogout;
 
@@ -212,6 +215,30 @@ public class Auth
      */
     public void setCredentials(String value) {
         this.credentials = value;
+    }
+
+    /**
+     * Gets the value of the tokenVariable property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getTokenVariable() {
+        return tokenVariable;
+    }
+
+    /**
+     * Sets the value of the tokenVariable property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setTokenVariable(String value) {
+        this.tokenVariable = value;
     }
 
     /**

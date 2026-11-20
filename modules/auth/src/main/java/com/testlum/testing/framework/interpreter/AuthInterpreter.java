@@ -1,7 +1,8 @@
 package com.testlum.testing.framework.interpreter;
 
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.auth.AuthFactory;
-import com.testlum.testing.framework.auth.AuthStrategy;
+import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.interpreter.lib.CommandRunner;
@@ -11,6 +12,7 @@ import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Auth;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @InterpreterForClass(Auth.class)
 public class AuthInterpreter extends AbstractInterpreter<Auth> {
@@ -30,28 +32,38 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     @Override
     protected void acceptImpl(final Auth command, final CommandResult result) {
-        if (dependencies.isAuthBlockActive()) {
-            throw new DefaultFrameworkException("Nested auth blocks are not supported");
-        }
+        Auth auth = prepareAuthCommand(command);
+        validateTokenVariable(auth);
+        boolean nested = dependencies.isAuthBlockActive();
+        InterpreterDependencies.Authorization previous = dependencies.getAuthorization();
+        Map<String, String> variables = dependencies.getScenarioContext().replaceAuthVariables(Map.of());
         dependencies.setAuthBlockActive(true);
         try {
-            executeAuthBlock(command, result);
+            executeAuthBlock(command, result, auth);
         } finally {
-            dependencies.setAuthBlockActive(false);
+            restoreAuthContext(nested, previous, variables);
         }
     }
 
-    private void executeAuthBlock(final Auth command, final CommandResult result) {
-        Auth auth = prepareAuthCommand(command);
+    private void restoreAuthContext(final boolean nested, final InterpreterDependencies.Authorization previous,
+                                    final Map<String, String> variables) {
+        dependencies.getScenarioContext().replaceAuthVariables(nested ? variables : Map.of());
+        if (nested) {
+            dependencies.setAuthorization(previous);
+        }
+        dependencies.setAuthBlockActive(nested);
+    }
+
+    private void executeAuthBlock(final Auth command, final CommandResult result, final Auth auth) {
         addAuthMetaData(auth, result);
         result.setSubCommandsResult(new ArrayList<>());
         dependencies.clearAuthorization();
-        AuthStrategy strategy = authFactory.create(dependencies, auth.getStrategyAlias());
+        AuthenticationStrategy strategy = authFactory.create(dependencies, auth.getStrategyAlias());
         executeAuth(command, result, strategy, auth);
     }
 
     private void executeAuth(final Auth command, final CommandResult result,
-                             final AuthStrategy strategy, final Auth auth) {
+                             final AuthenticationStrategy strategy, final Auth auth) {
         Throwable failure = null;
         try {
             authenticate(strategy, auth, result);
@@ -60,9 +72,13 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
             failure = exception;
             throw exception;
         } finally {
-            if (auth.isAutoLogout()) {
-                logout(strategy, failure);
-            }
+            cleanupAuth(strategy, auth, failure);
+        }
+    }
+
+    private void cleanupAuth(final AuthenticationStrategy strategy, final Auth auth, final Throwable failure) {
+        if (auth.isAutoLogout()) {
+            logout(strategy, failure);
         }
     }
 
@@ -70,17 +86,35 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         Auth auth = new Auth();
         auth.setStrategyAlias(inject(command.getStrategyAlias()));
         auth.setCredentials(inject(command.getCredentials()));
+        auth.setTokenVariable(inject(command.getTokenVariable()));
         auth.setAutoLogout(command.isAutoLogout());
         ensureAlias(auth::getStrategyAlias, auth::setStrategyAlias);
         return auth;
     }
 
-    private void authenticate(final AuthStrategy strategy,
+    private void validateTokenVariable(final Auth auth) {
+        String name = auth.getTokenVariable();
+        if (name != null && (name.isBlank() || dependencies.getScenarioContext().containsNonAuthKey(name))) {
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_TOKEN_VARIABLE_INVALID);
+        }
+    }
+
+    private void publishTokenVariable(final AuthenticationStrategy strategy, final Auth auth) {
+        if (auth.getTokenVariable() == null) {
+            return;
+        }
+        String token = strategy.getAccessToken().filter(value -> !value.isBlank())
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.AUTH_ACCESS_TOKEN_NOT_EXPOSED));
+        dependencies.getScenarioContext().setAuthToken(auth.getTokenVariable(), token);
+    }
+
+    private void authenticate(final AuthenticationStrategy strategy,
                               final Auth auth,
                               final CommandResult result) {
         try {
             strategy.authenticate(auth, result);
-        } catch (RuntimeException exception) {
+            publishTokenVariable(strategy, auth);
+        } catch (RuntimeException | Error exception) {
             dependencies.clearAuthorization();
             throw exception;
         }
@@ -92,7 +126,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         result.put(AUTO_LOGOUT, auth.isAutoLogout());
     }
 
-    private void logout(final AuthStrategy strategy, final Throwable failure) {
+    private void logout(final AuthenticationStrategy strategy, final Throwable failure) {
         try {
             strategy.logout();
         } catch (RuntimeException | Error exception) {

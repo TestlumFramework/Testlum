@@ -3,9 +3,15 @@ package com.testlum.testing.framework.auth;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.model.scenario.Auth;
 
-public interface AuthStrategy {
+import java.util.Optional;
+
+public interface AuthenticationStrategy {
 
     void authenticate(Auth auth, CommandResult result);
 
     void logout();
+
+    default Optional<String> getAccessToken() {
+        return Optional.empty();
+    }
 }

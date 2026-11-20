@@ -2,7 +2,7 @@ package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.auth.AuthFactory;
-import com.testlum.testing.framework.auth.AuthStrategy;
+import com.testlum.testing.framework.auth.AuthenticationStrategy;
 import com.testlum.testing.framework.configuration.ConfigProvider;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.exception.StopSignalException;
@@ -24,6 +24,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +35,7 @@ class AuthInterpreterTest {
 
     private AuthInterpreter interpreter;
     private AuthFactory authFactory;
-    private AuthStrategy authStrategy;
+    private AuthenticationStrategy authStrategy;
     private ConditionProvider conditionProvider;
     private CommandRunner commandRunner;
     private InterpreterDependencies dependencies;
@@ -43,7 +44,7 @@ class AuthInterpreterTest {
     @BeforeEach
     void setUp() {
         authFactory = mock(AuthFactory.class);
-        authStrategy = mock(AuthStrategy.class);
+        authStrategy = mock(AuthenticationStrategy.class);
         conditionProvider = mock(ConditionProvider.class);
         commandRunner = mock(CommandRunner.class);
         ApplicationContext context = mockContext();
@@ -230,12 +231,245 @@ class AuthInterpreterTest {
     }
 
     @Test
-    void rejectsNestedAuthWithoutClearingOuterAuthorization() {
+    void tokenCopiesRemainAvailableAfterAuthorizationIsCleared() {
+        Auth auth = command(false);
+        auth.setTokenVariable("googleToken");
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.of("provider-secret"));
+        doAnswer(call -> {
+            assertEquals("provider-secret", dependencies.getScenarioContext().get("googleToken"));
+            dependencies.getScenarioContext().setVariable("copy", "Bearer provider-secret");
+            return null;
+        }).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        interpreter.acceptImpl(auth, new CommandResult());
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertEquals("Bearer provider-secret", dependencies.getScenarioContext().get("copy"));
+        assertSame(authorization, dependencies.getAuthorization());
+        verify(authStrategy, never()).logout();
+        dependencies.clearAuthorization();
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertEquals("Bearer provider-secret", dependencies.getScenarioContext().inject("{{copy}}"));
+        assertEquals("Bearer pro***", dependencies.getScenarioContext().redact(
+                dependencies.getScenarioContext().get("copy")));
+    }
+
+    @Test
+    void tokenCopiesRemainAvailableAfterAutomaticLogout() {
+        Auth auth = command(true);
+        auth.setTokenVariable("googleToken");
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.of("provider-secret"));
+        doAnswer(call -> {
+            dependencies.getScenarioContext().setVariable("copy", "Bearer provider-secret");
+            return null;
+        }).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        interpreter.acceptImpl(auth, new CommandResult());
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertEquals("Bearer provider-secret", dependencies.getScenarioContext().inject("{{copy}}"));
+        assertEquals("Bearer pro***", dependencies.getScenarioContext().redact(
+                dependencies.getScenarioContext().get("copy")));
+        assertNull(dependencies.getAuthorization());
+        verify(authStrategy).logout();
+    }
+
+    @Test
+    void tokenIsClearedWhenChildrenAndLogoutFail() {
+        Auth auth = command(true);
+        auth.setTokenVariable("googleToken");
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.of("provider-secret"));
+        IllegalStateException failure = new IllegalStateException("child failed");
+        doThrow(failure).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        doThrow(new IllegalStateException("logout failed")).when(authStrategy).logout();
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> interpreter.acceptImpl(auth, new CommandResult())));
+        assertEquals(1, failure.getSuppressed().length);
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertNull(dependencies.getAuthorization());
+    }
+
+    @Test
+    void conflictingTokenNameFailsBeforeAuthentication() {
+        Auth auth = command(true);
+        auth.setTokenVariable("existing");
+        dependencies.getScenarioContext().set("existing", "old");
+        assertThrows(DefaultFrameworkException.class, () -> interpreter.acceptImpl(auth, new CommandResult()));
+        assertEquals("old", dependencies.getScenarioContext().get("existing"));
+        verifyNoInteractions(authFactory, authStrategy, commandRunner);
+    }
+
+    @Test
+    void strategyWithoutExportableTokenDoesNotRunChildren() {
+        Auth auth = command(false);
+        auth.setTokenVariable("googleToken");
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.empty());
+        assertThrows(DefaultFrameworkException.class, () -> interpreter.acceptImpl(auth, new CommandResult()));
+        assertFalse(dependencies.getScenarioContext().containsKey("googleToken"));
+        assertNull(dependencies.getAuthorization());
+        verifyNoInteractions(commandRunner);
+    }
+
+    @Test
+    void nestedAuthWithLogoutRestoresOuterContext() {
+        assertNestedAuthRestoresOuterContext(true);
+    }
+
+    @Test
+    void nestedAuthWithoutLogoutRestoresOuterContext() {
+        assertNestedAuthRestoresOuterContext(false);
+    }
+
+    private void assertNestedAuthRestoresOuterContext(final boolean autoLogout) {
+        Auth outer = command(false);
+        outer.setTokenVariable("token");
+        Auth inner = command(autoLogout);
+        inner.setStrategyAlias("INNER");
+        inner.setTokenVariable("token");
+        AuthenticationStrategy innerStrategy = mock(AuthenticationStrategy.class);
+        final InterpreterDependencies.Authorization innerHeaders =
+                new InterpreterDependencies.Authorization(Map.of("Authorization", "Bearer inner"));
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.of("outer-secret"));
+        when(authFactory.create(dependencies, "INNER")).thenReturn(innerStrategy);
+        when(innerStrategy.getAccessToken()).thenReturn(Optional.of("inner-secret"));
+        doAnswer(call -> {
+            dependencies.setAuthorization(innerHeaders);
+            return null;
+        }).when(innerStrategy).authenticate(any(), any());
+        doAnswer(call -> {
+            if (call.getArgument(0) == outer.getCommands()) {
+                assertEquals("outer-secret", dependencies.getScenarioContext().get("token"));
+                interpreter.acceptImpl(inner, new CommandResult());
+                assertSame(authorization, dependencies.getAuthorization());
+                assertEquals("outer-secret", dependencies.getScenarioContext().get("token"));
+            } else {
+                assertSame(innerHeaders, dependencies.getAuthorization());
+                assertEquals("inner-secret", dependencies.getScenarioContext().get("token"));
+                dependencies.getScenarioContext().setVariable("copy", "Bearer inner-secret");
+            }
+            return null;
+        }).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        interpreter.acceptImpl(outer, new CommandResult());
+        assertFalse(dependencies.getScenarioContext().containsKey("token"));
+        assertEquals("Bearer inner-secret", dependencies.getScenarioContext().get("copy"));
+        assertEquals("Bearer inn***", dependencies.getScenarioContext().redact(
+                dependencies.getScenarioContext().get("copy")));
+        assertSame(authorization, dependencies.getAuthorization());
+        verify(innerStrategy, times(autoLogout ? 1 : 0)).logout();
+        assertFalse(dependencies.isAuthBlockActive());
+    }
+
+    @Test
+    void nestedFactoryFailureRestoresOuterContext() {
+        assertNestedFailureRestoresOuterContext("factory");
+    }
+
+    @Test
+    void nestedLoginFailureRestoresOuterContext() {
+        assertNestedFailureRestoresOuterContext("login");
+    }
+
+    @Test
+    void nestedChildFailureRestoresOuterContext() {
+        assertNestedFailureRestoresOuterContext("children");
+    }
+
+    @Test
+    void nestedLogoutFailureRestoresOuterContext() {
+        assertNestedFailureRestoresOuterContext("logout");
+    }
+
+    private void assertNestedFailureRestoresOuterContext(final String phase) {
         dependencies.setAuthBlockActive(true);
         dependencies.setAuthorization(authorization);
-        assertThrows(DefaultFrameworkException.class,
-                () -> interpreter.acceptImpl(command(true), new CommandResult()));
+        dependencies.getScenarioContext().setAuthToken("token", "outer-secret");
+        AuthenticationStrategy inner = mock(AuthenticationStrategy.class);
+        IllegalStateException failure = new IllegalStateException("Inner failure");
+        when(authFactory.create(dependencies, "JWT")).thenReturn(inner);
+        if ("factory".equals(phase)) {
+            when(authFactory.create(dependencies, "JWT")).thenThrow(failure);
+        } else if ("login".equals(phase)) {
+            doAnswer(call -> {
+                dependencies.setAuthorization(new InterpreterDependencies.Authorization(Map.of()));
+                throw failure;
+            }).when(inner).authenticate(any(), any());
+        } else if ("children".equals(phase)) {
+            doThrow(failure).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        } else {
+            doThrow(failure).when(inner).logout();
+        }
+        assertSame(failure, assertThrows(IllegalStateException.class,
+                () -> interpreter.acceptImpl(command(true), new CommandResult())));
         assertSame(authorization, dependencies.getAuthorization());
+        assertEquals("outer-secret", dependencies.getScenarioContext().get("token"));
+        assertTrue(dependencies.isAuthBlockActive());
+    }
+
+    @Test
+    void sequentialAuthBlocksCanReuseTokenNameWithoutLogout() {
+        stubAuthentication("JWT");
+        when(authStrategy.getAccessToken()).thenReturn(Optional.of("provider-secret"));
+        Auth auth = command(false);
+        auth.setTokenVariable("token");
+        interpreter.acceptImpl(auth, new CommandResult());
+        assertFalse(dependencies.getScenarioContext().containsKey("token"));
+        interpreter.acceptImpl(auth, new CommandResult());
+        assertFalse(dependencies.getScenarioContext().containsKey("token"));
+        assertSame(authorization, dependencies.getAuthorization());
+        verify(authStrategy, times(2)).authenticate(any(), any());
+    }
+
+    @Test
+    void threeNestedLevelsRestoreTheirOwnHeadersAndTokens() {
+        final AtomicInteger level = new AtomicInteger();
+        when(authFactory.create(eq(dependencies), anyString())).thenAnswer(call -> {
+            final String alias = call.getArgument(1);
+            final AuthenticationStrategy strategy = mock(AuthenticationStrategy.class);
+            when(strategy.getAccessToken()).thenReturn(Optional.of(alias + "-secret"));
+            doAnswer(login -> {
+                dependencies.setAuthorization(new InterpreterDependencies.Authorization(
+                        Map.of("Authorization", alias)));
+                return null;
+            }).when(strategy).authenticate(any(), any());
+            return strategy;
+        });
+        doAnswer(call -> {
+            final int depth = level.getAndIncrement();
+            final String current = "level" + depth;
+            assertEquals(current + "-secret", dependencies.getScenarioContext().get("token"));
+            if (depth < 2) {
+                final Auth child = command(false);
+                child.setStrategyAlias("level" + (depth + 1));
+                child.setTokenVariable("token");
+                interpreter.acceptImpl(child, new CommandResult());
+                assertEquals(current, dependencies.getAuthorization().getHeaders().get("Authorization"));
+                assertEquals(current + "-secret", dependencies.getScenarioContext().get("token"));
+            }
+            return null;
+        }).when(commandRunner).runCommands(anyList(), any(), any(), anyList());
+        Auth outer = command(true);
+        outer.setStrategyAlias("level0");
+        outer.setTokenVariable("token");
+        interpreter.acceptImpl(outer, new CommandResult());
+        assertEquals(3, level.get());
+        assertNull(dependencies.getAuthorization());
+        assertFalse(dependencies.getScenarioContext().containsKey("token"));
+        assertFalse(dependencies.isAuthBlockActive());
+    }
+
+    @Test
+    void nestedOrdinaryVariableConflictPreservesOuterContext() {
+        dependencies.setAuthBlockActive(true);
+        dependencies.setAuthorization(authorization);
+        dependencies.getScenarioContext().setAuthToken("outerToken", "outer-secret");
+        dependencies.getScenarioContext().setVariable("ordinary", "unchanged");
+        Auth inner = command(false);
+        inner.setTokenVariable("ordinary");
+        assertThrows(DefaultFrameworkException.class, () -> interpreter.acceptImpl(inner, new CommandResult()));
+        assertSame(authorization, dependencies.getAuthorization());
+        assertEquals("outer-secret", dependencies.getScenarioContext().get("outerToken"));
+        assertEquals("unchanged", dependencies.getScenarioContext().get("ordinary"));
         assertTrue(dependencies.isAuthBlockActive());
         verifyNoInteractions(authFactory, commandRunner);
     }

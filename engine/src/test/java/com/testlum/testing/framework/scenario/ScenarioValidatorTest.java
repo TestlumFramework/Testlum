@@ -4,6 +4,7 @@ import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.UIConfiguration;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.testlum.testing.framework.interpreter.SendGridUtil;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.testlum.testing.framework.util.BrowserUtil;
@@ -510,6 +511,31 @@ class ScenarioValidatorTest {
             configureAuthRegistry();
             assertThrows(DefaultFrameworkException.class,
                     () -> validator.validate(createScenario(true, authCommand("missing")), xmlFile()));
+            verify(fileSearcher, never()).searchFileFromDataFolder(anyString());
+        }
+
+        @Test
+        void disabledStrategySkipsCredentialsAndNestedCommands() {
+            configureAuthRegistry();
+            integrations.getAuthStrategies().getJwtOrBasicOrCustom().get(0).setEnabled(false);
+            Auth auth = authCommand("JWT");
+            auth.setCredentials("missing.json");
+            auth.getCommands().add(new Graphql());
+
+            assertThrows(IntegrationDisabledException.class,
+                    () -> validator.validate(createScenario(true, auth), xmlFile()));
+            verify(fileSearcher, never()).searchFileFromDataFolder(anyString());
+            verify(integrations, never()).getGraphqlIntegration();
+        }
+
+        @Test
+        void disabledDefaultStrategySkipsCredentials() {
+            configureAuthRegistry();
+            integrations.getAuthStrategies().getJwtOrBasicOrCustom().get(1).setEnabled(false);
+
+            assertThrows(IntegrationDisabledException.class,
+                    () -> validator.validate(createScenario(true, authCommand(null)), xmlFile()));
+            verify(fileSearcher, never()).searchFileFromDataFolder(anyString());
         }
 
         @Test
@@ -565,7 +591,7 @@ class ScenarioValidatorTest {
             registry.getJwtOrBasicOrCustom().add(jwt);
             registry.getJwtOrBasicOrCustom().add(basic);
             when(integrations.getAuthStrategies()).thenReturn(registry);
-            when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(new File("creds.json"));
+            lenient().when(fileSearcher.searchFileFromDataFolder("creds.json")).thenReturn(new File("creds.json"));
         }
 
         private Auth authCommand(final String alias) {

@@ -13,13 +13,23 @@
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-http-inbound</artifactId>
+            <artifactId>testlum-inbound-server</artifactId>
             <version>1.1.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-api-util</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
         </dependency>
 
         <dependency>
@@ -51,6 +61,18 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

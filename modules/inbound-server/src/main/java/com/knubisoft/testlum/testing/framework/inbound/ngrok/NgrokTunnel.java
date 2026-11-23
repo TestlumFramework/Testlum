@@ -57,15 +57,18 @@ public class NgrokTunnel {
                 listenerBuilder = listenerBuilder.domain(config.reservedDomain());
             }
 
-            String target = "http://" + localServer.getHost() + ":" + localServer.getPort();
-            this.forwarder = listenerBuilder.forward(new URL(target));
+            String localHost = "0.0.0.0".equals(localServer.getHost()) ? "127.0.0.1" : localServer.getHost();
+            String target = "http://" + localHost + ":" + localServer.getPort();
+            Forwarder.Endpoint endpoint = listenerBuilder.forward(new URL(target));
+            this.forwarder = endpoint;
+            this.publicUrl = endpoint.getUrl();
 
             isRunning.set(true);
 
             log.info("============================================================");
             log.info(" ngrok tunnel STARTED ");
             log.info("    public URL: " + publicUrl);
-            log.info("    forward to: 127.0.0.1:" + localServer.getPort());
+            log.info("    forward to: " + target);
             log.info("============================================================");
         } catch (Exception e) {
             safeClose();

@@ -30,6 +30,10 @@ public class InboundResponseFactory {
         return json(404, "{\"error\":\"" + escape(message) + "\"}");
     }
 
+    public static InboundResponse status(int statusCode) {
+        return new InboundResponse(statusCode, Map.of(), new byte[0]);
+    }
+
     private static String escape(String s) {
         return s == null ? "" : s.replace("\\", "\\\\").replace("\"", "\\\"");
     }

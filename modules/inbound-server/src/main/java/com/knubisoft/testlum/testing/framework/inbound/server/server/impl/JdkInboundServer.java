@@ -86,17 +86,19 @@ public class JdkInboundServer implements InboundServer {
             InboundRequest request = inboundDtoMapper.toRequest(httpExchange);
             response = handler.handle(request);
             // To provide a correct response - the handler's deal. But we have to double-check it.
-            if (request == null) {
+            if (response == null) {
                 response = InboundResponseFactory.internalError("handler returned null");
             }
         } catch (Exception e) {
-            // Log it
+            log.error("Inbound request handler failed for {} {}",
+                    httpExchange.getRequestMethod(), httpExchange.getRequestURI(), e);
             response = InboundResponseFactory.internalError("handler throws error: " + e.getMessage());
         }
         try {
             writeResponse(httpExchange, response);
         } catch (IOException e) {
-            // Log it
+            log.warn("Failed to write inbound response for {} {}: {}",
+                    httpExchange.getRequestMethod(), httpExchange.getRequestURI(), e.getMessage());
         } finally {
             httpExchange.close();
         }

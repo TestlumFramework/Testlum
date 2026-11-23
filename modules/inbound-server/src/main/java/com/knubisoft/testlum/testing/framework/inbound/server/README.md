@@ -6,9 +6,11 @@ This server does not know anything about sessions or registry. Its main responsi
 to send an HTTP request to InboundRequestHandler and return a response from it. It maps
 the HTTP request to the InboundRequest and writes InboundResponse into the output stream.
 
-2. Session registry layer. 
+2. Request handling layer.
 
-SubscriptionRegistry represents mapping {endpoint -> list of subscribers}. Subscribers 
-are test-threads that are waiting to be notified when the request is received.
+InboundRequestHandler is the only thing the server talks to. Its implementation lives in the
+module of the command that receives the requests, e.g. WebhookRequestHandler in the webhook
+module: it buffers each request per endpoint, and a <webhook> step claims it from the buffer
+with a WebhookMatchStrategy (matching by header, query param, body key or path variable).
 
-RegistryRequestHandler serves as an interface between the core functionality and the server.
+3. Public access. NgrokTunnel exposes the local server, InboundServerLifecycle starts and stops both.

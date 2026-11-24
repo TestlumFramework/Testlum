@@ -2,6 +2,7 @@ package com.testlum.testing.framework.interpreter;
 
 import com.testlum.testing.framework.ai.util.AiUtil;
 import com.testlum.testing.framework.env.AliasEnv;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -64,7 +65,7 @@ public class AiInterpreter extends AbstractInterpreter<Ai> {
 
     private String executePrompt(final Ai ai) {
         AliasEnv aliasEnv = new AliasEnv(ai.getAlias(), dependencies.getEnvironment());
-        ChatModel chatModel = aiChatModels.get(aliasEnv);
+        ChatModel chatModel = getChatModel(aliasEnv, ai.getAlias());
         ChatMemory chatMemory = chatMemoryMap
                 .computeIfAbsent(aliasEnv, env -> MessageWindowChatMemory.withMaxMessages(MAX_MESSAGES));
 
@@ -73,7 +74,23 @@ public class AiInterpreter extends AbstractInterpreter<Ai> {
                 .chatMemory(chatMemory)
                 .build();
 
-        return aiService.askAi(ai.getPrompt()).trim();
+        return validateAndGetAnswer(aiService.askAi(ai.getPrompt()), ai.getAlias());
+    }
+
+    private ChatModel getChatModel(final AliasEnv aliasEnv, final String alias) {
+        if (aiChatModels == null || !aiChatModels.containsKey(aliasEnv)) {
+            throw new DefaultFrameworkException("AI chat model not configured for alias '%s' in environment '%s'",
+                    alias, dependencies.getEnvironment());
+        }
+        return aiChatModels.get(aliasEnv);
+    }
+
+    private String validateAndGetAnswer(final String answer, final String alias) {
+        if (answer == null || answer.isBlank()) {
+            throw new DefaultFrameworkException("AI model returned an empty response for alias '%s'. "
+                    + "Check prompt, token limit, or model availability.", alias);
+        }
+        return answer.trim();
     }
 
     private void logInfoBeforeAnswer(final Ai ai) {

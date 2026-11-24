@@ -2,6 +2,7 @@ package com.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.testlum.testing.framework.ai.util.AiUtil;
 import com.testlum.testing.framework.env.AliasEnv;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -63,7 +64,7 @@ public class UiAiExecutor extends AbstractUiExecutor<UiAi> {
 
     private String executePrompt(final UiAi uiAi) {
         AliasEnv aliasEnv = new AliasEnv(uiAi.getAlias(), dependencies.getEnvironment());
-        ChatModel chatModel = aiChatModels.get(aliasEnv);
+        ChatModel chatModel = getChatModel(aliasEnv, uiAi.getAlias());
         ChatMemory chatMemory = chatMemoryMap
                 .computeIfAbsent(aliasEnv, env -> MessageWindowChatMemory.withMaxMessages(MAX_MESSAGES));
 
@@ -72,7 +73,23 @@ public class UiAiExecutor extends AbstractUiExecutor<UiAi> {
                 .chatMemory(chatMemory)
                 .build();
 
-        return aiService.askAi(uiAi.getPrompt()).trim();
+        return validateAndGetAnswer(aiService.askAi(uiAi.getPrompt()), uiAi.getAlias());
+    }
+
+    private ChatModel getChatModel(final AliasEnv aliasEnv, final String alias) {
+        if (aiChatModels == null || !aiChatModels.containsKey(aliasEnv)) {
+            throw new DefaultFrameworkException("AI chat model not configured for alias '%s' in environment '%s'",
+                    alias, dependencies.getEnvironment());
+        }
+        return aiChatModels.get(aliasEnv);
+    }
+
+    private String validateAndGetAnswer(final String answer, final String alias) {
+        if (answer == null || answer.isBlank()) {
+            throw new DefaultFrameworkException("AI model returned an empty response for alias '%s'. "
+                    + "Check prompt, token limit, or model availability.", alias);
+        }
+        return answer.trim();
     }
 
     private void logInfoBeforeAnswer(final UiAi uiAi) {

@@ -225,6 +225,15 @@ public class UiUtil {
         return environmentLoader.getWebSettings(env).get().getBaseUrl() + path;
     }
 
+    public String resolveImageUrl(final String src, final String currentPageUrl) {
+        try {
+            return new URL(new URL(currentPageUrl), src).toString();
+        } catch (Exception e) {
+            throw new DefaultFrameworkException(
+                    String.format("Unable to resolve image url '%s' against page '%s'", src, currentPageUrl));
+        }
+    }
+
     public void waitForMatSelectToClose(final ExecutorDependencies dependencies, final WebElement matSelect) {
         getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }

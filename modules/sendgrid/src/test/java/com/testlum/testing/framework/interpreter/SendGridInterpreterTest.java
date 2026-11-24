@@ -2,8 +2,10 @@ package com.testlum.testing.framework.interpreter;
 
 import com.sendgrid.Request;
 import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.configuration.ConfigProvider;
+import com.testlum.testing.framework.env.AliasEnv;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
@@ -18,7 +20,9 @@ import com.testlum.testing.model.scenario.Header;
 import com.testlum.testing.model.scenario.Mode;
 import com.testlum.testing.model.scenario.Multipart;
 import com.testlum.testing.model.scenario.QueryParam;
+import com.testlum.testing.model.scenario.Sendgrid;
 import com.testlum.testing.model.scenario.SendgridInfo;
+import com.testlum.testing.model.scenario.SendgridPost;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,6 +30,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SendGridInterpreterTest {
@@ -57,8 +63,10 @@ class SendGridInterpreterTest {
         fileSearcher = mock(FileSearcher.class);
         when(applicationContext.getBean(FileSearcher.class)).thenReturn(fileSearcher);
         when(applicationContext.getBean(ConfigProvider.class)).thenReturn(mock(ConfigProvider.class));
-        when(applicationContext.getBean(ConditionProvider.class)).thenReturn(mock(ConditionProvider.class));
-        when(applicationContext.getBean(JacksonService.class)).thenReturn(mock(JacksonService.class));
+        final ConditionProvider conditionProvider = mock(ConditionProvider.class);
+        when(conditionProvider.isTrue(any(), any(), any())).thenReturn(true);
+        when(applicationContext.getBean(ConditionProvider.class)).thenReturn(conditionProvider);
+        when(applicationContext.getBean(JacksonService.class)).thenReturn(new JacksonService());
 
         final StringPrettifier prettifier = mock(StringPrettifier.class);
         when(prettifier.asJsonResult(anyString())).thenAnswer(inv -> inv.getArgument(0));
@@ -330,6 +338,51 @@ class SendGridInterpreterTest {
                     throw e.getCause() != null ? (Exception) e.getCause() : e;
                 }
             });
+        }
+
+        @Test
+        void nullExpectedResponseDoesNotThrowException() throws Exception {
+            final Response actual = new Response(200, "{\"id\":1}", Collections.emptyMap());
+            final CommandResult result = new CommandResult();
+
+            final Method method = SendGridInterpreter.class.getDeclaredMethod(
+                    "compare", com.testlum.testing.model.scenario.Response.class,
+                    Response.class, CommandResult.class);
+            method.setAccessible(true);
+
+            assertDoesNotThrow(() -> method.invoke(interpreter, null, actual, result));
+        }
+    }
+
+    @Nested
+    class AcceptWithoutResponse {
+
+        @Test
+        void executesSuccessfullyWhenResponseSectionIsOmitted() throws Exception {
+            final SendGrid sendGrid = mock(SendGrid.class);
+            final Response sgResponse = new Response(202, "{\"message\":\"success\"}", Collections.emptyMap());
+            when(sendGrid.api(any())).thenReturn(sgResponse);
+
+            final Field sendGridField = SendGridInterpreter.class.getDeclaredField("sendGrid");
+            sendGridField.setAccessible(true);
+            sendGridField.set(interpreter, Map.of(new AliasEnv("DEFAULT", "test"), sendGrid));
+
+            final Field sendGridUtilField = SendGridInterpreter.class.getDeclaredField("sendGridUtil");
+            sendGridUtilField.setAccessible(true);
+            sendGridUtilField.set(interpreter, new SendGridUtil(new JacksonService()));
+
+            final Sendgrid sendgrid = new Sendgrid();
+            sendgrid.setAlias("DEFAULT");
+            final SendgridPost postRequest = new SendgridPost();
+            postRequest.setEndpoint("/v3/mail/send");
+            final Body body = new Body();
+            body.setRaw("{\"content\":\"test\"}");
+            postRequest.setBody(body);
+            sendgrid.setPost(postRequest);
+
+            final CommandResult result = new CommandResult();
+            assertDoesNotThrow(() -> interpreter.apply(sendgrid, result));
+            verify(sendGrid).api(any());
         }
     }
 }

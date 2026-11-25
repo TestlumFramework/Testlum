@@ -147,11 +147,21 @@ public class ScenarioRunner {
     private void completePendingDownloads() {
         if (scenarioArguments.isContainsUiSteps() && nonNull(downloadDir)) {
             try {
-                webDownloadUtil.completeAndTransferDownloads(downloadDir, scenarioDir, downloadedFiles);
+                boolean completed =
+                        webDownloadUtil.completeAndTransferDownloads(downloadDir, scenarioDir, downloadedFiles);
+                if (!completed && isKeepDownloadedFiles()) {
+                    fillReportException(new DefaultFrameworkException(DOWNLOAD_NOT_COMPLETED));
+                }
             } catch (Exception exception) {
                 log.warn("Failed to complete pending downloads before teardown", exception);
             }
         }
+    }
+
+    private boolean isKeepDownloadedFiles() {
+        AbstractBrowser browserConfig = browserUtil.getBrowserBy(
+                scenarioArguments.getEnvironment(), scenarioArguments.getBrowser()).orElse(null);
+        return nonNull(browserConfig) && browserConfig.isKeepDownloadedFiles();
     }
 
     private void cleanupDownloadedFiles() {

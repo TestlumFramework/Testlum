@@ -260,5 +260,23 @@ class ElasticsearchInterpreterTest {
             assertDoesNotThrow(() -> interpreter.apply(elasticsearch, result));
             verify(restClient).performRequest(any());
         }
+
+        @Test
+        void logsResponseHeadersWithoutThrowing() throws Exception {
+            final Response esResponse = mock(Response.class);
+            final org.apache.http.Header h1 = mock(org.apache.http.Header.class);
+            when(h1.getName()).thenReturn("Content-Type");
+            when(h1.getValue()).thenReturn("application/json");
+            final org.apache.http.Header h2 = mock(org.apache.http.Header.class);
+            when(h2.getName()).thenReturn("X-Custom");
+            when(h2.getValue()).thenReturn("val1");
+            when(esResponse.getHeaders()).thenReturn(new org.apache.http.Header[]{h1, h2});
+
+            final Method method = ElasticsearchInterpreter.class.getDeclaredMethod(
+                    "logResponseHeaders", Response.class);
+            method.setAccessible(true);
+            assertDoesNotThrow(() -> method.invoke(interpreter, esResponse));
+            assertDoesNotThrow(() -> method.invoke(interpreter, new Object[]{null}));
+        }
     }
 }

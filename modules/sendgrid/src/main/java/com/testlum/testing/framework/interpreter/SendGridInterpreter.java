@@ -38,7 +38,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
     private static final String BODY_LOG = LogFormat.table("Body");
-    private static final String QUERY_PARAMS_LOG = LogFormat.table("Query parameters");
 
     private static final String CONTENT_TO_SEND = "Content to send";
     private static final String EXPECTED_CODE = "Expected code";
@@ -92,10 +91,12 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         String body = getBody(sendgridInfo, method);
         Request request = getRequest(body, method, sendgridInfo, endpoint, headers);
         result.put(CONTENT_TO_SEND, stringPrettifier.asJsonResult(body));
-        logHttpInfo(alias, method.name(), endpoint, getQueryParams(sendgridInfo));
+        logHttpInfo(alias, method.name(), endpoint, getQueryParams(sendgridInfo), headers);
         logBody(request.getBody());
         try {
-            return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
+            Response response = sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
+            HttpUtil.logHeaders(log, HttpUtil.RESPONSE_HEADERS_LOG, response.getHeaders());
+            return response;
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }
@@ -197,13 +198,13 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private void logHttpInfo(final String alias,
                              final String method,
                              final String endpoint,
-                             final List<String> queryParams) {
+                             final List<String> queryParams,
+                             final Map<String, String> headers) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
-        if (!queryParams.isEmpty()) {
-            log.info(QUERY_PARAMS_LOG, String.join(LogFormat.contentFormat(), queryParams));
-        }
+        HttpUtil.logQueryParams(log, queryParams);
+        HttpUtil.logHeaders(log, HttpUtil.REQUEST_HEADERS_LOG, headers);
     }
 
     private void logBody(final String body) {

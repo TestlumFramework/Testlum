@@ -133,9 +133,16 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                final CommandResult result) {
         String endpoint = elasticSearchRequest.getEndpoint();
         Map<String, String> headers = getHeaders(elasticSearchRequest);
-        logHttpInfo(alias, httpMethod.name(), endpoint);
+        Map<String, String> params = getParams(elasticSearchRequest);
+        logHttpInfo(alias, httpMethod.name(), endpoint, params, headers);
         addElasticsearchMetaData(alias, httpMethod.name(), headers, endpoint, result);
-        Request request = buildRequest(elasticSearchRequest, httpMethod, endpoint, headers);
+        Request request = buildRequest(elasticSearchRequest, httpMethod, endpoint, headers, params);
+        Response response = performRequest(alias, request);
+        logResponseHeaders(response);
+        return response;
+    }
+
+    private Response performRequest(final String alias, final Request request) {
         try {
             return restClient.get(new AliasEnv(alias, dependencies.getEnvironment())).performRequest(request);
         } catch (ResponseException responseException) {
@@ -149,11 +156,10 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     private Request buildRequest(final ElasticSearchRequest elasticSearchRequest,
                                  final HttpMethod httpMethod,
                                  final String endpoint,
-                                 final Map<String, String> headers) {
+                                 final Map<String, String> headers,
+                                 final Map<String, String> params) {
         Request request = new Request(httpMethod.name(), endpoint);
         setRequestOptions(headers, request);
-
-        Map<String, String> params = getParams(elasticSearchRequest);
         request.addParameters(params);
 
         ContentType contentType = httpUtil.computeContentType(headers);
@@ -195,10 +201,26 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         return httpUtil.extractBody(body, contentType, this, dependencies);
     }
 
-    private void logHttpInfo(final String alias, final String method, final String endpoint) {
+    private void logHttpInfo(final String alias,
+                             final String method,
+                             final String endpoint,
+                             final Map<String, String> params,
+                             final Map<String, String> headers) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
+        HttpUtil.logQueryParams(log, params);
+        HttpUtil.logHeaders(log, HttpUtil.REQUEST_HEADERS_LOG, headers);
+    }
+
+    private void logResponseHeaders(final Response response) {
+        if (Objects.nonNull(response) && Objects.nonNull(response.getHeaders())) {
+            Map<String, String> responseHeaders = new LinkedHashMap<>();
+            for (org.apache.http.Header header : response.getHeaders()) {
+                responseHeaders.put(header.getName(), header.getValue());
+            }
+            HttpUtil.logHeaders(log, HttpUtil.RESPONSE_HEADERS_LOG, responseHeaders);
+        }
     }
 
     private void logBodyContent(final HttpEntity body) {

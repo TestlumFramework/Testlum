@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.interpreter.lib.http.util;
 
+import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -15,6 +16,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -34,6 +36,10 @@ public final class HttpUtil {
 
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
+    public static final String REQUEST_HEADERS_LOG = LogFormat.table("Request headers");
+    public static final String RESPONSE_HEADERS_LOG = LogFormat.table("Response headers");
+    public static final String QUERY_PARAMS_LOG = LogFormat.table("Query parameters");
+    private static final String HEADER_LOG_FORMAT = "%s: %s";
 
     private static final Map<Function<Http, HttpInfo>, HttpMethod> HTTP_METHOD_MAP = new HashMap<>(8, 1F);
     private static final Map<Function<Elasticsearch, ElasticSearchRequest>, HttpMethod> ES_HTTP_METHOD_MAP =
@@ -179,6 +185,40 @@ public final class HttpUtil {
     public ContentType computeContentType(final Map<String, String> headers) {
         String typeValue = headers.computeIfAbsent(HttpHeaders.CONTENT_TYPE, type -> MediaType.APPLICATION_JSON_VALUE);
         return ContentType.parse(typeValue);
+    }
+
+    public static void logHeaders(final Logger log,
+                                  final String headerLogTemplate,
+                                  final Map<String, String> headers) {
+        if (Objects.nonNull(headers) && !headers.isEmpty()) {
+            String formatted = headers.entrySet().stream()
+                    .map(entry -> formatLogEntry(
+                            String.format(HEADER_LOG_FORMAT, entry.getKey(), entry.getValue())))
+                    .collect(Collectors.joining(LogFormat.contentFormat()));
+            log.info(headerLogTemplate, formatted);
+        }
+    }
+
+    public static void logQueryParams(final Logger log, final Map<String, String> params) {
+        if (Objects.nonNull(params) && !params.isEmpty()) {
+            List<String> formattedParams = params.entrySet().stream()
+                    .map(entry -> entry.getKey() + DelimiterConstant.EQUALS_MARK + entry.getValue())
+                    .toList();
+            logQueryParams(log, formattedParams);
+        }
+    }
+
+    public static void logQueryParams(final Logger log, final List<String> params) {
+        if (Objects.nonNull(params) && !params.isEmpty()) {
+            String formatted = params.stream()
+                    .map(HttpUtil::formatLogEntry)
+                    .collect(Collectors.joining(LogFormat.contentFormat()));
+            log.info(QUERY_PARAMS_LOG, formatted);
+        }
+    }
+
+    private static String formatLogEntry(final String entry) {
+        return entry.replaceAll(LogFormat.newLine(), LogFormat.contentFormat());
     }
 
     @RequiredArgsConstructor

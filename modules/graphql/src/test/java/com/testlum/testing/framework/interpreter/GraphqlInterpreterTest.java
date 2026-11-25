@@ -13,7 +13,10 @@ import com.testlum.testing.framework.util.JacksonService;
 import com.testlum.testing.framework.util.StringPrettifier;
 import com.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.testlum.testing.model.scenario.Graphql;
+import com.testlum.testing.model.scenario.GraphqlGet;
+import com.testlum.testing.model.scenario.GraphqlPost;
 import com.testlum.testing.model.scenario.HttpInfo;
+import com.testlum.testing.model.scenario.Param;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,7 +24,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -148,6 +153,54 @@ class GraphqlInterpreterTest {
         @Test
         void createsInterpreterSuccessfully() {
             assertNotNull(interpreter);
+        }
+    }
+
+    @Nested
+    class QueryParamsAndMetadata {
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void extractsQueryParamsForGraphqlGet() throws Exception {
+            final GraphqlGet get = new GraphqlGet();
+            final Param param = new Param();
+            param.setName("query");
+            param.setData("{ getAllSelfBooks {\n  title   author\n} }");
+            get.getParam().add(param);
+
+            final Method method = GraphqlInterpreter.class.getDeclaredMethod("getQueryParams", HttpInfo.class);
+            method.setAccessible(true);
+            final List<String> params = (List<String>) method.invoke(interpreter, get);
+
+            assertEquals(List.of("query={ getAllSelfBooks { title author\n} }"), params);
+        }
+
+        @Test
+        @SuppressWarnings("unchecked")
+        void returnsEmptyParamsForGraphqlPost() throws Exception {
+            final GraphqlPost post = new GraphqlPost();
+
+            final Method method = GraphqlInterpreter.class.getDeclaredMethod("getQueryParams", HttpInfo.class);
+            method.setAccessible(true);
+            final List<String> params = (List<String>) method.invoke(interpreter, post);
+
+            assertTrue(params.isEmpty());
+        }
+
+        @Test
+        void addsQueryParamsAndHeadersToCommandResult() throws Exception {
+            final CommandResult result = new CommandResult();
+            final Map<String, String> headers = Map.of("X-Test-Header", "header-test-value");
+            final List<String> queryParams = List.of("query={ books { title } }", "limit=5");
+
+            final Method method = GraphqlInterpreter.class.getDeclaredMethod(
+                    "addGraphQlMetaData",
+                    String.class, HttpMethod.class, Map.class, String.class, List.class, CommandResult.class);
+            method.setAccessible(true);
+            method.invoke(interpreter, "gqlAlias", HttpMethod.GET, headers, "/graphql", queryParams, result);
+
+            assertEquals("query={ books { title } }&limit=5", result.getMetadata().get("Query parameters"));
+            assertNotNull(result.getMetadata().get("Additional headers"));
         }
     }
 }

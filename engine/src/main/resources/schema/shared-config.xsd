@@ -9,7 +9,7 @@
 
     <x:simpleType name="url" final="restriction">
         <x:restriction base="x:string">
-            <x:pattern value="https?://.+"/>
+            <x:pattern value="https?://([a-zA-Z0-9_.~%\-]+(:[a-zA-Z0-9_.~%\-]+)?@)?([a-zA-Z0-9_]([a-zA-Z0-9_\-]{0,61}[a-zA-Z0-9_])?(\.[a-zA-Z0-9_]([a-zA-Z0-9_\-]{0,61}[a-zA-Z0-9_])?)*|[0-9]{1,3}(\.[0-9]{1,3}){3})(:[0-9]+)?(/[a-zA-Z0-9_.~%!$'()*+,;=:@%\-]*)*(\?[a-zA-Z0-9_.~%!$&amp;'()*+,;=:@/?%\-]*)?(#[a-zA-Z0-9_.~%!$&amp;'()*+,;=:@/?%\-]*)?"/>
             <x:pattern value=".*\$\{[^{}\s]+\}.*"/>
         </x:restriction>
     </x:simpleType>

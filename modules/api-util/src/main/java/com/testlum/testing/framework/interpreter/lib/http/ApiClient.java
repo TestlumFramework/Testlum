@@ -2,6 +2,7 @@ package com.testlum.testing.framework.interpreter.lib.http;
 
 import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -59,6 +60,7 @@ public class ApiClient implements DisposableBean {
                             final Map<String, String> headers,
                             final HttpEntity body) throws Exception {
         HttpUriRequest request = buildRequest(httpMethod, url, headers, body);
+        HttpUtil.logHeaders(log, HttpUtil.REQUEST_HEADERS_LOG, headers);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             return readAPIResponse(response);
         }
@@ -73,6 +75,7 @@ public class ApiClient implements DisposableBean {
         String responseBody = Objects.isNull(entity) ? StringUtils.EMPTY : EntityUtils.toString(entity);
         log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
+        HttpUtil.logHeaders(log, HttpUtil.RESPONSE_HEADERS_LOG, responseHeaders);
         return new ApiResponse(response.getStatusLine().getStatusCode(), responseHeaders, responseBody);
     }
 

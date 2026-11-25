@@ -37,6 +37,7 @@ import org.springframework.http.HttpMethod;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
+    private static final String QUERY_PARAMS = "Query parameters";
     private final Map<Function<Graphql, HttpInfo>, HttpMethod> graphqlMethodMap;
 
     @Autowired
@@ -98,8 +100,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                                           final CommandResult result) {
         String endpoint = httpInfo.getEndpoint();
         Map<String, String> headers = getHeaders(httpInfo);
-        logHttpInfo(alias, httpMethod.name(), endpoint);
-        addGraphQlMetaData(alias, httpMethod, headers, endpoint, result);
+        List<String> queryParams = getQueryParams(httpInfo);
+        logHttpInfo(alias, httpMethod.name(), endpoint, queryParams);
+        addGraphQlMetaData(alias, httpMethod, headers, endpoint, queryParams, result);
         ContentType contentType = httpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
         logBodyContent(body);
@@ -203,10 +206,23 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return string.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE);
     }
 
-    private void logHttpInfo(final String alias, final String method, final String endpoint) {
+    private List<String> getQueryParams(final HttpInfo httpInfo) {
+        if (httpInfo instanceof GraphqlGet get) {
+            return get.getParam().stream()
+                    .map(param -> param.getName() + DelimiterConstant.EQUALS_MARK + prettifyString(param.getData()))
+                    .toList();
+        }
+        return Collections.emptyList();
+    }
+
+    private void logHttpInfo(final String alias,
+                             final String method,
+                             final String endpoint,
+                             final List<String> queryParams) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
+        HttpUtil.logQueryParams(log, queryParams);
     }
 
     private void logBodyContent(final HttpEntity body) {
@@ -227,10 +243,14 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                                     final HttpMethod httpMethod,
                                     final Map<String, String> headers,
                                     final String endpoint,
+                                    final List<String> queryParams,
                                     final CommandResult result) {
         result.put(ALIAS, alias);
         result.put(HTTP_METHOD, httpMethod);
         result.put(ENDPOINT, endpoint);
+        if (!queryParams.isEmpty()) {
+            result.put(QUERY_PARAMS, String.join(DelimiterConstant.AMPERSAND, queryParams));
+        }
         if (!headers.isEmpty()) {
             addHeadersMetaData(headers, result);
         }

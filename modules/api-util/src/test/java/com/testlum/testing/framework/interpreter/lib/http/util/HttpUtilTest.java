@@ -1,5 +1,6 @@
 package com.testlum.testing.framework.interpreter.lib.http.util;
 
+import com.testlum.log.LogFormat;
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -11,17 +12,22 @@ import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import org.springframework.http.HttpMethod;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class HttpUtilTest {
@@ -606,6 +612,88 @@ class HttpUtilTest {
 
             assertThrows(DefaultFrameworkException.class,
                     () -> httpUtil.getESHttpMethodMetadata(es));
+        }
+    }
+
+    @Nested
+    class LogHeaders {
+
+        @Test
+        void logsFormattedHeadersWhenNonEmpty() {
+            final Logger logger = mock(Logger.class);
+            final Map<String, String> headers = new LinkedHashMap<>();
+            headers.put("X-Test-Header", "header-test-value");
+            headers.put("Content-Type", "application/json");
+
+            HttpUtil.logHeaders(logger, HttpUtil.REQUEST_HEADERS_LOG, headers);
+
+            final String expected = "X-Test-Header: header-test-value"
+                    + LogFormat.contentFormat()
+                    + "Content-Type: application/json";
+            verify(logger).info(HttpUtil.REQUEST_HEADERS_LOG, expected);
+        }
+
+        @Test
+        void formatsMultilineHeaderValues() {
+            final Logger logger = mock(Logger.class);
+            final Map<String, String> headers = Map.of("X-Multi", "line1\nline2");
+
+            HttpUtil.logHeaders(logger, HttpUtil.RESPONSE_HEADERS_LOG, headers);
+
+            final String expected = "X-Multi: line1" + LogFormat.contentFormat() + "line2";
+            verify(logger).info(HttpUtil.RESPONSE_HEADERS_LOG, expected);
+        }
+
+        @Test
+        void doesNotLogWhenHeadersNullOrEmpty() {
+            final Logger logger = mock(Logger.class);
+
+            HttpUtil.logHeaders(logger, HttpUtil.REQUEST_HEADERS_LOG, null);
+            HttpUtil.logHeaders(logger, HttpUtil.REQUEST_HEADERS_LOG, Collections.emptyMap());
+
+            verifyNoInteractions(logger);
+        }
+    }
+
+    @Nested
+    class LogQueryParams {
+
+        @Test
+        void logsQueryParamsMapWhenNonEmpty() {
+            final Logger logger = mock(Logger.class);
+            final Map<String, String> params = new LinkedHashMap<>();
+            params.put("query", "{ books { title } }");
+            params.put("limit", "10");
+
+            HttpUtil.logQueryParams(logger, params);
+
+            final String expected = "query={ books { title } }"
+                    + LogFormat.contentFormat()
+                    + "limit=10";
+            verify(logger).info(HttpUtil.QUERY_PARAMS_LOG, expected);
+        }
+
+        @Test
+        void formatsMultilineQueryParamValues() {
+            final Logger logger = mock(Logger.class);
+            final List<String> params = List.of("query={\n  books\n}");
+
+            HttpUtil.logQueryParams(logger, params);
+
+            final String expected = "query={" + LogFormat.contentFormat() + "  books" + LogFormat.contentFormat() + "}";
+            verify(logger).info(HttpUtil.QUERY_PARAMS_LOG, expected);
+        }
+
+        @Test
+        void doesNotLogWhenParamsNullOrEmpty() {
+            final Logger logger = mock(Logger.class);
+
+            HttpUtil.logQueryParams(logger, (Map<String, String>) null);
+            HttpUtil.logQueryParams(logger, Collections.emptyMap());
+            HttpUtil.logQueryParams(logger, (List<String>) null);
+            HttpUtil.logQueryParams(logger, Collections.emptyList());
+
+            verifyNoInteractions(logger);
         }
     }
 }

@@ -23,6 +23,8 @@ public class ExceptionMessage {
             "Interpreter for class %s not found";
     public static final String MISSING_CONSTRUCTOR =
             "Missing constructor for class: %s";
+    public static final String DOWNLOAD_NOT_COMPLETED =
+            "File download was not completed. Unfinished files were left in the download folder";
 
     public static final String ALIAS_BY_STORAGE_NAME_NOT_FOUND =
             "Alias for data storage [%s] not found. Available aliases are %s";

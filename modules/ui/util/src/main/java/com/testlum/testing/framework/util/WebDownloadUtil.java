@@ -124,21 +124,21 @@ public class WebDownloadUtil {
         }
     }
 
-    public void completeAndTransferDownloads(final Path downloadDir,
-                                             final Path scenarioDir,
-                                             final Set<Path> downloadedFiles) {
-        if (downloadDir == null || scenarioDir == null || !Files.exists(downloadDir)) {
-            return;
-        }
-        if (downloadDir.equals(scenarioDir)) {
-            return;
+    public boolean completeAndTransferDownloads(final Path downloadDir,
+                                                final Path scenarioDir,
+                                                final Set<Path> downloadedFiles) {
+        if (downloadDir == null || scenarioDir == null || !Files.exists(downloadDir)
+                || downloadDir.equals(scenarioDir)) {
+            return true;
         }
         if (containsActiveDownloads(downloadDir)) {
             log.info("Active download detected in {}, waiting for completion...", downloadDir);
             waitForActiveDownloads(downloadDir);
         }
+        boolean completed = !containsActiveDownloads(downloadDir);
         normalizeDuplicateFileNames(downloadDir, Collections.emptySet());
         transferDownloadedFiles(downloadDir, scenarioDir, downloadedFiles);
+        return completed;
     }
 
     private void processCompletedDownloads(final Path downloadDir,
@@ -329,6 +329,7 @@ public class WebDownloadUtil {
             }
             sleep();
         }
+        log.warn("Download in {} is still not completed after {} seconds", directory, DOWNLOAD_TIMEOUT_SECONDS);
     }
 
     private long processStabilityCycle(final Path directory, final long currentStableSince) {

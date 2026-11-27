@@ -42,6 +42,7 @@ public class UiUtil {
     private static final String LOCALHOST = "localhost";
     private static final int MAX_PERCENTS_VALUE = 100;
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
+    private static final String URL_SEPARATOR = "/";
 
     private final LocatorCollector locatorCollector;
     private final JavascriptUtil javascriptUtil;
@@ -219,10 +220,10 @@ public class UiUtil {
         if (HTTP_PATTERN.matcher(path).matches()) {
             return path;
         }
-        if (UiType.MOBILE_BROWSER == uiType) {
-            return environmentLoader.getMobileBrowserSettings(env).get().getBaseUrl() + path;
-        }
-        return environmentLoader.getWebSettings(env).get().getBaseUrl() + path;
+        String baseUrl = UiType.MOBILE_BROWSER == uiType
+                ? environmentLoader.getMobileBrowserSettings(env).get().getBaseUrl()
+                : environmentLoader.getWebSettings(env).get().getBaseUrl();
+        return StringUtils.appendIfMissing(baseUrl, URL_SEPARATOR) + StringUtils.removeStart(path, URL_SEPARATOR);
     }
 
     public String resolveImageUrl(final String src, final String currentPageUrl) {

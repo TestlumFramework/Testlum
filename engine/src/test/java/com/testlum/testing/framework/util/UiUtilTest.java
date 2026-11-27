@@ -333,6 +333,33 @@ class UiUtilTest {
             String result = uiUtil.getUrl("https://absolute.com/page", "env", UiType.WEB);
             assertEquals("https://absolute.com/page", result);
         }
+
+        @Test
+        void doesNotDuplicateSlashWhenBaseUrlEndsWithSlash() {
+            Mobilebrowser mb = mock(Mobilebrowser.class);
+            when(mb.getBaseUrl()).thenReturn("https://mobile.com/");
+            when(environmentLoader.getMobileBrowserSettings("mobileEnv")).thenReturn(Optional.of(mb));
+            String result = uiUtil.getUrl("/home", "mobileEnv", UiType.MOBILE_BROWSER);
+            assertEquals("https://mobile.com/home", result);
+        }
+
+        @Test
+        void addsSlashWhenPathHasNoLeadingSlash() {
+            Web web = mock(Web.class);
+            when(web.getBaseUrl()).thenReturn("https://base.com");
+            when(environmentLoader.getWebSettings("testEnv")).thenReturn(Optional.of(web));
+            String result = uiUtil.getUrl("login", "testEnv", UiType.WEB);
+            assertEquals("https://base.com/login", result);
+        }
+
+        @Test
+        void keepsSingleSlashWhenBaseUrlEndsWithSlashAndPathHasNone() {
+            Web web = mock(Web.class);
+            when(web.getBaseUrl()).thenReturn("https://base.com/");
+            when(environmentLoader.getWebSettings("testEnv")).thenReturn(Optional.of(web));
+            String result = uiUtil.getUrl("login", "testEnv", UiType.WEB);
+            assertEquals("https://base.com/login", result);
+        }
     }
 
     // ================================================================

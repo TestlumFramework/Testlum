@@ -1,0 +1,32 @@
+
+package com.testlum.testing.model.scenario;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Java class for sendgridPut complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="sendgridPut"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}sendgridWithBody"&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "sendgridPut")
+public class SendgridPut
+    extends SendgridWithBody
+{
+
+
+}

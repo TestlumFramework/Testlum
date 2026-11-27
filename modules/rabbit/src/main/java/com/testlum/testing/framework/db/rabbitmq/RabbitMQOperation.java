@@ -1,0 +1,52 @@
+package com.testlum.testing.framework.db.rabbitmq;
+
+import com.testlum.testing.framework.EnvToIntegrationMap;
+import com.testlum.testing.framework.condition.OnRabbitMQEnabledCondition;
+import com.testlum.testing.framework.db.AbstractStorageOperation;
+import com.testlum.testing.framework.db.source.Source;
+import com.testlum.testing.framework.env.AliasEnv;
+import com.testlum.testing.framework.env.EnvManager;
+import com.testlum.testing.framework.util.IntegrationsUtil;
+import com.testlum.testing.model.global_config.Rabbitmq;
+import com.rabbitmq.http.client.Client;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+@Conditional({OnRabbitMQEnabledCondition.class})
+@Component
+@RequiredArgsConstructor
+public class RabbitMQOperation extends AbstractStorageOperation {
+
+    @Qualifier("rabbitMqClient")
+    private final Map<AliasEnv, Client> rabbitMqClient;
+    private final EnvToIntegrationMap envToIntegrations;
+    private final IntegrationsUtil integrationsUtil;
+
+    @Override
+    public StorageOperationResult apply(final Source source, final String name) {
+        return null;
+    }
+
+    @Override
+    public void clearSystem() {
+        rabbitMqClient.forEach((aliasEnv, client) -> {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())
+                    && isTruncate(Rabbitmq.class, aliasEnv)) {
+                String virtualHost = this.findByName(aliasEnv).getVirtualHost();
+                client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
+            }
+        });
+    }
+
+    private Rabbitmq findByName(final AliasEnv aliasEnv) {
+        List<Rabbitmq> mqs = envToIntegrations.get(aliasEnv.getEnvironment())
+                .getRabbitmqIntegration().getRabbitmq();
+        return integrationsUtil.findForAlias(mqs, aliasEnv.getAlias());
+    }
+}

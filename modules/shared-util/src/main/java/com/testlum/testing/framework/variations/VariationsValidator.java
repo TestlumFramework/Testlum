@@ -1,0 +1,37 @@
+package com.testlum.testing.framework.variations;
+
+import com.testlum.testing.framework.constant.ExceptionMessage;
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.util.JacksonService;
+import com.testlum.testing.model.scenario.Scenario;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+@RequiredArgsConstructor
+@Component
+public class VariationsValidator {
+
+    private static final String VARIABLE_FORMAT = "{{%s}}";
+
+    private final JacksonService jacksonService;
+
+    public void validateByScenario(final List<Map<String, String>> variationList,
+                                   final Scenario scenario,
+                                   final File filePath) {
+        if (variationList.isEmpty()) {
+            throw new DefaultFrameworkException(ExceptionMessage.VARIATION_FILE_IS_EMPTY,
+                    scenario.getSettings().getVariations(), filePath.getAbsolutePath());
+        }
+        String scenarioAsText = jacksonService.writeValueAsString(scenario);
+        boolean variablesNotUsedInCommands = variationList.get(0).keySet().stream()
+                .map(var -> String.format(VARIABLE_FORMAT, var))
+                .noneMatch(scenarioAsText::contains);
+        if (variablesNotUsedInCommands) {
+            throw new DefaultFrameworkException(ExceptionMessage.VARIATIONS_NOT_USED, filePath.getAbsolutePath());
+        }
+    }
+}

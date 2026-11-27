@@ -1,0 +1,55 @@
+package com.testlum.testing.framework.auth;
+
+import com.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.testlum.testing.framework.util.IntegrationsProvider;
+import com.testlum.testing.model.global_config.Api;
+import com.testlum.testing.model.global_config.Auth;
+import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.stereotype.Service;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Objects;
+
+@Service
+public class AuthFactory {
+
+    private static final String AUTH_NOT_FOUND = "Cannot find <auth> configuration for <api> with alias <%s>";
+
+    public AuthStrategy create(final InterpreterDependencies dependencies, final String alias) {
+        IntegrationsProvider integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
+        final Auth auth = getAuthConfig(dependencies.getEnvironment(), alias, integrationsProvider);
+
+        return switch (auth.getAuthStrategy()) {
+            case BASIC -> new BasicAuth(dependencies);
+            case JWT -> new JwtAuth(dependencies);
+            case CUSTOM -> createCustomStrategy(auth.getAuthCustomClassName(), dependencies);
+            default -> new DefaultStrategy(dependencies);
+        };
+    }
+
+    private Auth getAuthConfig(final String env,
+                               final String alias,
+                               final IntegrationsProvider integrationsProvider) {
+        List<Api> apiList = integrationsProvider.findListByEnv(Api.class, env);
+        Api apiIntegration = integrationsProvider.findApiForAlias(apiList, alias);
+        if (Objects.nonNull(apiIntegration.getAuth())) {
+            return apiIntegration.getAuth();
+        }
+        throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
+    }
+
+    private AuthStrategy createCustomStrategy(final String className,
+                                              final InterpreterDependencies dependencies) {
+        try {
+            return (AuthStrategy) Class.forName(className)
+                    .getConstructor(InterpreterDependencies.class)
+                    .newInstance(dependencies);
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            throw new NotImplementedException("Cannot instantiate custom auth class: " + className);
+        } catch (InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException("Invalid custom auth constructor for class: " + className, e);
+        }
+    }
+}

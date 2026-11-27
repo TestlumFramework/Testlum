@@ -1,0 +1,14 @@
+**/target/
+
+.git
+.gitignore
+.github
+
+.idea
+*.iml
+*.iws
+*.ipr
+
+.DS_Store
+
+*.md

@@ -1,0 +1,50 @@
+package com.testlum.testing.framework.variable.util;
+
+import com.testlum.testing.framework.report.CommandResult;
+import com.testlum.testing.framework.scenario.ScenarioContext;
+import com.testlum.testing.model.scenario.AbstractCommand;
+import com.testlum.testing.model.scenario.FromConstant;
+import com.testlum.testing.model.scenario.FromDate;
+import com.testlum.testing.model.scenario.FromExpression;
+import com.testlum.testing.model.scenario.FromFile;
+import com.testlum.testing.model.scenario.FromPath;
+import com.testlum.testing.model.scenario.FromRandomGenerate;
+import com.testlum.testing.model.scenario.FromSQL;
+import com.testlum.testing.model.scenario.FromAlert;
+import org.openqa.selenium.Alert;
+
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+
+public interface VariableHelper {
+
+    <T extends AbstractCommand> VarMethod<T> lookupVarMethod(Map<VarPredicate<T>, VarMethod<T>> methodMap, T var);
+
+    String getRandomGenerateResult(FromRandomGenerate randomGenerate, String varName, CommandResult result);
+
+    String getFileResult(FromFile fromFile, String varName, UnaryOperator<String> fileToString, CommandResult result);
+
+    String getConstantResult(FromConstant fromConstant, String varName, CommandResult result);
+
+    String getExpressionResult(FromExpression fromExpression, String varName, CommandResult result);
+
+    String getPathResult(FromPath fromPath, String varName, ScenarioContext scenarioContext, CommandResult result,
+                         UnaryOperator<String> fileToString);
+
+    String getSQLResult(FromSQL fromSQL, String varName, CommandResult result);
+
+    String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result);
+
+    String getDateResult(FromDate fromDate, String varName, CommandResult result);
+
+    interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
+
+    interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> { }
+
+    interface RandomPredicate extends Predicate<FromRandomGenerate> { }
+
+    interface RandomFunction extends Function<FromRandomGenerate, String> { }
+}

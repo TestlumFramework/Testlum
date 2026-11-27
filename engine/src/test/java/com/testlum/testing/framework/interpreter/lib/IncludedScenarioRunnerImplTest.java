@@ -5,6 +5,7 @@ import com.testlum.testing.framework.TestResourceSettings;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.AuthCommandExpander;
+import com.testlum.testing.framework.scenario.IncludeCycleFinder;
 import com.testlum.testing.framework.scenario.ScenarioContext;
 import com.testlum.testing.framework.scenario.ScenarioValidator;
 import com.testlum.testing.framework.util.ConfigUtil;
@@ -58,6 +59,8 @@ class IncludedScenarioRunnerImplTest {
     private ScenarioValidator scenarioValidator;
     @Mock
     private AuthCommandExpander authCommandExpander;
+    @Mock
+    private IncludeCycleFinder includeCycleFinder;
 
     private IncludedScenarioRunnerImpl runner;
 
@@ -72,7 +75,8 @@ class IncludedScenarioRunnerImplTest {
                 logUtil,
                 interpreterProvider,
                 scenarioValidator,
-                authCommandExpander
+                authCommandExpander,
+                includeCycleFinder
         );
     }
 
@@ -226,6 +230,8 @@ class IncludedScenarioRunnerImplTest {
                 runner.run(include, mock(InterpreterDependencies.class), new CommandResult());
                 return List.of();
             });
+            when(includeCycleFinder.format(List.of(includedFile, includedFile)))
+                    .thenReturn("recursive -> recursive");
 
             final InterpreterDependencies mainDeps = InterpreterDependencies.builder()
                     .file(new File("/tests/scenarios/main/scenario.xml"))
@@ -234,7 +240,9 @@ class IncludedScenarioRunnerImplTest {
             final CommandResult result = new CommandResult();
             result.setSubCommandsResult(new ArrayList<>());
 
-            assertThrows(DefaultFrameworkException.class, () -> runner.run(include, mainDeps, result));
+            final DefaultFrameworkException exception = assertThrows(DefaultFrameworkException.class,
+                    () -> runner.run(include, mainDeps, result));
+            assertEquals("Circular include: recursive -> recursive", exception.getMessage());
         }
     }
 }

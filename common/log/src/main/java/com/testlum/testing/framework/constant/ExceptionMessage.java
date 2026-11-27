@@ -61,6 +61,7 @@ public class ExceptionMessage {
 
     public static final String SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF =
             "Scenario cannot be included to itself";
+    public static final String INCLUDE_CYCLE_DETECTED = "Circular include: %s";
     public static final String UNSUPPORTED_MIGRATION_FORMAT =
             "Unsupported data file format was found in <migration> tag. For %s allowed extensions are: %s, %s";
     public static final String DB_NOT_SUPPORTED = "Database by name %s not supported";

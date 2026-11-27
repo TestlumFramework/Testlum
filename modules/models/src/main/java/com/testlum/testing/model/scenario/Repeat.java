@@ -22,8 +22,11 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.testlum.com/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
  *         &lt;element name="include" type="{http://www.testlum.com/testing/model/scenario}include"/&gt;
+ *         &lt;element name="assert" type="{http://www.testlum.com/testing/model/scenario}assert"/&gt;
  *         &lt;element name="repeat" type="{http://www.testlum.com/testing/model/scenario}repeat"/&gt;
  *         &lt;element name="web" type="{http://www.testlum.com/testing/model/scenario}web"/&gt;
+ *         &lt;element name="mobilebrowser" type="{http://www.testlum.com/testing/model/scenario}mobilebrowser"/&gt;
+ *         &lt;element name="native" type="{http://www.testlum.com/testing/model/scenario}native"/&gt;
  *         &lt;element name="http" type="{http://www.testlum.com/testing/model/scenario}http"/&gt;
  *         &lt;element name="migrate" type="{http://www.testlum.com/testing/model/scenario}migrate"/&gt;
  *         &lt;element name="postgres" type="{http://www.testlum.com/testing/model/scenario}postgres"/&gt;
@@ -70,8 +73,11 @@ public class Repeat
 
     @XmlElements({
         @XmlElement(name = "include", type = Include.class),
+        @XmlElement(name = "assert", type = Assert.class),
         @XmlElement(name = "repeat", type = Repeat.class),
         @XmlElement(name = "web", type = Web.class),
+        @XmlElement(name = "mobilebrowser", type = Mobilebrowser.class),
+        @XmlElement(name = "native", type = Native.class),
         @XmlElement(name = "http", type = Http.class),
         @XmlElement(name = "migrate", type = Migrate.class),
         @XmlElement(name = "postgres", type = Postgres.class),
@@ -124,6 +130,7 @@ public class Repeat
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Ai }
+     * {@link Assert }
      * {@link Clickhouse }
      * {@link Condition }
      * {@link Dynamo }
@@ -134,8 +141,10 @@ public class Repeat
      * {@link Kafka }
      * {@link Lambda }
      * {@link Migrate }
+     * {@link Mobilebrowser }
      * {@link Mongo }
      * {@link Mysql }
+     * {@link Native }
      * {@link Oracle }
      * {@link Postgres }
      * {@link Rabbit }

@@ -2,9 +2,11 @@ package com.testlum.testing.framework.interpreter.lib;
 
 import com.testlum.testing.framework.FileSearcher;
 import com.testlum.testing.framework.TestResourceSettings;
+import com.testlum.testing.framework.constant.ExceptionMessage;
 import com.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.testlum.testing.framework.report.CommandResult;
 import com.testlum.testing.framework.scenario.AuthCommandExpander;
+import com.testlum.testing.framework.scenario.IncludeCycleFinder;
 import com.testlum.testing.framework.scenario.ScenarioValidator;
 import com.testlum.testing.framework.util.ConfigUtil;
 import com.testlum.testing.framework.util.LogUtil;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,9 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 @Component
 public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
-
-    private static final String INCLUDE_CYCLE_DETECTED =
-            "Include cycle detected: <%s> is already on the include stack";
 
     private final XMLParsers xmlParsers;
     private final FileSearcher fileSearcher;
@@ -39,6 +40,7 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
     private final InterpreterProvider interpreterProvider;
     private final ScenarioValidator scenarioValidator;
     private final AuthCommandExpander authCommandExpander;
+    private final IncludeCycleFinder includeCycleFinder;
 
     private final ThreadLocal<Deque<File>> includeStack = ThreadLocal.withInitial(ArrayDeque::new);
 
@@ -58,10 +60,18 @@ public class IncludedScenarioRunnerImpl implements IncludedScenarioRunner {
     private Deque<File> pushToStackOrThrow(final File includedFile) {
         Deque<File> stack = includeStack.get();
         if (stack.contains(includedFile)) {
-            throw new DefaultFrameworkException(INCLUDE_CYCLE_DETECTED, includedFile.getPath());
+            throw new DefaultFrameworkException(ExceptionMessage.INCLUDE_CYCLE_DETECTED,
+                    includeCycleFinder.format(toCycle(stack, includedFile)));
         }
         stack.push(includedFile);
         return stack;
+    }
+
+    private List<File> toCycle(final Deque<File> stack, final File includedFile) {
+        List<File> chain = new ArrayList<>(stack);
+        Collections.reverse(chain);
+        chain.add(includedFile);
+        return chain.subList(chain.indexOf(includedFile), chain.size());
     }
 
     private void runIncludedScenario(final File includedFile,

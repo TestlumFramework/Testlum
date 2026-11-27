@@ -82,6 +82,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private final GlobalVariationsProvider globalVariationsProvider;
     private final UiConfig uiConfig;
     private final UIConfiguration uiConfigs;
+    private final IncludeCycleFinder includeCycleFinder;
 
     private Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
@@ -707,6 +708,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (includedFile.equals(xmlFile)) {
             throw new DefaultFrameworkException(ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
         }
+        validateNoIncludeCycle(xmlFile, includedFile);
+    }
+
+    private void validateNoIncludeCycle(final File xmlFile, final File includedFile) {
+        includeCycleFinder.findCycle(xmlFile, includedFile).ifPresent(cycle -> {
+            throw new DefaultFrameworkException(ExceptionMessage.INCLUDE_CYCLE_DETECTED,
+                    includeCycleFinder.format(cycle));
+        });
     }
 
     /**

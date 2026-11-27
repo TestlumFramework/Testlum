@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -89,6 +90,8 @@ class ScenarioValidatorTest {
     private UiConfig uiConfig;
     @Mock
     private UIConfiguration uiConfigs;
+    @Mock
+    private IncludeCycleFinder includeCycleFinder;
 
     private ScenarioValidator validator;
 
@@ -97,7 +100,8 @@ class ScenarioValidatorTest {
         validator = new ScenarioValidator(
                 integrations, mobileUtil, integrationsUtil, testResourceSettings,
                 httpUtil, fileSearcher, sendGridUtil, browserUtil,
-                datasetValidator, globalVariationsProvider, uiConfig, uiConfigs
+                datasetValidator, globalVariationsProvider, uiConfig, uiConfigs,
+                includeCycleFinder
         );
         validator.init();
     }
@@ -991,6 +995,25 @@ class ScenarioValidatorTest {
             assertDoesNotThrow(() -> validator.validate(scenario, xmlFile()));
 
             verifyNoInteractions(testResourceSettings, fileSearcher);
+        }
+
+        @Test
+        void throwsWhenIncludeCycleDetected() {
+            File xml = new File("/tmp/scenarios/a/scenario.xml");
+            File included = new File("/tmp/scenarios/b/scenario.xml");
+            when(testResourceSettings.getScenariosFolder()).thenReturn(new File("/tmp/scenarios"));
+            when(fileSearcher.searchFileFromDir(any(File.class), eq(TestResourceSettings.SCENARIO_FILENAME)))
+                    .thenReturn(included);
+            List<File> cycle = List.of(xml, included, xml);
+            when(includeCycleFinder.findCycle(xml, included)).thenReturn(Optional.of(cycle));
+            when(includeCycleFinder.format(cycle)).thenReturn("a -> b -> a");
+
+            Include include = new Include();
+            include.setScenario("b");
+
+            DefaultFrameworkException e = assertThrows(DefaultFrameworkException.class,
+                    () -> validator.validate(createScenario(true, include), xml));
+            assertEquals("Circular include: a -> b -> a", e.getMessage());
         }
     }
 

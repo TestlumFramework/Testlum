@@ -154,8 +154,11 @@
                 <x:choice maxOccurs="unbounded">
                     <x:element name="include" type="tns:include"/>
 <!--                    <x:element name="auth" type="tns:auth"/>-->
+                    <x:element name="assert" type="tns:assert"/>
                     <x:element name="repeat" type="tns:repeat"/>
                     <x:element name="web" type="tns:web"/>
+                    <x:element name="mobilebrowser" type="tns:mobilebrowser"/>
+                    <x:element name="native" type="tns:native"/>
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>
